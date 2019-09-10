@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/debug_page.dart'; // 官方组件库
+import 'package:flutter_app/debug_page.dart'; // 全局调试
+import 'package:flutter_app/wallet_guide.dart'; // 钱包引导页
 
+import 'package:flutter_app/tab_wallet.dart'; // 钱包引导页TabExchange
+import 'package:flutter_app/tab_exchange.dart'; // 钱包引导页
+import 'package:flutter_app/tab_receive.dart'; // 钱包引导页
+import 'package:flutter_app/tab_transfer.dart'; // 钱包引导页
+
+// 应用入口，所有的一起都是从这里开始发生的
 void main() => runApp(MyApp());
-
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -11,37 +17,21 @@ class MyApp extends StatelessWidget {
       // 应用名称
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
       //注册路由表
       routes:{
-        "debug_page": (context) => new DebugPage()
+        "debug_page": (context) => new DebugPage(),
+        "wallet_guide": (context) => new WalletGuide()
       },
-      home: MyHomePage(title: 'Flutter no ok123'),
+      home: MyHomePage(title: 'youwallet'),
     );
   }
 }
 
+// 首页，程序进来后的第一个页面
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -50,18 +40,64 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  int _tabIndex = 0;
+  var tabImages;
+  var appBarTitles = ['钱包', '兑换', '收款','转账'];
+  /*
+   * 存放4个页面，跟fragmentList一样
+   */
 
-  void _incrementCounter() {
-    print('++');
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  var _pageList;
+
+  /*
+   * 根据选择获得对应的normal或是press的icon
+   */
+  Image getTabIcon(int curIndex) {
+    if (curIndex == _tabIndex) {
+      return tabImages[curIndex][1];
+    }
+    return tabImages[curIndex][0];
+  }
+
+  /*
+   * 获取bottomTab的颜色和文字
+   */
+  Text getTabTitle(int curIndex) {
+    if (curIndex == _tabIndex) {
+      return new Text(appBarTitles[curIndex],
+          style: new TextStyle(fontSize: 14.0, color: const Color(0xff1296db)));
+    } else {
+      return new Text(appBarTitles[curIndex],
+          style: new TextStyle(fontSize: 14.0, color: const Color(0xff515151)));
+    }
+  }
+  /*
+   * 根据image路径获取图片
+   */
+  Image getTabImage(path) {
+    return new Image.asset(path, width: 24.0, height: 24.0);
+  }
+
+
+  void initData() {
+    /*
+     * 初始化选中和未选中的icon
+     */
+    tabImages = [
+      [getTabImage('assets/images/home.png'), getTabImage('assets/images/home-active.png')],
+      [getTabImage('assets/images/home.png'), getTabImage('assets/images/home-active.png')],
+      [getTabImage('assets/images/home.png'), getTabImage('assets/images/home-active.png')],
+      [getTabImage('assets/images/home.png'), getTabImage('assets/images/home-active.png')]
+    ];
+    /*
+     * 三个子界面
+     */
+    _pageList = [
+      new TabWallet(),
+      new TabExchange(),
+      new TabReceive(),
+      new TabTransfer()
+    ];
   }
 
   @override
@@ -72,39 +108,41 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
+    initData();
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
+      bottomNavigationBar: new BottomNavigationBar(
+        items: <BottomNavigationBarItem>[
+          new BottomNavigationBarItem(
+              icon: getTabIcon(0), title: getTabTitle(0)),
+          new BottomNavigationBarItem(
+              icon: getTabIcon(1), title: getTabTitle(1)),
+          new BottomNavigationBarItem(
+              icon: getTabIcon(2), title: getTabTitle(2)),
+          new BottomNavigationBarItem(
+              icon: getTabIcon(3), title: getTabTitle(3)),
+        ],
+        type: BottomNavigationBarType.fixed,
+        //默认选中首页
+        currentIndex: _tabIndex,
+        iconSize: 24.0,
+        //点击事件
+        onTap: (index) {
+          setState(() {
+            _tabIndex = index;
+          });
+        },
+      ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Column(
-          // Column is also layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
             FlatButton(
               child: Text("open new route"),
               textColor: Colors.blue,
@@ -113,14 +151,23 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.pushNamed(context, "debug_page");
                 },
             ),
+            FlatButton(
+              child: Text("新建钱包"),
+              textColor: Colors.blue,
+              onPressed: () {
+                //导航到新路由
+                Navigator.pushNamed(context, "wallet_guide");
+              },
+            ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return null;
+  }
