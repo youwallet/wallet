@@ -19,25 +19,32 @@ class Page extends State<TabExchange> {
     return new Scaffold(
       appBar: buildAppBar(context),
       body: new ListView(
-        children: <Widget>[
-          header(context),
-          header(context),
-          header(context),
-          header(context),
-          header(context),
+        children: [
+          walleCard(context),
+          walleCard(context),
+          walleCard(context),
+          walleCard(context),
+          walleCard(context),
         ],
       ),
     );
   }
 
+  // 构建顶部标题栏
   Widget buildAppBar(BuildContext context) {
-    return new AppBar(title: const Text('首页'));
+    return new AppBar(title: const Text('兑换'));
   }
 
-  Widget header(BuildContext context) {
-    return new Image.network(
-      'http://i2.yeyou.itc.cn/2014/huoying/hd_20140925/hyimage06.jpg',
-
+  // 构建单个钱包卡片
+  Widget walleCard(BuildContext context) {
+    return new Card(
+      elevation: 4.0,//阴影
+      color: Colors.grey,//背景色
+      child: new Container(
+        color: Colors.lightBlue,
+        width: 200.0,
+        height: 200.0,
+      ),
     );
   }
 }

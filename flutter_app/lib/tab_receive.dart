@@ -31,7 +31,7 @@ class Page extends State<TabReceive> {
   }
 
   Widget buildAppBar(BuildContext context) {
-    return new AppBar(title: const Text('首页'));
+    return new AppBar(title: const Text('收款'));
   }
 
   Widget header(BuildContext context) {

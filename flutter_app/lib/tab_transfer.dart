@@ -31,7 +31,7 @@ class Page extends State<TabTransfer> {
   }
 
   Widget buildAppBar(BuildContext context) {
-    return new AppBar(title: const Text('首页'));
+    return new AppBar(title: const Text('转账'));
   }
 
   Widget header(BuildContext context) {
