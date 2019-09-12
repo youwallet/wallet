@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:youwallet/widgets/rating.dart';
+import 'package:youwallet/widgets/menu.dart';
 
 class TabExchange extends StatefulWidget {
   @override
@@ -21,7 +22,7 @@ class Page extends State<TabExchange> {
       appBar: buildAppBar(context),
       body: new ListView(
         children: [
-          RatingBar(5)
+          Menu(['导出助记词','导出私钥'])
         ],
       ),
     );
@@ -32,16 +33,4 @@ class Page extends State<TabExchange> {
     return new AppBar(title: const Text('兑换'));
   }
 
-  // 构建单个钱包卡片
-  Widget walleCard(BuildContext context) {
-    return new Card(
-      elevation: 4.0,//阴影
-      color: Colors.grey,//背景色
-      child: new Container(
-        color: Colors.lightBlue,
-        width: 200.0,
-        height: 200.0,
-      ),
-    );
-  }
 }
