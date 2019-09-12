@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/debug_page.dart'; // 全局调试
-import 'package:flutter_app/wallet_guide.dart'; // 钱包引导页
+import 'package:youwallet/debug_page.dart'; // 全局调试
+import 'package:youwallet/wallet_guide.dart'; // 钱包引导页
 
-import 'package:flutter_app/tab_wallet.dart'; // 钱包引导页TabExchange
-import 'package:flutter_app/tab_exchange.dart'; // 钱包引导页
-import 'package:flutter_app/tab_receive.dart'; // 钱包引导页
-import 'package:flutter_app/tab_transfer.dart'; // 钱包引导页
+import 'package:youwallet/tab_wallet.dart'; // 钱包引导页TabExchange
+import 'package:youwallet/tab_exchange.dart'; // 钱包引导页
+import 'package:youwallet/tab_receive.dart'; // 钱包引导页
+import 'package:youwallet/tab_transfer.dart'; // 钱包引导页
 
 // 应用入口，所有的一起都是从这里开始发生的
 void main() => runApp(MyApp());

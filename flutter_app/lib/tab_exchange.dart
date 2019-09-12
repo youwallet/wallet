@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:youwallet/widgets/rating.dart';
 
 class TabExchange extends StatefulWidget {
   @override
@@ -20,11 +21,7 @@ class Page extends State<TabExchange> {
       appBar: buildAppBar(context),
       body: new ListView(
         children: [
-          walleCard(context),
-          walleCard(context),
-          walleCard(context),
-          walleCard(context),
-          walleCard(context),
+          RatingBar(5)
         ],
       ),
     );
