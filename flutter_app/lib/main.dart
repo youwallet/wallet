@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:youwallet/debug_page.dart'; // 全局调试
+import 'package:youwallet/pages/login/login.dart'; // 解锁登录
 import 'package:youwallet/wallet_guide.dart'; // 钱包引导页
 
 import 'package:youwallet/tab_wallet.dart'; // 钱包引导页TabExchange
@@ -27,6 +28,7 @@ class MyApp extends StatelessWidget {
         "debug_page": (context) => new DebugPage(),
         "wallet_guide": (context) => new WalletGuide(),
         "set_wallet_name": (context) => new NewWalletName(),
+        "login": (context) => new Login(),
       },
       home: MyHomePage(title: 'youwallet'),
     );

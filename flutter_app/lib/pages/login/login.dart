@@ -2,23 +2,19 @@
 import 'package:flutter/material.dart';
 
 
-class NewWalletName extends StatefulWidget {
-  NewWalletName() : super();
+class Login extends StatefulWidget {
+  Login() : super();
   @override
-  _NewWalletNameState createState()  => _NewWalletNameState();
+  _LoginState createState()  => _LoginState();
 }
 
-class _NewWalletNameState extends State<NewWalletName> {
+class _LoginState extends State<Login> {
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("创建钱包"),
-        ),
-        body: new Container(
-          padding: const EdgeInsets.all(16.0), // 四周填充边距32像素
+        body: new Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -29,19 +25,13 @@ class _NewWalletNameState extends State<NewWalletName> {
                     'images/new_wallet.png'
                 ),
               ),
-              new TextField(
-                decoration: InputDecoration(
-                  hintText: "输入钱包名称",
-                ),
-              ),
               new Container(
                 margin: const EdgeInsets.only(top: 50.0, bottom: 20.0),
                 child: new Image.asset(
                     'images/fingerprint.png'
                 ),
               ),
-              new Text('开启指纹'),
-              new Text('设置免密登录'),
+              new Text('点击唤醒验证'),
             ],
           ),
         )

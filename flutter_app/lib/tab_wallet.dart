@@ -49,6 +49,7 @@ class Page extends State<TabWallet> {
           icon: new Icon(Icons.camera_alt ),
           onPressed: () {
             // ...
+            Navigator.pushNamed(context, "login");
           },
         ),
       )
