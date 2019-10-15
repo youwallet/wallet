@@ -90,10 +90,10 @@ class _MyHomePageState extends State<MyHomePage> {
      * 初始化选中和未选中的icon
      */
     tabImages = [
-      [getTabImage('assets/images/home.png'), getTabImage('assets/images/home-active.png')],
-      [getTabImage('assets/images/home.png'), getTabImage('assets/images/home-active.png')],
-      [getTabImage('assets/images/home.png'), getTabImage('assets/images/home-active.png')],
-      [getTabImage('assets/images/home.png'), getTabImage('assets/images/home-active.png')]
+      [getTabImage('images/tab_wallet.png'), getTabImage('images/tab_wallet.png')],
+      [getTabImage('images/tab_exchange.png'), getTabImage('images/tab_exchange.png')],
+      [getTabImage('images/tab_receive.png'), getTabImage('images/tab_receive.png')],
+      [getTabImage('images/tab_transfer.png'), getTabImage('images/tab_transfer.png')]
     ];
     /*
      * 四个子界面
