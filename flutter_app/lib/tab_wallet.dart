@@ -33,31 +33,77 @@ class Page extends State<TabWallet> {
   }
 
   Widget buildAppBar(BuildContext context) {
-    return new AppBar(title: const Text('首页'));
+    return new AppBar(
+        title: const Text('youwallet'),
+        leading: new Icon(Icons.account_balance_wallet),
+        actions: this.appBarActions(),
+    );
+  }
+
+  // 定义bar右侧的icon按钮
+  appBarActions() {
+    return <Widget>[
+      new Container(
+        width: 50.0,
+        child: new IconButton(
+          icon: new Icon(Icons.camera_alt ),
+          onPressed: () {
+            // ...
+          },
+        ),
+      )
+    ];
   }
 
   // 构建顶部卡片
   Widget topCard(BuildContext context) {
-    return new Card(
-      elevation: 4.0,//阴影
-      color: Colors.grey,//背景色
-      child: new Container(
-        color: Colors.lightBlue,
+    return new Container(
+        padding: const EdgeInsets.all(16.0), // 四周填充边距32像素
+        margin: const EdgeInsets.all(16.0),
+        decoration: new BoxDecoration(
+            borderRadius: new BorderRadius.all(new Radius.circular(8.0)),
+            color: Colors.lightBlue,
+            image: new DecorationImage(
+                image: new NetworkImage('http://h.hiphotos.baidu.com/zhidao/wh%3D450%2C600/sign=0d023672312ac65c67506e77cec29e27/9f2f070828381f30dea167bbad014c086e06f06c.jpg'),
+                fit: BoxFit.fill
+            ),
+        ),
         width: 200.0,
         height: 150.0,
-      ),
+        child: new Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            new Text('我的钱包'),
+            new Text('KDA'),
+            new Text(
+                '￥3000000',
+                // 因为外层设置了crossAxisAlignment，导致TextAlign失效，思考其他办法
+                textAlign: TextAlign.end,
+                style: new TextStyle(
+                  fontSize: 32.0,
+                )
+            ),
+          ]
+        )
+
     );
   }
 
   // 构建列表的表头菜单
   Widget listTopBar(BuildContext context) {
     return new Container(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.only(left: 16.0, right:16.0, top: 0),
       child: new Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           new Text('Token'),
-          new Text('+'),
+          new IconButton(
+              icon: new Icon(Icons.add_circle_outline ),
+              onPressed: () {
+                  Navigator.pushNamed(context, "wallet_guide");
+              },
+          ),
+
         ],
       ),
     );

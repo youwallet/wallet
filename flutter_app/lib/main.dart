@@ -6,6 +6,7 @@ import 'package:youwallet/tab_wallet.dart'; // 钱包引导页TabExchange
 import 'package:youwallet/tab_exchange.dart'; // 钱包引导页
 import 'package:youwallet/tab_receive.dart'; // 钱包引导页
 import 'package:youwallet/tab_transfer.dart'; // 钱包引导页
+import 'package:youwallet/pages/create_wallet/set_wallet_name.dart'; // 新建钱包名字
 
 // 应用入口，所有的一起都是从这里开始发生的
 void main() => runApp(MyApp());
@@ -14,22 +15,25 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // 应用名称
-      title: 'Flutter Demo',
+      title: 'You Wallet',
+      // 在Flutter中使用ThemeData来在应用中共享颜色和字体样式，Theme有两种：全局Theme和局部Theme。
+      // 全局Theme是由应用程序根MaterialApp创建的Theme
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        primaryColor: Colors.white
       ),
       //注册路由表
       routes:{
         "debug_page": (context) => new DebugPage(),
-        "wallet_guide": (context) => new WalletGuide()
+        "wallet_guide": (context) => new WalletGuide(),
+        "set_wallet_name": (context) => new NewWalletName(),
       },
       home: MyHomePage(title: 'youwallet'),
     );
   }
 }
 
-// 首页，程序进来后的第一个页面
+// 启动页，程序进来后的第一个页面
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
