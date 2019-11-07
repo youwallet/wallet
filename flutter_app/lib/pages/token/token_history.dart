@@ -43,7 +43,31 @@ class Page extends State<TokenHistory> {
                 )
             ),
           ],
-        )
+        ),
+      bottomNavigationBar: new BottomAppBar(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            RaisedButton.icon(
+              icon: Icon(Icons.search),
+              label: Text("兑换"),
+              onPressed: () => print("图标按钮"),
+            ),
+            RaisedButton.icon(
+              color: Colors.blue,
+              icon: Icon(Icons.search),
+              label: Text("兑换"),
+              onPressed: () => print("图标按钮"),
+            ),
+            RaisedButton.icon(
+              color: Colors.green,
+              icon: Icon(Icons.search),
+              label: Text("兑换"),
+              onPressed: () => print("图标按钮"),
+            ),
+          ],
+        ),
+      ),
       );
   }
 
@@ -86,7 +110,9 @@ class Page extends State<TokenHistory> {
   _buildBarItem(str) {
     return Container(
       child: GestureDetector(
-        onTap: _onClick(),//写入方法名称就可以了，但是是无参的
+        onTap: (){
+          debugPrint("onTap");
+        },
         child: Text(str),
       ),
     );
@@ -144,7 +170,7 @@ class Page extends State<TokenHistory> {
         )
     );
   }
-  
+
   @override
   _onClick() {
     debugPrint("onTap");
