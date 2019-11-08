@@ -22,12 +22,13 @@ class Page extends State<TabReceive> {
       appBar: buildAppBar(context),
       body: new Center(
         child: new Stack(
+          fit: StackFit.loose,
           overflow: Overflow.visible,
           children: <Widget>[
             new Container(
               padding: const EdgeInsets.only(top: 40.0),
               width: 300.0,
-              height: 325.0,
+              height: 322.0,
               decoration: new BoxDecoration(
                 borderRadius: new BorderRadius.all(new Radius.circular(8.0)),
                 color: Colors.lightBlue,

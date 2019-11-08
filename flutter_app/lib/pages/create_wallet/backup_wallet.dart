@@ -1,6 +1,9 @@
 
 import 'package:flutter/material.dart';
 
+import 'package:youwallet/widgets/loadingDialog.dart';
+
+import 'package:youwallet/widgets/modalDialog.dart';
 
 class BackupWallet extends StatefulWidget {
   BackupWallet() : super();
@@ -18,7 +21,7 @@ class BackupWalletState extends State<BackupWallet> {
         body: new Container(
           color:Colors.white,
           alignment: Alignment.center,
-          padding: const EdgeInsets.all(16.0), // 四周填充边距32像素
+          padding: const EdgeInsets.only(left: 60.0,right: 60.0), // 四周填充边距32像素
           child: Column(
             children: <Widget>[
               new Text(
@@ -51,8 +54,20 @@ class BackupWalletState extends State<BackupWallet> {
                 minWidth: 300,
                 child: new Text('下一步'),
                 onPressed: () {
-                  // ...
-                  Navigator.pushNamed(context, "load_wallet");
+                  showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return GenderChooseDialog(
+                            title: '提示',
+                            content: '请勿截屏分享或者存储，这样可能被第三方软件手机，造成资产损失',
+                            onBoyChooseEvent: () {
+                              Navigator.pop(context);
+                            },
+                            onGirlChooseEvent: () {
+                              Navigator.pop(context);
+                            });
+                      });
                 },
               ),
 
@@ -70,9 +85,17 @@ class BackupWalletState extends State<BackupWallet> {
 
   _buildText() {
     var arr = [
-      '使用纸和笔正确抄写助记词',
-      '如果你的手机丢失，被盗，损坏，助记词可恢复你的资产'
+      {'val': '备份助记词', 'size': 18.0, 'height': 2},
+      {'val': '使用纸和笔正确抄写助记词', 'size': 14.0, 'height': 2},
+      {'val': '如果你饿手机丢失、被盗、损坏，助记词可帮助恢复你的资产', 'size': 14.0, 'height': 2}
     ];
-    return arr.map( (data)=>new Text(data) ).toList();
+    return arr.map(
+            (data)=>new Text(
+              data['val'],
+              style: new TextStyle(
+                  fontSize: data['size'],
+              )
+          ) ).toList();
   }
 }
+

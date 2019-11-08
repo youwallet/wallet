@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart';
+import 'package:web3dart/json_rpc.dart';
+import 'package:youwallet/widgets/tokenList.dart';
 
 class TabWallet extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
-
     return new Page();
   }
 }
@@ -16,6 +18,32 @@ class Page extends State<TabWallet> {
     return layout(context);
   }
 
+  // 通过JSON RPC获取以太坊节点版本
+  void  _getETHVersionRPC() async{
+    var httpClient = new Client();
+    var rpc = new JsonRPC('http://localhost:8545',httpClient);
+    var version = await rpc.call('web3_clientVersion').then((ret)=>ret.result);
+    print('client version => ${version}');
+  }
+
+  // 通过http获取以太坊节点版本
+  void  _getETHVersion() async{
+    var client = Client();
+    var payload = {
+    "jsonrpc": "2.0",
+    "method": "web3_clientVersion",
+    "params": [],
+    "id": DateTime.now().millisecondsSinceEpoch };
+    print(payload);
+    var rsp = await client.post(
+      'HTTP://0.0.0.0:7545',
+      headers:{'Content-Type':'application/json'},
+      body: json.encode(payload)
+    );
+    print('rsp code => ${rsp.statusCode}');
+  }
+
+  // 构建页面
   Widget layout(BuildContext context) {
     return new Scaffold(
       appBar: buildAppBar(context),
@@ -23,15 +51,15 @@ class Page extends State<TabWallet> {
         children: <Widget>[
           topCard(context),
           listTopBar(context),
-          walleCard(context),
-          walleCard(context),
-          walleCard(context),
-          walleCard(context),
+          new Container(
+            child: new tokenList(),
+          )
         ],
       ),
     );
   }
 
+  // 构建AppBar
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
         title: const Text('youwallet'),
@@ -49,7 +77,9 @@ class Page extends State<TabWallet> {
           icon: new Icon(Icons.camera_alt ),
           onPressed: () {
             // ...
-            Navigator.pushNamed(context, "login");
+            //Navigator.pushNamed(context, "login");
+            // _getETHVersion();
+           // _getETHVersionRPC();
           },
         ),
       )
@@ -63,27 +93,53 @@ class Page extends State<TabWallet> {
         margin: const EdgeInsets.all(16.0),
         decoration: new BoxDecoration(
             borderRadius: new BorderRadius.all(new Radius.circular(8.0)),
-            color: Colors.lightBlue,
-            image: new DecorationImage(
-                image: new NetworkImage('http://h.hiphotos.baidu.com/zhidao/wh%3D450%2C600/sign=0d023672312ac65c67506e77cec29e27/9f2f070828381f30dea167bbad014c086e06f06c.jpg'),
-                fit: BoxFit.fill
-            ),
+            color: Colors.lightBlue
         ),
         width: 200.0,
-        height: 150.0,
         child: new Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            new Text('我的钱包'),
-            new Text('KDA'),
+             new Row(
+               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+               children: <Widget>[
+                 new Text(
+                     '我的钱包',
+                     style: new TextStyle(
+                         color: Colors.white
+                     )
+                 ),
+                 new IconButton(
+                   icon: new Icon(
+                       Icons.settings,
+                       color: Colors.white
+                   ),
+                   onPressed: () {
+                     // ...
+                     Navigator.pushNamed(context, "manage_wallet");
+                   },
+                 ),
+               ],
+             ),
             new Text(
-                '￥3000000',
-                // 因为外层设置了crossAxisAlignment，导致TextAlign失效，思考其他办法
-                textAlign: TextAlign.end,
+                'KDA',
                 style: new TextStyle(
-                  fontSize: 32.0,
+                    color: Colors.white
                 )
             ),
+            new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                new Text(''),
+                new Text(
+                    '￥30000.00',
+                    style: new TextStyle(
+                      fontSize: 32.0, color: Colors.white
+                    )
+                ),
+              ],
+            ),
+
+
           ]
         )
 
@@ -101,63 +157,11 @@ class Page extends State<TabWallet> {
           new IconButton(
               icon: new Icon(Icons.add_circle_outline ),
               onPressed: () {
-                  Navigator.pushNamed(context, "wallet_guide");
+                  Navigator.pushNamed(context, "add_wallet");
               },
           ),
-
         ],
       ),
-    );
-  }
-
-  // 构建单个钱包卡片
-  Widget walleCard(BuildContext context) {
-    return new Card(
-      color: Colors.white,//背景色
-      child:  new Container(
-          padding: const EdgeInsets.all(28.0),
-          child: new Row(
-          children: <Widget>[
-            new Container(
-              margin: const EdgeInsets.only(right: 16.0),
-              decoration: new BoxDecoration(
-                border: new Border.all(width: 2.0, color: Colors.black26),
-                borderRadius: new BorderRadius.all(new Radius.circular(20.0)),
-              ),
-              child: new Image.asset(
-                'assets/images/icon.png',
-                height: 40.0,
-                width: 40.0,
-                fit: BoxFit.cover,
-              ),
-            ),
-            new Expanded(
-              child: new Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  new Text(
-                      'TFT',
-                      style: new TextStyle(fontSize: 32.0,color: Colors.black),
-                  ),
-                  new Text('0xxxxxxxxxxxxxxxxxxxxx'),
-                ],
-              ),
-            ),
-            new Container(
-              child: new Column(
-                children: <Widget>[
-                  new Text(
-                    '14000.00',
-                    style: new TextStyle(fontSize: 16.0,color: Color.fromARGB(100, 6, 147, 193)),
-                  ),
-                  new Text('14000.00'),
-                ],
-              )
-
-            )
-          ],
-        )
-      )
     );
   }
 }
