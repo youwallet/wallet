@@ -42,6 +42,12 @@ class _NewWalletNameState extends State<NewWalletName> {
               ),
               new Text('开启指纹'),
               new Text('设置免密登录'),
+              new GestureDetector(
+                onTap: (){
+                  Navigator.pushNamed(context, "backup_wallet");
+                },//写入方法名称就可以了，但是是无参的
+                child: Text("点击这里进入备份提示页面"),
+              ),
             ],
           ),
         )
