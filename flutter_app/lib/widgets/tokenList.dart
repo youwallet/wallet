@@ -44,7 +44,7 @@ Widget walletCard(item) {
                   borderRadius: new BorderRadius.all(new Radius.circular(20.0)),
                 ),
                 child: new Image.asset(
-                  'assets/images/icon.png',
+                  'images/icon.png',
                   height: 40.0,
                   width: 40.0,
                   fit: BoxFit.cover,

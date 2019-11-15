@@ -52,6 +52,7 @@ class Page extends State<TabWallet> {
           topCard(context),
           listTopBar(context),
           new Container(
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0), // 四周填充边距32像素
             child: new tokenList(),
           )
         ],
@@ -91,11 +92,15 @@ class Page extends State<TabWallet> {
     return new Container(
         padding: const EdgeInsets.all(16.0), // 四周填充边距32像素
         margin: const EdgeInsets.all(16.0),
+        alignment: Alignment.center,
         decoration: new BoxDecoration(
-            borderRadius: new BorderRadius.all(new Radius.circular(8.0)),
-            color: Colors.lightBlue
+            image: DecorationImage(
+              image: AssetImage(
+                  "images/homebk.png",
+              ),
+              fit: BoxFit.fill
+            ),
         ),
-        width: 200.0,
         child: new Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
