@@ -54,20 +54,22 @@ class BackupWalletState extends State<BackupWallet> {
                 minWidth: 300,
                 child: new Text('下一步'),
                 onPressed: () {
-                  showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (BuildContext context) {
-                        return GenderChooseDialog(
-                            title: '提示',
-                            content: '请勿截屏分享或者存储，这样可能被第三方软件手机，造成资产损失',
-                            onBoyChooseEvent: () {
-                              Navigator.pop(context);
-                            },
-                            onGirlChooseEvent: () {
-                              Navigator.pop(context);
-                            });
-                      });
+                  Navigator.pushNamed(context, "load_wallet");
+//                  showDialog(
+//                      context: context,
+//                      barrierDismissible: false,
+//                      builder: (BuildContext context) {
+//                        return GenderChooseDialog(
+//                            title: '提示',
+//                            content: '请勿截屏分享或者存储，这样可能被第三方软件手机，造成资产损失',
+//                            onBoyChooseEvent: () {
+//                              //Navigator.pop(context);
+//                              Navigator.pushNamed(context, "load_wallet");
+//                            },
+//                            onGirlChooseEvent: () {
+//                              Navigator.pop(context);
+//                            });
+//                      });
                 },
               ),
 
