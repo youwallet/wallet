@@ -48,22 +48,54 @@ class Page extends State<TokenHistory> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            RaisedButton.icon(
-              icon: Icon(Icons.search),
-              label: Text("兑换"),
-              onPressed: () => print("图标按钮"),
+            Expanded(
+              child: new SizedBox(
+                height: 50.0,
+                child: RaisedButton.icon(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(0))
+                  ),
+                  elevation: 0,
+                  icon: Icon(Icons.search),
+                  label: Text("兑换"),
+                  onPressed: (){
+                    Navigator.pushNamed(context, "tab_exchange");
+                  },
+                ),
+              ),
+              flex: 1,
             ),
-            RaisedButton.icon(
-              color: Colors.blue,
-              icon: Icon(Icons.search),
-              label: Text("兑换"),
-              onPressed: () => print("图标按钮"),
+            Expanded(
+              child: new SizedBox(
+                height: 50.0,
+                child: RaisedButton.icon(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(0))
+                  ),
+                  elevation: 0,
+                  icon: Icon(Icons.search),
+                  color: Colors.blue,
+                  label: Text("收款"),
+                  onPressed: () => print("图标按钮"),
+                ),
+              ),
+              flex: 1,
             ),
-            RaisedButton.icon(
-              color: Colors.green,
-              icon: Icon(Icons.search),
-              label: Text("兑换"),
-              onPressed: () => print("图标按钮"),
+            Expanded(
+              child: new SizedBox(
+                height: 50.0,
+                child: RaisedButton.icon(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(0))
+                  ),
+                  elevation: 0,
+                  icon: Icon(Icons.search),
+                  label: Text("转账"),
+                  color: Colors.green,
+                  onPressed: () => print("图标按钮"),
+                ),
+              ),
+              flex: 1,
             ),
           ],
         ),

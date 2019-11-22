@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart';
+import 'package:web3dart/web3dart.dart';
 import 'package:web3dart/json_rpc.dart';
 import 'package:youwallet/widgets/tokenList.dart';
+import 'package:flutter/services.dart';
+//import 'package:barcode_scan/barcode_scan.dart';
 
 class TabWallet extends StatefulWidget {
   @override
@@ -12,39 +15,65 @@ class TabWallet extends StatefulWidget {
 }
 
 class Page extends State<TabWallet> {
+  String _scanResultStr = "";
 
   @override
   Widget build(BuildContext context) {
     return layout(context);
   }
 
-  // 通过JSON RPC获取以太坊节点版本
-  void  _getETHVersionRPC() async{
+  // 请求以太坊主网信息
+  void httpRequest() async{
     var httpClient = new Client();
-    var rpc = new JsonRPC('http://localhost:8545',httpClient);
-    var version = await rpc.call('web3_clientVersion').then((ret)=>ret.result);
-    print('client version => ${version}');
+    var web3Client = new Web3Client('https://mainnet.infura.io/',httpClient);
+//    var client = Client();
+//    var payload = {
+//      "jsonrpc": "2.0",
+//      "method": "eth_blockNumber",
+//      "params": [],
+//      "id": DateTime.now().millisecondsSinceEpoch
+//    };
+//    var rsp = await client.post(
+//        'https://mainnet.infura.io/',
+//        headers:{'Content-Type':'application/json'},
+//        body: json.encode(payload)
+//    );
+//    print('rsp code => ${rsp.statusCode}');
+//    print('rsp body => ${rsp.body}');
   }
 
-  // 通过http获取以太坊节点版本
-  void  _getETHVersion() async{
-    var client = Client();
-    var payload = {
-    "jsonrpc": "2.0",
-    "method": "web3_clientVersion",
-    "params": [],
-    "id": DateTime.now().millisecondsSinceEpoch };
-    print(payload);
-    var rsp = await client.post(
-      'HTTP://0.0.0.0:7545',
-      headers:{'Content-Type':'application/json'},
-      body: json.encode(payload)
-    );
-    print('rsp code => ${rsp.statusCode}');
-  }
+  //扫码
+//  Future _scan() async {
+//    //利用try-catch来进行异常处理
+//    try {
+//      //调起摄像头开始扫码
+//      String barcode = await BarcodeScanner.scan();
+//      setState(() {
+//        return this._scanResultStr = barcode;
+//      });
+//    } on PlatformException catch (e) {
+//      //如果没有调用摄像头的权限，则提醒
+//      if (e.code == BarcodeScanner.CameraAccessDenied) {
+//        setState(() {
+//          return this._scanResultStr =
+//          'The user did not grant the camera permission!';
+//        });
+//      } else {
+//        setState(() {
+//          return this._scanResultStr = 'Unknown error: $e';
+//        });
+//      }
+//    } on FormatException {
+//      setState(() => this._scanResultStr =
+//      'null (User returned using the "back"-button before scanning anything. Result)');
+//    } catch (e) {
+//      setState(() => this._scanResultStr = 'Unknown error: $e');
+//    }
+//  }
 
   // 构建页面
   Widget layout(BuildContext context) {
+    this.httpRequest();
     return new Scaffold(
       appBar: buildAppBar(context),
       body: new ListView(
@@ -57,6 +86,12 @@ class Page extends State<TabWallet> {
           )
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        child: new Icon(Icons.add),
+        onPressed: () => {
+          Navigator.pushNamed(context, "set_wallet_name")
+        }
+      ),
     );
   }
 
@@ -64,10 +99,31 @@ class Page extends State<TabWallet> {
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
         title: const Text('youwallet'),
-        leading: new Icon(Icons.account_balance_wallet),
+        leading: IconButton(
+          icon: new Icon(Icons.menu),
+          onPressed: () {
+            print('this is home menu');
+            showModalBottomSheet(
+              context: context,
+              builder: (BuildContext context) {
+                return GestureDetector(
+                  child: Container(
+                    height: 2000.0,
+                    color: Color(0xfff1f1f1),
+                    child: Center(
+                      child: Text("这里是钱包列表，选择钱包"),
+                    ),
+                  ),
+                  onTap: () => false,
+                );
+              },
+            );
+          },
+        ),
         actions: this.appBarActions(),
     );
   }
+
 
   // 定义bar右侧的icon按钮
   appBarActions() {
@@ -77,10 +133,8 @@ class Page extends State<TabWallet> {
         child: new IconButton(
           icon: new Icon(Icons.camera_alt ),
           onPressed: () {
-            // ...
-            //Navigator.pushNamed(context, "login");
-            // _getETHVersion();
-           // _getETHVersionRPC();
+            // httpRequest();
+//            _scan();
           },
         ),
       )

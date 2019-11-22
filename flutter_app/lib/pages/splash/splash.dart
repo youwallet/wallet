@@ -6,18 +6,29 @@ import 'package:youwallet/pages/container_page.dart';
 
 ///打开APP首页
 class SplashWidget extends StatefulWidget {
+
+  int tabIndex;
+
+  SplashWidget({Key key, @required  this.tabIndex})
+      : super(key: key);
+
   @override
   _SplashWidgetState createState() => _SplashWidgetState();
+
 }
 
 class _SplashWidgetState extends State<SplashWidget> {
-  var container = ContainerPage();
+
+  int tabIndex;
+
+//  _SplashWidgetState({Key key, @required this.tabIndex}) : super(key: key);
+
+  var container = ContainerPage(tabIndex: 0);
 
   bool showAd = true;
 
   @override
   Widget build(BuildContext context) {
-    print('build splash');
     return Stack(
       children: <Widget>[
         Offstage(
@@ -92,7 +103,7 @@ class CountDownWidget extends StatefulWidget {
 }
 
 class _CountDownWidgetState extends State<CountDownWidget> {
-  var _seconds = 6;
+  var _seconds = 3;
   Timer _timer;
 
   @override

@@ -33,6 +33,10 @@ class _NewWalletNameState extends State<NewWalletName> {
                 decoration: InputDecoration(
                   hintText: "输入钱包名称",
                 ),
+                onSubmitted: (text) {//内容提交(按回车)的回调
+                  print('submit $text');
+                  Navigator.pushNamed(context, "backup_wallet");
+                },
               ),
               new Container(
                 margin: const EdgeInsets.only(top: 50.0, bottom: 20.0),
@@ -42,12 +46,12 @@ class _NewWalletNameState extends State<NewWalletName> {
               ),
               new Text('开启指纹'),
               new Text('设置免密登录'),
-              new GestureDetector(
-                onTap: (){
-                  Navigator.pushNamed(context, "backup_wallet");
-                },//写入方法名称就可以了，但是是无参的
-                child: Text("点击这里进入备份提示页面"),
-              ),
+//              new GestureDetector(
+//                onTap: (){
+//                  Navigator.pushNamed(context, "backup_wallet");
+//                },//写入方法名称就可以了，但是是无参的
+//                child: Text("点击这里进入备份提示页面"),
+//              ),
             ],
           ),
         )

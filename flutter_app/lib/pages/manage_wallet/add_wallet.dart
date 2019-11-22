@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:web3dart/json_rpc.dart';
 import 'package:youwallet/widgets/menu.dart';
+import 'package:youwallet/widgets/loadingDialog.dart';
 
 class AddWallet extends StatefulWidget {
   @override
@@ -21,13 +22,13 @@ class Page extends State<AddWallet> {
   }
 
   Widget layout(BuildContext context) {
+    getSignFuncName();
     return new Scaffold(
       appBar: buildAppBar(context),
       body: new Container(
         padding: const EdgeInsets.all(16.0),
         child: new ListView(
           children: <Widget>[
-
 
           ],
         ),
@@ -47,9 +48,24 @@ class Page extends State<AddWallet> {
               borderRadius: BorderRadius.circular(6.0),
             )
         ),
-        onChanged: (text) {//内容改变的回调
-          print('change $text');
+        onSubmitted: (text) {//内容提交(按回车)的回调
+          print('submit $text');
+          searchToken(text);
+          showDialog<Null>(
+              context: context, //BuildContext对象
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return new LoadingDialog( //调用对话框
+                  text: '搜索中...',
+                );
+              });
         },
+//        onChanged: (text) {//内容改变的回调
+//          print('change $text');
+//          LoadingDialog(
+//              text: '搜索中···'
+//          );
+//        },
       ),
       actions: this.appBarActions(),
     );
@@ -72,54 +88,63 @@ class Page extends State<AddWallet> {
     ];
   }
 
-  // 构建单个钱包卡片
-  Widget walleCard(BuildContext context) {
-    return new Card(
-        color: Colors.white,//背景色
-        child:  new Container(
-            padding: const EdgeInsets.all(28.0),
-            child: new Row(
-              children: <Widget>[
-                new Container(
-                  margin: const EdgeInsets.only(right: 16.0),
-                  decoration: new BoxDecoration(
-                    border: new Border.all(width: 2.0, color: Colors.black26),
-                    borderRadius: new BorderRadius.all(new Radius.circular(20.0)),
-                  ),
-                  child: new Image.asset(
-                    'assets/images/icon.png',
-                    height: 40.0,
-                    width: 40.0,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                new Expanded(
-                  child: new Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      new Text(
-                        'TFT',
-                        style: new TextStyle(fontSize: 32.0,color: Colors.black),
-                      ),
-                      new Text('0xxxxxxxxxxxxxxxxxxxxx'),
-                    ],
-                  ),
-                ),
-                new Container(
-                    child: new Column(
-                      children: <Widget>[
-                        new IconButton(
-                          icon: new Icon(Icons.arrow_forward_ios ),
-                          onPressed: () {
-                            // ...
-                          },
-                        ),
-                      ],
-                    )
-                )
-              ],
-            )
-        )
+  // 请求以太坊主网信息
+
+  // SHT智能合约地址
+  // https://etherscan.io/address/0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef
+  void searchToken(String address) async{
+//    var httpClient = new Client();
+//    var web3Client = new Web3Client('https://mainnet.infura.io/',httpClient);
+    var client = Client();
+    var payload = {
+      "jsonrpc": "2.0",
+      "method": "eth_call",
+      "params": ['name'],
+      "id": DateTime.now().millisecondsSinceEpoch
+    };
+    var rsp = await client.post(
+        'https://mainnet.infura.io/',
+        headers:{'Content-Type':'application/json'},
+        body: json.encode(payload)
     );
+    print('rsp code => ${rsp.statusCode}');
+    print('rsp body => ${rsp.body}');
+    Navigator.pop(context);
+  }
+
+  // 获取方法的签名
+  void  getSignFuncName() async{
+//    var httpClient = new Client();
+//    var web3Client = new Web3Client('https://mainnet.infura.io/',httpClient);
+    var client = Client();
+    var payload = {
+      "jsonrpc": "2.0",
+      "method": "web3_sha3",
+      "params": ['name()'],
+      "id": DateTime.now().millisecondsSinceEpoch
+    };
+    var rsp = await client.post(
+        'https://mainnet.infura.io/',
+        headers:{'Content-Type':'application/json'},
+        body: json.encode(payload)
+    );
+    print('rsp code => ${rsp.statusCode}');
+    print('rsp body => ${rsp.body}');
+    Navigator.pop(context);
   }
 }
+
+
+
+
+//var path = "https://www.wanandroid.com/user/register";
+//var params = {
+//  "username": "aa112233",
+//  "password": "123456",
+//  "repassword": "123456"
+//};
+//Response response =
+//    await Dio().post(path, queryParameters: params);
+//this.setState(() {
+//result= response.toString();
+//});

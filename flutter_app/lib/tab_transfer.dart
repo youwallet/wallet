@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:youwallet/widgets/customStepper.dart';
+import 'package:youwallet/widgets/modalDialog.dart';
 
 class TabTransfer extends StatefulWidget {
   @override
@@ -13,7 +15,7 @@ class Page extends State<TabTransfer> {
     return layout(context);
   }
   var value;
-
+  double slider = 1.0;
   Widget layout(BuildContext context) {
     return new Scaffold(
       appBar: buildAppBar(context),
@@ -30,13 +32,10 @@ class Page extends State<TabTransfer> {
                 )
             ),
             new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-
                 new Container(
-                  constraints: BoxConstraints(
-                    minHeight: 10,
-                  ),
-
+                  margin: const EdgeInsets.only(right: 40.0),
                   decoration: new BoxDecoration(
                     borderRadius: new BorderRadius.all(new Radius.circular(6.0)),
                     border: new Border.all(width: 1.0, color: Colors.black12),
@@ -50,10 +49,12 @@ class Page extends State<TabTransfer> {
                         value=T;
                       });
                     },
+                    isDense: true,
                     elevation: 24,//设置阴影的高度
                     style: new TextStyle(//设置文本框里面文字的样式
-                        color: Colors.red
+                        color: Colors.black
                     ),
+
                     // isDense: false,//减少按钮的高度。默认情况下，此按钮的高度与其菜单项的高度相同。如果isDense为true，则按钮的高度减少约一半。 这个当按钮嵌入添加的容器中时，非常有用
                     // iconSize: 50.0,//设置三角标icon的大小
                   ),
@@ -75,42 +76,50 @@ class Page extends State<TabTransfer> {
                 )
               ],
             ),
-            new Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                new Text(
-                    '收款地址',
-                    style: new TextStyle(
+            new Container(
+              margin: const EdgeInsets.only(top: 20.0),
+              child: new Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  new Text(
+                      '收款地址',
+                      style: new TextStyle(
                         fontSize: 14.0,
-                    )
-                ),
-                new Text(
-                    '联系人',
-                    style: new TextStyle(
-                        fontSize: 14.0,
-                        color: Colors.lightBlue
-                    )
-                ),
-              ],
-            ),
-            new TextField(
-              decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(6.0),
-                  borderSide: BorderSide(
-                    color: Colors.black12, //边线颜色为黄色
-                    width: 1, //边线宽度为2
+                      )
                   ),
-                ),
-                suffixIcon: Icon(Icons.camera_alt),
-                hintText: "转账金额",
-                fillColor: Colors.black12,
-                contentPadding: new EdgeInsets.all(0.0), // 内部边距，默认不是0
+                  new Text(
+                      '联系人',
+                      style: new TextStyle(
+                          fontSize: 14.0,
+                          color: Colors.lightBlue
+                      )
+                  ),
+                ],
               ),
-              onChanged: (text) {//内容改变的回调
-                print('change $text');
-              },
             ),
+            new ConstrainedBox(
+              constraints: BoxConstraints(
+                  maxHeight: 26,
+              ),
+              child: new TextField(
+                decoration: InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(6.0),
+                    borderSide: BorderSide(
+                      color: Colors.black12, //边线颜色为黄色
+                      width: 1, //边线宽度为2
+                    ),
+                  ),
+                  suffixIcon: Icon(Icons.camera_alt),
+                  hintText: "输入以太坊地址或ENS域名",
+                  contentPadding: new EdgeInsets.only(left: 10.0), // 内部边距，默认不是0
+                ),
+                onChanged: (text) {//内容改变的回调
+                  print('change $text');
+                },
+              ),
+            ),
+
             new Text(
                 '手续费：99.00 ETH',
                 style: new TextStyle(
@@ -120,17 +129,34 @@ class Page extends State<TabTransfer> {
                 )
             ),
             new Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                new Text('慢速'),
-                new Text('常规'),
-                new Text('快速'),
+              children: <Widget>[
+                new Text(
+                    '转账模式',
+                    style: new TextStyle(
+                        fontSize: 16.0,
+                        height: 2
+                    )
+                ),
               ],
             ),
-            new LinearProgressIndicator(
-              backgroundColor: Colors.blue,
-               value: 0,
-              valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
+            new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                new Text('慢速'),
+                new Text('慢速'),
+                new Text('慢速')
+              ],
+            ),
+            new Slider(
+              value: slider,
+              max: 100.0,
+              min: 0.0,
+              activeColor: Colors.blue,
+              onChanged: (double val) {
+                this.setState(() {
+                  slider = val;
+                });
+              },
             ),
             new Text(
                 '付钱需要手续费，手续费越高，转账越快',
@@ -146,7 +172,21 @@ class Page extends State<TabTransfer> {
               minWidth: 300,
               child: new Text('确认转账'),
               onPressed: () {
-                // ...
+                showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (BuildContext context) {
+                      return GenderChooseDialog(
+                          title: '确认付款?',
+                          content: '',
+                          onBoyChooseEvent: () {
+                            print('get in callback');
+                            Navigator.pop(context);
+                          },
+                          onGirlChooseEvent: () {
+                            Navigator.pop(context);
+                          });
+                    });
               },
             ),
 
@@ -163,6 +203,24 @@ class Page extends State<TabTransfer> {
     return new AppBar(title: const Text('转账'));
   }
 
+  // 构建进度条
+  _buildCustomStepper2(){
+    return CustomStepper2(
+      currentStep: 1,
+      type: CustomStepperType2.horizontal,
+      steps: ['慢速', '常规', '快速']
+          .map(
+            (s) => CustomStep2(title: Text(s), content: Container(), isActive: true),
+      )
+          .toList(),
+      controlsBuilder: (BuildContext context,
+          {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
+        return Container();
+      },
+    );
+  }
+
+  // 构建弹出框中的内容
   List<DropdownMenuItem> getListData(){
     List<DropdownMenuItem> items=new List();
     DropdownMenuItem dropdownMenuItem1=new DropdownMenuItem(
@@ -180,41 +238,6 @@ class Page extends State<TabTransfer> {
       value: '3',
     );
     items.add(dropdownMenuItem3);
-    DropdownMenuItem dropdownMenuItem4=new DropdownMenuItem(
-      child:new Text('4'),
-      value: '4',
-    );
-    items.add(dropdownMenuItem4);
-    DropdownMenuItem dropdownMenuItem5=new DropdownMenuItem(
-      child:new Text('5'),
-      value: '5',
-    );
-    items.add(dropdownMenuItem5);
-    DropdownMenuItem dropdownMenuItem6=new DropdownMenuItem(
-      child:new Text('6'),
-      value: '6',
-    );
-    items.add(dropdownMenuItem6);
-    DropdownMenuItem dropdownMenuItem7=new DropdownMenuItem(
-      child:new Text('7'),
-      value: '7',
-    );
-    items.add(dropdownMenuItem7);
-    DropdownMenuItem dropdownMenuItem8=new DropdownMenuItem(
-      child:new Text('8'),
-      value: '8',
-    );
-    items.add(dropdownMenuItem8);
-    DropdownMenuItem dropdownMenuItem9=new DropdownMenuItem(
-      child:new Text('9'),
-      value: '9',
-    );
-    items.add(dropdownMenuItem9);
-    DropdownMenuItem dropdownMenuItem10=new DropdownMenuItem(
-      child:new Text('10'),
-      value: '10',
-    );
-    items.add(dropdownMenuItem10);
     return items;
   }
 

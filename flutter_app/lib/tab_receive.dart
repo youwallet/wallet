@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:share/share.dart';
 
 class TabReceive extends StatefulWidget {
   @override
@@ -90,7 +91,7 @@ class Page extends State<TabReceive> {
                             ),
                           ),
                           new Image.asset(
-                            'images/new_wallet.png',
+                            'images/qrcode.jpeg',
                             height: 100.0,
                             fit: BoxFit.cover,
                           ),
@@ -102,7 +103,7 @@ class Page extends State<TabReceive> {
               ),
             ),
             new Positioned(
-              child:  new Image.asset('assets/images/logo.png'),
+              child:  new Image.asset('images/icon.png'),
               left: 125,
               top: -25,
               width: 50,
@@ -128,10 +129,7 @@ class Page extends State<TabReceive> {
         child: new IconButton(
           icon: new Icon(Icons.share ),
           onPressed: () {
-            // ...
-            //Navigator.pushNamed(context, "login");
-            // _getETHVersion();
-            //_getETHVersionRPC();
+            Share.share( '');
           },
         ),
       )
