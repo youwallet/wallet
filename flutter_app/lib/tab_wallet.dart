@@ -92,6 +92,50 @@ class Page extends State<TabWallet> {
           Navigator.pushNamed(context, "set_wallet_name")
         }
       ),
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: <Widget>[
+                UserAccountsDrawerHeader(
+                  accountName: Text(
+                    'sibbay',
+                    style: TextStyle( fontWeight: FontWeight.bold, ),
+                  ),
+                  accountEmail: Text('sibbay@example.com'),
+                  currentAccountPicture: CircleAvatar( backgroundImage: NetworkImage('https://upyun-assets.ethfans.org/assets/ethereum-logo-fe43a240b78711a6d427e9638f03163f3dc88ca8c112510644ce7b5f6be07dbe.png'), ),
+                  decoration: BoxDecoration(
+                      color: Colors.black12,
+                      image: DecorationImage(
+                        image: NetworkImage( 'url'),
+                        fit: BoxFit.cover,
+                        colorFilter: ColorFilter.mode( Colors.yellow.withOpacity(0.3), BlendMode.lighten, ),
+                      )),
+                ),
+
+                ListTile(
+                  title: Text('切换网络'),
+                  leading: Icon(Icons.network_check),
+                  onTap: () {
+                    Navigator.pushNamed(context, "set_network");
+                  },
+                ),
+                ListTile(
+                  title: Text('检查更新'),
+                  leading: Icon(Icons.update),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                ListTile(
+                  title: Text('进入调试'),
+                  leading: Icon(Icons.adb),
+                  onTap: () {
+                    Navigator.pushNamed(context, "debug_page");
+                  },
+                ),
+            ],
+          ),
+        )
     );
   }
 
@@ -99,27 +143,27 @@ class Page extends State<TabWallet> {
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
         title: const Text('youwallet'),
-        leading: IconButton(
-          icon: new Icon(Icons.menu),
-          onPressed: () {
-            print('this is home menu');
-            showModalBottomSheet(
-              context: context,
-              builder: (BuildContext context) {
-                return GestureDetector(
-                  child: Container(
-                    height: 2000.0,
-                    color: Color(0xfff1f1f1),
-                    child: Center(
-                      child: Text("这里是钱包列表，选择钱包"),
-                    ),
-                  ),
-                  onTap: () => false,
-                );
-              },
-            );
-          },
-        ),
+//        leading: IconButton(
+//          icon: new Icon(Icons.menu),
+//          onPressed: () {
+//            print('this is home menu');
+//            showModalBottomSheet(
+//              context: context,
+//              builder: (BuildContext context) {
+//                return GestureDetector(
+//                  child: Container(
+//                    height: 2000.0,
+//                    color: Color(0xfff1f1f1),
+//                    child: Center(
+//                      child: Text("这里是钱包列表，选择钱包"),
+//                    ),
+//                  ),
+//                  onTap: () => false,
+//                );
+//              },
+//            );
+//          },
+//        ),
         actions: this.appBarActions(),
     );
   }
