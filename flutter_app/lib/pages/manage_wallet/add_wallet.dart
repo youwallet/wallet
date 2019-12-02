@@ -116,7 +116,10 @@ class Page extends State<AddWallet> {
     print(name);
     Map token = new Map();
     token['address'] = address;
-    token['name'] = name;
+
+    // 这里名字是16进制的字符串，需要把它转为utf-8格式的字符串，
+    // 还不知道怎么转，太长了，先截取显示
+    token['name'] = name.substring(0,6);
     tokenArr.add(token);
     setState((){
       this.tokenArr = tokenArr; // 设置初始值

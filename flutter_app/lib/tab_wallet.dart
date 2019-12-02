@@ -4,6 +4,7 @@ import 'package:http/http.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:web3dart/json_rpc.dart';
 import 'package:youwallet/widgets/tokenList.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 //import 'package:barcode_scan/barcode_scan.dart';
 
@@ -17,9 +18,20 @@ class TabWallet extends StatefulWidget {
 class Page extends State<TabWallet> {
   String _scanResultStr = "";
 
+  List tokenArr = [];
+
   @override
   Widget build(BuildContext context) {
+    buildTokenList();
     return layout(context);
+  }
+
+  // 每次页面show，触发首页token更新函数
+  void buildTokenList() async{
+    print('start storaghe');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List arr = prefs.getStringList('tokens');
+    print(arr);
   }
 
   // 请求以太坊主网信息
@@ -42,34 +54,34 @@ class Page extends State<TabWallet> {
 //    print('rsp body => ${rsp.body}');
   }
 
-  //扫码
-//  Future _scan() async {
-//    //利用try-catch来进行异常处理
-//    try {
-//      //调起摄像头开始扫码
-//      String barcode = await BarcodeScanner.scan();
-//      setState(() {
-//        return this._scanResultStr = barcode;
-//      });
-//    } on PlatformException catch (e) {
-//      //如果没有调用摄像头的权限，则提醒
-//      if (e.code == BarcodeScanner.CameraAccessDenied) {
-//        setState(() {
-//          return this._scanResultStr =
-//          'The user did not grant the camera permission!';
-//        });
-//      } else {
-//        setState(() {
-//          return this._scanResultStr = 'Unknown error: $e';
-//        });
-//      }
-//    } on FormatException {
-//      setState(() => this._scanResultStr =
-//      'null (User returned using the "back"-button before scanning anything. Result)');
-//    } catch (e) {
-//      setState(() => this._scanResultStr = 'Unknown error: $e');
-//    }
-//  }
+  //扫码//  Future _scan() async {
+  ////    //利用try-catch来进行异常处理
+  ////    try {
+  ////      //调起摄像头开始扫码
+  ////      String barcode = await BarcodeScanner.scan();
+  ////      setState(() {
+  ////        return this._scanResultStr = barcode;
+  ////      });
+  ////    } on PlatformException catch (e) {
+  ////      //如果没有调用摄像头的权限，则提醒
+  ////      if (e.code == BarcodeScanner.CameraAccessDenied) {
+  ////        setState(() {
+  ////          return this._scanResultStr =
+  ////          'The user did not grant the camera permission!';
+  ////        });
+  ////      } else {
+  ////        setState(() {
+  ////          return this._scanResultStr = 'Unknown error: $e';
+  ////        });
+  ////      }
+  ////    } on FormatException {
+  ////      setState(() => this._scanResultStr =
+  ////      'null (User returned using the "back"-button before scanning anything. Result)');
+  ////    } catch (e) {
+  ////      setState(() => this._scanResultStr = 'Unknown error: $e');
+  ////    }
+  ////  }
+
 
   // 构建页面
   Widget layout(BuildContext context) {
@@ -82,7 +94,7 @@ class Page extends State<TabWallet> {
           listTopBar(context),
           new Container(
             padding: const EdgeInsets.only(left: 16.0, right: 16.0), // 四周填充边距32像素
-            child: new tokenList(arr:[]),
+            child: new tokenList(arr: tokenArr)
           )
         ],
       ),
@@ -268,3 +280,5 @@ class Page extends State<TabWallet> {
     );
   }
 }
+
+
