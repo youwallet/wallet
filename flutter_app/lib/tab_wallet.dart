@@ -82,7 +82,7 @@ class Page extends State<TabWallet> {
           listTopBar(context),
           new Container(
             padding: const EdgeInsets.only(left: 16.0, right: 16.0), // 四周填充边距32像素
-            child: new tokenList(),
+            child: new tokenList(arr:[]),
           )
         ],
       ),

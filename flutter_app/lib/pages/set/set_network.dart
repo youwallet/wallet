@@ -1,11 +1,10 @@
-import 'dart:io';
-import 'dart:async';
+import 'package:http/http.dart';
 import 'package:flutter/material.dart'; // 官方组件库
-//import 'package:image_picker_saver/image_picker_saver.dart';
-import 'package:http/http.dart' as http;
-//import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:local_auth/local_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
+
+
 
 class NetworkPage extends StatefulWidget {
   NetworkPage() : super();
@@ -15,14 +14,9 @@ class NetworkPage extends StatefulWidget {
 
 class _NetworkPageState extends State<NetworkPage> {
 
+  String _newValue = 'Mainnet';
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
         appBar: AppBar(
           // Here we take the value from the MyHomePage object that was created by
@@ -30,15 +24,42 @@ class _NetworkPageState extends State<NetworkPage> {
           title: Text("网络配置"),
         ),
         body: Center(
-          // Center is a layout widget. It takes a single child and positions it
-          // in the middle of the parent.
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text('当前只支持以太坊主网')
+              RadioListTile<String>(
+                value: 'Mainnet',
+                title: Text('Mainnet'),
+                groupValue: _newValue,
+                onChanged: (value) {
+                  setNetWork(value);
+                },
+              ),
+              RadioListTile<String>(
+                value: 'Ropsten',
+                title: Text('Ropsten'),
+                groupValue: _newValue,
+                onChanged: (value) {
+                  setNetWork(value);
+                },
+              ),
             ],
           ),
         )
     );
+  }
+
+  void setNetWork(name) async{
+    setState(() {
+      _newValue = name;
+    });
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("network", name);
+    print(prefs.getString('network'));
+  }
+
+  getNetWork() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('network');
   }
 }

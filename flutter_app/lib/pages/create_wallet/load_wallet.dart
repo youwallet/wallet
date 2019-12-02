@@ -1,6 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:bip39/bip39.dart' as bip39;
+import 'package:bitcoin_flutter/bitcoin_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class LoadWallet extends StatefulWidget {
@@ -131,10 +133,25 @@ class LoadWalletState extends State<LoadWallet> {
     });
     print('_generateMnemonic ====> $randomMnemonic');
     // 得到64字节种子
-    String seed = bip39.mnemonicToSeedHex(randomMnemonic);
+    // String seed = bip39.mnemonicToSeedHex(randomMnemonic);
+    var seed = bip39.mnemonicToSeed(this._name.text);
+    print(seed);
+    var hdWallet = new HDWallet.fromSeed(seed);
+    print(hdWallet);
+    print(hdWallet.address);
+    // => 12eUJoaWBENQ3tNZE52ZQaHqr3v4tTX4os
+    print(hdWallet.pubKey);
+    // => 0360729fb3c4733e43bf91e5208b0d240f8d8de239cff3f2ebd616b94faa0007f4
+    print(hdWallet.privKey);
+    // => 01304181d699cd89db7de6337d597adf5f78dc1f0784c400e41a3bd829a5a226
+    print(hdWallet.wif);
     // 还可以增加一个口令来生成种子，这样即使助记词丢失也还有一层保险
     // bip39.mnemonicToSeedHex(words, password);
-    print('_generateMnemonic ====> $seed');
+    // print('_generateMnemonic ====> $seed');
+    //测试开发用：
+//    flutter: 17FaW8Lp28GM2pPimxjjmhKKsj5FapkHv9
+//    flutter: 02824c948bbdaa7254426aa251143f1d8e0aad221e35df79166b1a2f0c813c6049
+//    flutter: 9196fb3fccd8fccfb108c39fb48c8c5ea89924f5c0a45168a982f167ba9b5252
 
   }
 }

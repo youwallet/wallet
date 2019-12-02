@@ -4,6 +4,8 @@ import 'package:http/http.dart';
 import 'package:web3dart/json_rpc.dart';
 import 'package:youwallet/widgets/menu.dart';
 import 'package:youwallet/widgets/loadingDialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:youwallet/widgets/tokenList.dart';
 
 class AddWallet extends StatefulWidget {
   @override
@@ -16,20 +18,21 @@ class AddWallet extends StatefulWidget {
 
 class Page extends State<AddWallet> {
 
+  List tokenArr = new List();
+
   @override
   Widget build(BuildContext context) {
     return layout(context);
   }
 
   Widget layout(BuildContext context) {
-    getSignFuncName();
     return new Scaffold(
       appBar: buildAppBar(context),
       body: new Container(
         padding: const EdgeInsets.all(16.0),
         child: new ListView(
           children: <Widget>[
-
+            buildTokenList(this.tokenArr)
           ],
         ),
       ),
@@ -49,7 +52,6 @@ class Page extends State<AddWallet> {
             )
         ),
         onSubmitted: (text) {//内容提交(按回车)的回调
-          print('submit $text');
           searchToken(text);
           showDialog<Null>(
               context: context, //BuildContext对象
@@ -88,50 +90,45 @@ class Page extends State<AddWallet> {
     ];
   }
 
-  // 请求以太坊主网信息
-
   // SHT智能合约地址
-  // https://etherscan.io/address/0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef
+  // 0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef
   void searchToken(String address) async{
-//    var httpClient = new Client();
-//    var web3Client = new Web3Client('https://mainnet.infura.io/',httpClient);
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",
       "method": "eth_call",
-      "params": ['name'],
+      "params": [{
+        "to": address,
+        "data": "0x06fdde03"
+      },"latest"],
       "id": DateTime.now().millisecondsSinceEpoch
     };
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String network = prefs.getString('network');
     var rsp = await client.post(
-        'https://mainnet.infura.io/',
+        'https://' + network + '.infura.io/',
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
-    print('rsp code => ${rsp.statusCode}');
-    print('rsp body => ${rsp.body}');
+
+    Map result = jsonDecode(rsp.body);
+    String name = result['result']; // 得到16进制的名字，这里要转换为字符串
+    print(name);
+    Map token = new Map();
+    token['address'] = address;
+    token['name'] = name;
+    tokenArr.add(token);
+    setState((){
+      this.tokenArr = tokenArr; // 设置初始值
+    });
     Navigator.pop(context);
   }
 
-  // 获取方法的签名
-  void  getSignFuncName() async{
-//    var httpClient = new Client();
-//    var web3Client = new Web3Client('https://mainnet.infura.io/',httpClient);
-    var client = Client();
-    var payload = {
-      "jsonrpc": "2.0",
-      "method": "web3_sha3",
-      "params": ['name()'],
-      "id": DateTime.now().millisecondsSinceEpoch
-    };
-    var rsp = await client.post(
-        'https://mainnet.infura.io/',
-        headers:{'Content-Type':'application/json'},
-        body: json.encode(payload)
-    );
-    print('rsp code => ${rsp.statusCode}');
-    print('rsp body => ${rsp.body}');
-    Navigator.pop(context);
+  // 将搜索到的token填充到页面中
+  buildTokenList(arr) {
+    return new tokenList(arr: arr);
   }
+
 }
 
 

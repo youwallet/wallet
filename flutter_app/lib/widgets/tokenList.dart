@@ -2,19 +2,23 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 
 class tokenList extends StatelessWidget {
+
+  List arr = [1];
+  tokenList({Key key, this.arr}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Column(
-        children: getListWidgets()
+        children: getListWidgets(this.arr)
     );
   }
 }
 
 //生成listview children Widgets
-List<Widget> getListWidgets() {
+List<Widget> getListWidgets(arr) {
   List<ItemData> list = List();
   Random random = Random();
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < arr.length; i++) {
     int r = random.nextInt(255);
     int g = random.nextInt(255);
     int b = random.nextInt(255);

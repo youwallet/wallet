@@ -21,12 +21,16 @@ dependencies:
     sdk: flutter
   web3dart:
     git: git://github.com/simolus3/web3dart.git
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
   image_picker_saver: ^0.3.0
   http: ^0.12.0
   local_auth: ^0.5.2+4
+  share: ^0.6.1+1
+  bip39: ^1.0.3
+  bitcoin_flutter: ^1.0.7
+  barcode_scan: ^1.0.0
+  shared_preferences: ^0.5.4+6
+  steel_crypt: ^1.5.1+1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -54,12 +58,19 @@ flutter:
     - assets/images/icon.png
     - images/new_wallet.png
     - images/fingerprint.png
+    - images/tab_wallet_active.png
     - images/tab_wallet.png
+    - images/tab_exchange_active.png
     - images/tab_exchange.png
+    - images/tab_receive_active.png
     - images/tab_receive.png
+    - images/tab_transfer_active.png
     - images/tab_transfer.png
     - images/qrcode.png
     - images/backup.png
+    - images/icon.png
+    - images/qrcode.jpeg
+    - images/homebk.png
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
 

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:youwallet/widgets/rating.dart';
-import 'package:youwallet/widgets/menu.dart';
 import 'package:youwallet/widgets/priceNum.dart';
 import 'package:youwallet/widgets/transferList.dart';
+import 'package:http/http.dart';
+import 'dart:convert';
+import 'package:steel_crypt/steel_crypt.dart';
+import 'package:web3dart/web3dart.dart';
 
 
 
@@ -22,6 +24,7 @@ class Page extends State<TabExchange> {
   }
 
   var value;
+  String _btnText="买入";
 
   // 构建页面
   Widget layout(BuildContext context) {
@@ -92,7 +95,9 @@ class Page extends State<TabExchange> {
                     children: <Widget>[
                       new Expanded(
                           child: OutlineButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              changeOrderModel('买入');
+                            },
                             child: Text('买入'),
                             borderSide: BorderSide(
                                 color: Colors.green,
@@ -104,7 +109,9 @@ class Page extends State<TabExchange> {
                       ),
                       new Expanded(
                           child: OutlineButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              changeOrderModel('卖出');
+                            },
                             child: Text('卖出'),
                             borderSide: BorderSide(
                                 color: Colors.green,
@@ -198,9 +205,12 @@ class Page extends State<TabExchange> {
                         height: 30,
                         child: RaisedButton(
                             elevation: 0,
-                            onPressed: () {},
+                            onPressed: () {
+                              //makeOrder();
+                              getConfigData();
+                            },
                             child: Text(
-                                '买入SHT',
+                                this._btnText,
                                 style: TextStyle(
                                     fontSize: 14.0,
                                     color: Colors.white
@@ -353,14 +363,85 @@ class Page extends State<TabExchange> {
     );
   }
 
-// 构建左侧token区域
-//  Widget buildLeftToken(BuildContext context) {
-//    return new ListView(
-//      children: <Widget>[
-//        new Text('Token')
+  // 更改下单模式
+  void changeOrderModel(String text) {
+    setState(() {
+      this._btnText = text;
+    });
+  }
+
+  // 下单
+  void makeOrder() async{
+    print('start async');
+    var client = Client();
+
+    var payload = {
+      "jsonrpc": "2.0",
+      "method": "eth_blockNumber",
+      "params": [],
+      "id": DateTime.now().millisecondsSinceEpoch
+    };
+
+    var OrderAddressSet = {
+      "baseToken": "0x8F48de31810deaA8bF547587438970EBD2e4be16",
+      "quoteToken": "0x414b26708362B024A28C7Bc309D5C1a8Ac14647E",
+      "relayer":""
+    };
+
+    var OrderParam = {
+      "trader": "这是什么地址？",
+      "baseTokenAmount": 100, //交易token的数量
+      "quoteTokenAmount": 100, //报价token的数量
+      "gasTokenAmount": 0,
+      "data": '',
+      "signature" : ""
+    };
+
+    var rsp = await client.post(
+        'https://ropsten.infura.io/',
+        headers:{'Content-Type':'application/json'},
+        body: json.encode(payload)
+    );
+    print('rsp code => ${rsp}');
+    print('rsp code => ${rsp.statusCode}');
+    print('rsp body => ${rsp.body}');
+
+  }
+
+  // 交易参数的设置, 包含hydro版本号、交易买卖标志等
+  void getConfigData() async{
+    var client = Client();
+
+    String fullString = "hello word";
+    for (int i = 0; i <= fullString.length - 8; i += 8) {
+      final hex = fullString.substring(i, i + 8);
+
+      final number = int.parse(hex, radix: 16);
+      print(number);
+    }
+
+//    var payload = {
+//      "jsonrpc": "2.0",
+//      "method": "getConfigData",
+//      "params": [
+//        {
+//          "from":"",
+//          "to":"0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364",
+//          "data": true
+//        }
 //      ],
+//      "id": DateTime.now().millisecondsSinceEpoch
+//    };
+//
+//    var rsp = await client.post(
+//        'https://ropsten.infura.io/',
+//        headers:{'Content-Type':'application/json'},
+//        body: json.encode(payload)
 //    );
-//  }
+//    print('rsp code => ${rsp}');
+//    print('rsp code => ${rsp.statusCode}');
+//    print('rsp body => ${rsp.body}');
+  }
 
   List<DropdownMenuItem> getListData(){
     List<DropdownMenuItem> items=new List();
