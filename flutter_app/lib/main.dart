@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:youwallet/pages/splash/splash.dart'; // 启动页面
 import 'package:youwallet/pages/routers.dart'; // 添加币种
@@ -22,17 +21,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'youWallet',
+      debugShowCheckedModeBanner: false, //关闭调试
       theme: ThemeData(
         primarySwatch: Colors.blue,
         primaryColor: Colors.white
       ),
+      initialRoute: '/',
       routes: routers,
-      home: Scaffold(
-        resizeToAvoidBottomPadding: false,
-        body: SplashWidget(tabIndex: 0),
-      ),
+      //home: new SplashWidget(tabIndex: 0)
     );
   }
 }

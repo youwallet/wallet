@@ -19,8 +19,10 @@ import 'package:youwallet/pages/token/token_history.dart'; // 添加币种
 // 设置
 import 'package:youwallet/pages/set/set_network.dart'; // 网络设置
 
+
 // 定义全局的路由对象
 final routers = {
+  '/': ( context) => new SplashWidget(tabIndex: 1),
   "debug_page": (context) => new DebugPage(),
   "wallet_guide": (context) => new WalletGuide(),
   "set_wallet_name": (context) => new NewWalletName(),

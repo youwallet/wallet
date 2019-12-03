@@ -385,15 +385,15 @@ class Page extends State<TabExchange> {
     var OrderAddressSet = {
       "baseToken": "0x8F48de31810deaA8bF547587438970EBD2e4be16",
       "quoteToken": "0x414b26708362B024A28C7Bc309D5C1a8Ac14647E",
-      "relayer":""
+      "relayer":"0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef" // 手续费的收款账户，先设置为SHT钱包地址
     };
 
     var OrderParam = {
-      "trader": "这是什么地址？",
+      "trader": "0xAB890808775D51e9bF9fa76f40EE5fff124deCE5", // 这是我的在metaMask上新建的一个钱包地址
       "baseTokenAmount": 100, //交易token的数量
       "quoteTokenAmount": 100, //报价token的数量
       "gasTokenAmount": 0,
-      "data": '',
+      "data": '0x020100005def248f025802580000000000000000000000000000000000000000',
       "signature" : ""
     };
 
@@ -409,39 +409,63 @@ class Page extends State<TabExchange> {
   }
 
   // 交易参数的设置, 包含hydro版本号、交易买卖标志等
+  // getConfigData(bool) 经过sha3加密后取前四位feee047e
+  // 参数为true 则为0000000000000000000000000000000000000000000000000000000000000001
   void getConfigData() async{
     var client = Client();
+    var payload = {
+      "jsonrpc": "2.0",
+      "method": "eth_call",
+      "params": [
+        {
+          "from":"0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364",
+          "to":"0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364",
+          "data": "0xfeee047e0000000000000000000000000000000000000000000000000000000000000001"
+        },
+        "latest"
+      ],
+      "id": DateTime.now().millisecondsSinceEpoch
+    };
 
-    String fullString = "hello word";
-    for (int i = 0; i <= fullString.length - 8; i += 8) {
-      final hex = fullString.substring(i, i + 8);
-
-      final number = int.parse(hex, radix: 16);
-      print(number);
-    }
-
-//    var payload = {
-//      "jsonrpc": "2.0",
-//      "method": "getConfigData",
-//      "params": [
-//        {
-//          "from":"",
-//          "to":"0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364",
-//          "data": true
-//        }
-//      ],
-//      "id": DateTime.now().millisecondsSinceEpoch
-//    };
-//
-//    var rsp = await client.post(
-//        'https://ropsten.infura.io/',
-//        headers:{'Content-Type':'application/json'},
-//        body: json.encode(payload)
-//    );
-//    print('rsp code => ${rsp}');
-//    print('rsp code => ${rsp.statusCode}');
-//    print('rsp body => ${rsp.body}');
+    var rsp = await client.post(
+        'https://ropsten.infura.io/',
+        headers:{'Content-Type':'application/json'},
+        body: json.encode(payload)
+    );
+    print('rsp code => ${rsp}');
+    print('rsp code => ${rsp.statusCode}');
+    print('rsp body => ${rsp.body}');
+    // 参数为true，执行结果为0x020100005def248f025802580000000000000000000000000000000000000000
   }
+
+  // 获取交易签名数据
+  // getConfigSignature(bytes1 v,  bytes32 r, bytes32 s, uint8 signMethod) 的签名：
+  void getConfigSignature() async {
+    var client = Client();
+    var payload = {
+      "jsonrpc": "2.0",
+      "method": "eth_call",
+      "params": [
+        {
+          "from":"0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364",
+          "to":"0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364", // 合约地址
+          "data": ""
+        },
+        "latest"
+      ],
+      "id": DateTime.now().millisecondsSinceEpoch
+    };
+
+    var rsp = await client.post(
+        'https://ropsten.infura.io/',
+        headers:{'Content-Type':'application/json'},
+        body: json.encode(payload)
+    );
+    print('rsp code => ${rsp}');
+    print('rsp code => ${rsp.statusCode}');
+    print('rsp body => ${rsp.body}');
+  }
+
 
   List<DropdownMenuItem> getListData(){
     List<DropdownMenuItem> items=new List();

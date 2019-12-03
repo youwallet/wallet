@@ -4,13 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:youwallet/pages/container_page.dart';
 
 
-///打开APP首页
 class SplashWidget extends StatefulWidget {
 
   int tabIndex;
 
-  SplashWidget({Key key, @required  this.tabIndex})
-      : super(key: key);
+  SplashWidget({Key key, @required  this.tabIndex}) : super(key: key);
 
   @override
   _SplashWidgetState createState() => _SplashWidgetState();
@@ -29,65 +27,68 @@ class _SplashWidgetState extends State<SplashWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        Offstage(
-          child: container,
-          offstage: showAd,
-        ),
-        Offstage(
-          child: Container(
-            color: Colors.white,
-            child: Stack(
-              children: <Widget>[
-                Align(
-                  alignment: Alignment(0.0, 0.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+    return Scaffold(
+        resizeToAvoidBottomPadding: false,
+        body: Stack(
+            children: <Widget>[
+              Offstage(
+                child: container,
+                offstage: showAd,
+              ),
+              Offstage(
+                child: Container(
+                  color: Colors.white,
+                  child: Stack(
                     children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20.0),
-                        child: Text(
-                          '启动页面',
-                          style: TextStyle(fontSize: 30.0, color: Colors.lightBlue),
+                      Align(
+                        alignment: Alignment(0.0, 0.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.only(top: 20.0),
+                              child: Text(
+                                '启动页面',
+                                style: TextStyle(fontSize: 30.0, color: Colors.lightBlue),
+                              ),
+                            )
+                          ],
                         ),
-                      )
+                      ),
+                      SafeArea(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Align(
+                                alignment: Alignment(1.0, 0.0),
+                                child: Container(
+                                  margin: const EdgeInsets.only(right: 30.0, top: 20.0),
+                                  padding: const EdgeInsets.only(
+                                      left: 10.0, right: 10.0, top: 2.0, bottom: 2.0),
+                                  child: CountDownWidget(
+                                    onCountDownFinishCallBack: (bool value) {
+                                      if (value) {
+                                        setState(() {
+                                          showAd = false;
+                                        });
+                                      }
+                                    },
+                                  ),
+                                  decoration: BoxDecoration(
+                                      color: Color(0xffEDEDED),
+                                      borderRadius:
+                                      const BorderRadius.all(Radius.circular(10.0))),
+                                ),
+                              ),
+                            ],
+                          ))
                     ],
                   ),
                 ),
-                SafeArea(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Align(
-                          alignment: Alignment(1.0, 0.0),
-                          child: Container(
-                            margin: const EdgeInsets.only(right: 30.0, top: 20.0),
-                            padding: const EdgeInsets.only(
-                                left: 10.0, right: 10.0, top: 2.0, bottom: 2.0),
-                            child: CountDownWidget(
-                              onCountDownFinishCallBack: (bool value) {
-                                if (value) {
-                                  setState(() {
-                                    showAd = false;
-                                  });
-                                }
-                              },
-                            ),
-                            decoration: BoxDecoration(
-                                color: Color(0xffEDEDED),
-                                borderRadius:
-                                const BorderRadius.all(Radius.circular(10.0))),
-                          ),
-                        ),
-                      ],
-                    ))
-              ],
-            ),
-          ),
-          offstage: !showAd,
-        )
-      ],
+                offstage: !showAd,
+              )
+            ],
+          )
     );
   }
 }
