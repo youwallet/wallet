@@ -206,8 +206,11 @@ class Page extends State<TabExchange> {
                         child: RaisedButton(
                             elevation: 0,
                             onPressed: () {
+                              // =============================
                               //makeOrder();
-                              getConfigData();
+//                              getConfigData();
+                              getBQODHash();
+                              // =============================
                             },
                             child: Text(
                                 this._btnText,
@@ -465,6 +468,111 @@ class Page extends State<TabExchange> {
     print('rsp code => ${rsp.statusCode}');
     print('rsp body => ${rsp.body}');
   }
+
+  /* 获取订单相关hash值
+ * orderParam: 订单参数
+ * orderAddressSet: 订单地址集合
+ *
+ * 返回值
+ * bq_hash: base-token/quote-token 哈希值
+ * od_hash: 订单哈希值
+ *
+ * getBQODHash函数编码说明
+ * 函数名字的编码：0xefe331cf
+ * 第一个结构体编码：
+ * 0000000000000000000000000000000000000000000000000000000000000001
+ * AB890808775D51e9bF9fa76f40EE5fff124deCE5
+ * 第二个结构体编码：
+ * */
+  void  getBQODHash() async {
+    // 第一个参数，这个参数如何编码呢？
+    var OrderParam = {
+      "trader": "0xAB890808775D51e9bF9fa76f40EE5fff124deCE5", // 这是我的在metaMask上新建的一个钱包地址
+      "baseTokenAmount": 100, //交易token的数量
+      "quoteTokenAmount": 100, //报价token的数量
+      "gasTokenAmount": 0,
+      "data": '0x020100005def248f025802580000000000000000000000000000000000000000',
+      "signature" : ""
+    };
+
+    var OrderAddressSet = {
+      "baseToken": "0x8F48de31810deaA8bF547587438970EBD2e4be16",
+      "quoteToken": "0x414b26708362B024A28C7Bc309D5C1a8Ac14647E",
+      "relayer":"0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef" // 手续费的收款账户，先设置为SHT钱包地址
+    };
+
+    String name = '0xefe331cf';
+    String trader = '000000000000000000000000AB890808775D51e9bF9fa76f40EE5fff124deCE5';
+    String baseTokenAmount = '0000000000000000000000000000000000000000000000000000000000000100';
+    String quoteTokenAmount= '0000000000000000000000000000000000000000000000000000000000000100';
+    String gasTokenAmount =  '0000000000000000000000000000000000000000000000000000000000000000';
+    String data = '020100005def248f025802580000000000000000000000000000000000000000';
+    String signature = data + data + data;
+
+    String baseToken = "0000000000000000000000008F48de31810deaA8bF547587438970EBD2e4be16";
+    String quoteToken= "000000000000000000000000414b26708362B024A28C7Bc309D5C1a8Ac14647E";
+    String relayer =   "0000000000000000000000003d9c6c5a7b2b2744870166eac237bd6e366fa3ef";
+
+    String post_data = name + trader + baseTokenAmount + quoteTokenAmount + gasTokenAmount + data + signature + baseToken + quoteToken + relayer;
+
+    var client = Client();
+    var payload = {
+      "jsonrpc": "2.0",
+      "method": "eth_call",
+      "params": [
+        {
+          "from":"0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364",
+          "to":"0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364", // 合约地址
+          "data": post_data
+        },
+        "latest"
+      ],
+      "id": DateTime.now().millisecondsSinceEpoch
+    };
+
+    var rsp = await client.post(
+        'https://ropsten.infura.io/',
+        headers:{'Content-Type':'application/json'},
+        body: json.encode(payload)
+    );
+//    print('rsp code => ${post_data}');
+//    print('rsp code => ${rsp.statusCode}');
+//    print('rsp body => ${rsp.body}');
+    Map result = jsonDecode(rsp.body);
+    String  res = result['result'].replaceFirst("0x", ""); // 得到一个64字节的数据
+    print('rsp body => ${res}');
+    String old_hash = res.substring(0,64);
+    String order_hash = res.substring(64);
+    print('old_hash => ${old_hash}');
+    print('order_hash => ${order_hash}');
+
+    ethSign(old_hash);
+  }
+
+  // 对old_hash使用
+  void ethSign(String old_hash) async {
+    print('ethSign => ${old_hash}');
+    var client = Client();
+    var payload = {
+      "jsonrpc": "2.0",
+      "method": "eth_sign",
+      "params": [
+          "0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364",
+          old_hash
+      ],
+      "id": DateTime.now().millisecondsSinceEpoch
+    };
+
+    var rsp = await client.post(
+        'https://ropsten.infura.io/',
+        headers:{'Content-Type':'application/json'},
+        body: json.encode(payload)
+    );
+    print('rsp code => ${rsp.statusCode}');
+    print('rsp body => ${rsp.body}');
+  }
+
+
 
 
   List<DropdownMenuItem> getListData(){

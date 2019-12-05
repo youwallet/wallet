@@ -3,18 +3,17 @@ import 'package:youwallet/debug_page.dart'; // 全局调试
 import 'package:youwallet/pages/login/login.dart'; // 解锁登录
 import 'package:youwallet/wallet_guide.dart'; // 钱包引导页
 
-// 新建钱包
+// 钱包操作
 import 'package:youwallet/pages/create_wallet/set_wallet_name.dart';
 import 'package:youwallet/pages/create_wallet/backup_wallet.dart';
 import 'package:youwallet/pages/create_wallet/load_wallet.dart';
-
-// 钱包管理和设置
 import 'package:youwallet/pages/manage_wallet/manage_wallet.dart'; // 新建钱包名字
 import 'package:youwallet/pages/manage_wallet/set_wallet.dart'; // 新建钱包名字
-import 'package:youwallet/pages/manage_wallet/add_wallet.dart'; // 添加币种
+
 
 // token
-import 'package:youwallet/pages/token/token_history.dart'; // 添加币种
+import 'package:youwallet/pages/token/token_history.dart'; // token交易历史
+import 'package:youwallet/pages/token/token_add.dart'; // 添加一种token
 
 // 设置
 import 'package:youwallet/pages/set/set_network.dart'; // 网络设置

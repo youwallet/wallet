@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:youwallet/pages/container_page.dart';
+import 'package:youwallet/pages/tabs.dart';
 
 
 class SplashWidget extends StatefulWidget {

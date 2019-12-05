@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
-
-import 'package:youwallet/tab_wallet.dart'; // 钱包引导页TabExchange
-import 'package:youwallet/tab_exchange.dart'; // 钱包引导页
-import 'package:youwallet/tab_receive.dart'; // 钱包引导页
-import 'package:youwallet/tab_transfer.dart'; // 钱包引导页
+import 'package:youwallet/pages/tabs/tab_wallet.dart'; // 钱包引导页TabExchange
+import 'package:youwallet/pages/tabs/tab_exchange.dart'; // 钱包引导页
+import 'package:youwallet/pages/tabs/tab_receive.dart'; // 钱包引导页
+import 'package:youwallet/pages/tabs/tab_transfer.dart'; // 钱包引导页
 
 ///这个页面是作为四个tab页的容容器，以Tab为基础控制每个item的显示与隐藏
 class ContainerPage extends StatefulWidget {
