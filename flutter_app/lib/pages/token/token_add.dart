@@ -90,7 +90,7 @@ class Page extends State<AddWallet> {
     ];
   }
 
-  // SHT智能合约地址
+  // SHT智能合约地址,测试用
   // 0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef
   void searchToken(String address) async{
     var client = Client();
@@ -110,17 +110,19 @@ class Page extends State<AddWallet> {
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
-
     Map result = jsonDecode(rsp.body);
-    String name = result['result']; // 得到16进制的名字，这里要转换为字符串
-    print(name);
+    String res = result['result'];
+    String name = res.replaceFirst('0x', '');
+    String nameString = '';
+    for(var i = 0; i < name.length; i = i + 2) {
+      nameString = nameString + String.fromCharCode(int.parse(name.substring(i, i+2), radix: 16));
+    }
+    print(nameString);
     Map token = new Map();
     token['address'] = address;
-
-    // 这里名字是16进制的字符串，需要把它转为utf-8格式的字符串，
-    // 还不知道怎么转，太长了，先截取显示
-    token['name'] = name.substring(0,6);
+    token['name'] = nameString;
     tokenArr.add(token);
+//
     setState((){
       this.tokenArr = tokenArr; // 设置初始值
     });
