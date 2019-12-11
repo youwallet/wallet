@@ -138,13 +138,13 @@ class LoadWalletState extends State<LoadWallet> {
     print(seed);
     var hdWallet = new HDWallet.fromSeed(seed);
     print(hdWallet);
-    print(hdWallet.address);
+    print('hdWallet.address =》${hdWallet.address}');
     // => 12eUJoaWBENQ3tNZE52ZQaHqr3v4tTX4os
-    print(hdWallet.pubKey);
+    print('hdWallet.pubKey =》${hdWallet.pubKey}');
     // => 0360729fb3c4733e43bf91e5208b0d240f8d8de239cff3f2ebd616b94faa0007f4
-    print(hdWallet.privKey);
-    // => 01304181d699cd89db7de6337d597adf5f78dc1f0784c400e41a3bd829a5a226
-    print(hdWallet.wif);
+    print('hdWallet.privKey =》${hdWallet.privKey}');
+    // => 01304181d699cd89db7de6337d597adf5f78dc1f0784c400e41a3bd829a5a226;
+    print('hdWallet.wif =》${hdWallet.wif}');
     // 还可以增加一个口令来生成种子，这样即使助记词丢失也还有一层保险
     // bip39.mnemonicToSeedHex(words, password);
     // print('_generateMnemonic ====> $seed');

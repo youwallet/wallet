@@ -19,6 +19,7 @@ class AddWallet extends StatefulWidget {
 class Page extends State<AddWallet> {
 
   List tokenArr = new List();
+  Map token = new Map();
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +85,15 @@ class Page extends State<AddWallet> {
             // ...
             //Navigator.pushNamed(context, "login");
             // _getETHVersion();
+            showDialog<Null>(
+                context: context, //BuildContext对象
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return new LoadingDialog( //调用对话框
+                    text: '搜索中...',
+                  );
+                });
+            searchToken('0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef');
           },
         ),
       )
@@ -99,7 +109,7 @@ class Page extends State<AddWallet> {
       "method": "eth_call",
       "params": [{
         "to": address,
-        "data": "0x06fdde03"
+        "data": "0x95d89b41"
       },"latest"],
       "id": DateTime.now().millisecondsSinceEpoch
     };
@@ -111,23 +121,62 @@ class Page extends State<AddWallet> {
         body: json.encode(payload)
     );
     Map result = jsonDecode(rsp.body);
-    String res = result['result'];
-    String name = res.replaceFirst('0x', '');
-    String nameString = '';
-    for(var i = 0; i < name.length; i = i + 2) {
-      nameString = nameString + String.fromCharCode(int.parse(name.substring(i, i+2), radix: 16));
+    if (result.containsKey('error') ) {
+      print('请检查token地址');
+    } else {
+      String res = result['result'];
+      String name = res.replaceFirst('0x', '');
+      String nameString = '';
+      for(var i = 0; i < name.length; i = i + 2) {
+        if (name.substring(i, i+2) != "00") {
+          nameString = nameString + String.fromCharCode(int.parse(name.substring(i, i+2), radix: 16));
+        }
+      }
+      print(nameString.length);
+      print('SHT'.length);
+
+      token['address'] = address;
+      token['address_filter'] = address.substring(0,5) + '*****' + address.substring(30);
+      token['name'] = nameString;
+//      token['balance'] = '123456';
+//      tokenArr.add(token);
+//      setState((){
+//        this.tokenArr = tokenArr; // 设置初始值
+//      });
     }
-    print(nameString);
-    Map token = new Map();
-    token['address'] = address;
-    token['name'] = nameString;
+
+    Navigator.pop(context);
+    getBanance(address);
+  }
+
+  // 获取合约代币余额
+  void getBanance(String address) async {
+    var client = Client();
+    var payload = {
+      "jsonrpc": "2.0",
+      "method": "eth_getBalance",
+      "params": [address,"latest"],
+      "id": DateTime.now().millisecondsSinceEpoch
+    };
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String network = prefs.getString('network');
+    var rsp = await client.post(
+        'https://' + network + '.infura.io/',
+        headers:{'Content-Type':'application/json'},
+        body: json.encode(payload)
+    );
+
+    print(rsp.statusCode);
+    print(rsp.body);
+    Map result = jsonDecode(rsp.body);
+//    int balance = int.parse(result['result'].replaceFirst('0x', '').substring(0), radix: 16);
+    token['balance'] = result['result'];
     tokenArr.add(token);
-//
     setState((){
       this.tokenArr = tokenArr; // 设置初始值
     });
-    Navigator.pop(context);
   }
+
 
   // 将搜索到的token填充到页面中
   buildTokenList(arr) {

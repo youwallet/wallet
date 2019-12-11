@@ -44,7 +44,7 @@ Widget walletCard(item) {
                         item['name'],
                         style: new TextStyle(fontSize: 32.0, color: Colors.black),
                       ),
-                      new Text(item['address']),
+                      new Text(item['address_filter']),
                     ],
                   ),
                 ),
@@ -52,11 +52,11 @@ Widget walletCard(item) {
                     child: new Column(
                       children: <Widget>[
                         new Text(
-                          '14000.00',
+                          item['balance'],
                           style: new TextStyle(fontSize: 16.0,
                               color: Color.fromARGB(100, 6, 147, 193)),
                         ),
-                        new Text('14000.00'),
+                        new Text('￥14000.00'),
                       ],
                     )
 

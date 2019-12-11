@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:youwallet/widgets/priceNum.dart';
 import 'package:youwallet/widgets/transferList.dart';
@@ -5,6 +7,9 @@ import 'package:http/http.dart';
 import 'dart:convert';
 import 'package:steel_crypt/steel_crypt.dart';
 import 'package:web3dart/web3dart.dart';
+import 'package:web3dart/credentials.dart';
+import 'package:web3dart/crypto.dart';
+import 'dart:convert';
 
 
 
@@ -26,6 +31,23 @@ class Page extends State<TabExchange> {
   var value;
   String _btnText="买入";
 
+  // 每次进入交易页面，加载当前用户私钥, 我在metamask上注册的测试用钱包私钥
+  final privateKey = "用户私钥";
+
+  // 我在metaMask上注册的钱包地址，这个地址可以经由私钥进行椭圆曲线算法推倒而来
+  final myAddress = "AB890808775D51e9bF9fa76f40EE5fff124deCE5";
+
+  // youwalllet的合约地址
+  final contractAddress= "0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364";
+
+  // 收取交易费的地址
+  final relayerAddress = "0000000000000000000000003d9c6c5a7b2b2744870166eac237bd6e366fa3ef"; // 收取交易费的账户，暂时用SHT的合约账户
+
+  // 以太坊水龙头合约地址
+  final faucet = "0x81b7E08F65Bdf5648606c89998A9CC8164397647";
+
+  // 以太坊url
+  final String rpcUrl = "https://ropsten.infura.io/";
   // 构建页面
   Widget layout(BuildContext context) {
     return new Scaffold(
@@ -373,47 +395,11 @@ class Page extends State<TabExchange> {
     });
   }
 
-  // 下单
-  void makeOrder() async{
-    print('start async');
-    var client = Client();
-
-    var payload = {
-      "jsonrpc": "2.0",
-      "method": "eth_blockNumber",
-      "params": [],
-      "id": DateTime.now().millisecondsSinceEpoch
-    };
-
-    var OrderAddressSet = {
-      "baseToken": "0x8F48de31810deaA8bF547587438970EBD2e4be16",
-      "quoteToken": "0x414b26708362B024A28C7Bc309D5C1a8Ac14647E",
-      "relayer":"0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef" // 手续费的收款账户，先设置为SHT钱包地址
-    };
-
-    var OrderParam = {
-      "trader": "0xAB890808775D51e9bF9fa76f40EE5fff124deCE5", // 这是我的在metaMask上新建的一个钱包地址
-      "baseTokenAmount": 100, //交易token的数量
-      "quoteTokenAmount": 100, //报价token的数量
-      "gasTokenAmount": 0,
-      "data": '0x020100005def248f025802580000000000000000000000000000000000000000',
-      "signature" : ""
-    };
-
-    var rsp = await client.post(
-        'https://ropsten.infura.io/',
-        headers:{'Content-Type':'application/json'},
-        body: json.encode(payload)
-    );
-    print('rsp code => ${rsp}');
-    print('rsp code => ${rsp.statusCode}');
-    print('rsp body => ${rsp.body}');
-
-  }
 
   // 交易参数的设置, 包含hydro版本号、交易买卖标志等
   // getConfigData(bool) 经过sha3加密后取前四位feee047e
-  // 参数为true 则为0000000000000000000000000000000000000000000000000000000000000001
+  // 卖单true : 0000000000000000000000000000000000000000000000000000000000000001
+  // 买单false : 0000000000000000000000000000000000000000000000000000000000000000
   void getConfigData() async{
     var client = Client();
     var payload = {
@@ -422,7 +408,7 @@ class Page extends State<TabExchange> {
       "params": [
         {
           "from":"0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364",
-          "to":"0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364",
+          "to": contractAddress,
           "data": "0xfeee047e0000000000000000000000000000000000000000000000000000000000000001"
         },
         "latest"
@@ -441,79 +427,28 @@ class Page extends State<TabExchange> {
     // 参数为true，执行结果为0x020100005def248f025802580000000000000000000000000000000000000000
   }
 
-  // 获取交易签名数据
-  // getConfigSignature(bytes1 v,  bytes32 r, bytes32 s, uint8 signMethod) 的签名：
-  void getConfigSignature() async {
-    var client = Client();
-    var payload = {
-      "jsonrpc": "2.0",
-      "method": "eth_call",
-      "params": [
-        {
-          "from":"0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364",
-          "to":"0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364", // 合约地址
-          "data": ""
-        },
-        "latest"
-      ],
-      "id": DateTime.now().millisecondsSinceEpoch
-    };
-
-    var rsp = await client.post(
-        'https://ropsten.infura.io/',
-        headers:{'Content-Type':'application/json'},
-        body: json.encode(payload)
-    );
-    print('rsp code => ${rsp}');
-    print('rsp code => ${rsp.statusCode}');
-    print('rsp body => ${rsp.body}');
-  }
-
-  /* 获取订单相关hash值
- * orderParam: 订单参数
- * orderAddressSet: 订单地址集合
- *
- * 返回值
- * bq_hash: base-token/quote-token 哈希值
- * od_hash: 订单哈希值
- *
- * getBQODHash函数编码说明
- * 函数名字的编码：0xefe331cf
- * 第一个结构体编码：
- * 0000000000000000000000000000000000000000000000000000000000000001
- * AB890808775D51e9bF9fa76f40EE5fff124deCE5
- * 第二个结构体编码：
- * */
+  /*
+  * 获取订单相关hash值
+  */
   void  getBQODHash() async {
-    // 第一个参数，这个参数如何编码呢？
-    var OrderParam = {
-      "trader": "0xAB890808775D51e9bF9fa76f40EE5fff124deCE5", // 这是我的在metaMask上新建的一个钱包地址
-      "baseTokenAmount": 100, //交易token的数量
-      "quoteTokenAmount": 100, //报价token的数量
-      "gasTokenAmount": 0,
-      "data": '0x020100005def248f025802580000000000000000000000000000000000000000',
-      "signature" : ""
-    };
 
-    var OrderAddressSet = {
-      "baseToken": "0x8F48de31810deaA8bF547587438970EBD2e4be16",
-      "quoteToken": "0x414b26708362B024A28C7Bc309D5C1a8Ac14647E",
-      "relayer":"0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef" // 手续费的收款账户，先设置为SHT钱包地址
-    };
-
-    String name = '0xefe331cf';
-    String trader = '000000000000000000000000AB890808775D51e9bF9fa76f40EE5fff124deCE5';
+    String functionName = '0xefe331cf';
+    String address = "AB890808775D51e9bF9fa76f40EE5fff124deCE5";
+    // 参数一
+    String trader = '000000000000000000000000' + address; // 钱包的address
+    print(trader);
     String baseTokenAmount = '0000000000000000000000000000000000000000000000000000000000000100';
     String quoteTokenAmount= '0000000000000000000000000000000000000000000000000000000000000100';
     String gasTokenAmount =  '0000000000000000000000000000000000000000000000000000000000000000';
     String data = '020100005def248f025802580000000000000000000000000000000000000000';
-    String signature = data + data + data;
+    String signature = data + data + data;  // 此时还没有signature字段，所以随便填充三个32byte的字段
 
+    // 参数二
     String baseToken = "0000000000000000000000008F48de31810deaA8bF547587438970EBD2e4be16";
     String quoteToken= "000000000000000000000000414b26708362B024A28C7Bc309D5C1a8Ac14647E";
-    String relayer =   "0000000000000000000000003d9c6c5a7b2b2744870166eac237bd6e366fa3ef";
+    String relayer =   relayerAddress;
 
-    String post_data = name + trader + baseTokenAmount + quoteTokenAmount + gasTokenAmount + data + signature + baseToken + quoteToken + relayer;
+    String post_data = functionName + trader + baseTokenAmount + quoteTokenAmount + gasTokenAmount + data + signature + baseToken + quoteToken + relayer;
 
     var client = Client();
     var payload = {
@@ -522,7 +457,7 @@ class Page extends State<TabExchange> {
       "params": [
         {
           "from":"0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364",
-          "to":"0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364", // 合约地址
+          "to": contractAddress, // 合约地址
           "data": post_data
         },
         "latest"
@@ -535,30 +470,61 @@ class Page extends State<TabExchange> {
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
-//    print('rsp code => ${post_data}');
-//    print('rsp code => ${rsp.statusCode}');
-//    print('rsp body => ${rsp.body}');
-    Map result = jsonDecode(rsp.body);
-    String  res = result['result'].replaceFirst("0x", ""); // 得到一个64字节的数据
-    print('rsp body => ${res}');
-    String old_hash = res.substring(0,64);
-    String order_hash = res.substring(64);
-    print('old_hash => ${old_hash}');
-    print('order_hash => ${order_hash}');
 
-    ethSign(old_hash);
+    Map result = jsonDecode(rsp.body);
+    print('bq_hash => ${rsp.body}');
+    String  res = result['result'].replaceFirst("0x", ""); // 得到一个64字节的数据
+    print('getBQODHash => ${res}');
+    String bq_hash = res.substring(0,64);
+    String od_hash = res.substring(64);
+    print('od_hash => ${od_hash}');
+    print('bq_hash => ${bq_hash}');
+    print('进入签名');
+    ethSign(od_hash);
   }
 
-  // 对old_hash使用
-  void ethSign(String old_hash) async {
-    print('ethSign => ${old_hash}');
+  // 调用web3dart，对od_hash使用私钥进行签名，这一步必须在客户端做
+  void ethSign(String od_hash) async {
+    final key = EthPrivateKey(hexToBytes(privateKey));
+    final signature = await key.sign(hexToBytes(od_hash), chainId: 3);
+    final sign = bytesToHex(signature);
+    final r = sign.substring(0,64);
+    final s = sign.substring(64,128);
+    final v = sign.substring(128);
+    print('r => ${r}');
+    print('s => ${s}');
+    print('v => ${v}');
+    getConfigSignature(v,r,s,'1');
+  }
+
+  /* 获取交易签名数据
+ * v: 签名v值
+ * r: 签名r值
+ * s: 签名s值
+ * signMethod: 签名方法, 0为eth.sign, 1为EIP712
+ *
+ * 返回值：
+ * OrderSignature 结构体
+ * function getConfigSignature(bytes1 v,  bytes32 r, bytes32 s, uint8 signMethod);
+ * */
+  void getConfigSignature(String v,  String r, String s, String signMethod) async {
+
+    String functionHex = "0x0b973ca2";
+    String _v = v + "00000000000000000000000000000000000000000000000000000000000000";
+    String _signMethod = "000000000000000000000000000000000000000000000000000000000000000" +  signMethod; // signMethod: 签名方法, 0为eth.sign, 1为EIP712
+    String post_data = functionHex + _v + r + s + _signMethod;
+
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",
-      "method": "eth_sign",
+      "method": "eth_call",
       "params": [
-          "0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364",
-          old_hash
+        {
+          "from":"0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364",
+          "to": contractAddress, // 合约地址
+          "data": post_data
+        },
+        "latest"
       ],
       "id": DateTime.now().millisecondsSinceEpoch
     };
@@ -568,11 +534,60 @@ class Page extends State<TabExchange> {
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
+
     print('rsp code => ${rsp.statusCode}');
     print('rsp body => ${rsp.body}');
+    Map result = jsonDecode(rsp.body);
+    String  res = result['result'].replaceFirst("0x", "");
+
+    takeOrder(res);
   }
 
+  // 下单
+  void takeOrder(String sign) async{
+    print('开始下单');
 
+
+    String functionName = '0xefe29415';
+
+    // 参数一
+    String trader = '000000000000000000000000AB890808775D51e9bF9fa76f40EE5fff124deCE5'; // 我的钱包的address
+    print(trader);
+    String baseTokenAmount = '0000000000000000000000000000000000000000000000000000000000000100';
+    String quoteTokenAmount= '0000000000000000000000000000000000000000000000000000000000000100';
+    String gasTokenAmount =  '0000000000000000000000000000000000000000000000000000000000000000';
+    String data = '020100005def248f025802580000000000000000000000000000000000000000';  // 卖单
+    String signature = sign;  // 此时还没有signature字段，所以随便填充三个32byte的字段
+
+    // 参数二
+    String baseToken = "0000000000000000000000008F48de31810deaA8bF547587438970EBD2e4be16";
+    String quoteToken= "000000000000000000000000414b26708362B024A28C7Bc309D5C1a8Ac14647E";
+    String relayer =   relayerAddress; // SHT合约地址
+
+    String post_data = functionName + trader + baseTokenAmount + quoteTokenAmount + gasTokenAmount + data + signature + baseToken + quoteToken + relayer;
+
+
+    final client = Web3Client(rpcUrl, Client());
+
+    // 加载私钥，准备加密
+    var credentials = await client.credentialsFromPrivateKey(privateKey);
+
+    var rsp = await client.sendTransaction(
+      credentials,
+      Transaction(
+        to: EthereumAddress.fromHex(faucet),
+        gasPrice: EtherAmount.inWei(BigInt.one),
+        maxGas: 100000,
+        value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
+        data: hexToBytes(post_data)
+      ),
+        chainId: 3
+    );
+
+    await client.dispose();
+    print('rsp code => ${rsp}'); // 返回值0x76a2fc80d8b14f9fa70e3f079509f92aa855acfc1351d444a17c14e4b87e3eaf，这是一个Transaction Hash
+
+  }
 
 
   List<DropdownMenuItem> getListData(){
