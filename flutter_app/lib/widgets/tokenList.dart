@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class tokenList extends StatelessWidget {
 
-  List arr = [1];
+  List arr = [];
   tokenList({Key key, this.arr}) : super(key: key);
 
   @override
@@ -44,7 +44,7 @@ Widget walletCard(item) {
                         item['name'],
                         style: new TextStyle(fontSize: 32.0, color: Colors.black),
                       ),
-                      new Text(item['address_filter']),
+                      new Text(item['address']),
                     ],
                   ),
                 ),
@@ -56,7 +56,7 @@ Widget walletCard(item) {
                           style: new TextStyle(fontSize: 16.0,
                               color: Color.fromARGB(100, 6, 147, 193)),
                         ),
-                        new Text('￥14000.00'),
+                        new Text('￥0.0'),
                       ],
                     )
 

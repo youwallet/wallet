@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:youwallet/widgets/priceNum.dart';
 import 'package:youwallet/widgets/transferList.dart';
+
 import 'package:http/http.dart';
 import 'dart:convert';
 import 'package:steel_crypt/steel_crypt.dart';
@@ -10,29 +11,53 @@ import 'package:web3dart/web3dart.dart';
 import 'package:web3dart/credentials.dart';
 import 'package:web3dart/crypto.dart';
 import 'dart:convert';
+import 'package:dart_sql/dart_sql.dart';
 
+import 'package:sqflite/sqflite.dart' as sqllite;
+import 'package:path_provider/path_provider.dart';
 
+import 'package:event_bus/event_bus.dart';
+import 'package:youwallet/bus.dart';
 
 class TabExchange extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
-
     return new Page();
   }
 }
 
-class Page extends State<TabExchange> {
+class Page extends State {
+
+  BuildContext mContext;
+
+
+  //数据初始化
+  @override
+  void initState() {
+    super.initState();
+
+    // 初始化的时候，就加载tokens列表
+    _setTokens();
+
+    // 监听token添加事件
+    eventBus.on<EventAddToken>().listen((event) {
+      _setTokens();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    print('进入 tab exchange build');
     return layout(context);
   }
 
   var value;
   String _btnText="买入";
+  List tokens = [];
 
   // 每次进入交易页面，加载当前用户私钥, 我在metamask上注册的测试用钱包私钥
-  final privateKey = "用户私钥";
+  final privateKey = "279EFAC43AAE9405DCD9A470B9228C1A3C0F2DEFC930AD1D9B764E78D28DB1DF";
 
   // 我在metaMask上注册的钱包地址，这个地址可以经由私钥进行椭圆曲线算法推倒而来
   final myAddress = "AB890808775D51e9bF9fa76f40EE5fff124deCE5";
@@ -231,7 +256,8 @@ class Page extends State<TabExchange> {
                               // =============================
                               //makeOrder();
 //                              getConfigData();
-                              getBQODHash();
+                                //getBQODHash();
+                              _setTokens();
                               // =============================
                             },
                             child: Text(
@@ -292,88 +318,6 @@ class Page extends State<TabExchange> {
 
           ),
         ],
-      ),
-    );
-  }
-
-  // 构建页面上半部分区域
-  Widget buildPageTop1(BuildContext context) {
-    return Container(
-        child: new Column(
-          children: <Widget>[
-            new Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                new Text('Token'),
-                new Text('Base Token')
-              ],
-            ),
-            new Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                new Container(
-                  padding: const EdgeInsets.only(left: 10.0),
-                  decoration: new BoxDecoration(
-                    borderRadius: new BorderRadius.all(new Radius.circular(6.0)),
-                    border: new Border.all(width: 1.0, color: Colors.black12),
-                    color: Colors.black12,
-                  ),
-                  child: new DropdownButton(
-                    items: getListData(),
-                    hint:new Text('选择币种'),//当没有默认值的时候可以设置的提示
-                    value: value,//下拉菜单选择完之后显示给用户的值
-                    onChanged: (T){//下拉菜单item点击之后的回调
-                      setState(() {
-                        value=T;
-                      });
-                    },
-                    isDense: true,
-                    elevation: 24,//设置阴影的高度
-                    style: new TextStyle(//设置文本框里面文字的样式
-                        color: Colors.black
-                    ),
-                  ),
-                ),
-                new Text('/'),
-                new Container(
-                  padding: const EdgeInsets.only(left: 10.0),
-                  decoration: new BoxDecoration(
-                    borderRadius: new BorderRadius.all(new Radius.circular(6.0)),
-                    border: new Border.all(width: 1.0, color: Colors.black12),
-                    color: Colors.black12,
-                  ),
-                  child: new DropdownButton(
-                    items: getListData(),
-                    hint:new Text('选择币种'),//当没有默认值的时候可以设置的提示
-                    value: value,//下拉菜单选择完之后显示给用户的值
-                    onChanged: (T){//下拉菜单item点击之后的回调
-                      setState(() {
-                        value=T;
-                      });
-                    },
-                    isDense: true,
-                    elevation: 24,//设置阴影的高度
-                    style: new TextStyle(//设置文本框里面文字的样式
-                        color: Colors.black
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            new Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-//                buildLeftWidget(),
-                buildRightWidget(),
-//                new Expanded(
-//                    child: buildRightWidget(),
-//                    flex: 1
-//                )
-
-              ],
-            )
-          ],
       ),
     );
   }
@@ -590,18 +534,32 @@ class Page extends State<TabExchange> {
   }
 
 
+
+  // 构建页面下拉列表
   List<DropdownMenuItem> getListData(){
+
+    print("进入getListData => ${tokens}");
     List<DropdownMenuItem> items=new List();
-    DropdownMenuItem dropdownMenuItem1=new DropdownMenuItem(
-      child:new Text('1'),
-      value: '1',
-    );
-    items.add(dropdownMenuItem1);
-    DropdownMenuItem dropdownMenuItem2=new DropdownMenuItem(
-      child:new Text('2'),
-      value: '2',
-    );
-    items.add(dropdownMenuItem2);
+
+    for (var value in tokens) {
+      print(value);  // 循环打印 true 100 a 华为
+      items.add(new DropdownMenuItem(
+        child:new Text(value['name']),
+        value: value['address'],
+      ));
+    }
+
+//    List<DropdownMenuItem> items=new List();
+//    items.add(new DropdownMenuItem(
+//      child:new Text('1'),
+//      value: '1',
+//    ));
+//    items.add(
+//        new DropdownMenuItem(
+//          child:new Text('2'),
+//          value: '2',
+//        ),
+//    );
     return items;
   }
 
@@ -654,6 +612,39 @@ class Page extends State<TabExchange> {
         ],
       ),
     );
+  }
+
+
+  /**
+   * 每次页面show，触发首页token更新函数
+   */
+  void _setTokens() async {
+    final db = await getDataBase('wallet.db');
+    List res = [];
+    db.rawQuery('SELECT * FROM tokens').then((List<Map> lists) {
+      setState(() {
+        this.tokens = lists;
+      });
+    });
+
+  }
+
+  /**
+   * 初始化数据库存储路径
+   */
+  Future<sqllite.Database> getDataBase(String dbName) async {
+    //获取应用文件目录类似于Ios的NSDocumentDirectory和Android上的 AppData目录
+    final fileDirectory = await getApplicationDocumentsDirectory();
+
+    //获取存储路径
+    final dbPath = fileDirectory.path;
+    print(dbPath);
+    // /Users/zhaobinglong/Library/Developer/CoreSimulator/Devices/037DA882-FA4E-4328-80BE-4BCB84E2C47A/data/Containers/Data/Application/682A61BA-A7CF-406A-BBC7-B388F92E0A55/Documents
+    // /Users/zhaobinglong/Library/Developer/CoreSimulator/Devices/037DA882-FA4E-4328-80BE-4BCB84E2C47A/data/Containers/Data/Application/682A61BA-A7CF-406A-BBC7-B388F92E0A55/Documents
+    //构建数据库对象
+    sqllite.Database database = await sqllite.openDatabase(dbPath + "/" + dbName, version: 1);
+    print(database);
+    return database;
   }
 
 }

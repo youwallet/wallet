@@ -6,6 +6,9 @@ import 'package:web3dart/json_rpc.dart';
 import 'package:youwallet/widgets/tokenList.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:dart_sql/dart_sql.dart';
 //import 'package:barcode_scan/barcode_scan.dart';
 
 class TabWallet extends StatefulWidget {
@@ -16,43 +19,22 @@ class TabWallet extends StatefulWidget {
 }
 
 class Page extends State<TabWallet> {
-  String _scanResultStr = "";
 
-  List tokenArr = [];
+  String _scanResultStr = "";
+  List<Map> tokenArr = [];
+
+
+  @override // override是重写父类中的函数
+  void initState() {
+    super.initState();
+    getTokens();
+  }
 
   @override
   Widget build(BuildContext context) {
-    buildTokenList();
     return layout(context);
   }
 
-  // 每次页面show，触发首页token更新函数
-  void buildTokenList() async{
-    print('start storaghe');
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List arr = prefs.getStringList('tokens');
-    print(arr);
-  }
-
-  // 请求以太坊主网信息
-  void httpRequest() async{
-    var httpClient = new Client();
-    var web3Client = new Web3Client('https://mainnet.infura.io/',httpClient);
-//    var client = Client();
-//    var payload = {
-//      "jsonrpc": "2.0",
-//      "method": "eth_blockNumber",
-//      "params": [],
-//      "id": DateTime.now().millisecondsSinceEpoch
-//    };
-//    var rsp = await client.post(
-//        'https://mainnet.infura.io/',
-//        headers:{'Content-Type':'application/json'},
-//        body: json.encode(payload)
-//    );
-//    print('rsp code => ${rsp.statusCode}');
-//    print('rsp body => ${rsp.body}');
-  }
 
   //扫码//  Future _scan() async {
   ////    //利用try-catch来进行异常处理
@@ -82,10 +64,42 @@ class Page extends State<TabWallet> {
   ////    }
   ////  }
 
+  /**
+   * 每次页面show，触发首页token更新函数
+   */
+  void getTokens() async {
+    final db = await getDataBase('wallet.db');
+    List res = [];
+    db.rawQuery('SELECT * FROM tokens').then((List<Map> lists) {
+      setState(() {
+        this.tokenArr = lists;
+      });
+    });
+
+
+  }
+
+  /**
+   * 初始化数据库存储路径
+   */
+  Future<Database> getDataBase(String dbName) async {
+    //获取应用文件目录类似于Ios的NSDocumentDirectory和Android上的 AppData目录
+    final fileDirectory = await getApplicationDocumentsDirectory();
+
+    //获取存储路径
+    final dbPath = fileDirectory.path;
+
+    //构建数据库对象
+    Database database = await openDatabase(dbPath + "/" + dbName, version: 1,
+        onCreate: (Database db, int version) async {
+          await db.execute("CREATE TABLE token (id INTEGER, address TEXT PRIMARY KEY, name TEXT, balance TEXT, rmb TEXT)");
+        });
+
+    return database;
+  }
 
   // 构建页面
   Widget layout(BuildContext context) {
-    this.httpRequest();
     return new Scaffold(
       appBar: buildAppBar(context),
       body: new ListView(

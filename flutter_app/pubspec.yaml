@@ -14,7 +14,7 @@ description: A new Flutter application.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.4.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -31,6 +31,11 @@ dependencies:
   barcode_scan: ^1.0.0
   shared_preferences: ^0.5.4+6
   steel_crypt: ^1.5.1+1
+  sqflite: ^1.0.0
+  path_provider: ^1.5.1
+  dart_sql: ^0.0.7
+  provider: ^3.2.0
+  event_bus: ^1.1.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

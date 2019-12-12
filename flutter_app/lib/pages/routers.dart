@@ -4,9 +4,9 @@ import 'package:youwallet/pages/login/login.dart'; // 解锁登录
 import 'package:youwallet/wallet_guide.dart'; // 钱包引导页
 
 // 钱包操作
-import 'package:youwallet/pages/create_wallet/set_wallet_name.dart';
-import 'package:youwallet/pages/create_wallet/backup_wallet.dart';
-import 'package:youwallet/pages/create_wallet/load_wallet.dart';
+import 'package:youwallet/pages/wallet/new_wallet_first.dart';
+import 'package:youwallet/pages/wallet/new_wallet_second.dart';
+import 'package:youwallet/pages/wallet/new_wallet_third.dart';
 import 'package:youwallet/pages/manage_wallet/manage_wallet.dart'; // 新建钱包名字
 import 'package:youwallet/pages/manage_wallet/set_wallet.dart'; // 新建钱包名字
 

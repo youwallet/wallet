@@ -5,11 +5,16 @@ import 'package:youwallet/pages/tabs/tab_exchange.dart'; // 钱包引导页
 import 'package:youwallet/pages/tabs/tab_receive.dart'; // 钱包引导页
 import 'package:youwallet/pages/tabs/tab_transfer.dart'; // 钱包引导页
 
+class _Item {
+  String name, activeIcon, normalIcon;
+  _Item(this.name, this.activeIcon, this.normalIcon);
+}
+
+
 ///这个页面是作为四个tab页的容容器，以Tab为基础控制每个item的显示与隐藏
 class ContainerPage extends StatefulWidget {
 
-  // tab页面的索引
-  int tabIndex;
+  int tabIndex; // tab页面的索引
 
   // 实例化
   ContainerPage({Key key,@required this.tabIndex}) : super(key: key);
@@ -20,10 +25,6 @@ class ContainerPage extends StatefulWidget {
   }
 }
 
-class _Item {
-  String name, activeIcon, normalIcon;
-  _Item(this.name, this.activeIcon, this.normalIcon);
-}
 
 class _ContainerPageState extends State<ContainerPage> {
 
@@ -113,11 +114,9 @@ class _ContainerPageState extends State<ContainerPage> {
       bottomNavigationBar: BottomNavigationBar(
         items: itemList,
         onTap: (int index) {
-          print(index);
+          print('当前tab索引=> ${index}');
           setState(() {
             _selectIndex = index;
-            //这个是用来控制比较特别的shopPage中WebView不能动态隐藏的问题
-            //shopPageWidget.setShowState(pages.indexOf(shopPageWidget) == _selectIndex);
           });
         },
         iconSize: 24,  //图标大小
