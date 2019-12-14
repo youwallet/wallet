@@ -146,9 +146,7 @@ class Page extends State<TabWallet> {
       ),
       floatingActionButton: FloatingActionButton(
         child: new Icon(Icons.add),
-        onPressed: () => {
-          Navigator.pushNamed(context, "set_wallet_name")
-        }
+        onPressed: () => Navigator.pushNamed(context, "wallet_guide")
       ),
         drawer: Drawer(
           child: ListView(
@@ -201,27 +199,6 @@ class Page extends State<TabWallet> {
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
         title: const Text('youwallet'),
-//        leading: IconButton(
-//          icon: new Icon(Icons.menu),
-//          onPressed: () {
-//            print('this is home menu');
-//            showModalBottomSheet(
-//              context: context,
-//              builder: (BuildContext context) {
-//                return GestureDetector(
-//                  child: Container(
-//                    height: 2000.0,
-//                    color: Color(0xfff1f1f1),
-//                    child: Center(
-//                      child: Text("这里是钱包列表，选择钱包"),
-//                    ),
-//                  ),
-//                  onTap: () => false,
-//                );
-//              },
-//            );
-//          },
-//        ),
         actions: this.appBarActions(),
     );
   }

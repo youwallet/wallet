@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:youwallet/pages/splash/splash.dart'; // 启动页面
 import 'package:youwallet/debug_page.dart'; // 全局调试
 import 'package:youwallet/pages/login/login.dart'; // 解锁登录
-import 'package:youwallet/wallet_guide.dart'; // 钱包引导页
+import 'package:youwallet/pages/manage_wallet/wallet_guide.dart'; // 钱包引导页
 
 // 钱包操作
 import 'package:youwallet/pages/wallet/new_wallet_first.dart';
 import 'package:youwallet/pages/wallet/new_wallet_second.dart';
 import 'package:youwallet/pages/wallet/new_wallet_third.dart';
-import 'package:youwallet/pages/manage_wallet/manage_wallet.dart'; // 新建钱包名字
+import 'package:youwallet/pages/manage_wallet/manage_list.dart'; // 新建钱包名字
 import 'package:youwallet/pages/manage_wallet/set_wallet.dart'; // 新建钱包名字
 
 

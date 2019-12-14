@@ -48,7 +48,6 @@ class Page extends State {
 
   @override
   Widget build(BuildContext context) {
-    print('进入 tab exchange build');
     return layout(context);
   }
 
