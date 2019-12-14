@@ -36,6 +36,7 @@ dependencies:
   dart_sql: ^0.0.7
   provider: ^3.2.0
   event_bus: ^1.1.0
+  ed25519_hd_key: ^1.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

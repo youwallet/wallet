@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+// 类的名字需要大写字母开头
 class tokenList extends StatelessWidget {
 
   List arr = [];
@@ -14,6 +14,8 @@ class tokenList extends StatelessWidget {
   }
 }
 
+//item['address_filter'] = item['address'].substring(0,5) + '*****' + item['address'].substring(30);
+//token['address_filter'] =
 
 Widget walletCard(item) {
   return new Card(
@@ -56,7 +58,7 @@ Widget walletCard(item) {
                           style: new TextStyle(fontSize: 16.0,
                               color: Color.fromARGB(100, 6, 147, 193)),
                         ),
-                        new Text('￥0.0'),
+                        new Text('￥${item['rmb']}'),
                       ],
                     )
 
@@ -65,22 +67,9 @@ Widget walletCard(item) {
             )
         ),
         onTap: (){
-          print(item);
-          print(item['address']);
-          saveToken(item);
-
+          print("点击token =》 ${item}");
         },
       )
   );
 }
 
-// 把点击的token对象保存进入缓存，在首页去显示
-// 这里点击后应该给上层广播一个事件
-void saveToken(token) async{
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  List tokenArr = [token];
-  print(tokenArr);
-  prefs.setStringList('tokens', tokenArr);
-  List arr = prefs.getStringList('tokens');
-  print(arr);
-}

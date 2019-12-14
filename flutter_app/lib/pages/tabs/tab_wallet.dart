@@ -22,18 +22,32 @@ class Page extends State<TabWallet> {
 
   String _scanResultStr = "";
   List<Map> tokenArr = [];
+  List<Map> wallets = []; // 用户添加的钱包数组
+  int current_wallet = 0; // 当前钱包
 
 
   @override // override是重写父类中的函数
   void initState() {
     super.initState();
     getTokens();
+    getWallet();
+  }
+
+  @override
+  void deactivate() {
+    var bool = ModalRoute.of(context).isCurrent;
+    if (bool) {
+      getWallet();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return layout(context);
   }
+
+
+
 
 
   //扫码//  Future _scan() async {
@@ -75,9 +89,23 @@ class Page extends State<TabWallet> {
         this.tokenArr = lists;
       });
     });
+  }
 
+  /**
+   * 每次页面show，触发首页token更新函数
+   */
+  void getWallet() async {
+    final db = await getDataBase('wallet.db');
+    List res = [];
+    db.rawQuery('SELECT * FROM wallet').then((List<Map> lists) {
+      print("wallet =>>> ${lists}");
+      setState(() {
+        this.wallets = lists;
+      });
+    });
 
   }
+
 
   /**
    * 初始化数据库存储路径
@@ -213,6 +241,7 @@ class Page extends State<TabWallet> {
 
   // 构建顶部卡片
   Widget topCard(BuildContext context) {
+    Map wallet = this.wallets[current_wallet];
     return new Container(
         padding: const EdgeInsets.all(16.0), // 四周填充边距32像素
         margin: const EdgeInsets.all(16.0),
@@ -232,7 +261,7 @@ class Page extends State<TabWallet> {
                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                children: <Widget>[
                  new Text(
-                     '我的钱包',
+                     wallet['name'],
                      style: new TextStyle(
                          color: Colors.white
                      )
@@ -250,7 +279,7 @@ class Page extends State<TabWallet> {
                ],
              ),
             new Text(
-                'KDA',
+                wallet['address'],
                 style: new TextStyle(
                     color: Colors.white
                 )

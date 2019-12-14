@@ -3,6 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:bitcoin_flutter/bitcoin_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:math';
+import 'package:web3dart/crypto.dart';
+import 'package:ed25519_hd_key/ed25519_hd_key.dart';
+import 'package:web3dart/credentials.dart';
+import "package:hex/hex.dart";
+//import 'package:stellar_hd_wallet/stellar_hd_wallet.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path_provider/path_provider.dart';
 
 
 class LoadWallet extends StatefulWidget {
@@ -11,14 +19,23 @@ class LoadWallet extends StatefulWidget {
   LoadWalletState createState()  => LoadWalletState();
 }
 
+
 class LoadWalletState extends State<LoadWallet> {
 
+  String name;
   String randomMnemonic;
   TextEditingController _name = TextEditingController();
 
+  @override // override是重写父类中的函数 每次初始化的时候执行一次，类似于小程序中的onLoad
+  void initState() {
+    super.initState();
+    _getWalletName();
+    _generateMnemonic();
+
+  }
+
   @override
   Widget build(BuildContext context) {
-    _generateMnemonic();
     return new DefaultTabController(
         length: 2,
         child: Scaffold(
@@ -55,7 +72,7 @@ class LoadWalletState extends State<LoadWallet> {
         child: new IconButton(
           icon: new Icon(Icons.camera_alt ),
           onPressed: () {
-
+            print("click carmer");
           },
         ),
       )
@@ -125,33 +142,75 @@ class LoadWalletState extends State<LoadWallet> {
     }
   }
 
+  _getWalletName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String name = prefs.getString("new_wallet_name");
+    print("new name => ${name}");
+    setState(() {
+      this.name = name;
+    });
+  }
+
+  // bip39 https://pub.dev/packages/bip39
+
   _generateMnemonic() async {
+    Map wallet = new Map();
+
     // 生成助记词字符串，12个随机单词
     String randomMnemonic = bip39.generateMnemonic();
     setState((){
       this._name.text = randomMnemonic; // 设置初始值
     });
-    print('_generateMnemonic ====> $randomMnemonic');
-    // 得到64字节种子
-    // String seed = bip39.mnemonicToSeedHex(randomMnemonic);
-    var seed = bip39.mnemonicToSeed(this._name.text);
-    print(seed);
-    var hdWallet = new HDWallet.fromSeed(seed);
-    print(hdWallet);
-    print('hdWallet.address =》${hdWallet.address}');
-    // => 12eUJoaWBENQ3tNZE52ZQaHqr3v4tTX4os
-    print('hdWallet.pubKey =》${hdWallet.pubKey}');
-    // => 0360729fb3c4733e43bf91e5208b0d240f8d8de239cff3f2ebd616b94faa0007f4
-    print('hdWallet.privKey =》${hdWallet.privKey}');
-    // => 01304181d699cd89db7de6337d597adf5f78dc1f0784c400e41a3bd829a5a226;
-    print('hdWallet.wif =》${hdWallet.wif}');
-    // 还可以增加一个口令来生成种子，这样即使助记词丢失也还有一层保险
-    // bip39.mnemonicToSeedHex(words, password);
-    // print('_generateMnemonic ====> $seed');
-    //测试开发用：
-//    flutter: 17FaW8Lp28GM2pPimxjjmhKKsj5FapkHv9
-//    flutter: 02824c948bbdaa7254426aa251143f1d8e0aad221e35df79166b1a2f0c813c6049
-//    flutter: 9196fb3fccd8fccfb108c39fb48c8c5ea89924f5c0a45168a982f167ba9b5252
+    print('十二个助记词 ====> $randomMnemonic');
+    // 得到128位随机数, 这是一个根私钥，master priviter key
+    String hexSeed = bip39.mnemonicToSeedHex(randomMnemonic);
+    //print("hexSeed ====》${hexSeed}");
 
+    KeyData master = ED25519_HD_KEY.getMasterKeyFromSeed(hexSeed);
+    final privateKey = HEX.encode(master.key);
+    wallet['privateKey'] = privateKey;
+    print("private: $privateKey");
+
+    final private = EthPrivateKey.fromHex(privateKey);
+    final address = await private.extractAddress();
+    print("address: $address");
+    wallet['address'] = address;
+
+    wallet['name'] = this.name;
+
+    saveWallet(wallet);
+  }
+
+  /**
+   * 利用Sqflite数据库存储数据
+   */
+  void saveWallet(wallet) async {
+    final db = await getDataBase('wallet.db');
+    db.transaction((trx) {
+      trx.rawInsert(
+          'INSERT INTO wallet(name, privateKey, address) VALUES("${wallet['name']}", "${wallet['privateKey']}", "${wallet['address']}")');
+    });
+
+    // 广播事件
+//    eventBus.fire(EventAddToken(token));
+  }
+
+  /**
+   * 初始化数据库存储路径
+   */
+  Future<Database> getDataBase(String dbName) async {
+    //获取应用文件目录类似于Ios的NSDocumentDirectory和Android上的 AppData目录
+    final fileDirectory = await getApplicationDocumentsDirectory();
+
+    //获取存储路径
+    final dbPath = fileDirectory.path;
+
+    //构建数据库对象
+    Database database = await openDatabase(dbPath + "/" + dbName, version: 1,
+        onCreate: (Database db, int version) async {
+          await db.execute("CREATE TABLE wallet (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, privateKey TEXT, address TEXT)");
+        });
+
+    return database;
   }
 }

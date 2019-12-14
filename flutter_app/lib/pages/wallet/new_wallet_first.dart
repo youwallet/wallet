@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class NewWalletName extends StatefulWidget {
@@ -33,9 +34,14 @@ class _NewWalletNameState extends State<NewWalletName> {
                 decoration: InputDecoration(
                   hintText: "输入钱包名称",
                 ),
-                onSubmitted: (text) {//内容提交(按回车)的回调
-                  print('submit $text');
-                  Navigator.pushNamed(context, "backup_wallet");
+                onSubmitted: (text) async {//内容提交(按回车)的回调
+                   print('钱包名称 =》 $text');
+                   SharedPreferences prefs = await SharedPreferences.getInstance();
+                   prefs.setString("new_wallet_name", text);
+                   Navigator.pushNamed(context, "backup_wallet", arguments: <String, String>{});
+//                   Navigator.pushNamed(context, "backup_wallet", arguments: <String, String>{
+//                     'name': text,
+//                   });
                 },
               ),
               new Container(

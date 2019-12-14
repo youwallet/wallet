@@ -1,4 +1,5 @@
 
+
 import 'package:flutter/material.dart';
 
 import 'package:youwallet/widgets/loadingDialog.dart';
@@ -6,16 +7,25 @@ import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
 
 class BackupWallet extends StatefulWidget {
-  BackupWallet() : super();
+
+  final arguments;
+  // 构造函数
+  BackupWallet({Key key ,this.arguments}) : super(key: key);
+
+
   @override
-  BackupWalletState createState()  => BackupWalletState();
+  BackupWalletState createState()  => BackupWalletState(arguments: this.arguments);
 }
 
 class BackupWalletState extends State<BackupWallet> {
 
+  Map arguments;
+  BackupWalletState({this.arguments});
+
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         appBar: buildAppBar(context),
         body: new Container(
@@ -54,7 +64,8 @@ class BackupWalletState extends State<BackupWallet> {
                 minWidth: 300,
                 child: new Text('下一步'),
                 onPressed: () {
-                  Navigator.pushNamed(context, "load_wallet");
+//                  Navigator.pushNamed(context, "load_wallet");
+                  Navigator.of(context).pushReplacementNamed("load_wallet",);
 //                  showDialog(
 //                      context: context,
 //                      barrierDismissible: false,

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:youwallet/pages/splash/splash.dart'; // 启动页面
 import 'package:youwallet/debug_page.dart'; // 全局调试
 import 'package:youwallet/pages/login/login.dart'; // 解锁登录
@@ -20,7 +21,7 @@ import 'package:youwallet/pages/set/set_network.dart'; // 网络设置
 
 
 // 定义全局的路由对象
-final routers = {
+final routes = {
   '/': ( context) => new SplashWidget(tabIndex: 1),
   "debug_page": (context) => new DebugPage(),
   "wallet_guide": (context) => new WalletGuide(),
@@ -30,8 +31,25 @@ final routers = {
   "add_wallet": (context) => new AddWallet(),
   "token_history":(context) => new TokenHistory(),
   "login": (context) => new Login(),
-  "backup_wallet": (context) => new BackupWallet(),
+  "backup_wallet": (context, {arguments}) => new BackupWallet(arguments: arguments),
   "load_wallet": (context) => new LoadWallet(),
   "set_network": (context) => new NetworkPage()
+};
+
+var onGenerateRoute = (RouteSettings settings) { // 统一处理
+  final String name = settings.name;
+  final Function pageContentBuilder = routes[name];
+  if (pageContentBuilder != null) {
+    if (settings.arguments != null) {
+       final Route route = MaterialPageRoute(
+          builder: (context) => pageContentBuilder(context, arguments: settings.arguments)
+       );
+       return route;
+    }else{
+      final Route route = MaterialPageRoute(
+          builder: (context) => pageContentBuilder(context));
+      return route;
+    }
+  }
 };
 

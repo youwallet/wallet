@@ -30,13 +30,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: true, //关闭调试
+      debugShowCheckedModeBanner: false, //关闭调试
       theme: ThemeData(
         primarySwatch: Colors.blue,
         primaryColor: Colors.white
       ),
       initialRoute: '/',
-      routes: routers,
+      //routes: routes, // 因为定义了onGenerateRoute，所以就不需要routes这个参数了
+      onGenerateRoute: onGenerateRoute // 为了传递参数
       //home: new SplashWidget(tabIndex: 0)
     );
   }

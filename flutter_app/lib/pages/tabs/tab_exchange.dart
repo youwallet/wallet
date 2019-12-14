@@ -537,12 +537,9 @@ class Page extends State {
 
   // 构建页面下拉列表
   List<DropdownMenuItem> getListData(){
-
-    print("进入getListData => ${tokens}");
     List<DropdownMenuItem> items=new List();
 
     for (var value in tokens) {
-      print(value);  // 循环打印 true 100 a 华为
       items.add(new DropdownMenuItem(
         child:new Text(value['name']),
         value: value['address'],

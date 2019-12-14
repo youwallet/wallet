@@ -143,7 +143,6 @@ class Page extends State<AddWallet> {
       }
 
       token['address'] = address;
-      token['address_filter'] = address.substring(0,5) + '*****' + address.substring(30);
       token['name'] = nameString;
     }
 
