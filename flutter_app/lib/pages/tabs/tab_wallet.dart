@@ -8,14 +8,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:youwallet/service/token_service.dart';
 import 'package:dart_sql/dart_sql.dart';
 //import 'package:barcode_scan/barcode_scan.dart';
 
 class TabWallet extends StatefulWidget {
+
+
+
   @override
-  State<StatefulWidget> createState() {
-    return new Page();
-  }
+  State<StatefulWidget> createState() => new Page();
 }
 
 class Page extends State<TabWallet> {
@@ -23,7 +25,9 @@ class Page extends State<TabWallet> {
   String _scanResultStr = "";
   List<Map> tokenArr = [];
   List<Map> wallets = []; // 用户添加的钱包数组
-  int current_wallet = 0; // 当前钱包
+  int current_wallet = 0;
+
+
 
 
   @override // override是重写父类中的函数
@@ -279,7 +283,7 @@ class Page extends State<TabWallet> {
                ],
              ),
             new Text(
-                wallet['address'],
+                TokenService.maskAddress(wallet['address']),
                 style: new TextStyle(
                     color: Colors.white
                 )
