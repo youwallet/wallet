@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:youwallet/service/token_service.dart';
 import 'package:dart_sql/dart_sql.dart';
 //import 'package:barcode_scan/barcode_scan.dart';
+import 'package:youwallet/bus.dart';
 
 class TabWallet extends StatefulWidget {
 
@@ -35,6 +36,18 @@ class Page extends State<TabWallet> {
     super.initState();
     getTokens();
     getWallet();
+
+    // 监听钱包切换事件
+    eventBus.on<WalletChangeEvent>().listen((event) {
+      print(event.address);
+      this.wallets.forEach((f){
+        if (f['address'] == event.address) {
+          setState(() {
+            this.current_wallet = f['id'] - 1;
+          });
+        }
+      });
+    });
   }
 
   @override
@@ -254,7 +267,7 @@ class Page extends State<TabWallet> {
                    ),
                    onPressed: () {
                      // ...
-                     Navigator.pushNamed(context, "manage_wallet");
+                     Navigator.pushNamed(context, "manage_wallet",arguments:{ 'address': this.wallets[current_wallet]['address']});
                    },
                  ),
                ],

@@ -5,7 +5,6 @@ class WalletList extends StatelessWidget {
 
   List arr = [];
   WalletList({Key key, this.arr}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -14,10 +13,20 @@ class WalletList extends StatelessWidget {
   }
 }
 
+void setNetWork(name) async{
+//  setState(() {
+////    _newValue = name;
+////  });
+////  SharedPreferences prefs = await SharedPreferences.getInstance();
+////  prefs.setString("network", name);
+////  print(prefs.getString('network'));
+}
+
 //item['address_filter'] = item['address'].substring(0,5) + '*****' + item['address'].substring(30);
 //token['address_filter'] =
 
 Widget walletCard(item) {
+  String current_address = item['address'];
   return new Card(
       color: Colors.white, //背景色
       child:  GestureDetector(
@@ -27,15 +36,17 @@ Widget walletCard(item) {
               children: <Widget>[
                 new Container(
                   margin: const EdgeInsets.only(right: 16.0),
-                  decoration: new BoxDecoration(
-                    border: new Border.all(width: 2.0, color: Colors.black26),
-                    borderRadius: new BorderRadius.all(new Radius.circular(20.0)),
-                  ),
-                  child: new Image.asset(
-                    'images/icon.png',
-                    height: 40.0,
-                    width: 40.0,
-                    fit: BoxFit.cover,
+                  child: new Radio(
+                    groupValue: current_address,
+                    activeColor: Colors.blue,
+                    value: item['address'],
+                    onChanged: (v) {
+                      // val 与 value 的类型对应
+                      print(v);
+//                      setState(() {
+//                        current_address = v;  // aaa
+//                      });
+                    },
                   ),
                 ),
                 new Expanded(
@@ -71,5 +82,7 @@ Widget walletCard(item) {
         },
       )
   );
+
+
 }
 

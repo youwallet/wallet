@@ -15,3 +15,8 @@ class EventAddToken {
   Map token = null;
   EventAddToken(this.token);
 }
+
+class WalletChangeEvent{
+  String address = null;
+  WalletChangeEvent(this.address);
+}
