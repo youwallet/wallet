@@ -11,6 +11,11 @@ import "package:hex/hex.dart";
 //import 'package:stellar_hd_wallet/stellar_hd_wallet.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:youwallet/service/local_authentication_service.dart';
+import 'package:youwallet/service/service_locator.dart';
+
+
+
 
 
 class LoadWallet extends StatefulWidget {
@@ -24,7 +29,9 @@ class LoadWalletState extends State<LoadWallet> {
 
   String name;
   String randomMnemonic;
+  String privateKey;
   TextEditingController _name = TextEditingController();
+  final LocalAuthenticationService _localAuth = locator<LocalAuthenticationService>();
 
   @override // override是重写父类中的函数 每次初始化的时候执行一次，类似于小程序中的onLoad
   void initState() {
@@ -52,7 +59,7 @@ class LoadWalletState extends State<LoadWallet> {
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
         title: const Text('恢复身份'),
-//        actions: appBarActions(),
+        actions: appBarActions(),
         bottom: new TabBar(
             tabs: [
               new Tab(text: '助记词'),
@@ -71,7 +78,10 @@ class LoadWalletState extends State<LoadWallet> {
         child: new IconButton(
           icon: new Icon(Icons.camera_alt ),
           onPressed: () {
-            print("click carmer");
+            print("123");
+//            _localAuth.authenticate().then((result){
+//              print(result);
+//            });
           },
         ),
       )
@@ -118,9 +128,17 @@ class LoadWalletState extends State<LoadWallet> {
           ),
           new Container(
             margin: const EdgeInsets.only(top: 10.0),
-            child: new Image.asset(
-                'images/fingerprint.png'
-            ),
+            child: GestureDetector(
+               child: new Image.asset(
+                   'images/fingerprint.png'
+               ),
+              onTap: () async {
+                 print('click');
+                 SharedPreferences prefs = await SharedPreferences.getInstance();
+                 prefs.setString("randomMnemonic", this._name.text);
+                 Navigator.pushNamed(context, "wallet_check");
+              },
+              )
           ),
         ],
       ),

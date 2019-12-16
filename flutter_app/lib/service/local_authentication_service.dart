@@ -13,7 +13,7 @@ class LocalAuthenticationService {
 
   bool isAuthenticated = false;
 
-  Future<void> authenticate() async {
+  Future authenticate() async {
     if (_isProtectionEnabled) {
       try {
         List<BiometricType> availableBiometrics =
@@ -23,6 +23,7 @@ class LocalAuthenticationService {
           if (availableBiometrics.contains(BiometricType.face)) {
             // Face ID.
           } else if (availableBiometrics.contains(BiometricType.fingerprint)) {
+            print("there is touch id");
             // Touch ID.
           }
         }
@@ -35,6 +36,8 @@ class LocalAuthenticationService {
       } on PlatformException catch (e) {
         print(e);
       }
+    } else {
+      return false;
     }
   }
 }
