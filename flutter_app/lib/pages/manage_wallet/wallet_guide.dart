@@ -29,7 +29,6 @@ class _WalletGuideState extends State<WalletGuide> {
                       color: Colors.lightBlue
                   )
               ),
-
               new Container(
                   margin: const EdgeInsets.only(top: 50.0, bottom: 60.0),
                   child: new Image.asset(
@@ -42,7 +41,6 @@ class _WalletGuideState extends State<WalletGuide> {
                 minWidth: 300, // 控制按钮宽度
                 child: new Text('创建钱包'),
                 onPressed: () {
-                  // ...
                   Navigator.pushNamed(context, "set_wallet_name");
                 },
               ),
@@ -52,32 +50,7 @@ class _WalletGuideState extends State<WalletGuide> {
                 minWidth: 300, // 控制按钮宽度
                 child: new Text('导入钱包'),
                 onPressed: () {
-                  showDialog<Null>(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (BuildContext context) {
-                      return new AlertDialog(
-                        title: new Text('提示'),
-                        content: new SingleChildScrollView(
-                          child: new ListBody(
-                            children: <Widget>[
-                              new Text('等待导入'),
-                            ],
-                          ),
-                        ),
-                        actions: <Widget>[
-                          new FlatButton(
-                            child: new Text('确定'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  ).then((val) {
-                    print(val);
-                  });
+                  Navigator.pushNamed(context, "load_wallet");
                 },
               ),
             ],

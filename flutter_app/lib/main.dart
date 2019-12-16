@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:youwallet/pages/routers.dart';
 import 'package:youwallet/global.dart';
+import 'package:youwallet/service/service_locator.dart';
 
 
 import 'package:event_bus/event_bus.dart';
@@ -23,6 +24,7 @@ import 'package:event_bus/event_bus.dart';
 
 void main(){
   WidgetsFlutterBinding.ensureInitialized();
+  setupLocator();
   runApp(MyApp());
 }
 

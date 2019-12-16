@@ -29,9 +29,8 @@ class LoadWalletState extends State<LoadWallet> {
   @override // override是重写父类中的函数 每次初始化的时候执行一次，类似于小程序中的onLoad
   void initState() {
     super.initState();
-    _getWalletName();
+//    _getWalletName();
     _generateMnemonic();
-
   }
 
   @override
@@ -53,7 +52,7 @@ class LoadWalletState extends State<LoadWallet> {
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
         title: const Text('恢复身份'),
-        actions: appBarActions(),
+//        actions: appBarActions(),
         bottom: new TabBar(
             tabs: [
               new Tab(text: '助记词'),
@@ -91,7 +90,6 @@ class LoadWalletState extends State<LoadWallet> {
                 buildText(placeholder),
                 new TextField(
                   controller: this._name,
-                  enabled: false,
                   maxLines: 3,
                   decoration: InputDecoration(
                       filled: true,
@@ -178,7 +176,7 @@ class LoadWalletState extends State<LoadWallet> {
 
     wallet['name'] = this.name;
 
-    saveWallet(wallet);
+//    saveWallet(wallet);
   }
 
   /**
