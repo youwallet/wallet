@@ -9,13 +9,14 @@ import 'package:youwallet/pages/wallet/new_wallet_first.dart';
 import 'package:youwallet/pages/wallet/new_wallet_second.dart';
 import 'package:youwallet/pages/wallet/new_wallet_third.dart';
 import 'package:youwallet/pages/wallet/new_wallet_check.dart';
+import 'package:youwallet/pages/wallet/new_wallet_mnemonic.dart';
 import 'package:youwallet/pages/manage_wallet/manage_list.dart'; // 新建钱包名字
 import 'package:youwallet/pages/manage_wallet/set_wallet.dart'; // 新建钱包名字
-
 
 // token
 import 'package:youwallet/pages/token/token_history.dart'; // token交易历史
 import 'package:youwallet/pages/token/token_add.dart'; // 添加一种token
+
 
 // 设置
 import 'package:youwallet/pages/set/set_network.dart'; // 网络设置
@@ -36,7 +37,7 @@ final routes = {
   "login": (context) => new Login(),
   "backup_wallet": (context, {arguments}) => new BackupWallet(arguments: arguments),
   "load_wallet": (context) => new LoadWallet(),
-  "set_network": (context) => new NetworkPage(),
+  "wallet_mnemonic": (context) => new WalletMnemonic(),
   "wallet_check": (context) => new WalletCheck(),
   "tabs": (context) => new ContainerPage()
 };

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:youwallet/db/sql_util.dart';
 import 'dart:io';
 import 'package:youwallet/pages/routers.dart';
 import 'package:youwallet/global.dart';
 import 'package:youwallet/service/service_locator.dart';
-
-
+import 'package:youwallet/db/provider.dart';
+import 'package:youwallet/db/sql_util.dart';
 import 'package:event_bus/event_bus.dart';
 
 // 应用入口，所有的一起都是从这里开始发生的
@@ -22,9 +23,11 @@ import 'package:event_bus/event_bus.dart';
 //  }
 //}
 
-void main(){
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupLocator();
+  final provider = new Provider();
+  await provider.init();
   runApp(MyApp());
 }
 

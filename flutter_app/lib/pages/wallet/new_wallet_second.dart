@@ -65,7 +65,7 @@ class BackupWalletState extends State<BackupWallet> {
                 child: new Text('下一步'),
                 onPressed: () {
 //                  Navigator.pushNamed(context, "load_wallet");
-                  Navigator.of(context).pushReplacementNamed("load_wallet",);
+                  Navigator.of(context).pushReplacementNamed("wallet_mnemonic");
 //                  showDialog(
 //                      context: context,
 //                      barrierDismissible: false,

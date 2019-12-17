@@ -3,6 +3,8 @@ import 'package:bip39/bip39.dart' as bip39;
 import 'package:ed25519_hd_key/ed25519_hd_key.dart';
 import "package:hex/hex.dart";
 import 'package:web3dart/credentials.dart';
+import 'package:ed25519_hd_key/ed25519_hd_key.dart';
+//import 'package:shared_preferences/shared_preferences.dart';
 
 //abstract class TokenService {
 //  String generateMnemonic();
@@ -18,10 +20,22 @@ class TokenService {
 //  IConfigurationService _configService;
 //  AddressService(this._configService);
 
-  @override
-  String generateMnemonic() {
-    return bip39.generateMnemonic();
+
+
+  // 获取助记词
+  static String generateMnemonic() {
+    String randomMnemonic = bip39.generateMnemonic();
+    return randomMnemonic;
   }
+
+
+//  static String getPrivateKey(String randomMnemonic) {
+//
+//    String hexSeed = bip39.mnemonicToSeedHex(randomMnemonic);
+//
+//    KeyData master = ED25519_HD_KEY.getMasterKeyFromSeed(hexSeed);
+//    return HEX.encode(master.key);
+//  }
 
   @override
   static  maskAddress(String address) {
@@ -33,22 +47,17 @@ class TokenService {
   }
 
 
-  @override
-  String getPrivateKey(String mnemonic) {
-    print("start inn getPrivateKey");
-    print("mnemonic is ${mnemonic}");
+   // 助记词转密钥
+  static String getPrivateKey(String mnemonic) {
     String seed = bip39.mnemonicToSeedHex(mnemonic);
     KeyData master = ED25519_HD_KEY.getMasterKeyFromSeed(seed);
-    final privateKey = HEX.encode(master.key);
-    print("private: $privateKey");
-    return privateKey;
+    return HEX.encode(master.key);
   }
 
   @override
   Future<EthereumAddress> getPublicAddress(String privateKey) async {
     final private = EthPrivateKey.fromHex(privateKey);
     final address = await private.extractAddress();
-    print("address: $address");
     return address;
   }
 
