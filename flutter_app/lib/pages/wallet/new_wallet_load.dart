@@ -13,8 +13,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:youwallet/service/local_authentication_service.dart';
 import 'package:youwallet/service/service_locator.dart';
-
-
+import 'package:youwallet/service/token_service.dart';
+import 'package:youwallet/db/sql_util.dart';
 
 
 
@@ -31,13 +31,14 @@ class LoadWalletState extends State<LoadWallet> {
   String randomMnemonic;
   String privateKey;
   TextEditingController _name = TextEditingController();
+  TextEditingController _key = TextEditingController();
   final LocalAuthenticationService _localAuth = locator<LocalAuthenticationService>();
 
   @override // override是重写父类中的函数 每次初始化的时候执行一次，类似于小程序中的onLoad
   void initState() {
     super.initState();
 //    _getWalletName();
-    _generateMnemonic();
+//    _generateMnemonic();
   }
 
   @override
@@ -49,7 +50,7 @@ class LoadWalletState extends State<LoadWallet> {
           body: new TabBarView(
             children: [
               buildPage('输入助记词,用空格分隔'),
-              buildPage('输入明文私钥'),
+              buildKeyPage('输入明文私钥'),
             ],
           ),
         )
@@ -88,6 +89,7 @@ class LoadWalletState extends State<LoadWallet> {
     ];
   }
 
+  // 构建助记词page
   buildPage(placeholder){
     return new Container(
       child: new Column(
@@ -134,10 +136,69 @@ class LoadWalletState extends State<LoadWallet> {
                ),
               onTap: () async {
                  print('click');
-                 SharedPreferences prefs = await SharedPreferences.getInstance();
-                 prefs.setString("randomMnemonic", this._name.text);
-                 Navigator.pushNamed(context, "wallet_check");
+                 saveWallet();
+//                 SharedPreferences prefs = await SharedPreferences.getInstance();
+//                 prefs.setString("randomMnemonic", this._name.text);
+//                 Navigator.pushNamed(context, "wallet_check");
               },
+              )
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 构建私钥page
+  buildKeyPage(placeholder){
+    return new Container(
+      child: new Column(
+        children: <Widget>[
+          new Container(
+              padding: const EdgeInsets.all(32.0), // 四周填充边距32像素
+              color: Colors.white,
+              child: new Column(
+                children: <Widget>[
+                  buildText(placeholder),
+                  new TextField(
+                    controller: this._key,
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                        filled: true,
+                        hintText: placeholder,
+                        fillColor: Colors.black12,
+                        contentPadding: new EdgeInsets.all(6.0), // 内部边距，默认不是0
+                        border:InputBorder.none, // 没有任何边线
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(6.0),
+                          borderSide: BorderSide(
+                            width: 0, //边线宽度为2
+                          ),
+                        )
+                    ),
+
+                    onSubmitted: (text) {
+                      print('change $text');
+                    },
+                  ),
+                ],
+              )
+          ),
+          new Padding(
+              padding: new EdgeInsets.all(30.0),
+              child: new Text('免密设置')
+          ),
+          new Container(
+              margin: const EdgeInsets.only(top: 10.0),
+              child: GestureDetector(
+                child: new Image.asset(
+                    'images/fingerprint.png'
+                ),
+                onTap: () async {
+                  saveWalletByKey();
+//                 SharedPreferences prefs = await SharedPreferences.getInstance();
+//                 prefs.setString("randomMnemonic", this._name.text);
+//                 Navigator.pushNamed(context, "wallet_check");
+                },
               )
           ),
         ],
@@ -198,35 +259,51 @@ class LoadWalletState extends State<LoadWallet> {
   }
 
   /**
-   * 利用Sqflite数据库存储数据
    */
-  void saveWallet(wallet) async {
-    final db = await getDataBase('wallet.db');
-    db.transaction((trx) {
-      trx.rawInsert(
-          'INSERT INTO wallet(name, privateKey, address) VALUES("${wallet['name']}", "${wallet['privateKey']}", "${wallet['address']}")');
+  void saveWallet() async {
+    print("用户输入=》${this._name.text}");
+    String privateKey = TokenService.getPrivateKey(this._name.text);
+    EthereumAddress ethereumAddress = await TokenService.getPublicAddress(privateKey);
+    String address = ethereumAddress.toString();
+    print("address => ${address}");
+    String name = "";
+    var sql = SqlUtil.setTable("wallet");
+    String sql_insert ='INSERT INTO wallet(name, privateKey, address) VALUES(?, ?, ?)';
+    List list = [name, privateKey, address];
+    sql.rawInsert(sql_insert, list).then((id) {
+      if (id > 0) {
+        print("钱包保存成功,设置当前钱包，返回首页");
+        afterCreateWallet(address);
+      } else {
+        print("数据添加失败");
+      }
     });
-
-    // 广播事件
-//    eventBus.fire(EventAddToken(token));
   }
 
-  /**
-   * 初始化数据库存储路径
-   */
-  Future<Database> getDataBase(String dbName) async {
-    //获取应用文件目录类似于Ios的NSDocumentDirectory和Android上的 AppData目录
-    final fileDirectory = await getApplicationDocumentsDirectory();
-
-    //获取存储路径
-    final dbPath = fileDirectory.path;
-
-    //构建数据库对象
-    Database database = await openDatabase(dbPath + "/" + dbName, version: 1,
-        onCreate: (Database db, int version) async {
-          await db.execute("CREATE TABLE wallet (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, privateKey TEXT, address TEXT)");
-        });
-
-    return database;
+  // 通过key导入钱包
+  void saveWalletByKey() async {
+    String privateKey = this._key.text;
+    EthereumAddress ethereumAddress = await TokenService.getPublicAddress(privateKey);
+    String address = ethereumAddress.toString();
+    print("address => ${address}");
+    String name = "";
+    var sql = SqlUtil.setTable("wallet");
+    String sql_insert ='INSERT INTO wallet(name, privateKey, address) VALUES(?, ?, ?)';
+    List list = [name, privateKey, address];
+    sql.rawInsert(sql_insert, list).then((id) {
+      if (id > 0) {
+        print("钱包保存成功,设置当前钱包，返回首页");
+        afterCreateWallet(address);
+      } else {
+        print("数据添加失败");
+      }
+    });
   }
+
+  void afterCreateWallet(String address) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("current_wallet_address", address);
+    Navigator.pushNamed(context, "tabs");
+  }
+
 }

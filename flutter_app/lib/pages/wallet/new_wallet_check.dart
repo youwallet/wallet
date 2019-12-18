@@ -142,13 +142,11 @@ class Page extends State<WalletCheck> {
 
       var sql = SqlUtil.setTable("wallet");
       String sql_insert ='INSERT INTO wallet(name, privateKey, address) VALUES(?, ?, ?)';
-      String ad = address;
       List list = [name, privateKey, address];
       sql.rawInsert(sql_insert, list).then((id) {
           if (id > 0) {
-            print("钱包保存成功");
-
-            Navigator.pushNamed(context, "tabs");
+            print("钱包保存成功,设置当前钱包，返回首页");
+            afterCreateWallet(address);
           } else {
             print("数据添加失败");
           }
@@ -161,5 +159,11 @@ class Page extends State<WalletCheck> {
         print(randomMnemonic);
       }
     }
+  }
+
+  void afterCreateWallet(String address) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("current_wallet_address", address);
+    Navigator.pushNamed(context, "tabs");
   }
 }

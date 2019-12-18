@@ -7,7 +7,7 @@ import 'package:youwallet/pages/manage_wallet/wallet_guide.dart'; // 钱包引�
 // 钱包操作
 import 'package:youwallet/pages/wallet/new_wallet_first.dart';
 import 'package:youwallet/pages/wallet/new_wallet_second.dart';
-import 'package:youwallet/pages/wallet/new_wallet_third.dart';
+import 'package:youwallet/pages/wallet/new_wallet_load.dart';
 import 'package:youwallet/pages/wallet/new_wallet_check.dart';
 import 'package:youwallet/pages/wallet/new_wallet_mnemonic.dart';
 import 'package:youwallet/pages/manage_wallet/manage_list.dart'; // 新建钱包名字

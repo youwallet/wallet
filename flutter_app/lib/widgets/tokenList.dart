@@ -8,6 +8,12 @@ class tokenList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+//    return new ListView.builder(
+//      itemCount: arr.length,
+//      itemBuilder: (context, index) {
+//        return walletCard(arr[index]);
+//      },
+//    );
     return Column(
         children: arr.map((item) => walletCard(item)).toList()
     );
@@ -43,7 +49,7 @@ Widget walletCard(item) {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       new Text(
-                        item['name'],
+                        item['name']?? '--',
                         style: new TextStyle(fontSize: 32.0, color: Colors.black),
                       ),
                       new Text(item['address']),
@@ -54,7 +60,7 @@ Widget walletCard(item) {
                     child: new Column(
                       children: <Widget>[
                         new Text(
-                          item['balance'],
+                          item['balance']??'--',
                           style: new TextStyle(fontSize: 16.0,
                               color: Color.fromARGB(100, 6, 147, 193)),
                         ),

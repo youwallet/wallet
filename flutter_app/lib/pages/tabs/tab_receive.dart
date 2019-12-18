@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share/share.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TabReceive extends StatefulWidget {
   @override
@@ -13,10 +14,19 @@ class TabReceive extends StatefulWidget {
 
 // 收款tab页
 class Page extends State<TabReceive> {
+
+  @override // override是重写父类中的函数
+  void initState()  {
+    super.initState();
+    print(" receive start ");
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return layout(context);
   }
+
 
   Widget layout(BuildContext context) {
     return new Scaffold(
@@ -102,13 +112,13 @@ class Page extends State<TabReceive> {
                 ],
               ),
             ),
-            new Positioned(
-              child:  new Image.asset('images/icon.png'),
-              left: 125,
-              top: -25,
-              width: 50,
-              height: 50,
-            ),
+//            new Positioned(
+//              child:  new Image.asset('images/icon.png'),
+//              left: 125,
+//              top: -25,
+//              width: 50,
+//              height: 50,
+//            ),
           ]
         )
       ),
@@ -118,7 +128,7 @@ class Page extends State<TabReceive> {
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
       title: const Text('收款'),
-      actions: this.appBarActions(),
+//      actions: this.appBarActions(),
     );
   }
   // 定义bar右侧的icon按钮

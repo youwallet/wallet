@@ -13,8 +13,12 @@ import 'package:dart_sql/dart_sql.dart';
 //import 'package:barcode_scan/barcode_scan.dart';
 import 'package:youwallet/bus.dart';
 
-class TabWallet extends StatefulWidget {
+import 'package:provider/provider.dart';
+import 'package:youwallet/model/token.dart';
+import 'package:youwallet/model/wallet.dart' as walletModel;
+import 'package:youwallet/db/sql_util.dart';
 
+class TabWallet extends StatefulWidget {
 
 
   @override
@@ -27,35 +31,35 @@ class Page extends State<TabWallet> {
   List<Map> tokenArr = [];
   List<Map> wallets = []; // 用户添加的钱包数组
   int current_wallet = 0;
+  String current_wallet_address = "";
 
 
 
 
   @override // override是重写父类中的函数
-  void initState() {
+  void initState()  {
     super.initState();
-    getTokens();
-    getWallet();
+
 
     // 监听钱包切换事件
-    eventBus.on<WalletChangeEvent>().listen((event) {
-      print(event.address);
-      this.wallets.forEach((f){
-        if (f['address'] == event.address) {
-          setState(() {
-            this.current_wallet = f['id'] - 1;
-          });
-        }
-      });
-    });
+//    eventBus.on<WalletChangeEvent>().listen((event) {
+//      print(event.address);
+//      this.wallets.forEach((f){
+//        if (f['address'] == event.address) {
+//          setState(() {
+//            this.current_wallet = f['id'] - 1;
+//          });
+//        }
+//      });
+//    });
   }
 
-  @override
+  @override // 页面回退时候触发
   void deactivate() {
-    var bool = ModalRoute.of(context).isCurrent;
-    if (bool) {
-      getWallet();
-    }
+//    var bool = ModalRoute.of(context).isCurrent;
+//    if (bool) {
+//      getWallet();
+//    }
   }
 
   @override
@@ -95,18 +99,7 @@ class Page extends State<TabWallet> {
   ////    }
   ////  }
 
-  /**
-   * 每次页面show，触发首页token更新函数
-   */
-  void getTokens() async {
-    final db = await getDataBase('wallet.db');
-    List res = [];
-    db.rawQuery('SELECT * FROM tokens').then((List<Map> lists) {
-      setState(() {
-        this.tokenArr = lists;
-      });
-    });
-  }
+
 
   /**
    * 每次页面show，触发首页token更新函数
@@ -120,7 +113,6 @@ class Page extends State<TabWallet> {
         this.wallets = lists;
       });
     });
-
   }
 
 
@@ -151,9 +143,17 @@ class Page extends State<TabWallet> {
         children: <Widget>[
           topCard(context),
           listTopBar(context),
+//          new Container(
+//            padding: const EdgeInsets.only(left: 16.0, right: 16.0), // 四周填充边距32像素
+//            child: new tokenList(arr: tokenArr)
+//          )
           new Container(
             padding: const EdgeInsets.only(left: 16.0, right: 16.0), // 四周填充边距32像素
-            child: new tokenList(arr: tokenArr)
+            child: Consumer<Token>(
+              builder: (context, Token, child) {
+                return tokenList(arr: Token.items);
+              },
+            ),
           )
         ],
       ),
@@ -235,7 +235,6 @@ class Page extends State<TabWallet> {
 
   // 构建顶部卡片
   Widget topCard(BuildContext context) {
-    Map wallet = this.wallets[current_wallet];
     return new Container(
         padding: const EdgeInsets.all(16.0), // 四周填充边距32像素
         margin: const EdgeInsets.all(16.0),
@@ -248,52 +247,55 @@ class Page extends State<TabWallet> {
               fit: BoxFit.fill
             ),
         ),
-        child: new Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-             new Row(
-               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-               children: <Widget>[
-                 new Text(
-                     wallet['name'],
-                     style: new TextStyle(
-                         color: Colors.white
-                     )
-                 ),
-                 new IconButton(
-                   icon: new Icon(
-                       Icons.settings,
-                       color: Colors.white
-                   ),
-                   onPressed: () {
-                     // ...
-                     Navigator.pushNamed(context, "manage_wallet",arguments:{ 'address': this.wallets[current_wallet]['address']});
-                   },
-                 ),
-               ],
-             ),
-            new Text(
-                TokenService.maskAddress(wallet['address']),
-                style: new TextStyle(
-                    color: Colors.white
-                )
-            ),
-            new Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                new Text(''),
-                new Text(
-                    '￥30000.00',
-                    style: new TextStyle(
-                      fontSize: 32.0, color: Colors.white
-                    )
-                ),
-              ],
-            ),
+        child: Consumer<walletModel.Wallet>(
+          builder: (context, Wallet, child) {
+            return  new Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  new Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      new Text(
+                          'ok',
+                          style: new TextStyle(
+                              color: Colors.white
+                          )
+                      ),
+                      new IconButton(
+                        icon: new Icon(
+                            Icons.settings,
+                            color: Colors.white
+                        ),
+                        onPressed: () {
+                          Navigator.pushNamed(context, "manage_wallet",arguments:{ 'address': this.wallets[current_wallet]['address']});
+                        },
+                      ),
+                    ],
+                  ),
+                  new Text(
+                      Wallet.currentWallet,
+                      style: new TextStyle(
+                          color: Colors.white
+                      )
+                  ),
+                  new Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      new Text(''),
+                      new Text(
+                          '￥30000.00',
+                          style: new TextStyle(
+                              fontSize: 32.0, color: Colors.white
+                          )
+                      ),
+                    ],
+                  ),
 
+                ]
+            );
+          },
+        ),
 
-          ]
-        )
 
     );
   }

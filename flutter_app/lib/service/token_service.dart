@@ -54,8 +54,7 @@ class TokenService {
     return HEX.encode(master.key);
   }
 
-  @override
-  Future<EthereumAddress> getPublicAddress(String privateKey) async {
+  static Future<EthereumAddress> getPublicAddress(String privateKey) async {
     final private = EthPrivateKey.fromHex(privateKey);
     final address = await private.extractAddress();
     return address;

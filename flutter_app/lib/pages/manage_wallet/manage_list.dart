@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:youwallet/widgets/walletList.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:youwallet/bus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class ManageWallet extends StatefulWidget {
   final arguments;
@@ -149,7 +150,7 @@ class Page extends State<ManageWallet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         new Text(
-                          item['name'],
+                          item['name']??'--',
                           style: new TextStyle(fontSize: 32.0, color: Colors.black),
                         ),
                         new Text(item['address']),
@@ -172,8 +173,10 @@ class Page extends State<ManageWallet> {
                 ],
               )
           ),
-          onTap: (){
+          onTap: () async {
             print("点击token =》 ${item}");
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            prefs.setString("currentAddress", item['address']);
             setState(() {
               this.current_address = item['address'];  // aaa
             });

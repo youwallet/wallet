@@ -7,28 +7,32 @@ import 'package:youwallet/service/service_locator.dart';
 import 'package:youwallet/db/provider.dart';
 import 'package:youwallet/db/sql_util.dart';
 import 'package:event_bus/event_bus.dart';
+import 'package:provider/provider.dart';
 
-// 应用入口，所有的一起都是从这里开始发生的
-//void main() {
-//  Global.init().then((e) => runApp(MyApp()));
-//  runApp(MyApp());
-//  if (Platform.isAndroid) {
-//    print('this is Android');
-//    // 可以在这里针对安卓和ios做一些区别设置
-//    //SystemUiOverlayStyle systemUiOverlayStyle =
-//    //SystemUiOverlayStyle(statusBarColor: Colors.transparent);
-//    //SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
-//  } else {
-//    print('this is IOS');
-//  }
-//}
+
+// 引入model
+import 'package:youwallet/model/token.dart';
+import 'package:youwallet/model/wallet.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupLocator();
-  final provider = new Provider();
+
+  // 启动数据库
+  final provider = new ProviderSql();
   await provider.init();
-  runApp(MyApp());
+
+  await Global.init(); // 全局变量, 还没想清楚怎么用
+  Provider.debugCheckInvalidValueType = null;
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<Token>(create: (_) => Token()),
+        ChangeNotifierProvider<Wallet>(create: (_) => Wallet()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
