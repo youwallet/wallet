@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share/share.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+
+import 'package:provider/provider.dart';
+import 'package:youwallet/model/wallet.dart' ;
 
 class TabReceive extends StatefulWidget {
   @override
@@ -18,8 +21,6 @@ class Page extends State<TabReceive> {
   @override // override是重写父类中的函数
   void initState()  {
     super.initState();
-    print(" receive start ");
-
   }
 
   @override
@@ -39,7 +40,7 @@ class Page extends State<TabReceive> {
             new Container(
               padding: const EdgeInsets.only(top: 40.0),
               width: 300.0,
-              height: 322.0,
+              height: 329.0,
               decoration: new BoxDecoration(
                 borderRadius: new BorderRadius.all(new Radius.circular(8.0)),
                 color: Colors.lightBlue,
@@ -54,7 +55,7 @@ class Page extends State<TabReceive> {
                       )
                   ),
                   new Text(
-                      '0x0000000000000000000000',
+                      Provider.of<Wallet>(context).currentWallet,
                       style: new TextStyle(
                           fontSize: 18.0,
                           color: Colors.white
@@ -100,10 +101,9 @@ class Page extends State<TabReceive> {
                               ),
                             ),
                           ),
-                          new Image.asset(
-                            'images/qrcode.jpeg',
-                            height: 100.0,
-                            fit: BoxFit.cover,
+                          QrImage(
+                            data: Provider.of<Wallet>(context).currentWallet,
+                            size: 100.0,
                           ),
                         ],
                       )

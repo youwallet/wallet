@@ -3,6 +3,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:youwallet/bus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:youwallet/model/wallet.dart';
+import 'package:provider/provider.dart';
 
 
 class ManageWallet extends StatefulWidget {
@@ -14,25 +16,22 @@ class ManageWallet extends StatefulWidget {
   State<StatefulWidget> createState() {
     // TODO: implement createState
 
-    return new Page(arguments: this.arguments);
+    return new Page();
   }
 }
 
 class Page extends State<ManageWallet> {
 
   List wallets = [];
-  String current_address = "";
-  final arguments;
-
-  Page({this.arguments});
+  String currentAddress = "";
 
   @override // override是重写父类中的函数
   void initState() {
     super.initState();
-    setState(() {
-      this.current_address = this.arguments['address'];
-    });
-    this.getWallet();
+//    setState(() {
+//      this.currentAddress = Provider.of<Wallet>(context).currentWallet;
+//    });
+
   }
 
   @override
@@ -45,19 +44,16 @@ class Page extends State<ManageWallet> {
       appBar: buildAppBar(context),
       body: new Container(
         padding: const EdgeInsets.all(16.0),
-        child: new ListView(
-          children: this.wallets.map((item) => walletCard(item)).toList()
-//            new MaterialButton(
-//              color: Colors.blue,
-//              textColor: Colors.white,
-//              minWidth: 300, // 控制按钮宽度
-//              child: new Text('创建钱包'),
-//              onPressed: () {
-//                // ...
-//                Navigator.pushNamed(context, "set_wallet_name");
-//              },
-//            ),
+        child: Consumer<Wallet>(
+          builder: (context, Wallet, child) {
+            return new ListView(
+              children: Wallet.items.map((item) => walletCard(item)).toList()
+            );
+          },
         ),
+//        child: new ListView(
+//          children: this.wallets.map((item) => walletCard(item)).toList()
+//        ),
       ),
     );
   }
@@ -85,40 +81,6 @@ class Page extends State<ManageWallet> {
     ];
   }
 
-  /**
-   * 每次页面show，触发首页token更新函数
-   */
-  void getWallet() async {
-    final db = await getDataBase('wallet.db');
-    List res = [];
-    db.rawQuery('SELECT * FROM wallet').then((List<Map> lists) {
-      print(lists);
-      setState(() {
-        this.wallets = lists;
-      });
-    });
-
-  }
-
-
-  /**
-   * 初始化数据库存储路径
-   */
-  Future<Database> getDataBase(String dbName) async {
-    //获取应用文件目录类似于Ios的NSDocumentDirectory和Android上的 AppData目录
-    final fileDirectory = await getApplicationDocumentsDirectory();
-
-    //获取存储路径
-    final dbPath = fileDirectory.path;
-
-    //构建数据库对象
-    Database database = await openDatabase(dbPath + "/" + dbName, version: 1,
-        onCreate: (Database db, int version) async {
-          await db.execute("CREATE TABLE token (id INTEGER, address TEXT PRIMARY KEY, name TEXT, balance TEXT, rmb TEXT)");
-        });
-
-    return database;
-  }
 
   Widget walletCard(item) {
 
@@ -131,17 +93,17 @@ class Page extends State<ManageWallet> {
                 children: <Widget>[
                   new Container(
                     margin: const EdgeInsets.only(right: 16.0),
-                    child: new Radio(
-                      groupValue: this.current_address,
-                      activeColor: Colors.blue,
-                      value: item['address'],
-                      onChanged: (v) {
-                        // val 与 value 的类型对应
-                        // 广播事件
-                        eventBus.fire(WalletChangeEvent(v));
-                        setState(() {
-                          this.current_address = v;  // aaa
-                        });
+                    child: Consumer<Wallet>(
+                      builder: (context, wallet, child) {
+                        return new Radio(
+                          groupValue: wallet.currentWallet,
+                          activeColor: Colors.blue,
+                          value: item['address'],
+                          onChanged: (v) {
+                            print(v);
+                            Provider.of<Wallet>(context).changeWallet(v);
+                          },
+                        );
                       },
                     ),
                   ),
@@ -177,9 +139,9 @@ class Page extends State<ManageWallet> {
             print("点击token =》 ${item}");
             SharedPreferences prefs = await SharedPreferences.getInstance();
             prefs.setString("currentAddress", item['address']);
-            setState(() {
-              this.current_address = item['address'];  // aaa
-            });
+//            setState(() {
+//              this.current_address = item['address'];  // aaa
+//            });
           },
         )
     );

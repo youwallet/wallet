@@ -39,6 +39,14 @@ class Wallet extends ChangeNotifier {
     this.currentWallet = address??'--';
   }
 
+  // 切换钱包
+  void changeWallet(String address) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("currentWallet", address);
+    this.currentWallet = address;
+    notifyListeners();
+  }
+
 
   /// 所有钱包
   List<Map> _items = [];

@@ -267,7 +267,7 @@ class Page extends State<TabWallet> {
                             color: Colors.white
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(context, "manage_wallet",arguments:{ 'address': this.wallets[current_wallet]['address']});
+                          Navigator.pushNamed(context, "manage_wallet",arguments:{});
                         },
                       ),
                     ],
