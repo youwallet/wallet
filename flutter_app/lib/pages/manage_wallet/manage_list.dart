@@ -137,11 +137,14 @@ class Page extends State<ManageWallet> {
           ),
           onTap: () async {
             print("点击token =》 ${item}");
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            prefs.setString("currentAddress", item['address']);
+//            SharedPreferences prefs = await SharedPreferences.getInstance();
+//            prefs.setString("currentAddress", item['address']);
 //            setState(() {
 //              this.current_address = item['address'];  // aaa
 //            });
+          },
+          onLongPress: ()  {
+            Provider.of<Wallet>(context).remove(item);
           },
         )
     );

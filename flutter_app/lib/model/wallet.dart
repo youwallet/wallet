@@ -19,6 +19,18 @@ class Wallet extends ChangeNotifier {
     this._fetchWallet();
   }
 
+  /// 所有钱包
+  List<Map> _items = [];
+
+  /// 当前钱包地址
+  String currentWallet = "";
+
+  // 名字
+  String currentWalletName = "";
+
+  //
+  List<Map> get items => _items;
+
   // 获取缓存的钱包
   Future<List> _fetchWallet() async {
     var sql = SqlUtil.setTable("wallet");
@@ -35,8 +47,14 @@ class Wallet extends ChangeNotifier {
   //设置当前的钱包
   void setWallet() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String address = prefs.getString("currentAddress");
+    String address = prefs.getString("currentWallet");
     this.currentWallet = address??'--';
+
+    this._items.forEach((f){
+      if (f['address'] == address) {
+        this.currentWalletName = f['name']??'--';
+      }
+    });
   }
 
   // 切换钱包
@@ -44,28 +62,29 @@ class Wallet extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("currentWallet", address);
     this.currentWallet = address;
+    this._items.forEach((f){
+      if (f['address'] == address) {
+        this.currentWalletName = f['name']??'--';
+      }
+    });
     notifyListeners();
   }
 
 
-  /// 所有钱包
-  List<Map> _items = [];
-
-  /// 当前钱包
-  String currentWallet = "";
-
-  // 获取所有token
-  List<Map> get items => _items;
-
-  ///  将 [item] 到token列表中
+  ///  将 [item] 到列表中
   void add(Map item) {
     _items.add(item);
     notifyListeners();
   }
 
-// 获取token列表
-//  List get(){
-//    return _items;
-//  }
+  /// 删除指定钱包
+  void remove(Map wallet) {
+    _items.remove(wallet);
+    var sql = SqlUtil.setTable("wallet");
+    sql.delete('address', wallet['address']).then((result) {
+      print(result);
+    });
+    notifyListeners();
+  }
 
 }

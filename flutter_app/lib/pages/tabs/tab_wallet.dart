@@ -256,7 +256,7 @@ class Page extends State<TabWallet> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       new Text(
-                          'ok',
+                          Wallet.currentWalletName,
                           style: new TextStyle(
                               color: Colors.white
                           )
