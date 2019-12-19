@@ -143,10 +143,6 @@ class Page extends State<TabWallet> {
         children: <Widget>[
           topCard(context),
           listTopBar(context),
-//          new Container(
-//            padding: const EdgeInsets.only(left: 16.0, right: 16.0), // 四周填充边距32像素
-//            child: new tokenList(arr: tokenArr)
-//          )
           new Container(
             padding: const EdgeInsets.only(left: 16.0, right: 16.0), // 四周填充边距32像素
             child: Consumer<Token>(

@@ -28,7 +28,7 @@ class _NetworkPageState extends State<NetworkPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               RadioListTile<String>(
-                value: 'Mainnet',
+                value: 'mainnet',
                 title: Text('Mainnet'),
                 groupValue: _newValue,
                 onChanged: (value) {
@@ -36,7 +36,7 @@ class _NetworkPageState extends State<NetworkPage> {
                 },
               ),
               RadioListTile<String>(
-                value: 'Ropsten',
+                value: 'ropsten',
                 title: Text('Ropsten'),
                 groupValue: _newValue,
                 onChanged: (value) {

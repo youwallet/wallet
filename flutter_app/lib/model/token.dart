@@ -41,18 +41,32 @@ class Token extends ChangeNotifier {
 //    }
 //  }
 
-  /// Internal, private state of the cart. 内部的，购物车的私有状态
+  ///
   List<Map> _items = [];
 
-  /// 现在全部商品的总价格（假设他们加起来 $42）
-  int get totalPrice => _items.length * 42;
 
   // 获取所有token
   List<Map> get items => _items;
 
-  ///  将 [item] 到token列表中
-  void add(Map item) {
-    _items.add(item);
+  ///  将 [item] 到token列表中,同时保存到sql
+  Future<int> add(Map token) async {
+    _items.add(token);
+    var sql = SqlUtil.setTable("wallet");
+    String sql_insert ='INSERT INTO tokens(address, name, balance, rmb) VALUES(?, ?, ?, ?)';
+    List list = [token['address'], token['name'], token['balance'],token['rmb']];
+    sql.rawInsert(sql_insert, list).then((id) {
+      return id;
+    });
+    notifyListeners();
+  }
+
+  /// 移除一个token
+  void remove(Map item) {
+    _items.remove(item);
+    var sql = SqlUtil.setTable("tokens");
+    sql.delete('id', item['id']).then((result) {
+      print("remove =》 ${result}");
+    });
     notifyListeners();
   }
 
