@@ -48,16 +48,25 @@ class Token extends ChangeNotifier {
   // 获取所有token
   List<Map> get items => _items;
 
-  ///  将 [item] 到token列表中,同时保存到sql
+  ///  保存一个token，注意token重复保存
   Future<int> add(Map token) async {
-    _items.add(token);
-    var sql = SqlUtil.setTable("wallet");
-    String sql_insert ='INSERT INTO tokens(address, name, balance, rmb) VALUES(?, ?, ?, ?)';
-    List list = [token['address'], token['name'], token['balance'],token['rmb']];
-    sql.rawInsert(sql_insert, list).then((id) {
-      return id;
-    });
-    notifyListeners();
+
+    var sql = SqlUtil.setTable("tokens");
+    var map = {'address': token['address']};
+    List json = await sql.query(conditions: map);
+
+    if (json.isEmpty) {
+      _items.add(token);
+
+      String sql_insert ='INSERT INTO tokens(address, name, balance, rmb) VALUES(?, ?, ?, ?)';
+      List list = [token['address'], token['name'], token['balance'],token['rmb']];
+      sql.rawInsert(sql_insert, list).then((id) {
+        return id;
+      });
+      notifyListeners();
+    } else {
+      return 0;
+    }
   }
 
   /// 移除一个token

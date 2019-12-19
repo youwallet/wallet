@@ -18,32 +18,27 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:event_bus/event_bus.dart';
 import 'package:youwallet/bus.dart';
+import 'package:provider/provider.dart';
+import 'package:youwallet/model/token.dart';
+import 'package:youwallet/service/trade.dart';
 
 class TabExchange extends StatefulWidget {
+
   @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return new Page();
-  }
+  State<StatefulWidget> createState() => new Page();
 }
 
 class Page extends State {
 
   BuildContext mContext;
-
-
+  List baseToken = [{'name': 'ETH', 'address': '0x0'}];
+  final controllerAmount = TextEditingController();
+  final controllerPrice = TextEditingController();
   //数据初始化
   @override
   void initState() {
     super.initState();
 
-    // 初始化的时候，就加载tokens列表
-    _setTokens();
-
-    // 监听token添加事件
-    eventBus.on<EventAddToken>().listen((event) {
-      _setTokens();
-    });
   }
 
   @override
@@ -121,7 +116,7 @@ class Page extends State {
                     color: Colors.black12,
                   ),
                   child: new DropdownButton(
-                    items: getListData(),
+                    items: getListData(Provider.of<Token>(context).items),
                     hint:new Text('选择币种'),//当没有默认值的时候可以设置的提示
                     value: value,//下拉菜单选择完之后显示给用户的值
                     onChanged: (T){//下拉菜单item点击之后的回调
@@ -140,31 +135,11 @@ class Page extends State {
                   child: new Row(
                     children: <Widget>[
                       new Expanded(
-                          child: OutlineButton(
-                            onPressed: () {
-                              changeOrderModel('买入');
-                            },
-                            child: Text('买入'),
-                            borderSide: BorderSide(
-                                color: Colors.green,
-                                width: 1.0,
-                                style: BorderStyle.solid
-                            ),
-                          ),
+                          child: getButton('买入', this._btnText),
                           flex: 1
                       ),
                       new Expanded(
-                          child: OutlineButton(
-                            onPressed: () {
-                              changeOrderModel('卖出');
-                            },
-                            child: Text('卖出'),
-                            borderSide: BorderSide(
-                                color: Colors.green,
-                                width: 0.0,
-                                style: BorderStyle.solid
-                            ),
-                          ),
+                          child: getButton('卖出', this._btnText),
                           flex: 1
                       )
                     ],
@@ -177,6 +152,8 @@ class Page extends State {
                         maxWidth: 200
                     ),
                     child: new TextField(
+                      controller: controllerAmount,
+                      keyboardType: TextInputType.number,//键盘类型，数字键盘
                       decoration: InputDecoration(// 输入框内部右侧增加一个icon
                           suffixText: 'EOS',//位于尾部的填充文字
                           suffixStyle: new TextStyle(
@@ -196,9 +173,7 @@ class Page extends State {
                             ),
                           )
                       ),
-                      onSubmitted: (text) {//内容提交(按回车)的回调
-                        print('submit $text');
-                      },
+                      onSubmitted: (text) {},
                     ),
 
                 ),
@@ -213,6 +188,7 @@ class Page extends State {
                       maxWidth: 200
                   ),
                   child: new TextField(
+                    controller: controllerPrice,
                     decoration: InputDecoration(// 输入框内部右侧增加一个icon
                         suffixText: 'EOS',//位于尾部的填充文字
                         suffixStyle: new TextStyle(
@@ -232,9 +208,6 @@ class Page extends State {
                           ),
                         )
                     ),
-                    onSubmitted: (text) {//内容提交(按回车)的回调
-                      print('submit $text');
-                    },
                   ),
 
                 ),
@@ -251,13 +224,8 @@ class Page extends State {
                         height: 30,
                         child: RaisedButton(
                             elevation: 0,
-                            onPressed: () {
-                              // =============================
-                              //makeOrder();
-//                              getConfigData();
-                                //getBQODHash();
-                              _setTokens();
-                              // =============================
+                            onPressed: () async {
+                               this.makeOrder();
                             },
                             child: Text(
                                 this._btnText,
@@ -296,12 +264,12 @@ class Page extends State {
                     color: Colors.black12,
                   ),
                   child: new DropdownButton(
-                    items: getListData(),
+                    items: getListData(this.baseToken),
                     hint:new Text('选择币种'),//当没有默认值的时候可以设置的提示
                     value: value,//下拉菜单选择完之后显示给用户的值
                     onChanged: (T){//下拉菜单item点击之后的回调
                       setState(() {
-                        value=T;
+                        value=T['name'];
                       });
                     },
                     isDense: true,
@@ -331,6 +299,37 @@ class Page extends State {
     );
   }
 
+  // 获取按钮
+  Widget getButton(String btnText, String currentBtn) {
+    if (btnText == currentBtn) {
+      return RaisedButton(
+        onPressed: () {
+          changeOrderModel(btnText);
+        },
+        shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(0))
+        ), // 设置圆角，默认有圆角
+        child: Text(btnText),
+          textColor: Colors.white,
+        color: Colors.green
+      );
+    } else {
+      return OutlineButton(
+        onPressed: () {
+          changeOrderModel(btnText);
+        },
+        child: Text(btnText),
+        color: Colors.deepOrange,
+        borderSide: BorderSide(
+            color: Colors.green,
+            width: 1.0,
+            style: BorderStyle.solid
+        ),
+      );
+    }
+
+  }
+
   // 更改下单模式
   void changeOrderModel(String text) {
     setState(() {
@@ -338,37 +337,6 @@ class Page extends State {
     });
   }
 
-
-  // 交易参数的设置, 包含hydro版本号、交易买卖标志等
-  // getConfigData(bool) 经过sha3加密后取前四位feee047e
-  // 卖单true : 0000000000000000000000000000000000000000000000000000000000000001
-  // 买单false : 0000000000000000000000000000000000000000000000000000000000000000
-  void getConfigData() async{
-    var client = Client();
-    var payload = {
-      "jsonrpc": "2.0",
-      "method": "eth_call",
-      "params": [
-        {
-          "from":"0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364",
-          "to": contractAddress,
-          "data": "0xfeee047e0000000000000000000000000000000000000000000000000000000000000001"
-        },
-        "latest"
-      ],
-      "id": DateTime.now().millisecondsSinceEpoch
-    };
-
-    var rsp = await client.post(
-        'https://ropsten.infura.io/',
-        headers:{'Content-Type':'application/json'},
-        body: json.encode(payload)
-    );
-    print('rsp code => ${rsp}');
-    print('rsp code => ${rsp.statusCode}');
-    print('rsp body => ${rsp.body}');
-    // 参数为true，执行结果为0x020100005def248f025802580000000000000000000000000000000000000000
-  }
 
   /*
   * 获取订单相关hash值
@@ -535,7 +503,7 @@ class Page extends State {
 
 
   // 构建页面下拉列表
-  List<DropdownMenuItem> getListData(){
+  List<DropdownMenuItem> getListData(tokens){
     List<DropdownMenuItem> items=new List();
 
     for (var value in tokens) {
@@ -545,17 +513,6 @@ class Page extends State {
       ));
     }
 
-//    List<DropdownMenuItem> items=new List();
-//    items.add(new DropdownMenuItem(
-//      child:new Text('1'),
-//      value: '1',
-//    ));
-//    items.add(
-//        new DropdownMenuItem(
-//          child:new Text('2'),
-//          value: '2',
-//        ),
-//    );
     return items;
   }
 
@@ -610,37 +567,16 @@ class Page extends State {
     );
   }
 
-
-  /**
-   * 每次页面show，触发首页token更新函数
-   */
-  void _setTokens() async {
-    final db = await getDataBase('wallet.db');
-    List res = [];
-    db.rawQuery('SELECT * FROM tokens').then((List<Map> lists) {
-      setState(() {
-        this.tokens = lists;
-      });
-    });
-
-  }
-
-  /**
-   * 初始化数据库存储路径
-   */
-  Future<sqllite.Database> getDataBase(String dbName) async {
-    //获取应用文件目录类似于Ios的NSDocumentDirectory和Android上的 AppData目录
-    final fileDirectory = await getApplicationDocumentsDirectory();
-
-    //获取存储路径
-    final dbPath = fileDirectory.path;
-    print(dbPath);
-    // /Users/zhaobinglong/Library/Developer/CoreSimulator/Devices/037DA882-FA4E-4328-80BE-4BCB84E2C47A/data/Containers/Data/Application/682A61BA-A7CF-406A-BBC7-B388F92E0A55/Documents
-    // /Users/zhaobinglong/Library/Developer/CoreSimulator/Devices/037DA882-FA4E-4328-80BE-4BCB84E2C47A/data/Containers/Data/Application/682A61BA-A7CF-406A-BBC7-B388F92E0A55/Documents
-    //构建数据库对象
-    sqllite.Database database = await sqllite.openDatabase(dbPath + "/" + dbName, version: 1);
-    print(database);
-    return database;
+  void makeOrder(){
+    print(this.controllerAmount.text);
+    print(this.controllerPrice.text);
+    bool isBuy = true;
+    if (this._btnText == '买入') {
+      isBuy = true;
+    } else {
+      isBuy = false;
+    }
+    Trade.takeOrder('0x1', '0x2', this.controllerAmount.text, this.controllerPrice.text, isBuy);
   }
 
 }

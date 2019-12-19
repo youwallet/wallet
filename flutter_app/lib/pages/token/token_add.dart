@@ -69,7 +69,6 @@ class Page extends State<AddWallet> {
 //                );
 //              });
           Map token = await TokenService.searchToken(text);
-          print(token);
 //          Navigator.pop(context);
           if (token.containsKey('name')) {
             setState(() {
