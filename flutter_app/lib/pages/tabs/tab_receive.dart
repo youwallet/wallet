@@ -5,6 +5,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart' ;
+import 'package:youwallet/service/token_service.dart' ;
 
 class TabReceive extends StatefulWidget {
   @override
@@ -40,7 +41,7 @@ class Page extends State<TabReceive> {
             new Container(
               padding: const EdgeInsets.only(top: 40.0),
               width: 300.0,
-              height: 329.0,
+              height: 308.0,
               decoration: new BoxDecoration(
                 borderRadius: new BorderRadius.all(new Radius.circular(8.0)),
                 color: Colors.lightBlue,
@@ -48,14 +49,14 @@ class Page extends State<TabReceive> {
               child: new Column(
                 children: <Widget>[
                   new Text(
-                      'ETH-Wallet',
+                      Provider.of<Wallet>(context).currentWalletName,
                       style: new TextStyle(
                           fontSize: 24.0,
                           color: Colors.white
                       )
                   ),
                   new Text(
-                      Provider.of<Wallet>(context).currentWallet,
+                    TokenService.maskAddress(Provider.of<Wallet>(context).currentWallet),
                       style: new TextStyle(
                           fontSize: 18.0,
                           color: Colors.white
@@ -149,32 +150,8 @@ class Page extends State<TabReceive> {
   void  _copyAddress() {
     ClipboardData data = new ClipboardData(text:"测试剪贴板复制功能");
     Clipboard.setData(data);
-    showDialog<Null>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return new AlertDialog(
-          title: new Text('提示'),
-          content: new SingleChildScrollView(
-            child: new ListBody(
-              children: <Widget>[
-                new Text('复制成功'),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text('确定'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    ).then((val) {
-      print(val);
-    });
+    final snackBar = new SnackBar(content: new Text('复制成功'));
+    Scaffold.of(context).showSnackBar(snackBar);
   }
 
 //  Widget header(BuildContext context) {

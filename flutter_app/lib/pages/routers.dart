@@ -39,6 +39,7 @@ final routes = {
   "load_wallet": (context) => new LoadWallet(),
   "wallet_mnemonic": (context) => new WalletMnemonic(),
   "wallet_check": (context) => new WalletCheck(),
+  "set_network":  (context) => new NetworkPage(),
   "tabs": (context) => new ContainerPage()
 };
 

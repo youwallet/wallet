@@ -3,7 +3,6 @@ import 'package:bip39/bip39.dart' as bip39;
 import 'package:ed25519_hd_key/ed25519_hd_key.dart';
 import "package:hex/hex.dart";
 import 'package:web3dart/credentials.dart';
-import 'package:ed25519_hd_key/ed25519_hd_key.dart';
 //import 'package:shared_preferences/shared_preferences.dart';
 
 //abstract class TokenService {
@@ -37,8 +36,8 @@ class TokenService {
 //    return HEX.encode(master.key);
 //  }
 
-  @override
   static  maskAddress(String address) {
+    print(address);
     return "${address.substring(0, 6)}...${address.substring(address.length - 6, address.length)}";
   }
 
