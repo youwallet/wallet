@@ -16,7 +16,7 @@ class _NewWalletNameState extends State<NewWalletName> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("创建钱包"),
+          title: Text("新建钱包"),
         ),
         body: new Container(
           padding: const EdgeInsets.all(16.0), // 四周填充边距32像素

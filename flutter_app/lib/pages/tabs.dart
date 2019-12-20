@@ -4,6 +4,9 @@ import 'package:youwallet/pages/tabs/tab_wallet.dart'; // 钱包引导页TabExch
 import 'package:youwallet/pages/tabs/tab_exchange.dart'; // 钱包引导页
 import 'package:youwallet/pages/tabs/tab_receive.dart'; // 钱包引导页
 import 'package:youwallet/pages/tabs/tab_transfer.dart'; // 钱包引导页
+import 'package:provider/provider.dart';
+import 'package:youwallet/model/wallet.dart';
+import 'package:youwallet/pages/manage_wallet/wallet_guide.dart'; // 钱包引导页
 
 class _Item {
   String name, activeIcon, normalIcon;
@@ -51,7 +54,7 @@ class _ContainerPageState extends State<ContainerPage> {
   @override
   void initState() {
     super.initState();
-    print('initState _ContainerPageState');
+
     // 将四个tab页面初始化为一个数组pages
     if(pages == null){
       pages = [
@@ -101,30 +104,39 @@ class _ContainerPageState extends State<ContainerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: new Stack(
-        children: [
-          _getPagesWidget(0),
-          _getPagesWidget(1),
-          _getPagesWidget(2),
-          _getPagesWidget(3),
-        ],
-      ),
-      backgroundColor: Color.fromARGB(255, 248, 248, 248),
-      bottomNavigationBar: BottomNavigationBar(
-        items: itemList,
-        onTap: (int index) {
-          print('当前tab索引=> ${index}');
-          setState(() {
-            _selectIndex = index;
-          });
-        },
-        iconSize: 24,  //图标大小
-        currentIndex: _selectIndex,
-        //选中后，底部BottomNavigationBar内容的颜色(选中时，默认为主题色)（仅当type: BottomNavigationBarType.fixed,时生效）
-        fixedColor: Color.fromARGB(255, 0, 188, 96),
-        type: BottomNavigationBarType.fixed,
-      ),
-    );
+    List wallet = Provider.of<Wallet>(context).items;
+    print('lengt =>${wallet.length} ');
+    if (wallet.length > 0) {
+      return Scaffold(
+        body: new Stack(
+          children: [
+            _getPagesWidget(0),
+            _getPagesWidget(1),
+            _getPagesWidget(2),
+            _getPagesWidget(3),
+          ],
+        ),
+        backgroundColor: Color.fromARGB(255, 248, 248, 248),
+        bottomNavigationBar: BottomNavigationBar(
+          items: itemList,
+          onTap: (int index) {
+            print('当前tab索引=> ${index}');
+            setState(() {
+              _selectIndex = index;
+            });
+          },
+          iconSize: 24,
+          //图标大小
+          currentIndex: _selectIndex,
+          //选中后，底部BottomNavigationBar内容的颜色(选中时，默认为主题色)（仅当type: BottomNavigationBarType.fixed,时生效）
+          fixedColor: Color.fromARGB(255, 0, 188, 96),
+          type: BottomNavigationBarType.fixed,
+        ),
+      );
+    } else {
+      return Scaffold(
+        body: new WalletGuide()
+      );
+    }
   }
 }

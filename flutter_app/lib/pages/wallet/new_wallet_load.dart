@@ -16,6 +16,9 @@ import 'package:youwallet/service/service_locator.dart';
 import 'package:youwallet/service/token_service.dart';
 import 'package:youwallet/db/sql_util.dart';
 
+import 'package:provider/provider.dart';
+import 'package:youwallet/model/wallet.dart' as myWallet;
+
 
 
 class LoadWallet extends StatefulWidget {
@@ -282,22 +285,23 @@ class LoadWalletState extends State<LoadWallet> {
 
   // 通过key导入钱包
   void saveWalletByKey() async {
-    String privateKey = this._key.text;
-    EthereumAddress ethereumAddress = await TokenService.getPublicAddress(privateKey);
+
+    EthereumAddress ethereumAddress = await TokenService.getPublicAddress(this._key.text);
     String address = ethereumAddress.toString();
-    print("address => ${address}");
-    String name = "";
-    var sql = SqlUtil.setTable("wallet");
-    String sql_insert ='INSERT INTO wallet(name, privateKey, address) VALUES(?, ?, ?)';
-    List list = [name, privateKey, address];
-    sql.rawInsert(sql_insert, list).then((id) {
-      if (id > 0) {
-        print("钱包保存成功,设置当前钱包，返回首页");
-        afterCreateWallet(address);
-      } else {
-        print("数据添加失败");
-      }
-    });
+
+
+    Map item = {
+      'privateKey': this._key.text,
+      'address': address,
+      'name': '',
+      'mnemonic': ''
+    };
+
+    int id = await Provider.of<myWallet.Wallet>(context).add(item);
+    print('insert into id => ${id}');
+    if (id > 0) {
+      Navigator.pushNamed(context, "tabs");
+    }
   }
 
   void afterCreateWallet(String address) async{

@@ -153,10 +153,10 @@ class Page extends State<TabWallet> {
           )
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        child: new Icon(Icons.add),
-        onPressed: () => Navigator.pushNamed(context, "wallet_guide")
-      ),
+//      floatingActionButton: FloatingActionButton(
+//        child: new Icon(Icons.add),
+//        onPressed: () => Navigator.pushNamed(context, "wallet_guide")
+//      ),
         drawer: Drawer(
           child: ListView(
             padding: EdgeInsets.zero,
@@ -208,7 +208,7 @@ class Page extends State<TabWallet> {
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
         title: const Text('youwallet'),
-        actions: this.appBarActions(),
+//        actions: this.appBarActions(),
     );
   }
 

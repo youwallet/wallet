@@ -72,9 +72,22 @@ class Wallet extends ChangeNotifier {
 
 
   ///  将 [item] 到列表中
-  void add(Map item) {
+  Future<int> add(Map item) async {
     _items.add(item);
-    notifyListeners();
+
+    var sql = SqlUtil.setTable("wallet");
+    String sql_insert ='INSERT INTO wallet(name, mnemonic, privateKey, address) VALUES(?, ?, ?, ?)';
+    List list = [item['name'],item['mnemonic'], item['privateKey'], item['address']];
+    sql.rawInsert(sql_insert, list).then((id) {
+      if (id >0) {
+        notifyListeners();
+        return id;
+      } else {
+        return 0;
+      }
+    });
+
+
   }
 
   /// 删除指定钱包

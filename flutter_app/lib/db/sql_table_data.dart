@@ -10,11 +10,25 @@ class SqlTable{
     rmb TEXT);
     """;
   static final String sql_createTable_wallet = """
-    CREATE TABLE wallet (address
+    CREATE TABLE wallet (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, 
     name TEXT, 
     mnemonic TEXT,
     privateKey TEXT NOT NULL UNIQUE, 
     address TEXT NOT NULL UNIQUE);
+    """;
+
+  // 交易记录
+  static final String sql_createTable_trade = """
+    CREATE TABLE trade (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, 
+    orderType TEXT, 
+    price TEXT,
+    amount TEXT, 
+    token TEXT,
+    baseToken TEXT,
+    txnHash TEXT NOT NULL UNIQUE,
+    createTime TEXT,
+    status TEXT);
     """;
 }

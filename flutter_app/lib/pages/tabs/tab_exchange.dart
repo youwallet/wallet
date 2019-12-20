@@ -337,171 +337,6 @@ class Page extends State {
     });
   }
 
-
-  /*
-  * 获取订单相关hash值
-  */
-  void  getBQODHash() async {
-
-    String functionName = '0xefe331cf';
-    String address = "AB890808775D51e9bF9fa76f40EE5fff124deCE5";
-    // 参数一
-    String trader = '000000000000000000000000' + address; // 钱包的address
-    print(trader);
-    String baseTokenAmount = '0000000000000000000000000000000000000000000000000000000000000100';
-    String quoteTokenAmount= '0000000000000000000000000000000000000000000000000000000000000100';
-    String gasTokenAmount =  '0000000000000000000000000000000000000000000000000000000000000000';
-    String data = '020100005def248f025802580000000000000000000000000000000000000000';
-    String signature = data + data + data;  // 此时还没有signature字段，所以随便填充三个32byte的字段
-
-    // 参数二
-    String baseToken = "0000000000000000000000008F48de31810deaA8bF547587438970EBD2e4be16";
-    String quoteToken= "000000000000000000000000414b26708362B024A28C7Bc309D5C1a8Ac14647E";
-    String relayer =   relayerAddress;
-
-    String post_data = functionName + trader + baseTokenAmount + quoteTokenAmount + gasTokenAmount + data + signature + baseToken + quoteToken + relayer;
-
-    var client = Client();
-    var payload = {
-      "jsonrpc": "2.0",
-      "method": "eth_call",
-      "params": [
-        {
-          "from":"0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364",
-          "to": contractAddress, // 合约地址
-          "data": post_data
-        },
-        "latest"
-      ],
-      "id": DateTime.now().millisecondsSinceEpoch
-    };
-
-    var rsp = await client.post(
-        'https://ropsten.infura.io/',
-        headers:{'Content-Type':'application/json'},
-        body: json.encode(payload)
-    );
-
-    Map result = jsonDecode(rsp.body);
-    print('bq_hash => ${rsp.body}');
-    String  res = result['result'].replaceFirst("0x", ""); // 得到一个64字节的数据
-    print('getBQODHash => ${res}');
-    String bq_hash = res.substring(0,64);
-    String od_hash = res.substring(64);
-    print('od_hash => ${od_hash}');
-    print('bq_hash => ${bq_hash}');
-    print('进入签名');
-    ethSign(od_hash);
-  }
-
-  // 调用web3dart，对od_hash使用私钥进行签名，这一步必须在客户端做
-  void ethSign(String od_hash) async {
-    final key = EthPrivateKey(hexToBytes(privateKey));
-    final signature = await key.sign(hexToBytes(od_hash), chainId: 3);
-    final sign = bytesToHex(signature);
-    final r = sign.substring(0,64);
-    final s = sign.substring(64,128);
-    final v = sign.substring(128);
-    print('r => ${r}');
-    print('s => ${s}');
-    print('v => ${v}');
-    getConfigSignature(v,r,s,'1');
-  }
-
-  /* 获取交易签名数据
- * v: 签名v值
- * r: 签名r值
- * s: 签名s值
- * signMethod: 签名方法, 0为eth.sign, 1为EIP712
- *
- * 返回值：
- * OrderSignature 结构体
- * function getConfigSignature(bytes1 v,  bytes32 r, bytes32 s, uint8 signMethod);
- * */
-  void getConfigSignature(String v,  String r, String s, String signMethod) async {
-
-    String functionHex = "0x0b973ca2";
-    String _v = v + "00000000000000000000000000000000000000000000000000000000000000";
-    String _signMethod = "000000000000000000000000000000000000000000000000000000000000000" +  signMethod; // signMethod: 签名方法, 0为eth.sign, 1为EIP712
-    String post_data = functionHex + _v + r + s + _signMethod;
-
-    var client = Client();
-    var payload = {
-      "jsonrpc": "2.0",
-      "method": "eth_call",
-      "params": [
-        {
-          "from":"0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364",
-          "to": contractAddress, // 合约地址
-          "data": post_data
-        },
-        "latest"
-      ],
-      "id": DateTime.now().millisecondsSinceEpoch
-    };
-
-    var rsp = await client.post(
-        'https://ropsten.infura.io/',
-        headers:{'Content-Type':'application/json'},
-        body: json.encode(payload)
-    );
-
-    print('rsp code => ${rsp.statusCode}');
-    print('rsp body => ${rsp.body}');
-    Map result = jsonDecode(rsp.body);
-    String  res = result['result'].replaceFirst("0x", "");
-
-    takeOrder(res);
-  }
-
-  // 下单
-  void takeOrder(String sign) async{
-    print('开始下单');
-
-
-    String functionName = '0xefe29415';
-
-    // 参数一
-    String trader = '000000000000000000000000AB890808775D51e9bF9fa76f40EE5fff124deCE5'; // 我的钱包的address
-    print(trader);
-    String baseTokenAmount = '0000000000000000000000000000000000000000000000000000000000000100';
-    String quoteTokenAmount= '0000000000000000000000000000000000000000000000000000000000000100';
-    String gasTokenAmount =  '0000000000000000000000000000000000000000000000000000000000000000';
-    String data = '020100005def248f025802580000000000000000000000000000000000000000';  // 卖单
-    String signature = sign;  // 此时还没有signature字段，所以随便填充三个32byte的字段
-
-    // 参数二
-    String baseToken = "0000000000000000000000008F48de31810deaA8bF547587438970EBD2e4be16";
-    String quoteToken= "000000000000000000000000414b26708362B024A28C7Bc309D5C1a8Ac14647E";
-    String relayer =   relayerAddress; // SHT合约地址
-
-    String post_data = functionName + trader + baseTokenAmount + quoteTokenAmount + gasTokenAmount + data + signature + baseToken + quoteToken + relayer;
-
-
-    final client = Web3Client(rpcUrl, Client());
-
-    // 加载私钥，准备加密
-    var credentials = await client.credentialsFromPrivateKey(privateKey);
-
-    var rsp = await client.sendTransaction(
-      credentials,
-      Transaction(
-        to: EthereumAddress.fromHex(faucet),
-        gasPrice: EtherAmount.inWei(BigInt.one),
-        maxGas: 100000,
-        value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
-        data: hexToBytes(post_data)
-      ),
-        chainId: 3
-    );
-
-    await client.dispose();
-    print('rsp code => ${rsp}'); // 返回值0x76a2fc80d8b14f9fa70e3f079509f92aa855acfc1351d444a17c14e4b87e3eaf，这是一个Transaction Hash
-
-  }
-
-
-
   // 构建页面下拉列表
   List<DropdownMenuItem> getListData(tokens){
     List<DropdownMenuItem> items=new List();
@@ -567,7 +402,8 @@ class Page extends State {
     );
   }
 
-  void makeOrder(){
+  /// 下单
+  void makeOrder() async {
     print(this.controllerAmount.text);
     print(this.controllerPrice.text);
     bool isBuy = true;
@@ -576,7 +412,12 @@ class Page extends State {
     } else {
       isBuy = false;
     }
-    Trade.takeOrder('0x1', '0x2', this.controllerAmount.text, this.controllerPrice.text, isBuy);
+    String tokenA = '0x8F48de31810deaA8bF547587438970EBD2e4be16';
+    String tokenB = '0x414b26708362B024A28C7Bc309D5C1a8Ac14647E';
+    Trade trade = new Trade(tokenA, tokenB, this.controllerAmount.text, this.controllerPrice.text, isBuy);
+
+    String hash = await trade.takeOrder();
+    print(hash);
   }
 
 }

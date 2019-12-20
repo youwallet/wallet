@@ -15,11 +15,34 @@ import 'package:youwallet/db/sql_util.dart';
 
 class Trade {
 
-  /// youwalllet的合约地址
+  /// 交易所合约地址
   static final contractAddress= "0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364";
 
   // 收取交易费的账户，测试阶段用SHT的合约账户代替
-  static  String relayerAddress = "0000000000000000000000003d9c6c5a7b2b2744870166eac237bd6e366fa3ef";
+  static final taxAddress = "0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef";
+
+  // 这个定义多大
+  static final gasTokenAmount = "0000000000000000000000000000000000000000000000000000000000000000";
+
+  // Trade内的私有变量
+  String tokenA = '';
+  String tokenB = '';
+  String amount = '1';
+  String price = '';
+  bool isBuy = true;
+  String trader = ""; // 用户钱包地址
+  String configData = ""; // 协议版本号码，是否买单，计算配置信息
+  String privateKey="";
+
+  String rpcUrl = "https://ropsten.infura.io/";
+
+  Trade(String token, String baseToken, String amount, String price, bool isBuy) {
+     this.tokenA = token;
+     this.tokenB = baseToken;
+     this.amount = amount;
+     this.price = price;
+     this.isBuy = isBuy;
+  }
 
 
   static Future<String> getConfigData(bool isBuy) async{
@@ -67,70 +90,54 @@ class Trade {
   }
 
   // 下单，返回订单的hash
-  static Future<String> takeOrder(String token, String baseToken, String amount, String price, bool isBuy) async{
+   Future<String> takeOrder() async{
 
 
     String functionName = '0xefe29415';
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    // 用户钱包地址
-    String trader =  formatParam(prefs.getString("currentWallet"));
-
-    // 购买的token 数量
-    String baseTokenAmount = formatParam(amount);
-
-    // 剩下一个价格参数
-    String quoteTokenAmount= formatParam(price);
-
-    // 花费的gas
-    String gasTokenAmount =  '0000000000000000000000000000000000000000000000000000000000000000';
+    this.trader =  formatParam(prefs.getString("currentWallet"));
 
 
-    String data = await getConfigData(isBuy);
+    this.configData = await getConfigData(this.isBuy);
+    String signature = await getConfigSignature();
 
-    String signature = await getConfigSignature(token,baseToken,amount,price,isBuy);
-    print('signature => ${signature}');
-    // 参数二
-//    String baseToken = "0000000000000000000000008F48de31810deaA8bF547587438970EBD2e4be16";
-//    String quoteToken= "000000000000000000000000414b26708362B024A28C7Bc309D5C1a8Ac14647E";
-//    String relayer =   relayerAddress; // SHT合约地址
-//
-//    String post_data = functionName + trader + baseTokenAmount + quoteTokenAmount + gasTokenAmount + data + signature + baseToken + quoteToken + relayer;
 
-//
-//    final client = Web3Client(rpcUrl, Client());
-//
-//    // 加载私钥，准备加密
-//    var credentials = await client.credentialsFromPrivateKey(privateKey);
-//
-//    var rsp = await client.sendTransaction(
-//        credentials,
-//        Transaction(
-//            to: EthereumAddress.fromHex(faucet),
-//            gasPrice: EtherAmount.inWei(BigInt.one),
-//            maxGas: 100000,
-//            value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
-//            data: hexToBytes(post_data)
-//        ),
-//        chainId: 3
-//    );
-//
-//    await client.dispose();
+    String post_data = functionName + trader + formatParam(this.amount) + formatParam(this.price) + gasTokenAmount;
+    post_data = post_data + this.configData + signature + formatParam(this.tokenA) + formatParam(this.tokenB) + formatParam(taxAddress);
+
+
+    final client = Web3Client(rpcUrl, Client());
+    var credentials = await client.credentialsFromPrivateKey(privateKey);
+    var rsp = await client.sendTransaction(
+        credentials,
+        Transaction(
+            to: EthereumAddress.fromHex(contractAddress),
+            gasPrice: EtherAmount.inWei(BigInt.one),
+            maxGas: 100000,
+            value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
+            data: hexToBytes(post_data)
+        ),
+        chainId: 3
+    );
+
+    await client.dispose();
     // 返回值0x76a2fc80d8b14f9fa70e3f079509f92aa855acfc1351d444a17c14e4b87e3eaf，这是一个Transaction Hash
-//    return rsp;
-     return 'takeOrder返回';
+    return rsp;
+
   }
 
-  static Future<String> getConfigSignature(String token, String baseToken, String amount, String price, bool isBuy) async{
-    Map BQODHash = await getBQODHash(token,baseToken,amount,price,isBuy);
+  // 根据 RVS计算订单的签名
+  Future<String> getConfigSignature() async{
+    Map BQODHash = await getBQODHash();
     Map sign = await ethSign(BQODHash['od_hash']);
 
     String functionHex = "0x0b973ca2";
     String _v = sign['v'] + "00000000000000000000000000000000000000000000000000000000000000";
     // signMethod: 签名方法, 0为eth.sign, 1为EIP712
-    String _signMethod = "000000000000000000000000000000000000000000000000000000000000000" + '1';
-    String post_data = functionHex + _v + sign['r'] + sign['s'] + _signMethod;
+    // 开发阶段默认为1
+//    String _signMethod = "000000000000000000000000000000000000000000000000000000000000000" + '1';
+    String post_data = functionHex + _v + sign['r'] + sign['s'] + formatParam('1');
 
     var client = Client();
     var payload = {
@@ -138,7 +145,7 @@ class Trade {
       "method": "eth_call",
       "params": [
         {
-          "from":"0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364",
+          "from": contractAddress,
           "to": contractAddress, // 合约地址
           "data": post_data
         },
@@ -156,12 +163,12 @@ class Trade {
     print('rsp code => ${rsp.statusCode}');
     print('rsp body => ${rsp.body}');
     Map result = jsonDecode(rsp.body);
-    print(result);
+    print("getConfigSignature =》${result}");
     return result['result'].replaceFirst("0x", "");
   }
 
   // 调用web3dart，对od_hash使用私钥进行签名，这一步必须在客户端做
-  static  Future<Map> ethSign(String od_hash) async {
+  Future<Map> ethSign(String od_hash) async {
     String privateKey = await loadPrivateKey();
     final key = EthPrivateKey(hexToBytes(privateKey));
     final signature = await key.sign(hexToBytes(od_hash), chainId: 3);
@@ -179,13 +186,14 @@ class Trade {
     };
   }
 
-  static Future<String> loadPrivateKey() async{
+  Future<String> loadPrivateKey() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String address =  prefs.getString("currentWallet");
     var sql = SqlUtil.setTable("wallet");
     var map = {'address': address};
     List json = await sql.query(conditions: map);
-    return json[0]['privateKey'];
+    this.privateKey = json[0]['privateKey'];
+    return this.privateKey;
   }
 
   /*
@@ -193,35 +201,14 @@ class Trade {
   * String bq_hash = res.substring(0,64);
   * String od_hash = res.substring(64);
   */
-  static Future<Map> getBQODHash(String token, String baseToken, String amount, String price, bool isBuy) async {
+   Future<Map> getBQODHash() async {
 
     String functionName = '0xefe331cf';
 
-    // 用户钱包地址
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String trader =  formatParam(prefs.getString("currentWallet"));
-
-    // 购买的token 数量
-    String baseTokenAmount = formatParam(amount);
-
-    // 剩下一个价格参数
-    String quoteTokenAmount= formatParam(price);
-
-    // 花费的gas
-    String gasTokenAmount =  '0000000000000000000000000000000000000000000000000000000000000000';
+    String signature = this.configData + this.configData + this.configData;  // 此时还没有signature字段，所以随便填充三个32byte的字段
 
 
-    String data = await getConfigData(isBuy);
-
-    String signature = data + data + data;  // 此时还没有signature字段，所以随便填充三个32byte的字段
-
-    // 参数二
-    token = formatParam(token);
-    baseToken = formatParam(baseToken);
-
-    String relayerAddress = "0000000000000000000000003d9c6c5a7b2b2744870166eac237bd6e366fa3ef";
-
-    String post_data = functionName + trader + baseTokenAmount + quoteTokenAmount + gasTokenAmount + data + signature + token + baseToken + relayerAddress;
+    String post_data = functionName + this.trader + formatParam(this.amount) + formatParam(this.price) + gasTokenAmount + this.configData + signature + formatParam(this.tokenA) + formatParam(this.tokenB) + formatParam(taxAddress);
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",
