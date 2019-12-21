@@ -262,25 +262,24 @@ class LoadWalletState extends State<LoadWallet> {
   }
 
   /**
+   *  通过助记词导入钱包
    */
   void saveWallet() async {
-    print("用户输入=》${this._name.text}");
+
     String privateKey = TokenService.getPrivateKey(this._name.text);
+
     EthereumAddress ethereumAddress = await TokenService.getPublicAddress(privateKey);
     String address = ethereumAddress.toString();
-    print("address => ${address}");
-    String name = "";
-    var sql = SqlUtil.setTable("wallet");
-    String sql_insert ='INSERT INTO wallet(name, privateKey, address) VALUES(?, ?, ?)';
-    List list = [name, privateKey, address];
-    sql.rawInsert(sql_insert, list).then((id) {
-      if (id > 0) {
-        print("钱包保存成功,设置当前钱包，返回首页");
-        afterCreateWallet(address);
-      } else {
-        print("数据添加失败");
-      }
-    });
+
+
+    Map item = {
+      'privateKey': privateKey,
+      'address': address,
+      'name': '',
+      'mnemonic': this._name.text
+    };
+
+    this.doSave(item);
   }
 
   // 通过key导入钱包
@@ -297,17 +296,18 @@ class LoadWalletState extends State<LoadWallet> {
       'mnemonic': ''
     };
 
+    this.doSave(item);
+  }
+
+  void doSave(Map item) async {
     int id = await Provider.of<myWallet.Wallet>(context).add(item);
     print('insert into id => ${id}');
     if (id > 0) {
       Navigator.pushNamed(context, "tabs");
+    } else {
+      final snackBar = new SnackBar(content: new Text('钱包新建失败'));
+      Scaffold.of(context).showSnackBar(snackBar);
     }
-  }
-
-  void afterCreateWallet(String address) async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString("current_wallet_address", address);
-    Navigator.pushNamed(context, "tabs");
   }
 
 }

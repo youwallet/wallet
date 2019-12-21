@@ -17,6 +17,7 @@ import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
 import 'package:youwallet/model/wallet.dart' as walletModel;
 import 'package:youwallet/db/sql_util.dart';
+import 'package:youwallet/db/provider.dart';
 
 class TabWallet extends StatefulWidget {
 
@@ -196,6 +197,16 @@ class Page extends State<TabWallet> {
                   leading: Icon(Icons.adb),
                   onTap: () {
                     Navigator.pushNamed(context, "debug_page");
+                  },
+                ),
+                ListTile(
+                  title: Text('清空缓存'),
+                  leading: Icon(Icons.cached),
+                  onTap: () async {
+                    final provider = new ProviderSql();
+                    await provider.clearCache();
+                    final snackBar = new SnackBar(content: new Text('数据清除成功，关闭程序重新进入'));
+                    Scaffold.of(context).showSnackBar(snackBar);
                   },
                 ),
             ],

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart'; // 官方组件库
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:provider/provider.dart';
+import 'package:youwallet/model/network.dart';
 
 
 
@@ -14,52 +16,44 @@ class NetworkPage extends StatefulWidget {
 
 class _NetworkPageState extends State<NetworkPage> {
 
-  String _newValue = 'Mainnet';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
           title: Text("网络配置"),
         ),
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              RadioListTile<String>(
-                value: 'mainnet',
-                title: Text('Mainnet'),
-                groupValue: _newValue,
-                onChanged: (value) {
-                  setNetWork(value);
-                },
-              ),
-              RadioListTile<String>(
-                value: 'ropsten',
-                title: Text('Ropsten'),
-                groupValue: _newValue,
-                onChanged: (value) {
-                  setNetWork(value);
-                },
-              ),
-            ],
+          child:  Consumer<Network>(
+            builder: (context, network, child) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  RadioListTile<String>(
+                    value: 'mainnet',
+                    title: Text('Mainnet'),
+                    groupValue: network.network,
+                    onChanged: (value) {
+                      setNetWork(value);
+                    },
+                  ),
+                  RadioListTile<String>(
+                    value: 'ropsten',
+                    title: Text('Ropsten'),
+                    groupValue: network.network,
+                    onChanged: (value) {
+                      setNetWork(value);
+                    },
+                  ),
+                ],
+              );
+            },
           ),
         )
     );
   }
 
   void setNetWork(name) async{
-    setState(() {
-      _newValue = name;
-    });
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString("network", name);
-    print(prefs.getString('network'));
+    Provider.of<Network>(context).changeNetwork(name);
   }
 
-  getNetWork() async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('network');
-  }
 }

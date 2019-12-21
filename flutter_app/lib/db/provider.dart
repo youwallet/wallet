@@ -71,4 +71,20 @@ class ProviderSql {
       print("Opening existing database");
     }
   }
+
+  // 删除数据库
+  Future clearCache() async {
+    //Get a location using getDatabasesPath
+    String databasesPath = await getDatabasesPath();
+    String path = join(databasesPath, 'wallet.db');
+    print(path);
+    try {
+      db = await openDatabase(path);
+    } catch (e) {
+      print("Error $e");
+    }
+
+    await deleteDatabase(path);
+  }
+
 }

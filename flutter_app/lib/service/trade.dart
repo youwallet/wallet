@@ -114,7 +114,7 @@ class Trade {
         Transaction(
             to: EthereumAddress.fromHex(contractAddress),
             gasPrice: EtherAmount.inWei(BigInt.one),
-            maxGas: 100000,
+            maxGas: 7000000,
             value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
             data: hexToBytes(post_data)
         ),

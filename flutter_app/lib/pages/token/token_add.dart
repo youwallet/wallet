@@ -118,7 +118,7 @@ class Page extends State<AddWallet> {
   }
 
   void saveToken(Map token) {
-    Provider.of<Token>(context).add(token);
+//    Provider.of<Token>(context).add(token);
     final snackBar = new SnackBar(content: new Text('添加成功token'));
     Scaffold.of(context).showSnackBar(snackBar);
   }

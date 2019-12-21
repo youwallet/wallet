@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 // 引入model
 import 'package:youwallet/model/token.dart';
 import 'package:youwallet/model/wallet.dart';
+import 'package:youwallet/model/network.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +30,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider<Token>(create: (_) => Token()),
         ChangeNotifierProvider<Wallet>(create: (_) => Wallet()),
+        ChangeNotifierProvider<Network>(create: (_) => Network())
       ],
       child: MyApp(),
     ),

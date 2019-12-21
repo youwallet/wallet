@@ -146,13 +146,11 @@ class TokenService {
       return token['error'] = result['error'];
     } else {
       String res = result['result'];
-      print("name => ${res}");
       String name = res.replaceFirst('0x', '');
       String nameString = '';
       for(var i = 0; i < name.length; i = i + 2) {
         String subStr = name.substring(i, i+2);
         if (subStr != "00" && subStr != "20" && subStr != "03") {
-          print(name.substring(i, i+2));
           String str = String.fromCharCode(int.parse(name.substring(i, i+2), radix: 16));
           nameString = nameString + str;
         }
@@ -161,9 +159,43 @@ class TokenService {
       token['address'] = address;
       token['name'] = nameString;
       token['balance'] = await getBalance(address);
+      await getTokenBalance(address);
       return token;
     }
   }
+
+  // https://yq.aliyun.com/articles/600706/
+  //
+  static Future<String> getTokenBalance(String address) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String myAddress = await prefs.getString("currentWallet");
+    var client = Client();
+    var payload = {
+      "jsonrpc": "2.0",
+      "method": "eth_call",
+      "params":  [{
+        "to": address,
+         "data": "0x70a08231000000000000000000000000" + myAddress.replaceFirst('0x', '')
+      },"latest"],
+
+      "id": DateTime.now().millisecondsSinceEpoch
+    };
+
+    print(payload);
+    String rpcUrl = await getNetWork();
+
+    var rsp = await client.post(
+        rpcUrl,
+        headers:{'Content-Type':'application/json'},
+        body: json.encode(payload)
+    );
+
+    Map body = jsonDecode(rsp.body);
+    print(body);
+//    int b = int.parse(body['result'].replaceFirst('0x', ''), radix: 16);
+    print("banance of => ${body['result']}");
+  }
+
 
   /// h获取token余额
 

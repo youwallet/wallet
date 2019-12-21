@@ -35,6 +35,7 @@ class Wallet extends ChangeNotifier {
   Future<List> _fetchWallet() async {
     var sql = SqlUtil.setTable("wallet");
     sql.get().then((res) {
+      print(res);
       res.forEach((f){
         this._items.add(f);
       });
@@ -78,16 +79,10 @@ class Wallet extends ChangeNotifier {
     var sql = SqlUtil.setTable("wallet");
     String sql_insert ='INSERT INTO wallet(name, mnemonic, privateKey, address) VALUES(?, ?, ?, ?)';
     List list = [item['name'],item['mnemonic'], item['privateKey'], item['address']];
-    sql.rawInsert(sql_insert, list).then((id) {
-      if (id >0) {
-        notifyListeners();
-        return id;
-      } else {
-        return 0;
-      }
-    });
-
-
+    int id = await sql.rawInsert(sql_insert, list);
+    print("rawInsert => ${id}");
+    notifyListeners();
+    return id;
   }
 
   /// 删除指定钱包
