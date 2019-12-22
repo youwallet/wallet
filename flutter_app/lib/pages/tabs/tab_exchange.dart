@@ -282,7 +282,7 @@ class Page extends State {
                     border: new Border.all(width: 1.0, color: Colors.black12),
                     color: Colors.black12,
                   ),
-                  child: Text('TokenD')
+                  child: Text('BTD')
                 ),
                 buildRightWidget()
               ],

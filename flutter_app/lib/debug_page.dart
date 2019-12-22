@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 //import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:youwallet/db/provider.dart';
 
 class DebugPage extends StatefulWidget {
   DebugPage() : super();
@@ -95,21 +96,12 @@ class _DebugPageState extends State<DebugPage> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text("调试页面"),
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -134,6 +126,14 @@ class _DebugPageState extends State<DebugPage> {
               child: Text("指纹识别"),
               textColor: Colors.blue,
               onPressed: () {_checkBiometrics();},
+            ),
+            FlatButton(
+              child: Text("删除交易记录数据库"),
+              textColor: Colors.blue,
+              onPressed: () async {
+                final provider = new ProviderSql();
+                await provider.clearTrade();
+              },
             ),
           ],
         ),

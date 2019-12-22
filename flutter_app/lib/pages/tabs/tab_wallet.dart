@@ -101,41 +101,6 @@ class Page extends State<TabWallet> {
   ////  }
 
 
-
-  /**
-   * 每次页面show，触发首页token更新函数
-   */
-  void getWallet() async {
-    final db = await getDataBase('wallet.db');
-    List res = [];
-    db.rawQuery('SELECT * FROM wallet').then((List<Map> lists) {
-      print("wallet =>>> ${lists}");
-      setState(() {
-        this.wallets = lists;
-      });
-    });
-  }
-
-
-  /**
-   * 初始化数据库存储路径
-   */
-  Future<Database> getDataBase(String dbName) async {
-    //获取应用文件目录类似于Ios的NSDocumentDirectory和Android上的 AppData目录
-    final fileDirectory = await getApplicationDocumentsDirectory();
-
-    //获取存储路径
-    final dbPath = fileDirectory.path;
-
-    //构建数据库对象
-    Database database = await openDatabase(dbPath + "/" + dbName, version: 1,
-        onCreate: (Database db, int version) async {
-          await db.execute("CREATE TABLE token (id INTEGER, address TEXT PRIMARY KEY, name TEXT, balance TEXT, rmb TEXT)");
-        });
-
-    return database;
-  }
-
   // 构建页面
   Widget layout(BuildContext context) {
     return new Scaffold(

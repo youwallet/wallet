@@ -87,4 +87,18 @@ class ProviderSql {
     await deleteDatabase(path);
   }
 
+  // 删除交易数据表，然后新建交易数据表
+  Future clearTrade() async {
+    String databasesPath = await getDatabasesPath();
+    String path = join(databasesPath, 'wallet.db');
+    print(path);
+    try {
+      db = await openDatabase(path);
+    } catch (e) {
+      print("Error $e");
+    }
+
+    await db.delete('trade');
+    await db.execute(SqlTable.sql_createTable_trade);
+  }
 }

@@ -38,6 +38,7 @@ class Wallet extends ChangeNotifier {
       print(res);
       res.forEach((f){
         this._items.add(f);
+
       });
       setWallet();
     });
@@ -53,9 +54,10 @@ class Wallet extends ChangeNotifier {
 
     this._items.forEach((f){
       if (f['address'] == address) {
-        this.currentWalletName = f['name']??'--';
+        this.currentWalletName = f['name'].length > 0 ? f['name']:'Account${f['id'].toString()}';
       }
     });
+    notifyListeners();
   }
 
   // 切换钱包

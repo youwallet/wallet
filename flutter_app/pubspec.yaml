@@ -38,6 +38,8 @@ dependencies:
   event_bus: ^1.1.0
   ed25519_hd_key: ^1.0.1
   get_it: ^3.0.3
+  qr_flutter: ^3.1.0
+  common_utils: ^1.1.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -63,6 +65,7 @@ flutter:
     - assets/images/home.png
     - assets/images/home-active.png
     - assets/images/icon.png
+    - TempMatch.json
     - images/new_wallet.png
     - images/fingerprint.png
     - images/tab_wallet_active.png

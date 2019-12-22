@@ -83,7 +83,8 @@ class Page extends State<ManageWallet> {
 
 
   Widget walletCard(item) {
-
+    print(item['name']);
+    String name = item['name'].length > 0 ? item['name']:'Account${item['id'].toString()}';
     return new Card(
         color: Colors.white, //背景色
         child:  GestureDetector(
@@ -112,7 +113,7 @@ class Page extends State<ManageWallet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         new Text(
-                          item['name']??'--',
+                          name,
                           style: new TextStyle(fontSize: 32.0, color: Colors.black),
                         ),
                         new Text(item['address']),

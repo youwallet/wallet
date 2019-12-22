@@ -10,12 +10,8 @@ class transferList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(this.arr);
     return new Container(
-        padding: const EdgeInsets.only(top: 12.0,bottom: 12.0), // 四周填充边距32像素
-        decoration: new BoxDecoration(
-            border: Border(bottom: BorderSide(color: Colors.black12,width: 1.0))
-        ),
+        padding: const EdgeInsets.only(bottom: 12.0), // 四周填充边距32像素
         child: new Column(
           children: this.arr.map((item) => buildItem(item, context)).toList()
         )
@@ -25,40 +21,56 @@ class transferList extends StatelessWidget {
 
   Widget buildItem(item, context) {
     String date = DateUtil.formatDateMs( int.parse( item['createTime']), format: DataFormats.full);
-    return new Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        new Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            new Text('${item['orderType']}-fromtoken'),
-            new Text(
-                '+0.123 token',
-                style: new TextStyle(
-                    color: Colors.lightBlue
-                )
-            )
-          ],
+    double singlePrice = int.parse(item['price']) / int.parse(item['amount']);
+    return new Container(
+        padding: const EdgeInsets.all(10.0), // 四周填充边距32像素
+        decoration: new BoxDecoration(
+           border: Border(bottom: BorderSide(color: Colors.black26,width: 1.0)),
         ),
-        new Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            new Text(
-                date,
-                style: new TextStyle(
-                    color: Colors.black38
-                )
-            ),
-            new Text(
-                '转账中',
-                style: new TextStyle(
-                    color: Colors.deepOrange
-                )
-            )
-          ],
-        ),
-      ],
+        child: new Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          new Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              new Row(
+                children: <Widget>[
+                  new Text(
+                      '${item['orderType']}',
+                      style: new TextStyle(
+                          color: item['orderType']== '买入' ? Colors.green : Colors.deepOrange
+                      )
+                  ),
+                  new Text('   ${date}'),
+                ],
+              ),
+              new Text(
+                  '转账中',
+                  style: new TextStyle(
+                      color: Colors.deepOrange
+                  )
+              )
+            ],
+          ),
+          new Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              new Text(
+                  '${item['price']} (BTD)',
+              ),
+              new Text(
+                  '${item['amount']}/${singlePrice}(BTD)',
+                  style: new TextStyle(
+                      color: Colors.lightBlue
+                  )
+              )
+            ],
+          ),
+
+        ],
+      )
     );
+
   }
 
 }
