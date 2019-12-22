@@ -36,11 +36,15 @@ class Trade {
 
   String rpcUrl = "https://ropsten.infura.io/";
 
+  String txnHash = ""; // 下单成功会返回txnHash
+
   Trade(String token, String baseToken, String amount, String price, bool isBuy) {
      this.tokenA = token;
      this.tokenB = baseToken;
      this.amount = amount;
-     this.price = price;
+
+     //需要换一个名字
+     this.price = (int.parse(amount) * int.parse(price)).toString();
      this.isBuy = isBuy;
   }
 
@@ -120,11 +124,11 @@ class Trade {
         ),
         chainId: 3
     );
-
     await client.dispose();
     // 返回值0x76a2fc80d8b14f9fa70e3f079509f92aa855acfc1351d444a17c14e4b87e3eaf，这是一个Transaction Hash
-    return rsp;
-
+    this.txnHash = rsp;
+    await this.saveTrader();
+    return this.txnHash;
   }
 
   // 根据 RVS计算订单的签名
@@ -160,10 +164,8 @@ class Trade {
         body: json.encode(payload)
     );
 
-    print('rsp code => ${rsp.statusCode}');
     print('rsp body => ${rsp.body}');
     Map result = jsonDecode(rsp.body);
-    print("getConfigSignature =》${result}");
     return result['result'].replaceFirst("0x", "");
   }
 
@@ -238,5 +240,39 @@ class Trade {
       'od_hash': od_hash,
       'bq_hash': bq_hash
     };
+  }
+
+  /// 保存一个交易
+  ///    CREATE TABLE trade (
+  //    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+  //    orderType TEXT,
+  //    price TEXT,
+  //    amount TEXT,
+  //    token TEXT,
+  //    baseToken TEXT,
+  //    txnHash TEXT NOT NULL UNIQUE,
+  //    createTime TEXT,
+  //    status TEXT);
+  //    """;
+  Future<void> saveTrader() async {
+    var sql = SqlUtil.setTable("trade");
+    String sql_insert ='INSERT INTO trade(orderType, price, amount, token, baseToken, txnHash, createtime) VALUES(?, ?, ?, ?,?,?,?)';
+    String orderType = '';
+    if (this.isBuy) {
+      orderType = '买入';
+    } else {
+      orderType = '卖出';
+    }
+    List list = [orderType,this.price, this.amount, this.tokenA,this.tokenB,this.txnHash, DateTime.now().millisecondsSinceEpoch];
+    int id = await sql.rawInsert(sql_insert, list);
+    print("db trade id => ${id}");
+    return id;
+  }
+
+  /// 获取当前交易列表
+  static Future<List> getTraderList() async {
+    var sql = SqlUtil.setTable("trade");
+    List list = await sql.get();
+    return list;
   }
 }

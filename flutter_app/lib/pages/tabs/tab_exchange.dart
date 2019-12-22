@@ -21,6 +21,7 @@ import 'package:event_bus/event_bus.dart';
 import 'package:youwallet/bus.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
+import 'package:youwallet/model/network.dart';
 import 'package:youwallet/service/trade.dart';
 
 class TabExchange extends StatefulWidget {
@@ -39,6 +40,8 @@ class Page extends State {
   final controllerAmount = TextEditingController();
   final controllerPrice = TextEditingController();
 
+  List trades = [];
+
 
   // 输入框右侧显示的token提示
   String suffixText = "";
@@ -48,6 +51,7 @@ class Page extends State {
   @override
   void initState() {
     super.initState();
+    this.getTraderList();
 //    this._getBaseToken();
   }
 
@@ -95,7 +99,7 @@ class Page extends State {
               margin: const EdgeInsets.only(top: 16.0, bottom: 16.0),
               child: null,
             ),
-            transferList()
+            transferList(arr: this.trades)
           ],
         )
       ),
@@ -295,7 +299,6 @@ class Page extends State {
     return new Column(
       children: <Widget>[
 
-
       ],
     );
   }
@@ -407,6 +410,33 @@ class Page extends State {
   void makeOrder() async {
     print(this.controllerAmount.text);
     print(this.controllerPrice.text);
+    print(Provider.of<Network>(context).network);
+    this.getTraderList();
+    if (Provider.of<Network>(context).network != 'ropsten') {
+      final snackBar = new SnackBar(content: new Text('请切换到ropsten网络'));
+      Scaffold.of(context).showSnackBar(snackBar);
+      return ;
+    }
+    print(this.value);
+    if (this.value == null) {
+      final snackBar = new SnackBar(content: new Text('请选择token'));
+      Scaffold.of(context).showSnackBar(snackBar);
+      return ;
+    }
+
+
+    if (this.controllerAmount.text.length == 0) {
+      final snackBar = new SnackBar(content: new Text('请输入数量'));
+      Scaffold.of(context).showSnackBar(snackBar);
+      return ;
+    }
+
+    if (this.controllerPrice.text.length == 0) {
+      final snackBar = new SnackBar(content: new Text('请输入价格'));
+      Scaffold.of(context).showSnackBar(snackBar);
+      return ;
+    }
+
     bool isBuy = true;
     if (this._btnText == '买入') {
       isBuy = true;
@@ -414,15 +444,29 @@ class Page extends State {
       isBuy = false;
     }
     String tokenA = this.value['address'];
+
+    // basetoken 暂时固定
     String tokenD = "0x42ABeB85Edf30e470601Ef47B55B9FF1bF3dcABa";
 
-    int price = int.parse(this.controllerAmount.text) * int.parse(this.controllerPrice.text);
-
-    Trade trade = new Trade(tokenA, tokenD, this.controllerAmount.text, price.toString(), isBuy);
+    Trade trade = new Trade(tokenA, tokenD, this.controllerAmount.text, this.controllerPrice.text, isBuy);
 
     String hash = await trade.takeOrder();
     print(hash);
+    if (hash.length > 0) {
+      this.getTraderList();
+    }
   }
+
+  // 获取订单列表
+   void getTraderList() async {
+     List list = await Trade.getTraderList();
+     setState(() {
+       this.trades = list;
+     });
+     print(list);
+   }
+
+
 
   void _getBaseToken() async {
     await TokenService.getBaseToken();

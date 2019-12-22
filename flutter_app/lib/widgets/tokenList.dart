@@ -3,6 +3,7 @@ import 'package:youwallet/service/token_service.dart' ;
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
 
+
 // 类的名字需要大写字母开头
 class tokenList extends StatelessWidget {
 
