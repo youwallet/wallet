@@ -7,7 +7,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 import 'package:web3dart/web3dart.dart';
+import 'dart:io';
+import 'package:path/path.dart' show join, dirname;
 import 'package:youwallet/util/eth_amount_formatter.dart' ;
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart';
 
 //abstract class TokenService {
 //  String generateMnemonic();
@@ -23,7 +27,8 @@ class TokenService {
 //  IConfigurationService _configService;
 //  AddressService(this._configService);
 
-
+  /// 交易所合约地址
+  static final contractAddress= "0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364";
 
   // 获取助记词
   static String generateMnemonic() {
@@ -158,8 +163,16 @@ class TokenService {
 
       token['address'] = address;
       token['name'] = nameString;
-      token['balance'] = await getBalance(address);
-      await getTokenBalance(address);
+      token['balance'] = await getTokenBalance(address);
+      token['rmb'] = '';
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      token['network'] = await prefs.getString("network");
+      print(token);
+//      await getTokenBalance(address);
+//      int decimals = await getDecimals(address);
+//      await getTokenBalanceByWeb3(address);
+//      print("decimals => ${decimals}");
       return token;
     }
   }
@@ -181,7 +194,97 @@ class TokenService {
       "id": DateTime.now().millisecondsSinceEpoch
     };
 
-    print(payload);
+    String rpcUrl = await getNetWork();
+
+    var rsp = await client.post(
+        rpcUrl,
+        headers:{'Content-Type':'application/json'},
+        body: json.encode(payload)
+    );
+
+    Map body = jsonDecode(rsp.body);
+//    print(body);
+    String balance = body['result'].replaceFirst('0x', '');
+    String balanceFilter = "";
+    int i = 0;
+    while(balance[i] == '0' && i<balance.length - 1) {
+      balanceFilter = balance.substring(i + 1);
+      i++;
+    }
+    return balanceFilter;
+  }
+
+  /// 获取代币的小数位数
+  static Future<int> getDecimals(String address) async {
+
+    var client = Client();
+    var payload = {
+    "jsonrpc": "2.0",
+    "method": "eth_call",
+    "params": [{
+      "to": address,
+      "data": "0x313ce567"
+    },"latest"],
+    "id": DateTime.now().millisecondsSinceEpoch
+    };
+
+    String rpcUrl = await getNetWork();
+
+    var rsp = await client.post(
+      rpcUrl,
+      headers:{'Content-Type':'application/json'},
+      body: json.encode(payload)
+    );
+
+    Map body = jsonDecode(rsp.body);
+    return int.parse(body['result'].replaceFirst("0x",''), radix: 16);
+  }
+
+
+  /// 通过web3dart获取代币余额
+  static Future<void> getTokenBalanceByWeb3(String address) async {
+    String rpcUrl = await getNetWork();
+    final client = Web3Client(rpcUrl, Client(), enableBackgroundIsolate: true);
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String myAddress = await prefs.getString("currentWallet");
+
+    final EthereumAddress contractAddr =
+    EthereumAddress.fromHex(address);
+
+//    var appDocDir = await rootBundle.loadString('assets/TempMatch.json');
+//
+//    print(appDocDir);
+
+
+    final abiCode = await rootBundle.loadString('assets/TempMatch.json');
+
+    final contract =
+    DeployedContract(ContractAbi.fromJson(abiCode, 'TempMatch'), contractAddr);
+
+    final balanceFunction = contract.function('getBalance');
+
+
+    final balance = await client.call(
+        contract: contract, function: balanceFunction, params: [myAddress]);
+    print('We have ${balance.first} MetaCoins');
+
+  }
+
+
+  static Future<void> getBaseToken() async {
+
+    var client = Client();
+    var payload = {
+      "jsonrpc": "2.0",
+      "method": "eth_call",
+      "params": [{
+        "to": contractAddress,
+        "data": "0x1214dd58"
+      },"latest"],
+      "id": DateTime.now().millisecondsSinceEpoch
+    };
+
     String rpcUrl = await getNetWork();
 
     var rsp = await client.post(
@@ -192,12 +295,6 @@ class TokenService {
 
     Map body = jsonDecode(rsp.body);
     print(body);
-//    int b = int.parse(body['result'].replaceFirst('0x', ''), radix: 16);
-    print("banance of => ${body['result']}");
   }
-
-
-  /// h获取token余额
-
 
 }

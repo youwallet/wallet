@@ -117,10 +117,11 @@ class Page extends State<AddWallet> {
     return new tokenList(arr: arr);
   }
 
-  void saveToken(Map token) {
-//    Provider.of<Token>(context).add(token);
-    final snackBar = new SnackBar(content: new Text('添加成功token'));
-    Scaffold.of(context).showSnackBar(snackBar);
+  void saveToken(Map token) async {
+    int id = await Provider.of<Token>(context).add(token);
+    print(id);
+//    final snackBar = new SnackBar(content: new Text('添加成功token'));
+//    Scaffold.of(context).showSnackBar(snackBar);
   }
 
 }

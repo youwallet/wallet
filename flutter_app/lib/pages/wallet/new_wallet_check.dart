@@ -5,6 +5,8 @@ import 'package:youwallet/service/token_service.dart';
 import 'package:youwallet/db/sql_util.dart';
 import 'package:web3dart/credentials.dart';
 import 'package:youwallet/widgets/loadingDialog.dart';
+import 'package:provider/provider.dart';
+import 'package:youwallet/model/wallet.dart' as myWallet;
 
 class WalletCheck extends StatefulWidget {
   TokenService _tokenService;
@@ -129,28 +131,20 @@ class Page extends State<WalletCheck> {
     );
     if (this._name.text == randomMnemonic) {
       print("助记词确认ok，生成钱包，回到首页");
-      final privateKey = TokenService.getPrivateKey(randomMnemonic);
-      String  name = "test";
-      // todo 抽离成一个公共方法
-      final private = EthPrivateKey.fromHex(privateKey);
-      print("private=>${private}");
-      EthereumAddress ethereumAddress = await private.extractAddress();
-      String address = ethereumAddress.toString();
-      print("address=>${address}");
-//      final private = EthPrivateKey.fromHex(privateKey);
-//      final address = await private.extractAddress();
+      String privateKey = TokenService.getPrivateKey(this._name.text);
 
-      var sql = SqlUtil.setTable("wallet");
-      String sql_insert ='INSERT INTO wallet(name, privateKey, address) VALUES(?, ?, ?)';
-      List list = [name, privateKey, address];
-      sql.rawInsert(sql_insert, list).then((id) {
-          if (id > 0) {
-            print("钱包保存成功,设置当前钱包，返回首页");
-            afterCreateWallet(address);
-          } else {
-            print("数据添加失败");
-          }
-      });
+      EthereumAddress ethereumAddress = await TokenService.getPublicAddress(privateKey);
+      String address = ethereumAddress.toString();
+      Map obj = {
+        'privateKey': privateKey,
+        'address': address,
+        'name': '',
+        'mnemonic': randomMnemonic
+      };
+      int id = await Provider.of<myWallet.Wallet>(context).add(obj);
+      print('insert into id => ${id}');
+
+      Navigator.pushNamed(context, "tabs");
     } else {
       Navigator.pop(context);
       if (this.randomMnemonic.length == 0) {

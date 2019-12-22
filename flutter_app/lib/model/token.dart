@@ -58,12 +58,12 @@ class Token extends ChangeNotifier {
     if (json.isEmpty) {
       _items.add(token);
 
-      String sql_insert ='INSERT INTO tokens(address, name, balance, rmb) VALUES(?, ?, ?, ?)';
-      List list = [token['address'], token['name'], token['balance'],token['rmb']];
-      sql.rawInsert(sql_insert, list).then((id) {
-        return id;
-      });
+      String sql_insert ='INSERT INTO tokens(address, name, balance, rmb, network) VALUES(?, ?, ?, ?, ?)';
+      List list = [token['address'], token['name'], token['balance'],token['rmb'], token['network']];
+      int id = await sql.rawInsert(sql_insert, list);
+      print(id);
       notifyListeners();
+      return id;
     } else {
       return 0;
     }

@@ -15,8 +15,8 @@ import 'package:youwallet/db/sql_util.dart';
 
 class Trade {
 
-  /// 交易所合约地址
-  static final contractAddress= "0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364";
+  /// 交易所合约地址 这个要写入全局变量中，全局共用
+  static final contractAddress= "0xf5ac3b07a86a68aCA2050253eF5e28ca02BD07f8";
 
   // 收取交易费的账户，测试阶段用SHT的合约账户代替
   static final taxAddress = "0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef";
@@ -29,7 +29,7 @@ class Trade {
   String tokenB = '';
   String amount = '1';
   String price = '';
-  bool isBuy = true;
+  bool   isBuy = true;
   String trader = ""; // 用户钱包地址
   String configData = ""; // 协议版本号码，是否买单，计算配置信息
   String privateKey="";

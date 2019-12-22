@@ -61,9 +61,22 @@ Widget walletCard(item, context) {
                     child: new Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        new Text(
-                          item['name']?? '--',
-                          style: new TextStyle(fontSize: 32.0, color: Colors.black),
+                        new Row(
+                          children: <Widget>[
+                            new Text(
+                              item['name']?? '--',
+                              style: new TextStyle(fontSize: 32.0, color: Colors.black),
+                            ),
+                            new IconButton(
+                              icon: new Icon(Icons.image),
+                              onPressed: () {
+                                print(item);
+                                Navigator.pushNamed(context, "token_info",arguments:{
+                                   'address': item['address'],
+                                 });
+                              },
+                            ),
+                          ],
                         ),
                         GestureDetector(
                           child: new Text(TokenService.maskAddress(item['address'])),
@@ -78,10 +91,13 @@ Widget walletCard(item, context) {
                     ),
                   ),
                   new Container(
+                      width: 80.0,
                       child: new Column(
                         children: <Widget>[
                           new Text(
-                            item['balance'] + 'ETH',
+                            item['balance'],
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                             style: new TextStyle(fontSize: 16.0,
                                 color: Color.fromARGB(100, 6, 147, 193)),
                           ),

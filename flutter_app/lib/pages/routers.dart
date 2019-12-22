@@ -16,7 +16,7 @@ import 'package:youwallet/pages/manage_wallet/set_wallet.dart'; // 新建钱包�
 // token
 import 'package:youwallet/pages/token/token_history.dart'; // token交易历史
 import 'package:youwallet/pages/token/token_add.dart'; // 添加一种token
-
+import 'package:youwallet/pages/token/token_info.dart'; // 添加一种token
 
 // 设置
 import 'package:youwallet/pages/set/set_network.dart'; // 网络设置
@@ -34,6 +34,7 @@ final routes = {
   "set_wallet": (context) => new SetWallet(),
   "add_wallet": (context) => new AddWallet(),
   "token_history":(context) => new TokenHistory(),
+  "token_info":(context, {arguments}) => new TokenInfo(arguments: arguments),
   "login": (context) => new Login(),
   "backup_wallet": (context, {arguments}) => new BackupWallet(arguments: arguments),
   "load_wallet": (context) => new LoadWallet(),

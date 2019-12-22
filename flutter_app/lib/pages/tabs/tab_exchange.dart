@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:youwallet/service/token_service.dart';
 import 'package:youwallet/widgets/priceNum.dart';
 import 'package:youwallet/widgets/transferList.dart';
 
@@ -31,14 +32,23 @@ class TabExchange extends StatefulWidget {
 class Page extends State {
 
   BuildContext mContext;
-  List baseToken = [{'name': 'ETH', 'address': '0x0'}];
+  List baseToken = [{
+    'name': 'tokenD',
+    'address': '0x42ABeB85Edf30e470601Ef47B55B9FF1bF3dcABa'
+  }];
   final controllerAmount = TextEditingController();
   final controllerPrice = TextEditingController();
+
+
+  // 输入框右侧显示的token提示
+  String suffixText = "";
+
+
   //数据初始化
   @override
   void initState() {
     super.initState();
-
+//    this._getBaseToken();
   }
 
   @override
@@ -46,7 +56,10 @@ class Page extends State {
     return layout(context);
   }
 
+  // 左侧被选中的token
   var value;
+
+  var _rightToken = '0x42ABeB85Edf30e470601Ef47B55B9FF1bF3dcABa';
   String _btnText="买入";
   List tokens = [];
 
@@ -120,7 +133,9 @@ class Page extends State {
                     hint:new Text('选择币种'),//当没有默认值的时候可以设置的提示
                     value: value,//下拉菜单选择完之后显示给用户的值
                     onChanged: (T){//下拉菜单item点击之后的回调
+                      print(T);
                       setState(() {
+                        suffixText = T['name'];
                         value=T;
                       });
                     },
@@ -155,7 +170,7 @@ class Page extends State {
                       controller: controllerAmount,
                       keyboardType: TextInputType.number,//键盘类型，数字键盘
                       decoration: InputDecoration(// 输入框内部右侧增加一个icon
-                          suffixText: 'EOS',//位于尾部的填充文字
+                          suffixText: this.suffixText,//位于尾部的填充文字
                           suffixStyle: new TextStyle(
                               fontSize: 14.0,
                               color: Colors.black38
@@ -190,7 +205,7 @@ class Page extends State {
                   child: new TextField(
                     controller: controllerPrice,
                     decoration: InputDecoration(// 输入框内部右侧增加一个icon
-                        suffixText: 'EOS',//位于尾部的填充文字
+                        suffixText: this.suffixText,//位于尾部的填充文字
                         suffixStyle: new TextStyle(
                             fontSize: 14.0,
                             color: Colors.black38
@@ -211,14 +226,14 @@ class Page extends State {
                   ),
 
                 ),
-                new Text('当前账户余额0.1234EOS'),
+                new Text('当前账户余额~'),
                 new Container(
 
                   padding: new EdgeInsets.only(top: 30.0),
                   child: new Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                      new Text('交易额0.123EOS'),
+                      new Text('交易额~'),
                       new SizedBox(
                         width: double.infinity,
                         height: 30,
@@ -263,21 +278,7 @@ class Page extends State {
                     border: new Border.all(width: 1.0, color: Colors.black12),
                     color: Colors.black12,
                   ),
-                  child: new DropdownButton(
-                    items: getListData(this.baseToken),
-                    hint:new Text('选择币种'),//当没有默认值的时候可以设置的提示
-                    value: value,//下拉菜单选择完之后显示给用户的值
-                    onChanged: (T){//下拉菜单item点击之后的回调
-                      setState(() {
-                        value=T['name'];
-                      });
-                    },
-                    isDense: true,
-                    elevation: 24,//设置阴影的高度
-                    style: new TextStyle(//设置文本框里面文字的样式
-                        color: Colors.black
-                    ),
-                  ),
+                  child: Text('TokenD')
                 ),
                 buildRightWidget()
               ],
@@ -332,22 +333,22 @@ class Page extends State {
 
   // 更改下单模式
   void changeOrderModel(String text) {
+    print("当前下单模式=》${text}");
     setState(() {
       this._btnText = text;
     });
   }
 
   // 构建页面下拉列表
-  List<DropdownMenuItem> getListData(tokens){
+  List<DropdownMenuItem> getListData(List tokens){
     List<DropdownMenuItem> items=new List();
 
     for (var value in tokens) {
       items.add(new DropdownMenuItem(
         child:new Text(value['name']),
-        value: value['address'],
+        value: value,
       ));
     }
-
     return items;
   }
 
@@ -412,12 +413,19 @@ class Page extends State {
     } else {
       isBuy = false;
     }
-    String tokenA = '0x8F48de31810deaA8bF547587438970EBD2e4be16';
-    String tokenB = '0x414b26708362B024A28C7Bc309D5C1a8Ac14647E';
-    Trade trade = new Trade(tokenA, tokenB, this.controllerAmount.text, this.controllerPrice.text, isBuy);
+    String tokenA = this.value['address'];
+    String tokenD = "0x42ABeB85Edf30e470601Ef47B55B9FF1bF3dcABa";
+
+    int price = int.parse(this.controllerAmount.text) * int.parse(this.controllerPrice.text);
+
+    Trade trade = new Trade(tokenA, tokenD, this.controllerAmount.text, price.toString(), isBuy);
 
     String hash = await trade.takeOrder();
     print(hash);
+  }
+
+  void _getBaseToken() async {
+    await TokenService.getBaseToken();
   }
 
 }

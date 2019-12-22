@@ -7,7 +7,8 @@ class SqlTable{
     address TEXT NOT NULL UNIQUE, 
     name TEXT NOT NULL, 
     balance TEXT,
-    rmb TEXT);
+    rmb TEXT,
+    network TEXT);
     """;
   static final String sql_createTable_wallet = """
     CREATE TABLE wallet (
