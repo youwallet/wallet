@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart';
-import 'package:web3dart/web3dart.dart';
+
 import 'package:web3dart/json_rpc.dart';
 import 'package:youwallet/widgets/tokenList.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,6 +33,7 @@ class Page extends State<TabWallet> {
   List<Map> wallets = []; // 用户添加的钱包数组
   int current_wallet = 0;
   String current_wallet_address = "";
+  String _balance = '0Eth';
 
 
 
@@ -56,11 +57,14 @@ class Page extends State<TabWallet> {
   }
 
   @override // 页面回退时候触发
-  void deactivate() {
-//    var bool = ModalRoute.of(context).isCurrent;
-//    if (bool) {
-//      getWallet();
-//    }
+  void deactivate() async {
+    var bool = ModalRoute.of(context).isCurrent;
+    if (bool) {
+      String balance = await TokenService.getBalance(Provider.of<walletModel.Wallet>(context).currentWallet);
+      setState(() {
+        _balance = balance + 'Eth';
+      });
+    }
   }
 
   @override
@@ -150,13 +154,13 @@ class Page extends State<TabWallet> {
                     Navigator.pushNamed(context, "set_network");
                   },
                 ),
-                ListTile(
-                  title: Text('检查更新'),
-                  leading: Icon(Icons.update),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
+//                ListTile(
+//                  title: Text('检查更新'),
+//                  leading: Icon(Icons.update),
+//                  onTap: () {
+//                    Navigator.of(context).pop();
+//                  },
+//                ),
                 ListTile(
                   title: Text('进入调试'),
                   leading: Icon(Icons.adb),
@@ -255,7 +259,7 @@ class Page extends State<TabWallet> {
                     children: <Widget>[
                       new Text(''),
                       new Text(
-                          '￥30000.00',
+                          this._balance,
                           style: new TextStyle(
                               fontSize: 32.0, color: Colors.white
                           )

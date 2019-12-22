@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:youwallet/service/token_service.dart';
 import 'package:youwallet/widgets/priceNum.dart';
 import 'package:youwallet/widgets/transferList.dart';
+import 'package:youwallet/widgets/loadingDialog.dart';
 
 import 'package:http/http.dart';
 import 'dart:convert';
@@ -411,7 +412,7 @@ class Page extends State {
     print(this.controllerAmount.text);
     print(this.controllerPrice.text);
     print(Provider.of<Network>(context).network);
-    this.getTraderList();
+
     if (Provider.of<Network>(context).network != 'ropsten') {
       final snackBar = new SnackBar(content: new Text('请切换到ropsten网络'));
       Scaffold.of(context).showSnackBar(snackBar);
@@ -443,12 +444,20 @@ class Page extends State {
     } else {
       isBuy = false;
     }
-    String tokenA = this.value['address'];
 
     // basetoken 暂时固定
     String tokenD = "0x42ABeB85Edf30e470601Ef47B55B9FF1bF3dcABa";
 
-    Trade trade = new Trade(tokenA, tokenD, this.controllerAmount.text, this.controllerPrice.text, isBuy);
+
+    showDialog<Null>(
+      context: context, //BuildContext对象
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return new LoadingDialog( //调用对话框
+          text: '下单中...',
+        );
+    });
+    Trade trade = new Trade(this.value['address'], this.value['name'], tokenD, 'BTD', this.controllerAmount.text, this.controllerPrice.text, isBuy);
 
     String hash = await trade.takeOrder();
     print(hash);
@@ -464,6 +473,7 @@ class Page extends State {
        this.trades = list;
      });
      print(list);
+     Navigator.of(context).pop();
    }
 
 

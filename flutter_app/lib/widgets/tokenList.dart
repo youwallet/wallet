@@ -83,8 +83,6 @@ Widget walletCard(item, context) {
                           child: new Text(TokenService.maskAddress(item['address'])),
                           onTap: () async {
                             print(item['address']);
-//                            balance = await TokenService.getBalance(item['address']);
-//                            print(balance);
                           },
                         )
 
@@ -92,7 +90,7 @@ Widget walletCard(item, context) {
                     ),
                   ),
                   new Container(
-                      width: 80.0,
+                      width: 60.0,
                       child: new Column(
                         children: <Widget>[
                           new Text(

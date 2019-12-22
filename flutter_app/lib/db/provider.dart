@@ -92,12 +92,6 @@ class ProviderSql {
     String databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'wallet.db');
     print(path);
-    try {
-      db = await openDatabase(path);
-    } catch (e) {
-      print("Error $e");
-    }
-
     await db.delete('trade');
     await db.execute(SqlTable.sql_createTable_trade);
   }

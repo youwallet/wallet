@@ -90,33 +90,11 @@ class TokenService {
 
   /// 获取token的余额
   static Future<String> getBalance(String address) async {
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-//    String network = prefs.getString("network");
-//    var client = Client();
-//    var payload = {
-//      "jsonrpc": "2.0",
-//      "method": "eth_getBalance",
-//      "params": [address,"latest"],
-//      "id": DateTime.now().millisecondsSinceEpoch
-//    };
-//    String url = 'https://' + network + '.infura.io/';
-//    print(url);
-//    var rsp = await client.post(
-//        url,
-//        headers:{'Content-Type':'application/json'},
-//        body: json.encode(payload)
-//    );
-//
-//    Map body = jsonDecode(rsp.body);
-//    String hexBalance = body['result'].replaceAll('0x', '');
-//    print(EthAmountFormatter(body['result']).format());
-//    return  hexBalance;
 
       String rpcUrl = await getNetWork();
       final client = Web3Client(rpcUrl, Client(), enableBackgroundIsolate: true);
 
-//      final credentials = await client.credentialsFromPrivateKey(privateKey);
-//      final address = await credentials.extractAddress();
+
        EtherAmount balance = await client.getBalance(EthereumAddress.fromHex(address));
        double b = balance.getValueInUnit(EtherUnit.ether);
        return  b.toStringAsFixed(2);

@@ -36,20 +36,24 @@ class Page extends State<AddWallet> {
   Widget layout(BuildContext context) {
     return new Scaffold(
       appBar: buildAppBar(context),
-      body: new Container(
-        padding: const EdgeInsets.all(16.0),
-        child: new ListView(
-          children: <Widget>[
-            buildTokenList(this.tokenArr)
-          ],
-        ),
-      ),
+      body: Builder (
+        builder:  (BuildContext context) {
+          return new Container(
+            padding: const EdgeInsets.all(16.0),
+            child: new ListView(
+              children: <Widget>[
+                buildTokenList(this.tokenArr)
+              ],
+            ),
+          );
+        }
+      )
     );
   }
 
   // 构建顶部tabBar
   Widget buildAppBar(BuildContext context) {
-    return new AppBar(
+    return  new AppBar(
       title: new TextField(
         decoration: InputDecoration(
             hintText: "输入合约地址",
@@ -60,6 +64,11 @@ class Page extends State<AddWallet> {
             )
         ),
         onSubmitted: (text) async {//内容提交(按回车)的回调
+          if (text.length != 42) {
+            final snackBar = new SnackBar(content: new Text('合约地址长度不对'));
+            Scaffold.of(context).showSnackBar(snackBar);
+            return;
+          }
 //          showDialog<Null>(
 //              context: context, //BuildContext对象
 //              barrierDismissible: false,

@@ -135,14 +135,22 @@ class Page extends State<WalletCheck> {
 
       EthereumAddress ethereumAddress = await TokenService.getPublicAddress(privateKey);
       String address = ethereumAddress.toString();
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String name = await prefs.getString("new_wallet_name");
+
       Map obj = {
         'privateKey': privateKey,
         'address': address,
-        'name': '',
-        'mnemonic': randomMnemonic
+        'name': name,
+        'mnemonic': randomMnemonic,
+        'balance': ''
       };
+
       int id = await Provider.of<myWallet.Wallet>(context).add(obj);
       print('insert into id => ${id}');
+
+      await prefs.setString("currentWallet", address);
 
       Navigator.pushNamed(context, "tabs");
     } else {

@@ -16,7 +16,8 @@ class SqlTable{
     name TEXT, 
     mnemonic TEXT,
     privateKey TEXT NOT NULL UNIQUE, 
-    address TEXT NOT NULL UNIQUE);
+    address TEXT NOT NULL UNIQUE,
+    balance TEXT);
     """;
 
   // 交易记录
@@ -27,7 +28,9 @@ class SqlTable{
     price TEXT,
     amount TEXT, 
     token TEXT,
+    tokenName TEXT,
     baseToken TEXT,
+    baseTokenName TEXT,
     txnHash TEXT NOT NULL UNIQUE,
     createTime TEXT,
     status TEXT);

@@ -26,7 +26,9 @@ class Trade {
 
   // Trade内的私有变量
   String tokenA = '';
+  String tokenAName = ''; // 左边token的名字
   String tokenB = '';
+  String tokenBName = ''; // 右边token的名字
   String amount = '1';
   String price = '';
   bool   isBuy = true;
@@ -38,9 +40,11 @@ class Trade {
 
   String txnHash = ""; // 下单成功会返回txnHash
 
-  Trade(String token, String baseToken, String amount, String price, bool isBuy) {
+  Trade(String token, String tokenName, String baseToken, String baseTokenName, String amount, String price, bool isBuy) {
      this.tokenA = token;
+     this.tokenAName = tokenName;
      this.tokenB = baseToken;
+     this.tokenBName = baseTokenName;
      this.amount = amount;
 
      //需要换一个名字
@@ -96,12 +100,10 @@ class Trade {
   // 下单，返回订单的hash
    Future<String> takeOrder() async{
 
-
     String functionName = '0xefe29415';
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     this.trader =  formatParam(prefs.getString("currentWallet"));
-
 
     this.configData = await getConfigData(this.isBuy);
     String signature = await getConfigSignature();
@@ -164,7 +166,6 @@ class Trade {
         body: json.encode(payload)
     );
 
-    print('rsp body => ${rsp.body}');
     Map result = jsonDecode(rsp.body);
     return result['result'].replaceFirst("0x", "");
   }
@@ -191,9 +192,11 @@ class Trade {
   Future<String> loadPrivateKey() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String address =  prefs.getString("currentWallet");
+    print('sql address => ${address}');
     var sql = SqlUtil.setTable("wallet");
     var map = {'address': address};
     List json = await sql.query(conditions: map);
+    print("json => ${json}");
     this.privateKey = json[0]['privateKey'];
     return this.privateKey;
   }
@@ -233,6 +236,7 @@ class Trade {
     );
 
     Map result = jsonDecode(rsp.body);
+    print(result);
     String  res = result['result'].replaceFirst("0x", ""); // 得到一个64字节的数据
     String bq_hash = res.substring(0,64);
     String od_hash = res.substring(64);
@@ -256,14 +260,14 @@ class Trade {
   //    """;
   Future<void> saveTrader() async {
     var sql = SqlUtil.setTable("trade");
-    String sql_insert ='INSERT INTO trade(orderType, price, amount, token, baseToken, txnHash, createtime) VALUES(?, ?, ?, ?,?,?,?)';
+    String sql_insert ='INSERT INTO trade(orderType, price, amount, token,tokenName, baseToken,baseTokenname, txnHash, createtime) VALUES(?, ?, ?, ?,?,?,?,?,?)';
     String orderType = '';
     if (this.isBuy) {
       orderType = '买入';
     } else {
       orderType = '卖出';
     }
-    List list = [orderType,this.price, this.amount, this.tokenA,this.tokenB,this.txnHash, DateTime.now().millisecondsSinceEpoch];
+    List list = [orderType,this.price, this.amount, this.tokenA,this.tokenAName,this.tokenB,this.tokenBName,this.txnHash, DateTime.now().millisecondsSinceEpoch];
     int id = await sql.rawInsert(sql_insert, list);
     print("db trade id => ${id}");
     return id;

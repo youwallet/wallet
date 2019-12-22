@@ -276,7 +276,8 @@ class LoadWalletState extends State<LoadWallet> {
       'privateKey': privateKey,
       'address': address,
       'name': '',
-      'mnemonic': this._name.text
+      'mnemonic': this._name.text,
+      'balance':''
     };
 
     this.doSave(item);
@@ -288,20 +289,25 @@ class LoadWalletState extends State<LoadWallet> {
     EthereumAddress ethereumAddress = await TokenService.getPublicAddress(this._key.text);
     String address = ethereumAddress.toString();
 
-
     Map item = {
       'privateKey': this._key.text,
       'address': address,
       'name': '',
-      'mnemonic': ''
+      'mnemonic': '',
+      'balance':''
     };
 
     this.doSave(item);
   }
 
   void doSave(Map item) async {
+    String balance = await TokenService.getBalance(item['address']);
+    item.addAll({'balance': balance});
     int id = await Provider.of<myWallet.Wallet>(context).add(item);
     print('insert into id => ${id}');
+
+
+
     if (id > 0) {
       Navigator.pushNamed(context, "tabs");
     } else {

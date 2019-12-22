@@ -56,10 +56,10 @@ class transferList extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               new Text(
-                  '${item['price']} (BTD)',
+                  '${item['price']} (${item['baseTokenName']})',
               ),
               new Text(
-                  '${item['amount']}/${singlePrice}(BTD)',
+                  '${item['amount']}/${singlePrice}(${item['tokenName']})',
                   style: new TextStyle(
                       color: Colors.lightBlue
                   )

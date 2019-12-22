@@ -34,16 +34,11 @@ class Wallet extends ChangeNotifier {
   // 获取缓存的钱包
   Future<List> _fetchWallet() async {
     var sql = SqlUtil.setTable("wallet");
-    sql.get().then((res) {
-      print(res);
-      res.forEach((f){
-        this._items.add(f);
-
-      });
-      setWallet();
+    List res = await sql.get();
+    print(res);
+    res.forEach((f){
+      this._items.add(f);
     });
-
-    notifyListeners();
   }
 
   //设置当前的钱包
@@ -64,10 +59,11 @@ class Wallet extends ChangeNotifier {
   void changeWallet(String address) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("currentWallet", address);
+    print("当前缓存钱包地址=》${address}");
     this.currentWallet = address;
     this._items.forEach((f){
       if (f['address'] == address) {
-        this.currentWalletName = f['name']??'--';
+        this.currentWalletName = ['name'].length > 0 ? f['name']:'Account${f['id'].toString()}';
       }
     });
     notifyListeners();
@@ -79,10 +75,12 @@ class Wallet extends ChangeNotifier {
     _items.add(item);
 
     var sql = SqlUtil.setTable("wallet");
-    String sql_insert ='INSERT INTO wallet(name, mnemonic, privateKey, address) VALUES(?, ?, ?, ?)';
-    List list = [item['name'],item['mnemonic'], item['privateKey'], item['address']];
+    String sql_insert ='INSERT INTO wallet(name, mnemonic, privateKey, address, balance) VALUES(?, ?, ?, ?, ?)';
+    List list = [item['name'],item['mnemonic'], item['privateKey'], item['address'], item['balance']];
     int id = await sql.rawInsert(sql_insert, list);
     print("rawInsert => ${id}");
+    this.currentWallet = item['address'];
+    this.currentWalletName = item['name'];
     notifyListeners();
     return id;
   }
