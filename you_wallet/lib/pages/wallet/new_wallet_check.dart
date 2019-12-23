@@ -7,6 +7,7 @@ import 'package:web3dart/credentials.dart';
 import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart' as myWallet;
+import 'package:youwallet/pages/tabs.dart';
 
 class WalletCheck extends StatefulWidget {
   TokenService _tokenService;
@@ -23,6 +24,12 @@ class Page extends State<WalletCheck> {
   TextEditingController _name = TextEditingController();
   TokenService _tokenService;
 
+  final globalKey = GlobalKey<ScaffoldState>();
+
+  void showSnackbar(String text) {
+    final snackBar = SnackBar(content: Text(text));
+    globalKey.currentState.showSnackBar(snackBar);
+  }
 
   @override // override是重写父类中的函数 每次初始化的时候执行一次，类似于小程序中的onLoad
   void initState() {
@@ -44,6 +51,7 @@ class Page extends State<WalletCheck> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        key: globalKey,
         appBar: AppBar(
           title: Text("确认助记词"),
         ),
@@ -134,6 +142,8 @@ class Page extends State<WalletCheck> {
 
     if (this._name.text == randomMnemonic) {
       print("助记词确认ok，生成钱包，回到首页");
+      this.showSnackbar('钱包添加成功');
+
       String privateKey = TokenService.getPrivateKey(this._name.text);
 
       EthereumAddress ethereumAddress = await TokenService.getPublicAddress(privateKey);
@@ -155,7 +165,7 @@ class Page extends State<WalletCheck> {
 
       await prefs.setString("currentWallet", address);
 
-      Navigator.pushNamed(context, "tabs");
+      Navigator.pushNamed(context, "/");
     } else {
       Navigator.pop(context);
       if (this.randomMnemonic.length == 0) {
