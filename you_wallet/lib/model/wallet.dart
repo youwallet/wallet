@@ -73,15 +73,25 @@ class Wallet extends ChangeNotifier {
 
   ///  将 [item] 到列表中
   Future<int> add(Map item) async {
-    _items.add(item);
+
 
     var sql = SqlUtil.setTable("wallet");
     String sql_insert ='INSERT INTO wallet(name, mnemonic, privateKey, address, balance) VALUES(?, ?, ?, ?, ?)';
     List list = [item['name'],item['mnemonic'], item['privateKey'], item['address'], item['balance']];
     int id = await sql.rawInsert(sql_insert, list);
     print("rawInsert => ${id}");
+//    if (item['name'].length == 0){
+//      var map = {'name': 'Account${id}'};
+//      int res = await sql.update(map, 'address', item['address']);
+//    } else {
+//
+//    }
     this.currentWallet = item['address'];
-    this.currentWalletName = item['name'];
+    this.currentWalletName =  item['name'].length > 0 ? item['name'] : 'Account${id}';
+
+    item['name'] = this.currentWalletName;
+    _items.add(item);
+
     notifyListeners();
     return id;
   }

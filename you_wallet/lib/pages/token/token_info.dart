@@ -26,6 +26,7 @@ class Page extends State<TokenInfo> {
 
   Map arguments;
   Page({this.arguments});
+  final globalKey = GlobalKey<ScaffoldState>();
 
   @override // override是重写父类中的函数
   void initState()  {
@@ -41,6 +42,7 @@ class Page extends State<TokenInfo> {
 
   Widget layout(BuildContext context) {
     return new Scaffold(
+      key: globalKey,
       appBar: buildAppBar(context),
       body: new Center(
           child: new Stack(
@@ -50,7 +52,7 @@ class Page extends State<TokenInfo> {
                 new Container(
                   padding: const EdgeInsets.only(top: 40.0),
                   width: 300.0,
-                  height: 301.0,
+                  height: 280.0,
                   decoration: new BoxDecoration(
                     borderRadius: new BorderRadius.all(new Radius.circular(8.0)),
                     color: Colors.lightBlue,
@@ -58,7 +60,7 @@ class Page extends State<TokenInfo> {
                   child: new Column(
                     children: <Widget>[
                       new Text(
-                          this.arguments['address'],
+                          TokenService.maskAddress(this.arguments['address']),
                           style: new TextStyle(
                               fontSize: 18.0,
                               color: Colors.white
@@ -152,8 +154,12 @@ class Page extends State<TokenInfo> {
   void  _copyAddress() {
     ClipboardData data = new ClipboardData(text:"测试剪贴板复制功能");
     Clipboard.setData(data);
-    final snackBar = new SnackBar(content: new Text('复制成功'));
-    Scaffold.of(context).showSnackBar(snackBar);
+    this.showSnackbar('复制成功');
+  }
+
+  void showSnackbar(String text) {
+    final snackBar = SnackBar(content: Text(text));
+    globalKey.currentState.showSnackBar(snackBar);
   }
 
 //  Widget header(BuildContext context) {

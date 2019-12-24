@@ -1,0 +1,37 @@
+{
+  "id": "1579562",
+  "name": "youwallet",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "4365480",
+      "name": "扫码",
+      "font_class": "saoma",
+      "unicode": "e61d",
+      "unicode_decimal": 58909
+    },
+    {
+      "icon_id": "4892945",
+      "name": "银杏",
+      "font_class": "weibiaoti--",
+      "unicode": "e678",
+      "unicode_decimal": 59000
+    },
+    {
+      "icon_id": "5992794",
+      "name": "icon_以太坊",
+      "font_class": "icon_yitaifang",
+      "unicode": "e648",
+      "unicode_decimal": 58952
+    },
+    {
+      "icon_id": "10172816",
+      "name": "二维码",
+      "font_class": "qrcode",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    }
+  ]
+}

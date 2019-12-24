@@ -36,13 +36,15 @@ class Page extends State<TabWallet> {
   String _balance = '0Eth';
 
 
-
+//  @override
+//  void didUpdateWidget(ContainerPage oldWidget) {
+//    super.didUpdateWidget(oldWidget);
+//  }
 
   @override // override是重写父类中的函数
   void initState()  {
     super.initState();
-
-
+    _getWallets();
     // 监听钱包切换事件
 //    eventBus.on<WalletChangeEvent>().listen((event) {
 //      print(event.address);
@@ -56,10 +58,22 @@ class Page extends State<TabWallet> {
 //    });
   }
 
+  Future<void> _getWallets() async {
+    var sql = SqlUtil.setTable("wallet");
+    List wallets = await sql.get();
+    if (wallets.length == 0) {
+      Navigator.pushNamed(context, "wallet_guide");
+      return;
+    }
+  }
+
+
+
   @override // 页面回退时候触发
   void deactivate() async {
     var bool = ModalRoute.of(context).isCurrent;
     if (bool) {
+      await _getWallets();
       String balance = await TokenService.getBalance(Provider.of<walletModel.Wallet>(context).currentWallet);
       setState(() {
         _balance = balance + 'Eth';
@@ -188,7 +202,7 @@ class Page extends State<TabWallet> {
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
         title: const Text('youwallet'),
-//        actions: this.appBarActions(),
+        actions: this.appBarActions(),
     );
   }
 
@@ -199,7 +213,7 @@ class Page extends State<TabWallet> {
       new Container(
         width: 50.0,
         child: new IconButton(
-          icon: new Icon(Icons.camera_alt ),
+          icon: new Icon(IconData(0xe61d, fontFamily: 'iconfont')),
           onPressed: () {
             // httpRequest();
 //            _scan();

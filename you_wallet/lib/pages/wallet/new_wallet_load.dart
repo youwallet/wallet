@@ -37,6 +37,8 @@ class LoadWalletState extends State<LoadWallet> {
   TextEditingController _key = TextEditingController();
   final LocalAuthenticationService _localAuth = locator<LocalAuthenticationService>();
 
+  final globalKey = GlobalKey<ScaffoldState>();
+
   @override // override是重写父类中的函数 每次初始化的时候执行一次，类似于小程序中的onLoad
   void initState() {
     super.initState();
@@ -49,6 +51,7 @@ class LoadWalletState extends State<LoadWallet> {
     return new DefaultTabController(
         length: 2,
         child: Scaffold(
+          key: globalKey,
           appBar: buildAppBar(context),
           body: new TabBarView(
             children: [
@@ -143,11 +146,7 @@ class LoadWalletState extends State<LoadWallet> {
                    'images/fingerprint.png'
                ),
               onTap: () async {
-                 print('click');
                  saveWallet();
-//                 SharedPreferences prefs = await SharedPreferences.getInstance();
-//                 prefs.setString("randomMnemonic", this._name.text);
-//                 Navigator.pushNamed(context, "wallet_check");
               },
               )
           ),
@@ -203,9 +202,6 @@ class LoadWalletState extends State<LoadWallet> {
                 ),
                 onTap: () async {
                   saveWalletByKey();
-//                 SharedPreferences prefs = await SharedPreferences.getInstance();
-//                 prefs.setString("randomMnemonic", this._name.text);
-//                 Navigator.pushNamed(context, "wallet_check");
                 },
               )
           ),
@@ -271,6 +267,16 @@ class LoadWalletState extends State<LoadWallet> {
    */
   void saveWallet() async {
 
+    if (this._name.text.length == 0) {
+      this.showSnackbar('请输入助记词');
+      return ;
+    }
+
+    if (this._name.text.split(' ').length != 12) {
+      this.showSnackbar('助记词是12个单词，你输入的是${this._name.text.split(' ').length}个单词');
+      return ;
+    }
+
     String privateKey = TokenService.getPrivateKey(this._name.text);
 
     EthereumAddress ethereumAddress = await TokenService.getPublicAddress(privateKey);
@@ -291,6 +297,17 @@ class LoadWalletState extends State<LoadWallet> {
   // 通过key导入钱包
   void saveWalletByKey() async {
 
+
+    if (this._key.text.length == 0) {
+      this.showSnackbar('请输入密钥');
+      return ;
+    }
+
+    if (this._key.text.length != 64) {
+      this.showSnackbar('标准密钥长度64位，你的是${this._key.text.length}位');
+      return ;
+    }
+
     EthereumAddress ethereumAddress = await TokenService.getPublicAddress(this._key.text);
     String address = ethereumAddress.toString();
 
@@ -309,15 +326,19 @@ class LoadWalletState extends State<LoadWallet> {
     String balance = await TokenService.getBalance(item['address']);
     item.addAll({'balance': balance});
     int id = await Provider.of<myWallet.Wallet>(context).add(item);
-    print('insert into id => ${id}');
+    print('钱包插入成功：id => ${id}');
 
 
     if (id > 0) {
       Navigator.pushNamed(context, "/");
     } else {
-      final snackBar = new SnackBar(content: new Text('钱包新建失败'));
-      Scaffold.of(context).showSnackBar(snackBar);
+      this.showSnackbar('钱包保存失败');
     }
+  }
+
+  void showSnackbar(String text) {
+    final snackBar = SnackBar(content: Text(text));
+    globalKey.currentState.showSnackBar(snackBar);
   }
 
 }

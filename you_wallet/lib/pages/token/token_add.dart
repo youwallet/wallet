@@ -77,21 +77,30 @@ class Page extends State<AddWallet> {
             this.showSnackbar('地址长度不42位');
             return;
           }
-          showDialog<Null>(
-              context: context, //BuildContext对象
-              barrierDismissible: false,
-              builder: (BuildContext context) {
-                return new LoadingDialog( //调用对话框
-                  text: '搜索中...',
-                );
+//          showDialog<Null>(
+//              context: context, //BuildContext对象
+//              barrierDismissible: false,
+//              builder: (BuildContext context) {
+//                return new LoadingDialog( //调用对话框
+//                  text: '搜索中...',
+//                );
+//              });
+          print('搜索的token是=》 ${text}');
+          this.showSnackbar('搜索中···');
+          try {
+            Map token = await TokenService.searchToken(text);
+            //          Navigator.pop(context);
+            if (token.containsKey('name')) {
+              setState(() {
+                this.tokenArr.add(token);
               });
-          Map token = await TokenService.searchToken(text);
-          Navigator.pop(context);
-          if (token.containsKey('name')) {
-            setState(() {
-              this.tokenArr.add(token);
-            });
-            saveToken(token);
+              saveToken(token);
+            } else {
+              this.showSnackbar('没有搜索到token');
+            }
+          } catch (e) {
+            print("catch e => ${e}");
+            this.showSnackbar(e.toString());
           }
         },
       ),
@@ -105,7 +114,7 @@ class Page extends State<AddWallet> {
       new Container(
         width: 50.0,
         child: new IconButton(
-          icon: new Icon(Icons.camera_alt ),
+          icon: new Icon(IconData(0xe61d, fontFamily: 'iconfont')),
           onPressed: () {
             this.showSnackbar('还不能扫二维码');
           },

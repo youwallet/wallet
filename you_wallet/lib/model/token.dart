@@ -62,8 +62,10 @@ class Token extends ChangeNotifier {
       List list = [token['address'], token['name'], token['balance'],token['rmb'], token['network']];
       int id = await sql.rawInsert(sql_insert, list);
       print(id);
+
       notifyListeners();
       return id;
+
     } else {
       return 0;
     }

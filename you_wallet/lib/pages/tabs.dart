@@ -112,6 +112,10 @@ class _ContainerPageState extends State<ContainerPage> {
 
   @override
   Widget build(BuildContext context) {
+//    List wallets = Provider.of<Wallet>(context).items;
+//    if (wallets.length == 0) {
+//      Navigator.pushNamed(context, "wallet_guide");
+//    }
       return Scaffold(
         body: new Stack(
           children: [

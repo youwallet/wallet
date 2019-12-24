@@ -11,10 +11,17 @@ class NewWalletName extends StatefulWidget {
 
 class _NewWalletNameState extends State<NewWalletName> {
 
+  final globalKey = GlobalKey<ScaffoldState>();
+
+  void showSnackbar(String text) {
+    final snackBar = SnackBar(content: Text(text));
+    globalKey.currentState.showSnackBar(snackBar);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        key: globalKey,
         appBar: AppBar(
           title: Text("新建钱包"),
         ),
@@ -39,25 +46,21 @@ class _NewWalletNameState extends State<NewWalletName> {
                    SharedPreferences prefs = await SharedPreferences.getInstance();
                    prefs.setString("new_wallet_name", text);
                    Navigator.pushNamed(context, "backup_wallet", arguments: <String, String>{});
-//                   Navigator.pushNamed(context, "backup_wallet", arguments: <String, String>{
-//                     'name': text,
-//                   });
                 },
               ),
               new Container(
                 margin: const EdgeInsets.only(top: 50.0, bottom: 20.0),
-                child: new Image.asset(
-                    'images/fingerprint.png'
-                ),
+                child:  new GestureDetector(
+                  onTap: (){
+                    this.showSnackbar('还不能识别指纹，直接输入钱包名字提交');
+                  },//写入方法名称就可以了，但是是无参的
+                  child: new Image.asset(
+                      'images/fingerprint.png'
+                  ),
+              ),
               ),
               new Text('开启指纹'),
               new Text('设置免密登录'),
-//              new GestureDetector(
-//                onTap: (){
-//                  Navigator.pushNamed(context, "backup_wallet");
-//                },//写入方法名称就可以了，但是是无参的
-//                child: Text("点击这里进入备份提示页面"),
-//              ),
             ],
           ),
         )

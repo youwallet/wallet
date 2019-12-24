@@ -35,7 +35,6 @@ class Page extends State<SetWallet> {
               minWidth: 300, // 控制按钮宽度
               child: new Text('创建钱包'),
               onPressed: () {
-                // ...
                 Navigator.pushNamed(context, "set_wallet_name");
               },
             ),

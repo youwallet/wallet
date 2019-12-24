@@ -47,16 +47,11 @@ Widget walletCard(item, context) {
                 children: <Widget>[
                   new Container(
                     margin: const EdgeInsets.only(right: 16.0),
-                    decoration: new BoxDecoration(
-                      border: new Border.all(width: 2.0, color: Colors.black26),
-                      borderRadius: new BorderRadius.all(new Radius.circular(20.0)),
-                    ),
-                    child: new Image.asset(
-                      'images/icon.png',
-                      height: 40.0,
-                      width: 40.0,
-                      fit: BoxFit.cover,
-                    ),
+//                    decoration: new BoxDecoration(
+//                      border: new Border.all(width: 2.0, color: Colors.black26),
+//                      borderRadius: new BorderRadius.all(new Radius.circular(20.0)),
+//                    ),
+                    child: Icon(IconData(0xe648, fontFamily: 'iconfont'),size: 50.0, color: Colors.black26)
                   ),
                   new Expanded(
                     child: new Column(
@@ -69,7 +64,7 @@ Widget walletCard(item, context) {
                               style: new TextStyle(fontSize: 32.0, color: Colors.black),
                             ),
                             new IconButton(
-                              icon: new Icon(Icons.image),
+                              icon: Icon(IconData(0xe600, fontFamily: 'iconfont')),
                               onPressed: () {
                                 print(item);
                                 Navigator.pushNamed(context, "token_info",arguments:{

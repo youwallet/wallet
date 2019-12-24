@@ -146,13 +146,9 @@ class TokenService {
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       token['network'] = await prefs.getString("network");
-      print(token);
-//      await getTokenBalance(address);
-//      int decimals = await getDecimals(address);
-//      await getTokenBalanceByWeb3(address);
-//      print("decimals => ${decimals}");
       return token;
     }
+
   }
 
   // https://yq.aliyun.com/articles/600706/
