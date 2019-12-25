@@ -15,14 +15,24 @@ import 'package:youwallet/db/sql_util.dart';
 
 class Trade {
 
-  /// 交易所合约地址 这个要写入全局变量中，全局共用
-  static final contractAddress= "0xf5ac3b07a86a68aCA2050253eF5e28ca02BD07f8";
+  /// 交易所合约地址 这个要写入全局变量中，全局共用，contractAddress似乎是一个关键字，不要用这个名字做变量
+  static String contractAddress= "0xf5ac3b07a86a68aCA2050253eF5e28ca02BD07f8";
+
+  static final tempMatchAddress= "0xf5ac3b07a86a68aCA2050253eF5e28ca02BD07f8";
+
+  // 获取订单匹配情况的合约
+  static final hybridExchangeAddress = "0x139A53B0Cf2caE3e080cfC8A80D0A439F30edb52";
+
 
   // 收取交易费的账户，测试阶段用SHT的合约账户代替
   static final taxAddress = "0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef";
 
   // 这个定义多大
   static final gasTokenAmount = "0000000000000000000000000000000000000000000000000000000000000000";
+
+  static final Map func = {
+    'filled(bytes32)':'0x288cdc91',
+  };
 
   // Trade内的私有变量
   String tokenA = '';
@@ -38,7 +48,10 @@ class Trade {
 
   String rpcUrl = "https://ropsten.infura.io/";
 
+  String odHash = "";  // od_hash,用来查询每个订单的匹配情况
+
   String txnHash = ""; // 下单成功会返回txnHash
+
 
   Trade(String token, String tokenName, String baseToken, String baseTokenName, String amount, String price, bool isBuy) {
      this.tokenA = token;
@@ -60,27 +73,28 @@ class Trade {
     } else {
       configData = '1';
     }
+    print("contractAddress => ${contractAddress}");
     var client = Client();
+
     var payload = {
       "jsonrpc": "2.0",
       "method": "eth_call",
       "params": [
         {
-          "from": contractAddress, // 这里的form随便写一个
-          "to": contractAddress,
-          "data": "0xfeee047e000000000000000000000000000000000000000000000000000000000000000"
-          + configData
+          "from": tempMatchAddress, // 这里的form随便写一个
+          "to": tempMatchAddress,
+          "data": "0xfeee047e000000000000000000000000000000000000000000000000000000000000000${configData}"
         },
         "latest"
       ],
       "id": DateTime.now().millisecondsSinceEpoch
     };
-
     var rsp = await client.post(
-        'https://ropsten.infura.io/',
+        "https://ropsten.infura.io/",
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
+    print("getConfigData => ${rsp.body}");
     Map result = jsonDecode(rsp.body);
     return result['result'].replaceFirst('0x', '');
   }
@@ -147,19 +161,16 @@ class Trade {
 
     String functionHex = "0x0b973ca2";
     String _v = sign['v'] + "00000000000000000000000000000000000000000000000000000000000000";
-    // signMethod: 签名方法, 0为eth.sign, 1为EIP712
-    // 开发阶段默认为1
-//    String _signMethod = "000000000000000000000000000000000000000000000000000000000000000" + '1';
     String post_data = functionHex + _v + sign['r'] + sign['s'] + formatParam('1');
-
+    print("getConfigSignature post =>${post_data}");
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",
       "method": "eth_call",
       "params": [
         {
-          "from": contractAddress,
-          "to": contractAddress, // 合约地址
+          "from": tempMatchAddress,
+          "to": tempMatchAddress, // 合约地址
           "data": post_data
         },
         "latest"
@@ -217,9 +228,10 @@ class Trade {
 
     String functionName = '0xefe331cf';
 
-    String signature = this.configData + this.configData + this.configData;  // 此时还没有signature字段，所以随便填充三个32byte的字段
+    // 此时还没有signature字段，所以随便填充三个32byte的字段
+    String signature = this.configData + this.configData + this.configData;
 
-
+    print("getBQODHash signature  凑够长度就行=> ${signature}");
     String post_data = functionName + this.trader + formatParam(this.amount) + formatParam(this.price) + gasTokenAmount + this.configData + signature + formatParam(this.tokenA) + formatParam(this.tokenB) + formatParam(taxAddress);
     var client = Client();
     var payload = {
@@ -227,8 +239,8 @@ class Trade {
       "method": "eth_call",
       "params": [
         {
-          "from":"0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364",
-          "to": contractAddress, // 合约地址
+          "from":tempMatchAddress,
+          "to": tempMatchAddress,
           "data": post_data
         },
         "latest"
@@ -241,40 +253,29 @@ class Trade {
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
-
+    print("打印getBQODHash =》 ${rsp.body}");
     Map result = jsonDecode(rsp.body);
-    print(result);
+
     String  res = result['result'].replaceFirst("0x", ""); // 得到一个64字节的数据
     String bq_hash = res.substring(0,64);
     String od_hash = res.substring(64);
+    this.odHash = od_hash;
     return {
       'od_hash': od_hash,
       'bq_hash': bq_hash
     };
   }
 
-  /// 保存一个交易
-  ///    CREATE TABLE trade (
-  //    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-  //    orderType TEXT,
-  //    price TEXT,
-  //    amount TEXT,
-  //    token TEXT,
-  //    baseToken TEXT,
-  //    txnHash TEXT NOT NULL UNIQUE,
-  //    createTime TEXT,
-  //    status TEXT);
-  //    """;
   Future<void> saveTrader() async {
     var sql = SqlUtil.setTable("trade");
-    String sql_insert ='INSERT INTO trade(orderType, price, amount, token,tokenName, baseToken,baseTokenname, txnHash, createtime) VALUES(?, ?, ?, ?,?,?,?,?,?)';
+    String sql_insert ='INSERT INTO trade(orderType, price, amount, token,tokenName, baseToken,baseTokenname, txnHash, odHash, createtime) VALUES(?, ?, ?, ?,?,?,?,?,?,?)';
     String orderType = '';
     if (this.isBuy) {
       orderType = '买入';
     } else {
       orderType = '卖出';
     }
-    List list = [orderType,this.price, this.amount, this.tokenA,this.tokenAName,this.tokenB,this.tokenBName,this.txnHash, DateTime.now().millisecondsSinceEpoch];
+    List list = [orderType,this.price, this.amount, this.tokenA,this.tokenAName,this.tokenB,this.tokenBName,this.txnHash,this.odHash,DateTime.now().millisecondsSinceEpoch];
     int id = await sql.rawInsert(sql_insert, list);
     print("db trade id => ${id}");
     return id;
@@ -285,5 +286,33 @@ class Trade {
     var sql = SqlUtil.setTable("trade");
     List list = await sql.get();
     return list;
+  }
+
+  /// 获取订单匹配情况
+  static Future getFilled(String odHash) async {
+
+    String postData = func['filled(bytes32)'] + odHash;
+    var client = Client();
+    var payload = {
+      "jsonrpc": "2.0",
+      "method": "eth_call",
+      "params": [
+        {
+          "from":hybridExchangeAddress,
+          "to": hybridExchangeAddress,
+          "data": postData
+        },
+        "latest"
+      ],
+      "id": DateTime.now().millisecondsSinceEpoch
+    };
+
+    var rsp = await client.post(
+        'https://ropsten.infura.io/',
+        headers:{'Content-Type':'application/json'},
+        body: json.encode(payload)
+    );
+    print("getFilled =》 ${rsp.body}");
+
   }
 }

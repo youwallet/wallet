@@ -53,7 +53,17 @@ class Page extends State {
   void initState() {
     super.initState();
     this.getTraderList();
-//    this._getBaseToken();
+
+    // 监听页面切换，刷新交易的状态
+    eventBus.on<TabChangeEvent>().listen((event) {
+      print("event listen =》${event.index}");
+      if (event.index == 1) {
+        print('刷新订单状态');
+        this._getTradeInfo();
+      } else {
+        print('do nothing');
+      }
+    });
   }
 
   @override
@@ -475,19 +485,26 @@ class Page extends State {
     }
   }
 
-  // 获取订单列表
+   // 获取订单列表
    void getTraderList() async {
      List list = await Trade.getTraderList();
      setState(() {
        this.trades = list;
      });
-     print('交易列表=》${list}');
+     this._getTradeInfo();
+   }
+
+
+   Future<void> _getTradeInfo() async {
+     for(var i = 0; i<this.trades.length; i++) {
+       await Trade.getFilled(this.trades[i]['odHash']);
+     }
    }
 
 
 
-  void _getBaseToken() async {
+   void _getBaseToken() async {
     await TokenService.getBaseToken();
-  }
+   }
 
 }

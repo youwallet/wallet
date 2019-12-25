@@ -32,6 +32,7 @@ class SqlTable{
     baseToken TEXT,
     baseTokenName TEXT,
     txnHash TEXT NOT NULL UNIQUE,
+    odHash TEXT,
     createTime TEXT,
     status TEXT);
     """;

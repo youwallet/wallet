@@ -20,3 +20,9 @@ class WalletChangeEvent{
   String address = null;
   WalletChangeEvent(this.address);
 }
+
+/// tab页面切换通知
+class TabChangeEvent{
+  int index = 0;
+  TabChangeEvent(this.index);
+}

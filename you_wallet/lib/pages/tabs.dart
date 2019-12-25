@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart';
 import 'package:youwallet/pages/manage_wallet/wallet_guide.dart'; // 钱包引导页
 import 'package:youwallet/db/sql_util.dart';
+import 'package:youwallet/bus.dart';
 
 class _Item {
   String name, activeIcon, normalIcon;
@@ -130,6 +131,7 @@ class _ContainerPageState extends State<ContainerPage> {
           items: itemList,
           onTap: (int index) {
             print('当前tab索引=> ${index}');
+            eventBus.fire(TabChangeEvent(index));
             setState(() {
               _selectIndex = index;
             });

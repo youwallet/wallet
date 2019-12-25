@@ -25,7 +25,7 @@ class Network extends ChangeNotifier {
 
   Future<void> _getNetwork() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    this._network = await prefs.getString("network")??'mainnet';
+    this._network = await prefs.getString("network")??'ropsten';
     notifyListeners();
   }
 
