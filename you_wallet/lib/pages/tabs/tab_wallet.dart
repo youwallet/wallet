@@ -19,6 +19,8 @@ import 'package:youwallet/model/wallet.dart' as walletModel;
 import 'package:youwallet/db/sql_util.dart';
 import 'package:youwallet/db/provider.dart';
 import 'package:barcode_scan/barcode_scan.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class TabWallet extends StatefulWidget {
 
@@ -185,6 +187,14 @@ class Page extends State<TabWallet> {
                     await provider.clearCache();
                     final snackBar = new SnackBar(content: new Text('数据清除成功，关闭程序重新进入'));
                     Scaffold.of(context).showSnackBar(snackBar);
+                  },
+                ),
+                ListTile(
+                  title: Text('意见反馈'),
+                  leading: Icon(Icons.feedback),
+                  onTap: () async {
+                    const url='https://github.com/youwallet/wallet/issues';
+                    await launch(url);
                   },
                 ),
             ],
