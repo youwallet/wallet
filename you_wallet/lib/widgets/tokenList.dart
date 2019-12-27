@@ -8,13 +8,21 @@ import 'package:youwallet/model/token.dart';
 class tokenList extends StatelessWidget {
 
   List arr = [];
-  tokenList({Key key, this.arr}) : super(key: key);
+  String network = "ropsten";
+  tokenList({Key key, this.arr, this.network="ropsten"}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-
+    print("get in buid => ${this.network}");
+    print("get in buid => ${this.arr}");
+    List filterArr = [];
+    this.arr.forEach((element){
+      if (element['network'] == this.network) {
+        filterArr.add(element);
+      }
+    });
     return Column(
-        children: arr.map((item) => walletCard(item, context)).toList()
+        children: filterArr.map((item) => walletCard(item, context)).toList(),
     );
   }
 }
