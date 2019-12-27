@@ -10,7 +10,7 @@ import 'package:web3dart/web3dart.dart';
 import 'dart:io';
 import 'package:path/path.dart' show join, dirname;
 import 'package:youwallet/util/eth_amount_formatter.dart' ;
-import 'package:path_provider/path_provider.dart';
+
 import 'package:flutter/services.dart';
 
 //abstract class TokenService {
@@ -102,7 +102,8 @@ class TokenService {
 
   static Future<String> getNetWork() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return 'https://' + prefs.getString('network') + '.infura.io/';
+    String network = await prefs.getString('network');
+    return 'https://' + network + '.infura.io/';
   }
 
   /// 搜索指定token
@@ -125,6 +126,7 @@ class TokenService {
         body: json.encode(payload)
     );
     Map result = jsonDecode(rsp.body);
+
     if (result.containsKey('error') ) {
       return token['error'] = result['error'];
     } else {
@@ -177,15 +179,18 @@ class TokenService {
     );
 
     Map body = jsonDecode(rsp.body);
-//    print(body);
-    String balance = body['result'].replaceFirst('0x', '');
-    String balanceFilter = "";
-    int i = 0;
-    while(balance[i] == '0' && i<balance.length - 1) {
-      balanceFilter = balance.substring(i + 1);
-      i++;
+    print('token balance => ${body}');
+    String balance = BigInt.parse(body['result']).toString();
+    print('token balance => ${balance}');
+    int decimals = await getDecimals(address);
+    print("token decimals => ${decimals}");
+    if (balance == '0') {
+      return '0';
+    } else {
+      int len = balance.length;
+      return balance.substring(0,len-decimals );
     }
-    return balanceFilter;
+
   }
 
   /// 获取代币的小数位数

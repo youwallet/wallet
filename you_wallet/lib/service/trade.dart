@@ -126,7 +126,7 @@ class Trade {
     String post_data = functionName + trader + formatParam(this.amount) + formatParam(this.price) + gasTokenAmount;
     post_data = post_data + this.configData + signature + formatParam(this.tokenA) + formatParam(this.tokenB) + formatParam(taxAddress);
 
-
+    print("takeOrder post => ${post_data}");
     final client = Web3Client(rpcUrl, Client());
     var credentials = await client.credentialsFromPrivateKey(privateKey);
     try {
@@ -162,7 +162,6 @@ class Trade {
     String functionHex = "0x0b973ca2";
     String _v = sign['v'] + "00000000000000000000000000000000000000000000000000000000000000";
     String post_data = functionHex + _v + sign['r'] + sign['s'] + formatParam('1');
-    print("getConfigSignature post =>${post_data}");
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",
@@ -185,6 +184,7 @@ class Trade {
     );
 
     Map result = jsonDecode(rsp.body);
+    print("getConfigSignature body =>${result}");
     return result['result'].replaceFirst("0x", "");
   }
 
