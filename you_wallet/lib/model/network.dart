@@ -19,14 +19,18 @@ class Network extends ChangeNotifier {
 
 
   String _network = "";
+  String _rpcUrl = "";
 
   //
   String  get network => _network;
 
+  // 获取jsonrpc请求所用的url
+  String  get rpcUrl => _rpcUrl;
+
   Future<void> _getNetwork() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    this._network = await prefs.getString("network")??'ropsten';
-    notifyListeners();
+    String network = await prefs.getString("network")??'ropsten';
+    await this.changeNetwork(network);
   }
 
 
@@ -34,6 +38,7 @@ class Network extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("network", network);
     this._network = network;
+    this._rpcUrl = 'https://' + network + '.infura.io/';
     notifyListeners();
   }
 

@@ -28,17 +28,21 @@ class Wallet extends ChangeNotifier {
   // 名字
   String currentWalletName = "";
 
-  //
+  Map _nowWallet = {};
+
+  // 获取钱包列表
   List<Map> get items => _items;
+  // 获取当前钱包对象
+  List<Map> get  nowWallet=> _nowWallet;
 
   // 获取缓存的钱包
   Future<List> _fetchWallet() async {
     var sql = SqlUtil.setTable("wallet");
     List res = await sql.get();
-    print(res);
     res.forEach((f){
       this._items.add(f);
     });
+    this.setWallet();
   }
 
   //设置当前的钱包
@@ -50,6 +54,7 @@ class Wallet extends ChangeNotifier {
     this._items.forEach((f){
       if (f['address'] == address) {
         this.currentWalletName = f['name'].length > 0 ? f['name']:'Account${f['id'].toString()}';
+        this._nowWallet = f;
       }
     });
     notifyListeners();
