@@ -263,7 +263,24 @@ class Page extends State<TabTransfer> {
 
   // 定义bar上的内容
   Widget buildAppBar(BuildContext context) {
-    return new AppBar(title: const Text('转账'));
+    return new AppBar(
+        title: const Text('转账'),
+        actions: this.appBarActions(),
+    );
+  }
+
+  appBarActions() {
+    return <Widget>[
+      new Container(
+        width: 50.0,
+        child: new IconButton(
+          icon: Icon(Icons.menu),
+          onPressed: () {
+            Navigator.pushNamed(context, "token_history");
+          },
+        ),
+      )
+    ];
   }
 
   // 构建进度条

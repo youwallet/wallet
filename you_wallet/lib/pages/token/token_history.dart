@@ -107,7 +107,7 @@ class Page extends State<TokenHistory> {
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
         backgroundColor: Colors.white,
-        title: new Text('Token'),
+        title: new Text('转账记录'),
 //        bottom: new TabBar(
 //          tabs: [
 //            new Tab(text: '日期'),
