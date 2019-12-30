@@ -4,16 +4,16 @@ class GenderChooseDialog extends Dialog {
 
   var title; //modal的标题
   var content; // modal中的内容
-  Function onBoyChooseEvent;
-  Function onGirlChooseEvent;
+  Function onCancelChooseEvent;
+  Function onSuccessChooseEvent;
 
   // 构造函数
   GenderChooseDialog({
     Key key,
-    @required this.title,
+    this.title = "提示",
     @required this.content,
-    @required this.onBoyChooseEvent,
-    @required this.onGirlChooseEvent,
+    @required this.onCancelChooseEvent,
+    @required this.onSuccessChooseEvent,
   }) : super(key: key);
 
   @override
@@ -56,16 +56,16 @@ class GenderChooseDialog extends Dialog {
                             mainAxisSize: MainAxisSize.max,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
-                              _genderChooseItemWid(1),
-                              _genderChooseItemWid(2)
+                              _buttonChooseItemWid(1),
+                              _buttonChooseItemWid(2)
                             ])
                       ]))
                 ])));
   }
 
-  Widget _genderChooseItemWid(var gender) {
+  Widget _buttonChooseItemWid(var gender) {
     return GestureDetector(
-        onTap: gender == 1 ? this.onBoyChooseEvent : this.onGirlChooseEvent,
+        onTap: gender == 1 ? this.onCancelChooseEvent : this.onSuccessChooseEvent,
         child: Container(
           alignment: Alignment.center,
           width: 100,
@@ -73,7 +73,7 @@ class GenderChooseDialog extends Dialog {
             color: gender == 1 ? Colors.black12: Colors.lightBlue,
             child: Text(gender == 1 ? '取消' : '确定',
                   style: TextStyle(
-                      color: Color(gender == 1 ? 0xff4285f4 : 0xffff4444),
+                      color: gender == 1 ? Colors.white : Colors.white,
                       fontSize: 15.0)),
           )
         );

@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:youwallet/service/token_service.dart';
 import 'package:youwallet/widgets/customStepper.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
+
+import 'package:provider/provider.dart';
+import 'package:youwallet/model/token.dart';
+import 'package:youwallet/model/wallet.dart';
+import 'package:youwallet/model/network.dart';
+import 'package:youwallet/service/trade.dart';
+import 'package:youwallet/bus.dart';
+import 'package:youwallet/service/token_service.dart';
 
 class TabTransfer extends StatefulWidget {
   @override
@@ -10,14 +19,41 @@ class TabTransfer extends StatefulWidget {
 }
 
 class Page extends State<TabTransfer> {
+
+  double balance = 0.0;
+  final globalKey = GlobalKey<ScaffoldState>();
+  var value;
+  // 定义TextEditingController()接收编辑框的输入值
+  final controllerPrice = TextEditingController();
+  final controllerAddress = TextEditingController();
+
+  //数据初始化
+  @override
+  void initState() {
+    super.initState();
+
+    // 监听页面切换，刷新交易的状态
+    eventBus.on<TabChangeEvent>().listen((event) {
+      print("event listen =》${event.index}");
+      if (event.index == 3) {
+        print('刷新订单状态');
+        this._getBalance();
+      } else {
+        print('do nothing');
+      }
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return layout(context);
   }
-  var value;
+
   double slider = 1.0;
   Widget layout(BuildContext context) {
     return new Scaffold(
+      key: globalKey,
       appBar: buildAppBar(context),
       body: new Container(
         alignment: Alignment.center,
@@ -25,7 +61,7 @@ class Page extends State<TabTransfer> {
         child: new Column(
           children: <Widget>[
             new Text(
-              '余额：2999.00 ETH',
+              '余额：${this.balance}ETH',
                 style: new TextStyle(
                     fontSize: 26.0,
                     color: Colors.lightBlue
@@ -41,10 +77,11 @@ class Page extends State<TabTransfer> {
                     border: new Border.all(width: 1.0, color: Colors.black12),
                   ),
                   child: new DropdownButton(
-                    items: getListData(),
+                    items: getListData(Provider.of<Token>(context).items),
                     hint:new Text('选择币种'),//当没有默认值的时候可以设置的提示
                     value: value,//下拉菜单选择完之后显示给用户的值
                     onChanged: (T){//下拉菜单item点击之后的回调
+                      print(T);
                       setState(() {
                         value=T;
                       });
@@ -60,20 +97,25 @@ class Page extends State<TabTransfer> {
                   ),
                 ),
                 new  Expanded(
-                    child: new TextField(
-                      decoration: InputDecoration(
-                          hintText: "转账金额",
-                          fillColor: Colors.black12,
-                          contentPadding: new EdgeInsets.only(left: 4.0),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(6.0),
-                          )
+                    child: new Container(
+                      height: 26.0,
+                      child: new TextField(
+                        controller: controllerPrice,
+                        decoration: InputDecoration(
+                            hintText: "转账金额",
+                            fillColor: Colors.black12,
+                            contentPadding: EdgeInsets.only(left: 10.0),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(6.0),
+                            )
+                        ),
+                        onChanged: (text) {//内容改变的回调
+                          print('change $text');
+
+                        },
                       ),
-                      onChanged: (text) {//内容改变的回调
-                        print('change $text');
-                      },
-                    ),
-                )
+                    )
+                  ),
               ],
             ),
             new Container(
@@ -102,6 +144,7 @@ class Page extends State<TabTransfer> {
                   maxHeight: 26,
               ),
               child: new TextField(
+                controller: controllerAddress,
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(6.0),
@@ -143,8 +186,8 @@ class Page extends State<TabTransfer> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 new Text('慢速'),
-                new Text('慢速'),
-                new Text('慢速')
+                new Text('中速'),
+                new Text('快速')
               ],
             ),
             new Slider(
@@ -172,6 +215,25 @@ class Page extends State<TabTransfer> {
               minWidth: 300,
               child: new Text('确认转账'),
               onPressed: () {
+                if (this.value == null) {
+                  this.showSnackbar('请选择token');
+                  return;
+                }
+
+                if (this.controllerPrice.text == '') {
+                  this.showSnackbar('请输入转账金额');
+                  return;
+                }
+
+                if (this.controllerAddress.text == '') {
+                  this.showSnackbar('请输入转账地址');
+                  return;
+                }
+
+                if (this.controllerAddress.text.length != 42) {
+                  this.showSnackbar('转账地址长度不符合42位长度要求');
+                  return;
+                }
                 showDialog(
                     context: context,
                     barrierDismissible: false,
@@ -179,14 +241,15 @@ class Page extends State<TabTransfer> {
                       return GenderChooseDialog(
                           title: '确认付款?',
                           content: '',
-                          onBoyChooseEvent: () {
-                            print('get in callback');
+                          onCancelChooseEvent: () {
                             Navigator.pop(context);
+                            this.showSnackbar('取消转账');
                           },
-                          onGirlChooseEvent: () {
+                          onSuccessChooseEvent: () {
                             Navigator.pop(context);
+                            this.startTransfer();
                           });
-                    });
+                });
               },
             ),
 
@@ -220,25 +283,34 @@ class Page extends State<TabTransfer> {
     );
   }
 
-  // 构建弹出框中的内容
-  List<DropdownMenuItem> getListData(){
+  Future<void> _getBalance() async {
+    print(Provider.of<Wallet>(context).currentWallet);
+    String balance = await TokenService.getBalance(Provider.of<Wallet>(context).currentWallet);
+    setState(() {
+      this.balance =  double.parse(balance);
+    });
+  }
+
+
+  // 构建页面下拉列表
+  List<DropdownMenuItem> getListData(List tokens){
     List<DropdownMenuItem> items=new List();
-    DropdownMenuItem dropdownMenuItem1=new DropdownMenuItem(
-      child:new Text('1'),
-      value: '1',
-    );
-    items.add(dropdownMenuItem1);
-    DropdownMenuItem dropdownMenuItem2=new DropdownMenuItem(
-      child:new Text('2'),
-      value: '2',
-    );
-    items.add(dropdownMenuItem2);
-    DropdownMenuItem dropdownMenuItem3=new DropdownMenuItem(
-      child:new Text('3'),
-      value: '3',
-    );
-    items.add(dropdownMenuItem3);
+
+    for (var value in tokens) {
+      items.add(new DropdownMenuItem(
+        child:new Text(value['name']),
+        value: value,
+      ));
+    }
     return items;
   }
 
+  void showSnackbar(String text) {
+    final snackBar = SnackBar(content: Text(text));
+    globalKey.currentState.showSnackBar(snackBar);
+  }
+
+  Future<void> startTransfer(){
+    this.showSnackbar('转账中···');
+  }
 }

@@ -25,6 +25,7 @@ import 'package:youwallet/model/token.dart';
 import 'package:youwallet/model/network.dart';
 import 'package:youwallet/service/trade.dart';
 
+
 class TabExchange extends StatefulWidget {
 
   @override
@@ -42,11 +43,9 @@ class Page extends State {
   final controllerPrice = TextEditingController();
 
   List trades = [];
-
-
   // 输入框右侧显示的token提示
   String suffixText = "";
-
+  double tradePrice = 0;
 
   //数据初始化
   @override
@@ -77,29 +76,15 @@ class Page extends State {
   var _rightToken = '0x42ABeB85Edf30e470601Ef47B55B9FF1bF3dcABa';
   String _btnText="买入";
   List tokens = [];
+  String tokenBalance = "";
 
-  // 每次进入交易页面，加载当前用户私钥, 我在metamask上注册的测试用钱包私钥
-  final privateKey = "279EFAC43AAE9405DCD9A470B9228C1A3C0F2DEFC930AD1D9B764E78D28DB1DF";
-
-  // 我在metaMask上注册的钱包地址，这个地址可以经由私钥进行椭圆曲线算法推倒而来
-  final myAddress = "AB890808775D51e9bF9fa76f40EE5fff124deCE5";
-
-  // youwalllet的合约地址
-  final contractAddress= "0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364";
-
-  // 收取交易费的地址
-  final relayerAddress = "0000000000000000000000003d9c6c5a7b2b2744870166eac237bd6e366fa3ef"; // 收取交易费的账户，暂时用SHT的合约账户
-
-  // 以太坊水龙头合约地址
-  final faucet = "0x81b7E08F65Bdf5648606c89998A9CC8164397647";
-
-  // 以太坊url
-  final String rpcUrl = "https://ropsten.infura.io/";
   // 构建页面
   Widget layout(BuildContext context) {
     return new Scaffold(
+      backgroundColor: _btnText == '买入' ? Colors.white : Colors.red[50],
       appBar: buildAppBar(context),
       body: new Container(
+
         padding: const EdgeInsets.all(16.0), // 四周填充边距32像素
         child: new Column(
           children: <Widget>[
@@ -147,12 +132,16 @@ class Page extends State {
                     items: getListData(Provider.of<Token>(context).items),
                     hint:new Text('选择币种'),//当没有默认值的时候可以设置的提示
                     value: value,//下拉菜单选择完之后显示给用户的值
-                    onChanged: (T){//下拉菜单item点击之后的回调
-                      print(T);
+                    onChanged: (T) async {
+                      // 每次切换token，动态获取当前token的余额
+//                      String tokenBalance = await TokenService.getTokenBalance(T['address']);
+                      Map token = Provider.of<Token>(context).items.firstWhere((element)=>(element['address'] == T['address']));
                       setState(() {
-                        suffixText = T['name'];
-                        value=T;
+                        this.suffixText = token['name'];
+                        this.value=T;
+                        this.tokenBalance = token['balance'];
                       });
+
                     },
                     isDense: true,
                     elevation: 24,//设置阴影的高度
@@ -174,43 +163,6 @@ class Page extends State {
                       )
                     ],
                   )
-                ),
-                new Text('限价模式'),
-                new ConstrainedBox(
-                    constraints: BoxConstraints(
-                        maxHeight: 25,
-                        maxWidth: 200
-                    ),
-                    child: new TextField(
-                      controller: controllerAmount,
-                      keyboardType: TextInputType.number,//键盘类型，数字键盘
-                      decoration: InputDecoration(// 输入框内部右侧增加一个icon
-                          suffixText: this.suffixText,//位于尾部的填充文字
-                          suffixStyle: new TextStyle(
-                              fontSize: 14.0,
-                              color: Colors.black38
-                          ),
-                          hintText:"输入买入数量",
-                          filled: true, // 填充背景颜色
-                          fillColor: Colors.black12,
-                          contentPadding: new EdgeInsets.all(6.0), // 内部边距，默认不是0
-                          border:InputBorder.none, // 没有任何边线
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(6.0),
-                            borderSide: BorderSide(
-                              color: Colors.black12, //边线颜色为黄色
-                              width: 1, //边线宽度为2
-                            ),
-                          )
-                      ),
-                      onSubmitted: (text) {},
-                    ),
-
-                ),
-                new Text('约=￥0.001元'),
-                new Container(
-                  height: 10.0,
-                  child: null,
                 ),
                 new ConstrainedBox(
                   constraints: BoxConstraints(
@@ -238,33 +190,76 @@ class Page extends State {
                           ),
                         )
                     ),
+                    onChanged: (text) {//内容改变的回调
+                      this.computeTrade();
+                    },
                   ),
 
                 ),
-                new Text('当前账户余额~'),
+                new Text('当前账户余额${tokenBalance}'),
+                new Container(
+                  height: 10.0,
+                  child: null,
+                ),
+                new Text('限价模式'),
+                new ConstrainedBox(
+                  constraints: BoxConstraints(
+                      maxHeight: 25,
+                      maxWidth: 200
+                  ),
+                  child: new TextField(
+                    controller: controllerAmount,
+                    keyboardType: TextInputType.number,//键盘类型，数字键盘
+                    decoration: InputDecoration(// 输入框内部右侧增加一个icon
+                        suffixText: this.suffixText,//位于尾部的填充文字
+                        suffixStyle: new TextStyle(
+                            fontSize: 14.0,
+                            color: Colors.black38
+                        ),
+                        hintText:"输入买入数量",
+                        filled: true, // 填充背景颜色
+                        fillColor: Colors.black12,
+                        contentPadding: new EdgeInsets.all(6.0), // 内部边距，默认不是0
+                        border:InputBorder.none, // 没有任何边线
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(6.0),
+                          borderSide: BorderSide(
+                            color: Colors.black12, //边线颜色为黄色
+                            width: 1, //边线宽度为2
+                          ),
+                        )
+                    ),
+                    onSubmitted: (text) {},
+                    onChanged: (text) {//内容改变的回调
+                      this.computeTrade();
+                    },
+                  ),
+
+                ),
+                new Text('约=￥0.001元'),
                 new Container(
 
                   padding: new EdgeInsets.only(top: 30.0),
                   child: new Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                      new Text('交易额~'),
+                      new Text('交易额${tradePrice}BTD'),
                       new SizedBox(
                         width: double.infinity,
                         height: 30,
                         child: RaisedButton(
+                            color: _btnText == '买入'? Colors.green : Colors.red,
                             elevation: 0,
                             onPressed: () async {
                                this.makeOrder();
                             },
                             child: Text(
-                                this._btnText,
+                                this._btnText + this.suffixText,
                                 style: TextStyle(
                                     fontSize: 14.0,
                                     color: Colors.white
                                 )
                             ),
-                            color: Colors.green,
                             textColor: Colors.white,
                           ),
                       ),
@@ -316,7 +311,7 @@ class Page extends State {
 
   // 获取按钮
   Widget getButton(String btnText, String currentBtn) {
-    if (btnText == currentBtn) {
+    if (btnText != currentBtn) {
       return RaisedButton(
         onPressed: () {
           changeOrderModel(btnText);
@@ -325,8 +320,7 @@ class Page extends State {
               borderRadius: BorderRadius.all(Radius.circular(0))
         ), // 设置圆角，默认有圆角
         child: Text(btnText),
-          textColor: Colors.white,
-        color: Colors.green
+        textColor: Colors.white,
       );
     } else {
       return OutlineButton(
@@ -334,9 +328,8 @@ class Page extends State {
           changeOrderModel(btnText);
         },
         child: Text(btnText),
-        color: Colors.deepOrange,
-        borderSide: BorderSide(
-            color: Colors.green,
+        borderSide:  BorderSide(
+            color: currentBtn == '买入'? Colors.green : Colors.red,
             width: 1.0,
             style: BorderStyle.solid
         ),
@@ -408,7 +401,7 @@ class Page extends State {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               new Text('价格EOS'),
-              new Text('价格SHT'),
+              new Text('数量SHT'),
             ],
           ),
           priceNum()
@@ -501,10 +494,19 @@ class Page extends State {
      }
    }
 
+   // 计算交易额度
+   void computeTrade() {
+     if (this.controllerAmount.text.length == 0) {
+       return ;
+     }
 
+     if (this.controllerPrice.text.length == 0) {
+       return ;
+     }
 
-   void _getBaseToken() async {
-    await TokenService.getBaseToken();
+     setState(() {
+       this.tradePrice = double.parse(this.controllerAmount.text) * double.parse(this.controllerPrice.text);
+     });
    }
 
 }

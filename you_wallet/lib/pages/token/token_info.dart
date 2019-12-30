@@ -99,7 +99,7 @@ class Page extends State<TokenInfo> {
                               new Padding(
                                 padding: new EdgeInsets.all(10.0),
                                 child: new Text(
-                                  'Token地址',
+                                  '合约地址',
                                   style: TextStyle(
                                       fontSize: 16.0,
                                       height: 2
@@ -132,7 +132,7 @@ class Page extends State<TokenInfo> {
 
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
-      title: const Text('Token信息'),
+      title: const Text('合约信息'),
 //      actions: this.appBarActions(),
     );
   }
@@ -152,7 +152,7 @@ class Page extends State<TokenInfo> {
   }
 
   void  _copyAddress() {
-    ClipboardData data = new ClipboardData(text:"测试剪贴板复制功能");
+    ClipboardData data = new ClipboardData(text:this.arguments['address']);
     Clipboard.setData(data);
     this.showSnackbar('复制成功');
   }

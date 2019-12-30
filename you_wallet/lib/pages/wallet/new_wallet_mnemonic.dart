@@ -4,12 +4,19 @@ import 'package:youwallet/service/token_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WalletMnemonic extends StatefulWidget {
+  final arguments;
+
+  WalletMnemonic({Key key ,this.arguments}) : super(key: key);
 
   @override
-  Page createState()  => Page();
+  Page createState()  => Page(arguments: this.arguments);
 }
 
 class Page extends State<WalletMnemonic> {
+
+  Map arguments;
+  Page({this.arguments});
+  bool showBtn;
 
 //  List randomMnemonic = [];
 //  List randomMnemonicAgain = [];
@@ -18,9 +25,17 @@ class Page extends State<WalletMnemonic> {
   @override // override是重写父类中的函数 每次初始化的时候执行一次，类似于小程序中的onLoad
   void initState() {
     super.initState();
-    String randomMnemonic = TokenService.generateMnemonic();
+    String randomMnemonic = '';
+    bool _showBtn = true;
+    if (this.arguments == null) {
+      randomMnemonic = TokenService.generateMnemonic();
+    } else {
+      randomMnemonic = this.arguments['mnemonic'];
+      _showBtn = false;
+    }
     setState(() {
       this._name.text = randomMnemonic;
+      this.showBtn = _showBtn;
     });
   }
 
@@ -69,22 +84,44 @@ class Page extends State<WalletMnemonic> {
                     )
                 ),
               ),
-              RaisedButton(
-                child: Text('我已备份，下一步',
-                    style: new TextStyle(
-                        color: Colors.white
-                    )),
-                color: Colors.lightBlue,
-                onPressed: () async {
-                      SharedPreferences prefs = await SharedPreferences.getInstance();
-                      prefs.setString("randomMnemonic", this._name.text );
-                      Navigator.of(context).pushReplacementNamed("wallet_check");
-                },
-              ),
+              buildButton()
+//              RaisedButton(
+//                child: Text('我已备份，下一步',
+//                    style: new TextStyle(
+//                        color: Colors.white
+//                    )),
+//                color: Colors.lightBlue,
+//                onPressed: () async {
+//                      SharedPreferences prefs = await SharedPreferences.getInstance();
+//                      prefs.setString("randomMnemonic", this._name.text );
+//                      Navigator.of(context).pushReplacementNamed("wallet_check");
+//                },
+//              ),
+//              Text(''),
+
             ],
           ),
         )
     );
+  }
+
+  Widget buildButton(){
+    if (this.showBtn) {
+      return  RaisedButton(
+        child: Text('我已备份，下一步',
+            style: new TextStyle(
+                color: Colors.white
+            )),
+        color: Colors.lightBlue,
+        onPressed: () async {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString("randomMnemonic", this._name.text );
+          Navigator.of(context).pushReplacementNamed("wallet_check");
+        },
+      );
+    } else {
+      return Text('');
+    }
   }
 
 //  Widget buildItem(item){

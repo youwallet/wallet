@@ -148,7 +148,7 @@ class Page extends State<TabReceive> {
   }
 
   void  _copyAddress() {
-    ClipboardData data = new ClipboardData(text:"测试剪贴板复制功能");
+    ClipboardData data = new ClipboardData(text:Provider.of<Wallet>(context).currentWallet);
     Clipboard.setData(data);
     final snackBar = new SnackBar(content: new Text('复制成功'));
     Scaffold.of(context).showSnackBar(snackBar);

@@ -1,7 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:youwallet/service/service_locator.dart';
+import 'package:youwallet/service/local_authentication_service.dart';
 
 class NewWalletName extends StatefulWidget {
   NewWalletName() : super();
@@ -12,6 +13,8 @@ class NewWalletName extends StatefulWidget {
 class _NewWalletNameState extends State<NewWalletName> {
 
   final globalKey = GlobalKey<ScaffoldState>();
+  final LocalAuthenticationService _localAuth = locator<LocalAuthenticationService>();
+
 
   void showSnackbar(String text) {
     final snackBar = SnackBar(content: Text(text));
@@ -52,6 +55,7 @@ class _NewWalletNameState extends State<NewWalletName> {
                 margin: const EdgeInsets.only(top: 50.0, bottom: 20.0),
                 child:  new GestureDetector(
                   onTap: (){
+                    _localAuth.authenticate;
                     this.showSnackbar('还不能识别指纹，直接输入钱包名字提交');
                   },//写入方法名称就可以了，但是是无参的
                   child: new Image.asset(

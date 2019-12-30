@@ -28,7 +28,7 @@ class TokenService {
 //  AddressService(this._configService);
 
   /// 交易所合约地址
-  static final contractAddress= "0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364";
+//  static final contractAddress= "0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364";
 
   // 获取助记词
   static String generateMnemonic() {
@@ -158,6 +158,7 @@ class TokenService {
   static Future<String> getTokenBalance(String address) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String myAddress = await prefs.getString("currentWallet");
+    print('my Address => ${myAddress}');
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",
@@ -190,7 +191,6 @@ class TokenService {
       int len = balance.length;
       return balance.substring(0,len-decimals );
     }
-
   }
 
   /// 获取代币的小数位数
@@ -248,32 +248,6 @@ class TokenService {
         contract: contract, function: balanceFunction, params: [myAddress]);
     print('We have ${balance.first} MetaCoins');
 
-  }
-
-
-  static Future<void> getBaseToken() async {
-
-    var client = Client();
-    var payload = {
-      "jsonrpc": "2.0",
-      "method": "eth_call",
-      "params": [{
-        "to": contractAddress,
-        "data": "0x1214dd58"
-      },"latest"],
-      "id": DateTime.now().millisecondsSinceEpoch
-    };
-
-    String rpcUrl = await getNetWork();
-
-    var rsp = await client.post(
-        rpcUrl,
-        headers:{'Content-Type':'application/json'},
-        body: json.encode(payload)
-    );
-
-    Map body = jsonDecode(rsp.body);
-    print(body);
   }
 
 }

@@ -16,12 +16,12 @@ import 'package:youwallet/db/sql_util.dart';
 class Trade {
 
   /// 交易所合约地址 这个要写入全局变量中，全局共用，contractAddress似乎是一个关键字，不要用这个名字做变量
-  static String contractAddress= "0xf5ac3b07a86a68aCA2050253eF5e28ca02BD07f8";
+  static String contractAddress= "0x3762fF9389feaE5C7C00aC765C1f0056f9B53eCB";
 
-  static final tempMatchAddress= "0xf5ac3b07a86a68aCA2050253eF5e28ca02BD07f8";
+  static final tempMatchAddress= "0x3762fF9389feaE5C7C00aC765C1f0056f9B53eCB";
 
   // 获取订单匹配情况的合约
-  static final hybridExchangeAddress = "0x139A53B0Cf2caE3e080cfC8A80D0A439F30edb52";
+  static final hybridExchangeAddress = "0xC34528755ACBcf1872FeE04c5Cf4BbE112cdafA2";
 
 
   // 收取交易费的账户，测试阶段用SHT的合约账户代替

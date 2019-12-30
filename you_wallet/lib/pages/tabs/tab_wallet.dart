@@ -15,6 +15,7 @@ import 'package:youwallet/bus.dart';
 
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
+import 'package:youwallet/model/network.dart';
 import 'package:youwallet/model/wallet.dart' as walletModel;
 import 'package:youwallet/db/sql_util.dart';
 import 'package:youwallet/db/provider.dart';
@@ -128,16 +129,12 @@ class Page extends State<TabWallet> {
             padding: const EdgeInsets.only(left: 16.0, right: 16.0), // 四周填充边距32像素
             child: Consumer<Token>(
               builder: (context, Token, child) {
-                return tokenList(arr: Token.items);
+                return tokenList(arr: Token.items,network: Provider.of<Network>(context).network);
               },
             ),
           )
         ],
       ),
-//      floatingActionButton: FloatingActionButton(
-//        child: new Icon(Icons.add),
-//        onPressed: () => Navigator.pushNamed(context, "wallet_guide")
-//      ),
         drawer: Drawer(
           child: ListView(
             padding: EdgeInsets.zero,
@@ -148,7 +145,8 @@ class Page extends State<TabWallet> {
                     style: TextStyle( fontWeight: FontWeight.bold, ),
                   ),
                   accountEmail: Text('sibbay@example.com'),
-                  currentAccountPicture: CircleAvatar( backgroundImage: NetworkImage('https://upyun-assets.ethfans.org/assets/ethereum-logo-fe43a240b78711a6d427e9638f03163f3dc88ca8c112510644ce7b5f6be07dbe.png'), ),
+                  //currentAccountPicture: CircleAvatar( backgroundImage: NetworkImage('https://upyun-assets.ethfans.org/assets/ethereum-logo-fe43a240b78711a6d427e9638f03163f3dc88ca8c112510644ce7b5f6be07dbe.png')),
+                  currentAccountPicture : Icon(IconData(0xe648, fontFamily: 'iconfont'),size: 60.0, color: Colors.black26),
                   decoration: BoxDecoration(
                       color: Colors.black12,
                       image: DecorationImage(

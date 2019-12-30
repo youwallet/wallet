@@ -12,6 +12,7 @@ import 'package:youwallet/pages/wallet/new_wallet_check.dart';
 import 'package:youwallet/pages/wallet/new_wallet_mnemonic.dart';
 import 'package:youwallet/pages/manage_wallet/manage_list.dart'; // 新建钱包名字
 import 'package:youwallet/pages/manage_wallet/set_wallet.dart'; // 新建钱包名字
+import 'package:youwallet/pages/wallet/wallet_export.dart'; // 导出钱包
 
 // token
 import 'package:youwallet/pages/token/token_history.dart'; // token交易历史
@@ -38,9 +39,10 @@ final routes = {
   "login": (context) => new Login(),
   "backup_wallet": (context, {arguments}) => new BackupWallet(arguments: arguments),
   "load_wallet": (context) => new LoadWallet(),
-  "wallet_mnemonic": (context) => new WalletMnemonic(),
+  "wallet_mnemonic": (context,{arguments}) => new WalletMnemonic(arguments: arguments),
   "wallet_check": (context) => new WalletCheck(),
   "set_network":  (context) => new NetworkPage(),
+  "wallet_export":  (context,{arguments}) => new WalletExport(arguments: arguments),
 //  "tabs": (context) => new ContainerPage()
 };
 

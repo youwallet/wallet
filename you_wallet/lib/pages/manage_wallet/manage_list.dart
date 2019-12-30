@@ -87,8 +87,7 @@ class Page extends State<ManageWallet> {
     String name = item['name'].length > 0 ? item['name']:'Account${item['id']}';
     return new Card(
         color: Colors.white, //背景色
-        child:  GestureDetector(
-          child: new Container(
+        child: new Container(
               padding: const EdgeInsets.all(28.0),
               child: new Row(
                 children: <Widget>[
@@ -120,33 +119,20 @@ class Page extends State<ManageWallet> {
                       ],
                     ),
                   ),
-//                new Container(
-//                    child: new Column(
-//                      children: <Widget>[
-//                        new Text(
-//                          item['balance'],
-//                          style: new TextStyle(fontSize: 16.0,
-//                              color: Color.fromARGB(100, 6, 147, 193)),
-//                        ),
-//                        new Text('￥${item['rmb']}'),
-//                      ],
-//                    )
-//
-//                )
+                  new Container(
+                    child: new IconButton(
+                      icon: new Icon(Icons.settings),
+                      onPressed: () {
+                        print(item);
+                        Navigator.pushNamed(context, "wallet_export",arguments:{
+                          'address': item['address'],
+                        });
+                      },
+                    ),
+
+                )
                 ],
               )
-          ),
-          onTap: () async {
-            print("点击token =》 ${item}");
-//            SharedPreferences prefs = await SharedPreferences.getInstance();
-//            prefs.setString("currentAddress", item['address']);
-//            setState(() {
-//              this.current_address = item['address'];  // aaa
-//            });
-          },
-          onLongPress: ()  {
-            Provider.of<Wallet>(context).remove(item);
-          },
         )
     );
 

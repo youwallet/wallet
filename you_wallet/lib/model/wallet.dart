@@ -33,7 +33,7 @@ class Wallet extends ChangeNotifier {
   // 获取钱包列表
   List<Map> get items => _items;
   // 获取当前钱包对象
-  List<Map> get  nowWallet=> _nowWallet;
+  Map get  nowWallet=> _nowWallet;
 
   // 获取缓存的钱包
   Future<List> _fetchWallet() async {
