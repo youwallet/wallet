@@ -76,7 +76,9 @@ class Page extends State<TokenHistory> {
                   icon: Icon(Icons.search),
                   color: Colors.blue,
                   label: Text("收款"),
-                  onPressed: () => print("图标按钮"),
+                  onPressed: () {
+                    Navigator.pushNamed(context, "tab_transfer");
+                  },
                 ),
               ),
               flex: 1,
@@ -92,7 +94,9 @@ class Page extends State<TokenHistory> {
                   icon: Icon(Icons.search),
                   label: Text("转账"),
                   color: Colors.green,
-                  onPressed: () => print("图标按钮"),
+                  onPressed: (){
+                    Navigator.of(context).pop();
+                  },
                 ),
               ),
               flex: 1,

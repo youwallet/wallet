@@ -102,7 +102,7 @@ class TokenService {
 
   static Future<String> getNetWork() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String network = await prefs.getString('network');
+    String network =  prefs.getString('network');
     return 'https://' + network + '.infura.io/';
   }
 
@@ -226,7 +226,7 @@ class TokenService {
     final client = Web3Client(rpcUrl, Client(), enableBackgroundIsolate: true);
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String myAddress = await prefs.getString("currentWallet");
+    String myAddress = prefs.getString("currentWallet");
 
     final EthereumAddress contractAddr =
     EthereumAddress.fromHex(address);
