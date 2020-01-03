@@ -15,10 +15,10 @@ import 'package:youwallet/db/sql_util.dart';
 
 class Trade {
 
-  /// 交易所合约地址 这个要写入全局变量中，全局共用，contractAddress似乎是一个关键字，不要用这个名字做变量
-  static String contractAddress= "0x3762fF9389feaE5C7C00aC765C1f0056f9B53eCB";
-
   static final tempMatchAddress= "0x3762fF9389feaE5C7C00aC765C1f0056f9B53eCB";
+
+  // 水龙头合约地址
+  // static final tempMatchAddress = "0x81b7e08f65bdf5648606c89998a9cc8164397647";
 
   // 获取订单匹配情况的合约
   static final hybridExchangeAddress = "0xC34528755ACBcf1872FeE04c5Cf4BbE112cdafA2";
@@ -27,11 +27,12 @@ class Trade {
   // 收取交易费的账户，测试阶段用SHT的合约账户代替
   static final taxAddress = "0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef";
 
-  // 这个定义多大
+  // 这个定义多大?
   static final gasTokenAmount = "0000000000000000000000000000000000000000000000000000000000000000";
 
   static final Map func = {
     'filled(bytes32)':'0x288cdc91',
+    'getOrderQueueInfo(address,address,bool)': '0x22f42f6b'
   };
 
   // Trade内的私有变量
@@ -42,9 +43,9 @@ class Trade {
   String amount = '1';
   String price = '';
   bool   isBuy = true;
-  String trader = ""; // 用户钱包地址
-  String configData = ""; // 协议版本号码，是否买单，计算配置信息
-  String privateKey="";
+  String trader = ""; // 当前交易的用户钱包地址
+  String configData = ""; // 协议版本号码、是否买单，计算配置信息
+  String privateKey = "";
 
   String rpcUrl = "https://ropsten.infura.io/";
 
@@ -63,19 +64,27 @@ class Trade {
      //需要换一个名字
      this.price = (int.parse(amount) * int.parse(price)).toString();
      this.isBuy = isBuy;
+     print('baseToken => ${baseToken}');
+     print('isBuy => ${isBuy}');
   }
 
-
+  /* 获取订单参数中的data
+   * is_sell: true 为卖单, false 为买单
+   *
+   * 返回值：
+   * bytes32 data
+   *
+   * function getConfigData(bool is_sell);
+   * */
   static Future<String> getConfigData(bool isBuy) async{
     String configData = '';
+    // 参数编码中0表示false，1表示你true
     if (isBuy) {
       configData = '0';
     } else {
       configData = '1';
     }
-    print("contractAddress => ${contractAddress}");
     var client = Client();
-
     var payload = {
       "jsonrpc": "2.0",
       "method": "eth_call",
@@ -94,7 +103,7 @@ class Trade {
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
-    print("getConfigData => ${rsp.body}");
+    print("订单的getConfigData => ${rsp.body}");
     Map result = jsonDecode(rsp.body);
     return result['result'].replaceFirst('0x', '');
   }
@@ -118,26 +127,44 @@ class Trade {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     this.trader =  formatParam(prefs.getString("currentWallet"));
+    print('当前下单的钱包地址 =》 ${this.trader}');
 
     this.configData = await getConfigData(this.isBuy);
+
     String signature = await getConfigSignature();
+    /**
+     * trader 钱包地址
+     * configData 买单卖单计算的config
+     * signature  签名
+     * taxAddress 收手续费的一个地址
+     */
+    String postData = functionName + trader + formatParam(this.amount) + formatParam(this.price) + gasTokenAmount;
+    postData = postData + this.configData + signature + formatParam(this.tokenA) + formatParam(this.tokenB) + formatParam(taxAddress);
+
+    print("takeOrder post => ${postData}");
+    /**
+     *  0xefe29415000000000000000000000000ab890808775d51e9bf9fa76f40ee5fff124dece5000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000020000005ff0603c000000000000000000000000000000000000000000000000000000000000000000000000e898663A2CbDf7a371bB4B6a5dd7aC93d4505C9a0000000000000000000000002e01154391F7dcBf215c77DBd7fF3026Ea7514ce0000000000000000000000003d9c6c5a7b2b2744870166eac237bd6e366fa3ef
+     *
+     *  trader=000000000000000000000000ab890808775d51e9bf9fa76f40ee5fff124dece5
+     *  formatParam(this.amount) = 0000000000000000000000000000000000000000000000000000000000000001
+     *  formatParam(this.price) = 0000000000000000000000000000000000000000000000000000000000000001
+     *  gasTokenAmount = 0000000000000000000000000000000000000000000000000000000000000000
+     */
 
 
-    String post_data = functionName + trader + formatParam(this.amount) + formatParam(this.price) + gasTokenAmount;
-    post_data = post_data + this.configData + signature + formatParam(this.tokenA) + formatParam(this.tokenB) + formatParam(taxAddress);
-
-    print("takeOrder post => ${post_data}");
     final client = Web3Client(rpcUrl, Client());
     var credentials = await client.credentialsFromPrivateKey(privateKey);
+    print(BigInt.one);
+    print(EtherAmount.inWei(BigInt.one));
     try {
       var rsp = await client.sendTransaction(
           credentials,
           Transaction(
-              to: EthereumAddress.fromHex(contractAddress),
-              gasPrice: EtherAmount.inWei(BigInt.one),
+              to: EthereumAddress.fromHex(tempMatchAddress),
+              gasPrice: EtherAmount.inWei(BigInt.from(20000000000)),
               maxGas: 7000000,
               value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
-              data: hexToBytes(post_data)
+              data: hexToBytes(postData)
           ),
           chainId: 3
       );
@@ -147,21 +174,32 @@ class Trade {
       await this.saveTrader();
       return this.txnHash;
     } catch (e) {
-//      Map json = jsonDecode(e);
-//      print(json);
+      print("catch error =》 ${e}");
       return e.toString();
     }
 
   }
 
   // 根据 RVS计算订单的签名
+    /* 获取交易签名数据
+   * v: 签名v值
+   * r: 签名r值
+   * s: 签名s值
+   * signMethod: 签名方法, 0为eth.sign, 1为EIP712
+   *
+   * 返回值：
+   * OrderSignature 结构体
+   *
+   *  function getConfigSignature(bytes1 v,  bytes32 r, bytes32 s, uint8 signMethod);
+   * */
+
   Future<String> getConfigSignature() async{
     Map BQODHash = await getBQODHash();
     Map sign = await ethSign(BQODHash['od_hash']);
 
-    String functionHex = "0x0b973ca2";
     String _v = sign['v'] + "00000000000000000000000000000000000000000000000000000000000000";
-    String post_data = functionHex + _v + sign['r'] + sign['s'] + formatParam('1');
+    String postData = "0x0b973ca2" + _v + sign['r'] + sign['s'] + formatParam('0');
+
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",
@@ -170,7 +208,7 @@ class Trade {
         {
           "from": tempMatchAddress,
           "to": tempMatchAddress, // 合约地址
-          "data": post_data
+          "data": postData
         },
         "latest"
       ],
@@ -193,6 +231,7 @@ class Trade {
     String privateKey = await loadPrivateKey();
     final key = EthPrivateKey(hexToBytes(privateKey));
     final signature = await key.sign(hexToBytes(od_hash), chainId: 3);
+    print("ethSign signature =》${signature}");
     final sign = bytesToHex(signature);
     final r = sign.substring(0,64);
     final s = sign.substring(64,128);
@@ -210,12 +249,14 @@ class Trade {
   Future<String> loadPrivateKey() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String address =  prefs.getString("currentWallet");
-    print('sql address => ${address}');
+
     var sql = SqlUtil.setTable("wallet");
     var map = {'address': address};
     List json = await sql.query(conditions: map);
     print("json => ${json}");
     this.privateKey = json[0]['privateKey'];
+    print('钱包地址 => ${address}');
+    print('钱包私钥 => ${this.privateKey}');
     return this.privateKey;
   }
 
@@ -231,8 +272,8 @@ class Trade {
     // 此时还没有signature字段，所以随便填充三个32byte的字段
     String signature = this.configData + this.configData + this.configData;
 
-    print("getBQODHash signature  凑够长度就行=> ${signature}");
-    String post_data = functionName + this.trader + formatParam(this.amount) + formatParam(this.price) + gasTokenAmount + this.configData + signature + formatParam(this.tokenA) + formatParam(this.tokenB) + formatParam(taxAddress);
+//    print("getBQODHash signature  凑够长度就行=> ${signature}");
+    String postData = functionName + this.trader + formatParam(this.amount) + formatParam(this.price) + gasTokenAmount + this.configData + signature + formatParam(this.tokenA) + formatParam(this.tokenB) + formatParam(taxAddress);
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",
@@ -241,7 +282,7 @@ class Trade {
         {
           "from":tempMatchAddress,
           "to": tempMatchAddress,
-          "data": post_data
+          "data": postData
         },
         "latest"
       ],
@@ -253,12 +294,14 @@ class Trade {
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
-    print("打印getBQODHash =》 ${rsp.body}");
+    print("getBQODHash =》 ${rsp.body}");
     Map result = jsonDecode(rsp.body);
 
     String  res = result['result'].replaceFirst("0x", ""); // 得到一个64字节的数据
     String bq_hash = res.substring(0,64);
     String od_hash = res.substring(64);
+    print("bq_hash =》 ${bq_hash}");
+    print("od_hash =》 ${od_hash}");
     this.odHash = od_hash;
     return {
       'od_hash': od_hash,
@@ -313,6 +356,69 @@ class Trade {
         body: json.encode(payload)
     );
     print("getFilled =》 ${rsp.body}");
+  }
 
+  // 0x22f42f6b
+  // 根据token和basetoken获取订单队列
+  static Future getOrderQueueInfo(String baseToken, String quoteToken, bool isSell) async {
+    String functionName = func['getOrderQueueInfo(address,address,bool)'];
+    String strSell = isSell ? '1' : '0';
+    String params = formatParam(baseToken) + formatParam(quoteToken) + formatParam(strSell);
+    String postData = functionName + params;
+    var client = Client();
+    var payload = {
+      "jsonrpc": "2.0",
+      "method": "eth_call",
+      "params": [
+        {
+          "from":tempMatchAddress,
+          "to": tempMatchAddress,
+          "data": postData
+        },
+        "latest"
+      ],
+      "id": DateTime.now().millisecondsSinceEpoch
+    };
+
+    var rsp = await client.post(
+        'https://ropsten.infura.io/',
+        headers:{'Content-Type':'application/json'},
+        body: json.encode(payload)
+    );
+    print("getOrderQueueInfo =》 ${rsp.body}");
+
+  }
+
+  // 自定义转账
+  // data的组成，
+  // 0x + 要调用的合约方法的function signature
+  // + 要传递的方法参数，每个参数都为64位
+  // (对transfer来说，第一个是接收人的地址去掉0x，第二个是代币数量的16进制表示，去掉前面0x，然后补齐为64位)
+  
+  static Future sendToken() async {
+    String rpcUrl = "https://ropsten.infura.io/";
+    final client = Web3Client(rpcUrl, Client());
+    const String privateKey =
+        '279EFAC43AAE9405DCD9A470B9228C1A3C0F2DEFC930AD1D9B764E78D28DB1DF';
+    var credentials = await client.credentialsFromPrivateKey(privateKey);
+
+    String postData = '0x' + 'a9059cbb' + formatParam('3b11f5CAB8362807273e1680890A802c5F1B15a8') + formatParam('1');
+    try {
+      var rsp = await client.sendTransaction(
+          credentials,
+          Transaction(
+              to: EthereumAddress.fromHex('0x6C3118c39FAB22caF3f9910cd054F8ea435B5FFB'),
+              gasPrice: EtherAmount.inWei(BigInt.from(10000000000)),
+              maxGas: 7000000,
+              value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
+              data: hexToBytes(postData)
+          ),
+          chainId: 3
+      );
+      print("transaction => ${rsp}");
+    } catch (e) {
+      print("catch error =》 ${e}");
+      return e.toString();
+    }
   }
 }
