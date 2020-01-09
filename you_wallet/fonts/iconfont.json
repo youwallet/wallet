@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "2531537",
+      "name": "转账",
+      "font_class": "zhuanzhang",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
       "icon_id": "4365480",
       "name": "扫码",
       "font_class": "saoma",
@@ -25,6 +32,20 @@
       "font_class": "icon_yitaifang",
       "unicode": "e648",
       "unicode_decimal": 58952
+    },
+    {
+      "icon_id": "6272919",
+      "name": "兑换",
+      "font_class": "duihuan",
+      "unicode": "e6eb",
+      "unicode_decimal": 59115
+    },
+    {
+      "icon_id": "10149600",
+      "name": "收款",
+      "font_class": "shoukuan",
+      "unicode": "e624",
+      "unicode_decimal": 58916
     },
     {
       "icon_id": "10172816",
