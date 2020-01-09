@@ -6,6 +6,7 @@ import 'package:youwallet/widgets/menu.dart';
 import 'package:youwallet/db/sql_util.dart';
 import 'package:common_utils/common_utils.dart';
 import 'package:youwallet/bus.dart';
+import 'package:youwallet/service/trade.dart';
 
 class TokenHistory extends StatefulWidget {
   @override
@@ -237,6 +238,7 @@ class Page extends State<TokenHistory> {
     setState(() {
       this.list = arr;
     });
+    Trade.getTransactionByHash('0x6228896388f1f36df1b67f8715854250fd4966db1dd28520db43987021bba42b');
   }
 
 //  void _onTabChanged() {

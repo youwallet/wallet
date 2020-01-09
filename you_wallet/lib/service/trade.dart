@@ -459,4 +459,25 @@ class Trade {
       return e.toString();
     }
   }
+
+  static Future<String> getTransactionByHash(String hash) async{
+
+
+    var client = Client();
+    var payload = {
+      "jsonrpc": "2.0",
+      "method": "eth_getTransactionByHash",
+      "params": [hash],
+      "id": DateTime.now().millisecondsSinceEpoch
+    };
+    var rsp = await client.post(
+        "https://ropsten.infura.io/",
+        headers:{'Content-Type':'application/json'},
+        body: json.encode(payload)
+    );
+    print("根据订单hash查询状态 => ${rsp.body}");
+    return '1';
+  }
+
+
 }
