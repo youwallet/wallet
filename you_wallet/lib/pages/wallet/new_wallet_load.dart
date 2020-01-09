@@ -20,15 +20,18 @@ import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart' as myWallet;
 
 
-
 class LoadWallet extends StatefulWidget {
-  LoadWallet() : super();
+
+  final arguments;
+  LoadWallet({Key key ,this.arguments}) : super();
+
   @override
-  LoadWalletState createState()  => LoadWalletState();
+  State<StatefulWidget> createState()  => new Page(arguments: this.arguments);
+
 }
 
 
-class LoadWalletState extends State<LoadWallet> {
+class Page extends State<LoadWallet> {
 
   String name;
   String randomMnemonic;
@@ -36,8 +39,11 @@ class LoadWalletState extends State<LoadWallet> {
   TextEditingController _name = TextEditingController();
   TextEditingController _key = TextEditingController();
   final LocalAuthenticationService _localAuth = locator<LocalAuthenticationService>();
-
   final globalKey = GlobalKey<ScaffoldState>();
+  Map arguments;
+
+
+  Page({this.arguments});
 
   @override // override是重写父类中的函数 每次初始化的时候执行一次，类似于小程序中的onLoad
   void initState() {
@@ -50,6 +56,7 @@ class LoadWalletState extends State<LoadWallet> {
   Widget build(BuildContext context) {
     return new DefaultTabController(
         length: 2,
+        initialIndex: 1,
         child: Scaffold(
           key: globalKey,
           appBar: buildAppBar(context),
@@ -71,9 +78,12 @@ class LoadWalletState extends State<LoadWallet> {
             tabs: [
               new Tab(text: '助记词'),
               new Tab(text: '私钥'),
-            ]
+            ],
+          onTap: (index) {
+            //your currently selected index
+            print('current index => ${index}');
+          },
         )
-
     );
   }
 

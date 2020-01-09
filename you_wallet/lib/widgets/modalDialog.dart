@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class GenderChooseDialog extends Dialog {
 
   var title; //modal的标题
-  var content; // modal中的内容
+  String content = ""; // modal中的内容
   Function onCancelChooseEvent;
   Function onSuccessChooseEvent;
 
@@ -11,7 +11,7 @@ class GenderChooseDialog extends Dialog {
   GenderChooseDialog({
     Key key,
     this.title = "提示",
-    @required this.content,
+    this.content,
     @required this.onCancelChooseEvent,
     @required this.onSuccessChooseEvent,
   }) : super(key: key);

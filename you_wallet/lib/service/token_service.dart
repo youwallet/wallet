@@ -141,13 +141,16 @@ class TokenService {
         }
       }
 
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
       token['address'] = address;
+      token['wallet'] = prefs.getString("currentWallet");
       token['name'] = nameString;
       token['balance'] = await getTokenBalance(address);
+      token['decimals'] = await getDecimals(address);
       token['rmb'] = '';
+      token['network'] =  prefs.getString("network");
 
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      token['network'] = await prefs.getString("network");
       return token;
     }
 

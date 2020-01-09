@@ -5,6 +5,7 @@ import 'package:youwallet/bus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:youwallet/model/wallet.dart';
 import 'package:provider/provider.dart';
+import 'package:youwallet/widgets/modalDialog.dart';
 
 
 class WalletExport extends StatefulWidget {
@@ -67,6 +68,7 @@ class Page extends State<WalletExport> {
   }
 
   Widget layout(BuildContext context) {
+    String name = this.wallet['name'].length > 0 ? this.wallet['name']:'Account${this.wallet['id']}';
     return new Scaffold(
       key: globalKey,
       appBar: buildAppBar(context),
@@ -85,7 +87,7 @@ class Page extends State<WalletExport> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 new Text(
-                                  this.wallet['name'],
+                                  name,
                                   style: new TextStyle(fontSize: 32.0, color: Colors.black),
                                 ),
                                 new Text(this.wallet['address']),
@@ -125,10 +127,25 @@ class Page extends State<WalletExport> {
                 title: Text('导出私钥'),
                 trailing: new Icon(Icons.keyboard_arrow_right),
                 onTap: () {
-//                  Navigator.pushNamed(context, "set_network");
-
+                  Navigator.pushNamed(context, "load_wallet",arguments:{
+                    'address': this.wallet['address'],
+                    'initialIndex': 1
+                  });
                 },
               ),
+              new Container(
+                padding: const EdgeInsets.all(40.0),
+                child: new RaisedButton(
+                  child: Text("删除钱包"),
+                  elevation: 0, // 按钮阴影高度
+                  color: Colors.red,
+                  textColor: Colors.white,
+                  onPressed: () {
+                    this.delWallet();
+                  },
+                ),
+              )
+
             ],
         )
 
@@ -142,6 +159,26 @@ class Page extends State<WalletExport> {
 //      actions: this.appBarActions(),
       //leading: new Icon(Icons.account_balance_wallet),
     );
+  }
+
+  void delWallet(){
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return GenderChooseDialog(
+              title: '确定删除钱包?',
+              content: '',
+              onCancelChooseEvent: () {
+                Navigator.pop(context);
+//                this.showSnackbar('取消');
+              },
+              onSuccessChooseEvent: () {
+                print(this.arguments);
+                this.showSnackbar('点击了确认，先不删除');
+                Navigator.pop(context);
+              });
+        });
   }
 
   // 定义bar右侧的icon按钮

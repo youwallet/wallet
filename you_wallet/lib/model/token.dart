@@ -52,14 +52,14 @@ class Token extends ChangeNotifier {
   Future<int> add(Map token) async {
 
     var sql = SqlUtil.setTable("tokens");
-    var map = {'address': token['address']};
+    var map = {'address': token['address'],'wallet': token['wallet'],'network': token['network']};
     List json = await sql.query(conditions: map);
 
     if (json.isEmpty) {
       _items.add(token);
 
-      String sql_insert ='INSERT INTO tokens(address, name, balance, rmb, network) VALUES(?, ?, ?, ?, ?)';
-      List list = [token['address'], token['name'], token['balance'],token['rmb'], token['network']];
+      String sql_insert ='INSERT INTO tokens(address, wallet, name, decimals, balance, rmb, network) VALUES(?, ?, ?, ?, ?, ?, ?)';
+      List list = [token['address'], token['wallet'], token['name'], token['decimals'], token['balance'],token['rmb'], token['network']];
       int id = await sql.rawInsert(sql_insert, list);
       print(id);
 
@@ -67,6 +67,7 @@ class Token extends ChangeNotifier {
       return id;
 
     } else {
+      print('token添加重复');
       return 0;
     }
   }

@@ -23,6 +23,7 @@ import 'package:youwallet/bus.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
 import 'package:youwallet/model/network.dart';
+import 'package:youwallet/model/wallet.dart' as walletModel;
 import 'package:youwallet/service/trade.dart';
 
 
@@ -36,8 +37,8 @@ class Page extends State {
 
   BuildContext mContext;
   List baseToken = [{
-    'name': 'tokenD',
-    'address': '0x42ABeB85Edf30e470601Ef47B55B9FF1bF3dcABa'
+    'name': 'BTD',
+    'address': '0x2e01154391F7dcBf215c77DBd7fF3026Ea7514ce'
   }];
   final controllerAmount = TextEditingController();
   final controllerPrice = TextEditingController();
@@ -81,7 +82,7 @@ class Page extends State {
   // 构建页面
   Widget layout(BuildContext context) {
     return new Scaffold(
-      backgroundColor: _btnText == '买入' ? Colors.white : Colors.red[50],
+      backgroundColor: _btnText == '买入' ? Colors.green[50] : Colors.red[50],
       appBar: buildAppBar(context),
       body: new Container(
 
@@ -134,14 +135,15 @@ class Page extends State {
                     value: value,//下拉菜单选择完之后显示给用户的值
                     onChanged: (T) async {
                       // 每次切换token，动态获取当前token的余额
-//                      String tokenBalance = await TokenService.getTokenBalance(T['address']);
+                      // String tokenBalance = await TokenService.getTokenBalance(T['address']);
                       Map token = Provider.of<Token>(context).items.firstWhere((element)=>(element['address'] == T['address']));
                       setState(() {
                         this.suffixText = token['name'];
                         this.value=T;
                         this.tokenBalance = token['balance'];
                       });
-
+                      // 动态刷新交易列表
+                      this.updateTradeList(T);
                     },
                     isDense: true,
                     elevation: 24,//设置阴影的高度
@@ -164,6 +166,7 @@ class Page extends State {
                     ],
                   )
                 ),
+                new Text('限价模式'),
                 new ConstrainedBox(
                   constraints: BoxConstraints(
                       maxHeight: 25,
@@ -196,12 +199,11 @@ class Page extends State {
                   ),
 
                 ),
-                new Text('当前账户余额${tokenBalance}'),
+                new Text('≈'),
                 new Container(
                   height: 10.0,
                   child: null,
                 ),
-                new Text('限价模式'),
                 new ConstrainedBox(
                   constraints: BoxConstraints(
                       maxHeight: 25,
@@ -236,7 +238,8 @@ class Page extends State {
                   ),
 
                 ),
-                new Text('约=￥0.001元'),
+
+                new Text('当前账户余额${tokenBalance}'),
                 new Container(
 
                   padding: new EdgeInsets.only(top: 30.0),
@@ -319,8 +322,9 @@ class Page extends State {
         shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(0))
         ), // 设置圆角，默认有圆角
-        child: Text(btnText),
-        textColor: Colors.white,
+        elevation: 0, // 按钮阴影高度
+        color: Colors.white,
+        child: Text(btnText)
       );
     } else {
       return OutlineButton(
@@ -347,14 +351,20 @@ class Page extends State {
   }
 
   // 构建页面下拉列表
-  List<DropdownMenuItem> getListData(List tokens){
+  List<DropdownMenuItem> getListData(List tokens) {
     List<DropdownMenuItem> items=new List();
 
+//    String network = Provider.of<Netwotk>(context).network;
+    String network = Provider.of<Network>(context).network;
+    String currentWallet =  Provider.of<walletModel.Wallet>(context).currentWallet;
+
     for (var value in tokens) {
-      items.add(new DropdownMenuItem(
-        child:new Text(value['name']),
-        value: value,
-      ));
+      if (value['network'] == network && value['wallet'] == currentWallet) {
+        items.add(new DropdownMenuItem(
+          child:new Text(value['name']),
+          value: value,
+        ));
+      }
     }
     return items;
   }
@@ -448,22 +458,13 @@ class Page extends State {
       isBuy = false;
     }
 
-    // basetoken 暂时固定
-    String tokenD = "0x42ABeB85Edf30e470601Ef47B55B9FF1bF3dcABa";
-
-//    showDialog<Null>(
-//      context: context, //BuildContext对象
-//      barrierDismissible: false,
-//      builder: (BuildContext context) {
-//        return new LoadingDialog( //调用对话框
-//          text: '下单中...',
-//        );
-//    });
     final snackBar = new SnackBar(content: new Text('下单中···'));
     Scaffold.of(context).showSnackBar(snackBar);
-    Trade trade = new Trade(this.value['address'], this.value['name'], tokenD, 'BTD', this.controllerAmount.text, this.controllerPrice.text, isBuy);
 
+    Trade trade = new Trade(this.value['address'], this.value['name'], this.baseToken[0]['address'], this.baseToken[0]['name'], this.controllerAmount.text, this.controllerPrice.text, isBuy);
     String hash = await trade.takeOrder();
+
+    return;
     if (hash.contains('RPCError')) {
       String barText = '';
       if (hash.contains('insufficient funds for gas * price + value')){
@@ -485,6 +486,13 @@ class Page extends State {
        this.trades = list;
      });
      this._getTradeInfo();
+   }
+
+   Future<void> updateTradeList(Map obj) async {
+      String tokenAddress = obj['address'];
+      String baseTokenAddress = this.baseToken[0]['address'];
+      bool isSell = this._btnText == '买入' ? false : true;
+      Trade.getOrderQueueInfo(tokenAddress,baseTokenAddress,isSell);
    }
 
 

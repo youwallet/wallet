@@ -9,7 +9,8 @@ class tokenList extends StatelessWidget {
 
   List arr = [];
   String network = "ropsten";
-  tokenList({Key key, this.arr, this.network="ropsten"}) : super(key: key);
+  String currentWallet = "";
+  tokenList({Key key, this.arr, this.network="ropsten", this.currentWallet}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +18,8 @@ class tokenList extends StatelessWidget {
     print("get in buid => ${this.arr}");
     List filterArr = [];
     this.arr.forEach((element){
-      if (element['network'] == this.network) {
+      // 必须当前你选择的网络和当前你的钱包地址
+      if (element['network'] == this.network && element['wallet'] == this.currentWallet) {
         filterArr.add(element);
       }
     });

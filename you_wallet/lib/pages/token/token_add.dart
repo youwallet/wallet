@@ -27,6 +27,7 @@ class AddWallet extends StatefulWidget {
 class Page extends State<AddWallet> {
 
   List tokenArr = new List();
+  Map token = {};
 
   final globalKey = GlobalKey<ScaffoldState>();
 
@@ -46,13 +47,89 @@ class Page extends State<AddWallet> {
             padding: const EdgeInsets.all(16.0),
             child: new ListView(
               children: <Widget>[
-                buildTokenList(this.tokenArr)
+                buildItem(this.token)
               ],
             ),
           );
         }
       )
     );
+  }
+
+  Widget buildItem(Map item){
+    if (item.containsKey('name')) {
+      print('start card');
+      return new Card(
+        color: Colors.white, //背景色
+        child: new Container(
+            padding: const EdgeInsets.all(28.0),
+            child: new Row(
+              children: <Widget>[
+                new Container(
+                    margin: const EdgeInsets.only(right: 16.0),
+                    child: Icon(
+                        IconData(0xe648, fontFamily: 'iconfont'), size: 50.0,
+                        color: Colors.black26)
+                ),
+                new Expanded(
+                  child: new Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      new Row(
+                        children: <Widget>[
+                          new Text(
+                            item['name'] ?? '--',
+                            style: new TextStyle(
+                                fontSize: 32.0, color: Colors.black),
+                          ),
+                          new IconButton(
+                            icon: Icon(IconData(0xe600,
+                                fontFamily: 'iconfont')),
+                            onPressed: () {
+                              print(item);
+                              Navigator.pushNamed(
+                                  context, "token_info", arguments: {
+                                'address': item['address'],
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                      GestureDetector(
+                        child: new Text(
+                            TokenService.maskAddress(item['address'])),
+                        onTap: () async {
+                          print(item['address']);
+                        },
+                      )
+
+                    ],
+                  ),
+                ),
+                new Container(
+                    width: 60.0,
+                    child: new Column(
+                      children: <Widget>[
+                        new Text(
+                          item['balance'],
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: new TextStyle(fontSize: 16.0,
+                              color: Color.fromARGB(100, 6, 147, 193)),
+                        ),
+                        new Text('￥${item['rmb'] ?? '-'}'),
+                      ],
+                    )
+
+                )
+              ],
+            )
+        ),
+      );
+    } else {
+      print('start null');
+      return Text('');
+    }
   }
 
   // 构建顶部tabBar
@@ -90,9 +167,10 @@ class Page extends State<AddWallet> {
           try {
             Map token = await TokenService.searchToken(text);
             //          Navigator.pop(context);
+            print("搜索结果是${token}");
             if (token.containsKey('name')) {
               setState(() {
-                this.tokenArr.add(token);
+                this.token = token;
               });
               saveToken(token);
             } else {
@@ -142,26 +220,12 @@ class Page extends State<AddWallet> {
   void saveToken(Map token) async {
     int id = await Provider.of<Token>(context).add(token);
     print(id);
-    this.showSnackbar('token添加成功');
-  }
-
-}
-
-class MyScaffoldBody extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: RaisedButton(
-        child: Text('SHOW A SNACKBAR'),
-        onPressed: () {
-          Scaffold.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Have a snack!'),
-            ),
-          );
-        },
-      ),
-    );
+    if (id == 0) {
+      this.showSnackbar('数据库写失败，插入结果为0');
+    } else {
+      this.showSnackbar('token添加成功');
+    }
   }
 }
+
 

@@ -16,7 +16,7 @@ class _Item {
 }
 
 
-///这个页面是作为四个tab页的容容器，以Tab为基础控制每个item的显示与隐藏
+///这个页面是作为四个tab页的容器，以Tab为基础控制每个item的显示与隐藏
 class ContainerPage extends StatefulWidget {
 
   // 实例化
@@ -83,6 +83,12 @@ class _ContainerPageState extends State<ContainerPage> {
           Image.asset(item.activeIcon, width: 30.0, height: 30.0)))
           .toList();
     }
+
+    eventBus.on<TabChangeEvent>().listen((event) {
+      setState(() {
+        _selectIndex = event.index;
+      });
+    });
 
   }
 

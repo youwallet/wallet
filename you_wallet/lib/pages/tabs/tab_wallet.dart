@@ -121,19 +121,22 @@ class Page extends State<TabWallet> {
   Widget layout(BuildContext context) {
     return new Scaffold(
       appBar: buildAppBar(context),
-      body: new ListView(
-        children: <Widget>[
-          topCard(context),
-          listTopBar(context),
-          new Container(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0), // 四周填充边距32像素
-            child: Consumer<Token>(
-              builder: (context, Token, child) {
-                return tokenList(arr: Token.items,network: Provider.of<Network>(context).network);
-              },
-            ),
-          )
-        ],
+      body: RefreshIndicator(
+        onRefresh: _refresh,
+        child: new ListView(
+          children: <Widget>[
+            topCard(context),
+            listTopBar(context),
+            new Container(
+              padding: const EdgeInsets.only(left: 16.0, right: 16.0), // 四周填充边距32像素
+              child: Consumer<Token>(
+                builder: (context, Token, child) {
+                  return tokenList(arr: Token.items,network: Provider.of<Network>(context).network, currentWallet: Provider.of<walletModel.Wallet>(context).currentWallet);
+                },
+              ),
+            )
+          ],
+        ),
       ),
         drawer: Drawer(
           child: ListView(
@@ -247,12 +250,26 @@ class Page extends State<TabWallet> {
                   new Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      new Text(
-                          Wallet.currentWalletName,
-                          style: new TextStyle(
-                              color: Colors.white,
-                              fontSize: 24.0
-                          )
+                      Row(
+                        children: <Widget>[
+                          new Text(
+                              Wallet.currentWalletName,
+                              style: new TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24.0
+                              )
+                          ),
+                          new IconButton(
+                            icon: Icon(IconData(0xe600, fontFamily: 'iconfont'),color: Colors.white,),
+                            onPressed: () {
+                              eventBus.fire(TabChangeEvent(2));
+//                              print(item);
+//                              Navigator.pushNamed(context, "token_info",arguments:{
+//                                'address': item['address'],
+//                              });
+                            },
+                          ),
+                        ],
                       ),
                       new IconButton(
                         icon: new Icon(
@@ -310,6 +327,10 @@ class Page extends State<TabWallet> {
         ],
       ),
     );
+  }
+
+  Future<void> _refresh() async {
+
   }
 }
 

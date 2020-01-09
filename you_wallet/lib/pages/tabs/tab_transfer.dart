@@ -10,6 +10,15 @@ import 'package:youwallet/model/network.dart';
 import 'package:youwallet/service/trade.dart';
 import 'package:youwallet/bus.dart';
 import 'package:youwallet/service/token_service.dart';
+import 'package:barcode_scan/barcode_scan.dart';
+import 'package:flutter/services.dart';
+import 'package:youwallet/db/sql_util.dart';
+
+//import 'package:web3dart/web3dart.dart';
+//import 'package:web_socket_channel/io.dart';
+//import 'package:http/http.dart';
+//import 'package:path/path.dart' show join, dirname;
+//import 'dart:io';
 
 class TabTransfer extends StatefulWidget {
   @override
@@ -111,7 +120,6 @@ class Page extends State<TabTransfer> {
                         ),
                         onChanged: (text) {//内容改变的回调
                           print('change $text');
-
                         },
                       ),
                     )
@@ -153,8 +161,13 @@ class Page extends State<TabTransfer> {
                       width: 1, //边线宽度为2
                     ),
                   ),
-                  suffixIcon: Icon(Icons.camera_alt),
-                  hintText: "输入以太坊地址或ENS域名",
+                  suffixIcon: new IconButton(
+                    icon: new Icon(IconData(0xe61d, fontFamily: 'iconfont'),size:16.0),
+                    onPressed: () {
+                      _scan();
+                    },
+                  ),
+                  hintText: "输入以太坊地址",
                   contentPadding: new EdgeInsets.only(left: 10.0), // 内部边距，默认不是0
                 ),
                 onChanged: (text) {//内容改变的回调
@@ -162,53 +175,75 @@ class Page extends State<TabTransfer> {
                 },
               ),
             ),
-
+//            new TextField(
+//              controller: controllerAddress,
+//              decoration: InputDecoration(
+//                enabledBorder: OutlineInputBorder(
+//                  borderRadius: BorderRadius.circular(6.0),
+//                  borderSide: BorderSide(
+//                    color: Colors.black12, //边线颜色为黄色
+//                    width: 1, //边线宽度为2
+//                  ),
+//                ),
+//                suffixIcon: new IconButton(
+//                  icon: new Icon(IconData(0xe61d, fontFamily: 'iconfont'),size:16.0),
+//                  onPressed: () {
+//                    _scan();
+//                  },
+//                ),
+//                hintText: "输入以太坊地址",
+//                contentPadding: new EdgeInsets.only(left: 10.0), // 内部边距，默认不是0
+//              ),
+//              onChanged: (text) {//内容改变的回调
+//                print('change $text');
+//              },
+//            ),
             new Text(
-                '手续费：99.00 ETH',
+                '矿工费用：0.6%',
                 style: new TextStyle(
                     fontSize: 16.0,
                     color: Colors.lightBlue,
                     height: 2
                 )
             ),
-            new Row(
-              children: <Widget>[
-                new Text(
-                    '转账模式',
-                    style: new TextStyle(
-                        fontSize: 16.0,
-                        height: 2
-                    )
-                ),
-              ],
-            ),
-            new Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                new Text('慢速'),
-                new Text('中速'),
-                new Text('快速')
-              ],
-            ),
-            new Slider(
-              value: slider,
-              max: 100.0,
-              min: 0.0,
-              activeColor: Colors.blue,
-              onChanged: (double val) {
-                this.setState(() {
-                  slider = val;
-                });
-              },
-            ),
-            new Text(
-                '付钱需要手续费，手续费越高，转账越快',
-                textAlign: TextAlign.center,
-                style: new TextStyle(
-                    fontSize: 12.0,
-                    height: 3,
-                )
-            ),
+//            new Row(
+//              children: <Widget>[
+//                new Text(
+//                    '转账模式',
+//                    style: new TextStyle(
+//                        fontSize: 16.0,
+//                        height: 2
+//                    )
+//                ),
+//              ],
+//            ),
+//            new Row(
+//              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//              children: <Widget>[
+//                new Text('慢速'),
+//                new Text('中速'),
+//                new Text('快速')
+//              ],
+//            ),
+//            new Slider(
+//              value: slider,
+//              max: 100.0,
+//              min: 0.0,
+//              activeColor: Colors.blue,
+//              onChanged: (double val) {
+//                this.setState(() {
+//                  slider = val;
+//                });
+//              },
+//            ),
+//            new Text(
+//                '付钱需要手续费，手续费越高，转账越快',
+//                textAlign: TextAlign.center,
+//                style: new TextStyle(
+//                    fontSize: 12.0,
+//                    height: 3,
+//                )
+//            ),
             new MaterialButton(
               color: Colors.blue,
               textColor: Colors.white,
@@ -308,6 +343,31 @@ class Page extends State<TabTransfer> {
     });
   }
 
+  Future _scan() async {
+    try {
+      // 此处为扫码结果，barcode为二维码的内容
+      String barcode = await BarcodeScanner.scan();
+      final snackBar = new SnackBar(content: new Text(barcode));
+      Scaffold.of(context).showSnackBar(snackBar);
+    } on PlatformException catch (e) {
+      if (e.code == BarcodeScanner.CameraAccessDenied) {
+        // 未授予APP相机权限
+        final snackBar = new SnackBar(content: new Text('未授予APP相机权限'));
+        Scaffold.of(context).showSnackBar(snackBar);
+      } else {
+        // 扫码错误
+        print('扫码错误: $e');
+      }
+    } on FormatException{
+      // 进入扫码页面后未扫码就返回
+      print('进入扫码页面后未扫码就返回');
+    } catch (e) {
+      // 扫码错误
+      final snackBar = new SnackBar(content: new Text(e.toString()));
+      Scaffold.of(context).showSnackBar(snackBar);
+    }
+  }
+
 
   // 构建页面下拉列表
   List<DropdownMenuItem> getListData(List tokens){
@@ -322,12 +382,42 @@ class Page extends State<TabTransfer> {
     return items;
   }
 
+  // 显示提示
   void showSnackbar(String text) {
     final snackBar = SnackBar(content: Text(text));
     globalKey.currentState.showSnackBar(snackBar);
   }
 
-  Future<void> startTransfer(){
+  // 开始转账
+  Future<void> startTransfer() async{
     this.showSnackbar('转账中···');
+    print(controllerPrice.text);
+    String from = Provider.of<Wallet>(context).currentWallet;
+    String to = controllerAddress.text;
+    String num = controllerPrice.text;
+    String txnHash = await Trade.sendToken(from, to, num, this.value);
+
+    this.saveTransfer(from, to, num, txnHash, this.value);
+  }
+
+  // 保存转账记录进数据库
+//  CREATE TABLE transfer (
+//  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+//  fromAddress TEXT NOT NULL,
+//  toAddress TEXT NOT NULL,
+//  tokenName TEXT NOT NULL,
+//  tokenAddress TEXT NOT NULL,
+//  num TEXT NOT NULL,
+//  txnHash TEXT NOT NULL UNIQUE,
+//  createTime TEXT,
+//  status TEXT);
+//  """;
+  void saveTransfer(String fromAddress, String toAddress, String num, String txnHash, Map token) async{
+    var sql = SqlUtil.setTable("transfer");
+    String sql_insert ='INSERT INTO transfer(fromAddress, toAddress, tokenName, tokenAddress, num, txnHash, createTime) VALUES(?, ?, ?, ?, ?, ?, ?)';
+    List list = [fromAddress, toAddress,  token['name'], token['address'], num, txnHash, DateTime.now().millisecondsSinceEpoch];
+    int id = await sql.rawInsert(sql_insert, list);
+    print("转账记录插入成功=》${id}");
+
   }
 }

@@ -32,7 +32,8 @@ class Trade {
 
   static final Map func = {
     'filled(bytes32)':'0x288cdc91',
-    'getOrderQueueInfo(address,address,bool)': '0x22f42f6b'
+    'getOrderQueueInfo(address,address,bool)': '0x22f42f6b',
+    'transfer(address,uint256)': '0xa9059cbb'
   };
 
   // Trade内的私有变量
@@ -118,6 +119,17 @@ class Trade {
       i++;
     }
     return str + para;
+  }
+
+  static padingZero(int n){
+    String str = '';
+    int i = 0;
+    while(i < n)
+    {
+      str = str + '0';
+      i++;
+    }
+    return str;
   }
 
   // 下单，返回订单的hash
@@ -260,6 +272,17 @@ class Trade {
     return this.privateKey;
   }
 
+  // static 方法获取用户私钥
+  static Future<String> getPrivateKey() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String address =  prefs.getString("currentWallet");
+
+    var sql = SqlUtil.setTable("wallet");
+    var map = {'address': address};
+    List json = await sql.query(conditions: map);
+    return json[0]['privateKey'];
+  }
+
   /*
   * 获取订单相关hash值, 返回值是长度为128位的一个字符串，前64位是bq_hash
   * String bq_hash = res.substring(0,64);
@@ -389,33 +412,48 @@ class Trade {
 
   }
 
+  static Future<String> getNetWork() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String network =  prefs.getString('network');
+    return 'https://' + network + '.infura.io/';
+  }
+
+
   // 自定义转账
   // data的组成，
   // 0x + 要调用的合约方法的function signature
   // + 要传递的方法参数，每个参数都为64位
   // (对transfer来说，第一个是接收人的地址去掉0x，第二个是代币数量的16进制表示，去掉前面0x，然后补齐为64位)
-  
-  static Future sendToken() async {
-    String rpcUrl = "https://ropsten.infura.io/";
+
+  static Future<String> sendToken(String fromAddress, String toAddress, String num, Map token) async {
+    String rpcUrl = await getNetWork();
+    String privateKey = await getPrivateKey();
+
     final client = Web3Client(rpcUrl, Client());
-    const String privateKey =
-        '279EFAC43AAE9405DCD9A470B9228C1A3C0F2DEFC930AD1D9B764E78D28DB1DF';
     var credentials = await client.credentialsFromPrivateKey(privateKey);
 
-    String postData = '0x' + 'a9059cbb' + formatParam('3b11f5CAB8362807273e1680890A802c5F1B15a8') + formatParam('1');
+    // 用户输入的是10进制的整数，这里要根据该token的小数位数计算它的16进制
+    // 先直接使用10进制
+    //    String tokenNum = num + padingZero(token['decimals']);
+    //    print("tokenNum => ${tokenNum}");
+    //    print("token['address'] => ${token['address']}");
+
+    String postData = '${func['transfer(address,uint256)']}${formatParam(toAddress)}${formatParam(num)}';
+    print("postData=>${postData}");
     try {
       var rsp = await client.sendTransaction(
           credentials,
           Transaction(
-              to: EthereumAddress.fromHex('0x6C3118c39FAB22caF3f9910cd054F8ea435B5FFB'),
-              gasPrice: EtherAmount.inWei(BigInt.from(10000000000)),
+              to: EthereumAddress.fromHex(token['address']),
+              gasPrice: EtherAmount.inWei(BigInt.from(1000000000)),
               maxGas: 7000000,
               value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
               data: hexToBytes(postData)
           ),
-          chainId: 3
+          chainId: 3 // 没有这个参数会报RPCError: got code -32000 with msg "invalid sender".
       );
       print("transaction => ${rsp}");
+      return rsp;
     } catch (e) {
       print("catch error =》 ${e}");
       return e.toString();
