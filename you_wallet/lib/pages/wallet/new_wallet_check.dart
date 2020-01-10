@@ -164,7 +164,6 @@ class Page extends State<WalletCheck> {
       print('insert into id => ${id}');
 
       await prefs.setString("currentWallet", address);
-
       Navigator.pushNamed(context, "/");
     } else {
       Navigator.pop(context);

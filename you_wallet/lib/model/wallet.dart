@@ -40,10 +40,10 @@ class Wallet extends ChangeNotifier {
   Future<List> _fetchWallet() async {
     var sql = SqlUtil.setTable("wallet");
     List res = await sql.get();
-    this._items = res;
-//    res.forEach((f){
-//      this._items.add(f);
-//    });
+    this._items = [];
+    res.forEach((f){
+      this._items.add(f);
+    });
     this.setWallet();
   }
 
@@ -85,16 +85,9 @@ class Wallet extends ChangeNotifier {
     List list = [item['name'],item['mnemonic'], item['privateKey'], item['address'], item['balance']];
     int id = await sql.rawInsert(sql_insert, list);
     print("rawInsert => ${id}");
-//    if (item['name'].length == 0){
-//      var map = {'name': 'Account${id}'};
-//      int res = await sql.update(map, 'address', item['address']);
-//    } else {
-//
-//    }
     this.currentWallet = item['address'];
     this.currentWalletName =  item['name'].length > 0 ? item['name'] : 'Account${id}';
 
-    item['name'] = this.currentWalletName;
     _items.add(item);
 
     notifyListeners();
@@ -102,13 +95,16 @@ class Wallet extends ChangeNotifier {
   }
 
   /// 删除指定钱包
-  void remove(Map wallet) {
+  Future<int> remove(Map wallet) async {
     _items.remove(wallet);
     var sql = SqlUtil.setTable("wallet");
-    sql.delete('address', wallet['address']).then((result) {
-      print(result);
-    });
-    notifyListeners();
+    int i = await sql.delete('address', wallet['address']);
+    if (_items.length > 0 && wallet['address'] == this.currentWallet) {
+      this.changeWallet(_items[0]['address']);
+    } else {
+      notifyListeners();
+    }
+    return i;
   }
 
   // 根据地址导出指定钱包私钥

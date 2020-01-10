@@ -176,10 +176,11 @@ class Page extends State<WalletExport> {
                 Navigator.pop(context);
 //                this.showSnackbar('取消');
               },
-              onSuccessChooseEvent: () {
+              onSuccessChooseEvent: () async {
                 print(this.arguments);
-                this.showSnackbar('点击了确认，先不删除');
-                Navigator.pop(context);
+                int i = await Provider.of<Wallet>(context).remove(this.wallet);
+                print('被删除的钱包id=》${i}');
+                Navigator.popAndPushNamed(context, 'manage_wallet');
               });
         });
   }
