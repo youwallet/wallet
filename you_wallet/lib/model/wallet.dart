@@ -120,4 +120,15 @@ class Wallet extends ChangeNotifier {
     return key;
   }
 
+  // 更新钱包名字
+  void updateName(String address) {
+    String key = "";
+    this._items.forEach((item){
+      if (item['address'] == address) {
+        key = item['privateKey'];
+      }
+    });
+    notifyListeners();
+  }
+
 }

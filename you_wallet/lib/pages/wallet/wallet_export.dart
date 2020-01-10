@@ -6,10 +6,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:youwallet/model/wallet.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
-
+import 'package:youwallet/widgets/inputDialog.dart';
 
 class WalletExport extends StatefulWidget {
+
   final arguments;
+
 
   WalletExport({Key key ,this.arguments}) : super(key: key);
 
@@ -27,6 +29,7 @@ class Page extends State<WalletExport> {
     'name': '',
     'address':''
   };
+  TextEditingController _input = TextEditingController();
 
   Map arguments;
   Page({this.arguments});
@@ -98,10 +101,9 @@ class Page extends State<WalletExport> {
                             child: new IconButton(
                               icon: new Icon(Icons.keyboard_arrow_right),
                               onPressed: () {
-                                print(this.wallet);
-      //                      Navigator.pushNamed(context, "token_info",arguments:{
-      //                        'address': item['address'],
-      //                      });
+//                                print(this.wallet);
+                                // 修改钱包名字
+                                this.updateWalletName();
                               },
                             ),
 
@@ -177,6 +179,27 @@ class Page extends State<WalletExport> {
               onSuccessChooseEvent: () {
                 print(this.arguments);
                 this.showSnackbar('点击了确认，先不删除');
+                Navigator.pop(context);
+              });
+        });
+  }
+
+  // 更新钱包名字
+  updateWalletName(){
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return InputDialog(
+              title: '请输入钱包名字',
+              hintText: '请输入',
+              controller: this._input,
+              onCancelChooseEvent: () {
+                Navigator.pop(context);
+              },
+              onSuccessChooseEvent: () {
+                print(this._input.text);
+
                 Navigator.pop(context);
               });
         });
