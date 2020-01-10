@@ -33,6 +33,8 @@ class LoadWallet extends StatefulWidget {
 
 class Page extends State<LoadWallet> {
 
+  Page({this.arguments});
+
   String name;
   String randomMnemonic;
   String privateKey;
@@ -43,14 +45,27 @@ class Page extends State<LoadWallet> {
   Map arguments;
 
 
-  Page({this.arguments});
-
   @override // override是重写父类中的函数 每次初始化的时候执行一次，类似于小程序中的onLoad
   void initState() {
     super.initState();
-//    _getWalletName();
-//    _generateMnemonic();
   }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (this.arguments == null) {
+      print("没有参数");
+    } else {
+      String key = Provider.of<myWallet.Wallet>(context).exportPrivateKey(this.arguments['address']);
+      print('查询到的key=》${key}');
+      setState(() {
+        this._key.text = key;
+      });
+    }
+
+  }
+
+
 
   @override
   Widget build(BuildContext context) {

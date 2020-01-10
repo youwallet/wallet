@@ -78,8 +78,6 @@ class Wallet extends ChangeNotifier {
 
   ///  将 [item] 到列表中
   Future<int> add(Map item) async {
-
-
     var sql = SqlUtil.setTable("wallet");
     String sql_insert ='INSERT INTO wallet(name, mnemonic, privateKey, address, balance) VALUES(?, ?, ?, ?, ?)';
     List list = [item['name'],item['mnemonic'], item['privateKey'], item['address'], item['balance']];
@@ -109,6 +107,17 @@ class Wallet extends ChangeNotifier {
       print(result);
     });
     notifyListeners();
+  }
+
+  // 根据地址导出指定钱包私钥
+  String exportPrivateKey(String address) {
+    String key = "";
+    this._items.forEach((item){
+      if (item['address'] == address) {
+        key = item['privateKey'];
+      }
+    });
+    return key;
   }
 
 }

@@ -127,6 +127,7 @@ class Page extends State<WalletExport> {
                 title: Text('导出私钥'),
                 trailing: new Icon(Icons.keyboard_arrow_right),
                 onTap: () {
+                  // 跳转load_wallet页面，然后通过address查询对应的key
                   Navigator.pushNamed(context, "load_wallet",arguments:{
                     'address': this.wallet['address'],
                     'initialIndex': 1
