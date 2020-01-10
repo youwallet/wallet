@@ -198,11 +198,14 @@ class Page extends State<WalletExport> {
                 Navigator.pop(context);
               },
               onSuccessChooseEvent: () {
-                print(this._input.text);
-
-                Navigator.pop(context);
+                this.clickSuccess();
               });
         });
+  }
+
+  void clickSuccess() async {
+    Provider.of<Wallet>(context).updateName(this.wallet['address'], this._input.text);
+    Navigator.pop(context);
   }
 
   // 定义bar右侧的icon按钮

@@ -32,6 +32,7 @@ class Wallet extends ChangeNotifier {
 
   // 获取钱包列表
   List<Map> get items => _items;
+
   // 获取当前钱包对象
   Map get  nowWallet=> _nowWallet;
 
@@ -39,9 +40,10 @@ class Wallet extends ChangeNotifier {
   Future<List> _fetchWallet() async {
     var sql = SqlUtil.setTable("wallet");
     List res = await sql.get();
-    res.forEach((f){
-      this._items.add(f);
-    });
+    this._items = res;
+//    res.forEach((f){
+//      this._items.add(f);
+//    });
     this.setWallet();
   }
 
@@ -120,15 +122,12 @@ class Wallet extends ChangeNotifier {
     return key;
   }
 
-  // 更新钱包名字
-  void updateName(String address) {
-    String key = "";
-    this._items.forEach((item){
-      if (item['address'] == address) {
-        key = item['privateKey'];
-      }
-    });
-    notifyListeners();
+  // 更新钱包名字到数据库
+  Future<int> updateName(String address, String name) async {
+    var sql = SqlUtil.setTable("wallet");
+    int i = await sql.update({'name': name}, 'address', address);
+    this._fetchWallet();
+    return i;
   }
 
 }
