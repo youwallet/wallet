@@ -195,7 +195,7 @@ class Page extends State<TokenHistory> {
             new Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                new Text('收款-${item['tokenName']}'),
+                new Text('转账-${item['tokenName']}'),
                 new Text(
                     '-${item['num']} token',
                     style: new TextStyle(

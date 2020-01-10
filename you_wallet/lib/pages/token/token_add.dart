@@ -177,8 +177,11 @@ class Page extends State<AddWallet> {
               this.showSnackbar('没有搜索到token');
             }
           } catch (e) {
-            print("catch e => ${e}");
-            this.showSnackbar(e.toString());
+            if(e.toString().contains('FormatException: Could not parse BigInt')) {
+              this.showSnackbar('搜索不到该token');
+            } else {
+              this.showSnackbar(e.toString());
+            }
           }
         },
       ),
