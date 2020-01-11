@@ -396,8 +396,11 @@ class Page extends State<TabTransfer> {
     String to = controllerAddress.text;
     String num = controllerPrice.text;
     String txnHash = await Trade.sendToken(from, to, num, this.value);
-
-    this.saveTransfer(from, to, num, txnHash, this.value);
+    if (txnHash.contains('replacement transaction underpriced')) {
+      this.showSnackbar('等待上一笔交易确认中···');
+    } else {
+      this.saveTransfer(from, to, num, txnHash, this.value);
+    }
   }
 
   // 保存转账记录进数据库
@@ -419,5 +422,8 @@ class Page extends State<TabTransfer> {
     int id = await sql.rawInsert(sql_insert, list);
     print("转账记录插入成功=》${id}");
 
+    if (id > 0) {
+      Navigator.pushNamed(context, "token_history");
+    }
   }
 }

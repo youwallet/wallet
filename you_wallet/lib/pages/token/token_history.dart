@@ -37,11 +37,11 @@ class Page extends State<TokenHistory> {
         appBar: buildAppBar(context),
         body: new TabBarView(
           children: [
-            _getHistoryToken(),
-            _getHistoryToken(),
-            _getHistoryToken(),
-            _getHistoryToken(),
-            _getHistoryToken()
+            _getHistoryToken(1),
+            _getHistoryToken(2),
+            _getHistoryToken(3),
+            _getHistoryToken(4),
+            _getHistoryToken(5)
           ],
         ),
         bottomNavigationBar: new BottomAppBar(
@@ -174,7 +174,8 @@ class Page extends State<TokenHistory> {
     );
   }
 
-  _getHistoryToken() {
+  // 查询所有记录
+  _getHistoryToken(int i) {
     return new Container(
       padding: new EdgeInsets.all(16.0),
       child: new Column(
