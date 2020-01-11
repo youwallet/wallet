@@ -330,7 +330,7 @@ class Page extends State<TabWallet> {
   }
 
   Future<void> _refresh() async {
-
+    print('下拉刷新');
   }
 }
 

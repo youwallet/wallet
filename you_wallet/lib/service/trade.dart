@@ -460,9 +460,8 @@ class Trade {
     }
   }
 
+  // 根据hash查询订单
   static Future<String> getTransactionByHash(String hash) async{
-
-
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",
@@ -476,7 +475,8 @@ class Trade {
         body: json.encode(payload)
     );
     print("根据订单hash查询状态 => ${rsp.body}");
-    return '1';
+    Map result = jsonDecode(rsp.body);
+    return result['result']['blockHash'];
   }
 
 

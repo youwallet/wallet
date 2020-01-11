@@ -234,15 +234,30 @@ class Page extends State<TokenHistory> {
   void _getHistory() async {
     var sql = SqlUtil.setTable("transfer");
     List arr = await sql.get();
-    print(arr);
     setState(() {
       this.list = arr;
     });
-    Trade.getTransactionByHash('0x6228896388f1f36df1b67f8715854250fd4966db1dd28520db43987021bba42b');
+    this.list.forEach((item) async {
+      print('开始查询${item}');
+      if(item['status'] == null) {
+
+        String blockHash = await Trade.getTransactionByHash(item['txnHash']);
+        print('进入查询, 查询到blockHash=>${blockHash}');
+        if(blockHash != null) {
+          await this.updateTransferStatus(item['txnHash']);
+        } else {
+          print('blockHash为null');
+        }
+      }
+    });
+
   }
 
-//  void _onTabChanged() {
-//
-//  }
+  Future<void> updateTransferStatus(String txnHash) async {
+    print('开始更新数据表 =》 ${txnHash}');
+    var sql = SqlUtil.setTable("transfer");
+    int i = await sql.update({'status':'成功'}, 'txnHash', txnHash);
+    print('更新完毕=》${i}');
+  }
 
 }
