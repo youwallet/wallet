@@ -240,7 +240,7 @@ class Page extends State<TokenHistory> {
     });
     this.list.forEach((item) async {
       print('开始查询${item}');
-      if(item['status'] == null) {
+      if(item['status'] == null && item['txnHash'].length == 66) {
 
         String blockHash = await Trade.getTransactionByHash(item['txnHash']);
         print('进入查询, 查询到blockHash=>${blockHash}');
@@ -249,6 +249,8 @@ class Page extends State<TokenHistory> {
         } else {
           print('blockHash为null');
         }
+      } else {
+        print('订单不需要查询，状态不为null或者hash长度不符合格式');
       }
     });
 

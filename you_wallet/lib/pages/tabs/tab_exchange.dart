@@ -38,7 +38,7 @@ class Page extends State {
   BuildContext mContext;
   List baseToken = [{
     'name': 'BTD',
-    'address': '0x2e01154391F7dcBf215c77DBd7fF3026Ea7514ce'
+    'address': '0x2e01154391f7dcbf215c77dbd7ff3026ea7514ce'
   }];
   final controllerAmount = TextEditingController();
   final controllerPrice = TextEditingController();

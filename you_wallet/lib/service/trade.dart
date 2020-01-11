@@ -25,7 +25,9 @@ class Trade {
 
 
   // 收取交易费的账户，测试阶段用SHT的合约账户代替
-  static final taxAddress = "0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef";
+   static final taxAddress = "0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef";
+
+//  static final taxAddress = "0x3D9c6C5A7b2B2744870166EaC237bd6e366fa3ef";
 
   // 这个定义多大?
   static final gasTokenAmount = "0000000000000000000000000000000000000000000000000000000000000000";
@@ -106,7 +108,8 @@ class Trade {
     );
     print("订单的getConfigData => ${rsp.body}");
     Map result = jsonDecode(rsp.body);
-    return result['result'].replaceFirst('0x', '');
+    //    return result['result'].replaceFirst('0x', '');
+    return '020000005ffb17bc000000000000000000000000000000000000000000000000';
   }
 
   static formatParam(String para) {
@@ -139,6 +142,7 @@ class Trade {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     this.trader =  formatParam(prefs.getString("currentWallet"));
+//     this.trader =  formatParam('0xAB890808775D51e9bF9fa76f40EE5fff124deCE5');
     print('当前下单的钱包地址 =》 ${this.trader}');
 
     this.configData = await getConfigData(this.isBuy);
@@ -166,8 +170,7 @@ class Trade {
 
     final client = Web3Client(rpcUrl, Client());
     var credentials = await client.credentialsFromPrivateKey(privateKey);
-    print(BigInt.one);
-    print(EtherAmount.inWei(BigInt.one));
+
     try {
       var rsp = await client.sendTransaction(
           credentials,
@@ -241,8 +244,13 @@ class Trade {
   // 调用web3dart，对od_hash使用私钥进行签名，这一步必须在客户端做
   Future<Map> ethSign(String od_hash) async {
     String privateKey = await loadPrivateKey();
+    print("ethSign od_hash =》54793c08f2aa87ec02c025fbbfa7eee9ac8665088e0a28a17428a0269934f807");
+    print("ethSign hexToBytes(od_hash) =》${hexToBytes('54793c08f2aa87ec02c025fbbfa7eee9ac8665088e0a28a17428a0269934f807')}");
     final key = EthPrivateKey(hexToBytes(privateKey));
-    final signature = await key.sign(hexToBytes(od_hash), chainId: 3);
+    //final signature = await key.sign(hexToBytes(od_hash), chainId: 3);
+    //final signature = await key.sign(hexToBytes('54793c08f2aa87ec02c025fbbfa7eee9ac8665088e0a28a17428a0269934f807'));
+    //final signature = await key.sign('54793c08f2aa87ec02c025fbbfa7eee9ac8665088e0a28a17428a0269934f807');
+    final signature = await key.signPersonalMessage(hexToBytes(od_hash));
     print("ethSign signature =》${signature}");
     final sign = bytesToHex(signature);
     final r = sign.substring(0,64);
@@ -294,9 +302,19 @@ class Trade {
 
     // 此时还没有signature字段，所以随便填充三个32byte的字段
     String signature = this.configData + this.configData + this.configData;
-
-//    print("getBQODHash signature  凑够长度就行=> ${signature}");
+    print('getBQODHash functionName             =》${functionName}');
+    print('getBQODHash this.trader              =》${this.trader}');
+    print('getBQODHash formatParam(this.amount) =》${formatParam(this.amount)}');
+    print('getBQODHash formatParam(this.price)  =》${formatParam(this.price)}');
+    print('getBQODHash gasTokenAmount           =》${gasTokenAmount}');
+    print('getBQODHash this.configData          =》${this.configData}');
+    print('getBQODHash signature                =》${signature}');
+    print('getBQODHash formatParam(this.tokenA) =》${formatParam(this.tokenA)}');
+    print('getBQODHash formatParam(this.tokenB) =》${formatParam(this.tokenB)}');
+    print('getBQODHash formatParam(taxAddress)  =》${formatParam(taxAddress)}');
     String postData = functionName + this.trader + formatParam(this.amount) + formatParam(this.price) + gasTokenAmount + this.configData + signature + formatParam(this.tokenA) + formatParam(this.tokenB) + formatParam(taxAddress);
+
+    print('getBQODHash postData=》${postData}');
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",

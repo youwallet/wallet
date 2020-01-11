@@ -347,8 +347,7 @@ class Page extends State<TabTransfer> {
     try {
       // 此处为扫码结果，barcode为二维码的内容
       String barcode = await BarcodeScanner.scan();
-      final snackBar = new SnackBar(content: new Text(barcode));
-      Scaffold.of(context).showSnackBar(snackBar);
+      this.controllerAddress.text = barcode;
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
         // 未授予APP相机权限
