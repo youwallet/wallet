@@ -14,7 +14,7 @@ class _NewWalletNameState extends State<NewWalletName> {
 
   final globalKey = GlobalKey<ScaffoldState>();
   final LocalAuthenticationService _localAuth = locator<LocalAuthenticationService>();
-
+  TextEditingController _name = TextEditingController();
 
   void showSnackbar(String text) {
     final snackBar = SnackBar(content: Text(text));
@@ -41,30 +41,43 @@ class _NewWalletNameState extends State<NewWalletName> {
                 ),
               ),
               new TextField(
+                controller: _name,
                 decoration: InputDecoration(
                   hintText: "输入钱包名称",
                 ),
-                onSubmitted: (text) async {//内容提交(按回车)的回调
-                   print('钱包名称 =》 $text');
-                   SharedPreferences prefs = await SharedPreferences.getInstance();
-                   prefs.setString("new_wallet_name", text);
-                   Navigator.pushNamed(context, "backup_wallet", arguments: <String, String>{});
+              ),
+              new SizedBox(
+                height: 50.0,
+              ),
+              new MaterialButton(
+                color: Colors.blue,
+                textColor: Colors.white,
+                minWidth: 150,
+                child: new Text('下一步'),
+                onPressed: () async {
+                  if (_name.text.length == 0) {
+                    this.showSnackbar('钱包名字不能为空');
+                  } else {
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    prefs.setString("new_wallet_name", _name.text);
+                    Navigator.pushNamed(context, "backup_wallet", arguments: <String, String>{});
+                  }
                 },
               ),
-              new Container(
-                margin: const EdgeInsets.only(top: 50.0, bottom: 20.0),
-                child:  new GestureDetector(
-                  onTap: (){
-                    _localAuth.authenticate;
-                    this.showSnackbar('还不能识别指纹，直接输入钱包名字提交');
-                  },//写入方法名称就可以了，但是是无参的
-                  child: new Image.asset(
-                      'images/fingerprint.png'
-                  ),
-              ),
-              ),
-              new Text('开启指纹'),
-              new Text('设置免密登录'),
+//              new Container(
+//                margin: const EdgeInsets.only(top: 50.0, bottom: 20.0),
+//                child:  new GestureDetector(
+//                  onTap: (){
+//                    _localAuth.authenticate;
+//                    this.showSnackbar('还不能识别指纹，直接输入钱包名字提交');
+//                  },//写入方法名称就可以了，但是是无参的
+//                  child: new Image.asset(
+//                      'images/fingerprint.png'
+//                  ),
+//              ),
+//              ),
+//              new Text('开启指纹'),
+//              new Text('设置免密登录'),
             ],
           ),
         )

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:youwallet/pages/splash/splash.dart'; // 启动页面
 import 'package:youwallet/debug_page.dart'; // 全局调试
 import 'package:youwallet/pages/login/login.dart'; // 解锁登录
-import 'package:youwallet/pages/manage_wallet/wallet_guide.dart'; // 钱包引导页
+import 'package:youwallet/pages/wallet/new_wallet_guide.dart'; // 钱包引导页
 
 // 钱包操作
 import 'package:youwallet/pages/wallet/new_wallet_first.dart';
@@ -10,6 +10,7 @@ import 'package:youwallet/pages/wallet/new_wallet_second.dart';
 import 'package:youwallet/pages/wallet/new_wallet_load.dart';
 import 'package:youwallet/pages/wallet/new_wallet_check.dart';
 import 'package:youwallet/pages/wallet/new_wallet_mnemonic.dart';
+import 'package:youwallet/pages/wallet/new_wallet_success.dart';
 import 'package:youwallet/pages/manage_wallet/manage_list.dart'; // 新建钱包名字
 import 'package:youwallet/pages/manage_wallet/set_wallet.dart'; // 新建钱包名字
 import 'package:youwallet/pages/wallet/wallet_export.dart'; // 导出钱包
@@ -24,6 +25,7 @@ import 'package:youwallet/pages/set/set_network.dart'; // 网络设置
 
 import 'package:youwallet/pages/tabs.dart';
 
+import 'package:youwallet/pages/keyboard/keyboard_main.dart';
 
 // 定义全局的路由对象
 final routes = {
@@ -41,8 +43,10 @@ final routes = {
   "load_wallet": (context,{arguments}) => new LoadWallet(arguments: arguments),
   "wallet_mnemonic": (context,{arguments}) => new WalletMnemonic(arguments: arguments),
   "wallet_check": (context) => new WalletCheck(),
+  "wallet_success": (context) => new WalletSuccess(),
   "set_network":  (context) => new NetworkPage(),
   "wallet_export":  (context,{arguments}) => new WalletExport(arguments: arguments),
+  "keyboard_main":  (context) => new main_keyboard()
 //  "tabs": (context) => new ContainerPage()
 };
 

@@ -33,6 +33,9 @@ class keyboardState extends State<main_keyboard> {
   Widget build(BuildContext context) {
     return new Scaffold(
       key: _scaffoldKey,
+//      appBar: AppBar(
+//        title: Text("账户密码"),
+//      ),
       body: _buildContent(context),
     );
   }
@@ -86,7 +89,7 @@ class keyboardState extends State<main_keyboard> {
   }
 
   void _onKeyDown(KeyEvent data){
-    print(data);
+    print(data.key);
     if (data.isDelete()) {
       if (pwdData.length > 0) {
         pwdData = pwdData.substring(0, pwdData.length - 1);
@@ -94,9 +97,11 @@ class keyboardState extends State<main_keyboard> {
       }
     } else if (data.isCommit()) {
       if (pwdData.length != 6) {
-//        Fluttertoast.showToast(msg: "密码不足6位，请重试", gravity: ToastGravity.CENTER);
+        // Fluttertoast.showToast(msg: "密码不足6位，请重试", gravity: ToastGravity.CENTER);
+        print('密码不足6位');
         return;
       }
+      Navigator.of(context).pop();
       onAffirmButton();
     } else {
       if (pwdData.length < 6) {

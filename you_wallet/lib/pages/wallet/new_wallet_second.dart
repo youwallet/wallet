@@ -29,70 +29,51 @@ class BackupWalletState extends State<BackupWallet> {
     return Scaffold(
         appBar: buildAppBar(context),
         body: new Container(
-          color:Colors.white,
-          alignment: Alignment.center,
-          padding: const EdgeInsets.only(left: 60.0,right: 60.0), // 四周填充边距32像素
-          child: Column(
-            children: <Widget>[
-              new Text(
-                  '备份提示',
-                  style: new TextStyle(
-                      fontSize: 24.0,
-                      height: 2
-                  )
-              ),
-              new Text(
-                  '获取助记词等于拥有钱包资产所有权',
-                  style: new TextStyle(
-                      fontSize: 16.0,
-                      height: 2
-                  )
-              ),
-              new Container(
-                margin: const EdgeInsets.only(bottom: 30.0),
-                child: new Image.asset(
-                    'images/backup.png'
+            color:Colors.white,
+            alignment: Alignment.center,
+            padding: const EdgeInsets.only(left: 60.0,right: 60.0), // 四周填充边距32像素
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                new Text(
+                    '获取助记词等于拥有钱包资产所有权',
+                    style: new TextStyle(
+                        fontSize: 16.0,
+                        height: 2
+                    )
                 ),
-              ),
-              new Column(
+                new Container(
+                  margin: const EdgeInsets.only(bottom: 30.0),
+                  child: new Image.asset(
+                      'images/backup.png'
+                  ),
+                ),
+                new Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: _buildText(),
-              ),
-              new MaterialButton(
-                color: Colors.blue,
-                textColor: Colors.white,
-                minWidth: 300,
-                child: new Text('下一步'),
-                onPressed: () {
-//                  Navigator.pushNamed(context, "load_wallet");
-                  Navigator.of(context).pushReplacementNamed("wallet_mnemonic");
-//                  showDialog(
-//                      context: context,
-//                      barrierDismissible: false,
-//                      builder: (BuildContext context) {
-//                        return GenderChooseDialog(
-//                            title: '提示',
-//                            content: '请勿截屏分享或者存储，这样可能被第三方软件手机，造成资产损失',
-//                            onBoyChooseEvent: () {
-//                              //Navigator.pop(context);
-//                              Navigator.pushNamed(context, "load_wallet");
-//                            },
-//                            onGirlChooseEvent: () {
-//                              Navigator.pop(context);
-//                            });
-//                      });
-                },
-              ),
+                ),
+                new SizedBox(
+                  height: 50.0,
+                ),
+                new MaterialButton(
+                  color: Colors.blue,
+                  textColor: Colors.white,
+                  minWidth: 150,
+                  child: new Text('下一步'),
+                  onPressed: () {
+                    Navigator.of(context).pushReplacementNamed("wallet_mnemonic");
+                  },
+                ),
 
-            ],
-          ),
+              ],
+            ),
         )
     );
   }
 
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
-      title: const Text('返回')
+      title: const Text('备份提示')
     );
   }
 

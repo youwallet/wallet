@@ -178,6 +178,7 @@ class Page extends State<WalletCheck> {
   void afterCreateWallet(String address) async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("current_wallet_address", address);
-    Navigator.pushNamed(context, "tabs");
+//    Navigator.pushNamed(context, "tabs");
+    Navigator.of(context).pushReplacementNamed("wallet_success");
   }
 }

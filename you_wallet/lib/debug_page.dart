@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/cupertino.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:youwallet/db/provider.dart';
+import 'package:youwallet/pages/keyboard/keyboard_main.dart';
 
 class DebugPage extends StatefulWidget {
   DebugPage() : super();
@@ -103,6 +104,17 @@ class _DebugPageState extends State<DebugPage> {
               onPressed: () async {
                 final provider = new ProviderSql();
                 await provider.clearTrade();
+              },
+            ),
+            FlatButton(
+              child: Text("输入支付密码"),
+              textColor: Colors.blue,
+              onPressed: () async {
+                print('开始输入支付');
+                Navigator.pushNamed(context, "keyboard_main").then((data){
+                  //接受返回的参数
+                  print(data.toString());
+                });
               },
             ),
           ],

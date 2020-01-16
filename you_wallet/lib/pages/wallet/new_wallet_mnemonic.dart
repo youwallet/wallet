@@ -84,17 +84,18 @@ class Page extends State<WalletMnemonic> {
                     )
                 ),
               ),
-              buildButton()
+              new SizedBox(
+                height: 50.0,
+              ),
+              buildButton(),
 //              RaisedButton(
-//                child: Text('我已备份，下一步',
+//                child: Text('点击前往成功页面',
 //                    style: new TextStyle(
 //                        color: Colors.white
 //                    )),
 //                color: Colors.lightBlue,
 //                onPressed: () async {
-//                      SharedPreferences prefs = await SharedPreferences.getInstance();
-//                      prefs.setString("randomMnemonic", this._name.text );
-//                      Navigator.of(context).pushReplacementNamed("wallet_check");
+//                  Navigator.of(context).pushReplacementNamed("wallet_success");
 //                },
 //              ),
 //              Text(''),
