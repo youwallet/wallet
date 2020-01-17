@@ -394,7 +394,7 @@ class Page extends State<TabTransfer> {
     String from = Provider.of<Wallet>(context).currentWallet;
     String to = controllerAddress.text;
     String num = controllerPrice.text;
-    String txnHash = await Trade.sendToken(from, to, num, this.value);
+    String txnHash = await Trade.sendToken(from, to, num, this.value, '');
     if (txnHash.contains('replacement transaction underpriced')) {
       this.showSnackbar('等待上一笔交易确认中···');
     } else {

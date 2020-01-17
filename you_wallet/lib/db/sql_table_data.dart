@@ -23,7 +23,7 @@ class SqlTable{
     balance TEXT);
     """;
 
-  // 交易记录
+  // 兑换记录
   static final String sql_createTable_trade = """
     CREATE TABLE trade (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, 
@@ -36,6 +36,7 @@ class SqlTable{
     baseTokenName TEXT,
     txnHash TEXT NOT NULL UNIQUE,
     odHash TEXT,
+    bqHash TEXT,
     createTime TEXT,
     status TEXT);
     """;

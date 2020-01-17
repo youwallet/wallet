@@ -52,18 +52,22 @@ class Page extends State {
   @override
   void initState() {
     super.initState();
-    this.getTraderList();
 
     // 监听页面切换，刷新交易的状态
     eventBus.on<TabChangeEvent>().listen((event) {
       print("event listen =》${event.index}");
       if (event.index == 1) {
-        print('刷新订单状态');
         this._getTradeInfo();
       } else {
         print('do nothing');
       }
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    this.getTraderList();
   }
 
   @override
@@ -142,7 +146,6 @@ class Page extends State {
                         this.value=T;
                         this.tokenBalance = token['balance'];
                       });
-                      // 动态刷新交易列表
                       this.updateTradeList(T);
                     },
                     isDense: true,
@@ -450,7 +453,14 @@ class Page extends State {
       Scaffold.of(context).showSnackBar(snackBar);
       return ;
     }
+    this.getWalletPassWord('');
+//    Navigator.pushNamed(context, "keyboard_main").then((data){
+//      print('你设置的交易密码是=》${data.toString()}');
+//      this.getWalletPassWord(data.toString());
+//    });
+  }
 
+  void getWalletPassWord(String pwd) async {
     bool isBuy = true;
     if (this._btnText == '买入') {
       isBuy = true;
@@ -461,10 +471,9 @@ class Page extends State {
     final snackBar = new SnackBar(content: new Text('下单中···'));
     Scaffold.of(context).showSnackBar(snackBar);
 
-    Trade trade = new Trade(this.value['address'], this.value['name'], this.baseToken[0]['address'], this.baseToken[0]['name'], this.controllerAmount.text, this.controllerPrice.text, isBuy);
+    Trade trade = new Trade(this.value['address'], this.value['name'], this.baseToken[0]['address'], this.baseToken[0]['name'], this.controllerAmount.text, this.controllerPrice.text, isBuy, pwd);
     String hash = await trade.takeOrder();
 
-    return;
     if (hash.contains('RPCError')) {
       String barText = '';
       if (hash.contains('insufficient funds for gas * price + value')){
@@ -475,7 +484,7 @@ class Page extends State {
       final snackBar = new SnackBar(content: new Text(barText));
       Scaffold.of(context).showSnackBar(snackBar);
     } else {
-       this.getTraderList();
+      this.getTraderList();
     }
   }
 
@@ -485,20 +494,30 @@ class Page extends State {
      setState(() {
        this.trades = list;
      });
+     //
      this._getTradeInfo();
    }
 
+   // 获取当前的买单和卖单前三个交易
+   // Map obj是用户在左边选择的token，
    Future<void> updateTradeList(Map obj) async {
       String tokenAddress = obj['address'];
       String baseTokenAddress = this.baseToken[0]['address'];
       bool isSell = this._btnText == '买入' ? false : true;
-      Trade.getOrderQueueInfo(tokenAddress,baseTokenAddress,isSell);
+      String hash = await Trade.getOrderQueueInfo(tokenAddress,baseTokenAddress,isSell);
+      await Trade.getOrderInfo(hash, isSell);
    }
 
-
+   // 遍历每个订单的状态
    Future<void> _getTradeInfo() async {
      for(var i = 0; i<this.trades.length; i++) {
-       await Trade.getFilled(this.trades[i]['odHash']);
+       print('查询订单=》${this.trades[i]}');
+       // await Trade.getFilled(this.trades[i]['odHash']);
+       if (this.trades[i]['bqHash'] != null && this.trades[i]['odHash'] != null) {
+         String hash = this.trades[i]['bqHash'] + this.trades[i]['odHash'];
+         bool isSell = this.trades[i]['orderType'] == '买入' ? false : true;
+         await Trade.getOrderInfo(hash, isSell);
+       }
      }
    }
 

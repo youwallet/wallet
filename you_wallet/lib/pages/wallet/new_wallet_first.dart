@@ -21,6 +21,16 @@ class _NewWalletNameState extends State<NewWalletName> {
     globalKey.currentState.showSnackBar(snackBar);
   }
 
+  @override // override是重写父类中的函数
+  void initState()  {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,7 +70,11 @@ class _NewWalletNameState extends State<NewWalletName> {
                   } else {
                     SharedPreferences prefs = await SharedPreferences.getInstance();
                     prefs.setString("new_wallet_name", _name.text);
-                    Navigator.pushNamed(context, "backup_wallet", arguments: <String, String>{});
+                    Navigator.pushNamed(context, "keyboard_main").then((data){
+                      print('你设置的交易密码是=》${data.toString()}');
+                      prefs.setString("new_wallet_pw", data.toString());
+                      Navigator.pushNamed(context, "backup_wallet", arguments: <String, String>{});
+                    });
                   }
                 },
               ),

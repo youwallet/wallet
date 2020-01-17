@@ -2,12 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:youwallet/service/token_service.dart';
-import 'package:youwallet/db/sql_util.dart';
 import 'package:web3dart/credentials.dart';
-import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart' as myWallet;
-import 'package:youwallet/pages/tabs.dart';
+
 
 class WalletCheck extends StatefulWidget {
   TokenService _tokenService;
@@ -31,9 +29,14 @@ class Page extends State<WalletCheck> {
     globalKey.currentState.showSnackBar(snackBar);
   }
 
-  @override // override是重写父类中的函数 每次初始化的时候执行一次，类似于小程序中的onLoad
+  @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     setRandomMnemonic();
   }
 
@@ -41,6 +44,7 @@ class Page extends State<WalletCheck> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String randomMnemonic = prefs.getString("randomMnemonic");
     print("助记词=》${randomMnemonic}");
+    print("私钥  =》${TokenService.getPrivateKey(randomMnemonic)}");
     setState(() {
       this.randomMnemonic = randomMnemonic.split(' ');
       this.randomMnemonic.shuffle();
@@ -94,20 +98,31 @@ class Page extends State<WalletCheck> {
                 runSpacing: 4.0, // gap between lines
                 children: this.randomMnemonic.map((item) => buildItem(item)).toList()
               ),
-
-              RaisedButton(
-                  child: Text('清空重试',
-                      style: new TextStyle(
-                        color: Colors.white
-                  )),
-                  color: Colors.lightBlue,
-                  onPressed: () {
-                    this._name.text = ""; // 设置初始值
-                    this.randomMnemonicAgain = [];
-                    this.setRandomMnemonic();
-
-                  },
+              new MaterialButton(
+                color: Colors.blue,
+                textColor: Colors.white,
+                minWidth: 150,
+                child: new Text('清空重试'),
+                onPressed: () {
+                  this._name.text = ""; // 设置初始值
+                  this.randomMnemonicAgain = [];
+                  this.setRandomMnemonic();
+                },
               ),
+//              RaisedButton(
+//                  child: Text('清空重试',
+//                      style: new TextStyle(
+//                        color: Colors.white
+//                  )),
+//                  minWidth:150.0,
+//                  color: Colors.lightBlue,
+//                  onPressed: () {
+//                    this._name.text = ""; // 设置初始值
+//                    this.randomMnemonicAgain = [];
+//                    this.setRandomMnemonic();
+//
+//                  },
+//              ),
             ],
           ),
         )
@@ -120,7 +135,7 @@ class Page extends State<WalletCheck> {
         onTap: () {
           this.clickItem(item);
         },
-        child: Text(item)
+        child: Text(item,style: new TextStyle(fontSize: 18.0))
       )
     );
   }
@@ -141,11 +156,9 @@ class Page extends State<WalletCheck> {
     }
 
     if (this._name.text == randomMnemonic) {
-      print("助记词确认ok，生成钱包，回到首页");
-      this.showSnackbar('钱包添加成功');
+      print("助记词备份输入一致");
 
       String privateKey = TokenService.getPrivateKey(this._name.text);
-
       EthereumAddress ethereumAddress = await TokenService.getPublicAddress(privateKey);
       String address = ethereumAddress.toString();
 
@@ -164,7 +177,7 @@ class Page extends State<WalletCheck> {
       print('insert into id => ${id}');
 
       await prefs.setString("currentWallet", address);
-      Navigator.pushNamed(context, "/");
+      Navigator.of(context).pushReplacementNamed("wallet_success");
     } else {
       Navigator.pop(context);
       if (this.randomMnemonic.length == 0) {
@@ -175,10 +188,5 @@ class Page extends State<WalletCheck> {
     }
   }
 
-  void afterCreateWallet(String address) async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString("current_wallet_address", address);
-//    Navigator.pushNamed(context, "tabs");
-    Navigator.of(context).pushReplacementNamed("wallet_success");
-  }
+
 }

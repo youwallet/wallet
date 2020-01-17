@@ -8,6 +8,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:youwallet/db/provider.dart';
 import 'package:youwallet/pages/keyboard/keyboard_main.dart';
+import 'package:youwallet/service/token_service.dart';
+import 'package:bip39/bip39.dart' as bip39;
+import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
+import 'package:sacco/sacco.dart';
+import 'package:bitcoin_flutter/bitcoin_flutter.dart';
 
 class DebugPage extends StatefulWidget {
   DebugPage() : super();
@@ -115,6 +120,58 @@ class _DebugPageState extends State<DebugPage> {
                   //接受返回的参数
                   print(data.toString());
                 });
+              },
+            ),
+            FlatButton(
+              child: Text("点击生成助记词"),
+              textColor: Colors.blue,
+              onPressed: () async {
+                String randomMnemonic = bip39.generateMnemonic();
+                print(randomMnemonic);
+              },
+            ),
+            FlatButton(
+              child: Text("助记词转seed"),
+              textColor: Colors.blue,
+              onPressed: () async {
+                String randomMnemonic = bip39.generateMnemonic();
+                print(randomMnemonic);
+                String seed = bip39.mnemonicToSeedHex(randomMnemonic);
+                print(seed);
+              },
+            ),
+            FlatButton(
+              child: Text("助记词转私钥"),
+              textColor: Colors.blue,
+              onPressed: () async {
+                String randomMnemonic = bip39.generateMnemonic();
+                print(randomMnemonic);
+                var seed1 = bip39.mnemonicToSeed(randomMnemonic);
+                var hdWallet = new HDWallet.fromSeed(seed1);
+                String wallet_priv_key = '0x' + hdWallet.privKey;
+                print(wallet_priv_key);
+              },
+            ),
+            FlatButton(
+              child: Text("seed转PrivateKey"),
+              textColor: Colors.blue,
+              onPressed: () async {
+                String randomMnemonic = bip39.generateMnemonic();
+                print(randomMnemonic);
+                String seed = bip39.mnemonicToSeedHex(randomMnemonic);
+                print(seed);
+              },
+            ),
+            FlatButton(
+              child: Text("私钥加密解密"),
+              textColor: Colors.blue,
+              onPressed: () async {
+                String key="279EFAC43AAE9405DCD9A470B9228C1A3C0F2DEFC930AD1D9B764E78D28DB1DF";
+                String pwd = "890726";
+                var encryptText = await FlutterAesEcbPkcs5.encryptString(key, pwd);
+                print("encryptText => ${encryptText}");
+                var decryptText = await FlutterAesEcbPkcs5.decryptString(encryptText, pwd);
+                print("str => ${decryptText}");
               },
             ),
           ],

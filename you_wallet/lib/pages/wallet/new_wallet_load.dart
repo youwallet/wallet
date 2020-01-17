@@ -15,6 +15,7 @@ import 'package:youwallet/service/local_authentication_service.dart';
 import 'package:youwallet/service/service_locator.dart';
 import 'package:youwallet/service/token_service.dart';
 import 'package:youwallet/db/sql_util.dart';
+import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
 
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart' as myWallet;
@@ -64,7 +65,6 @@ class Page extends State<LoadWallet> {
     }
 
   }
-
 
 
   @override
@@ -215,21 +215,40 @@ class Page extends State<LoadWallet> {
                 ],
               )
           ),
-          new Padding(
-              padding: new EdgeInsets.all(30.0),
-              child: new Text('免密设置')
+          new MaterialButton(
+            color: Colors.blue,
+            textColor: Colors.white,
+            minWidth: 150,
+            child: new Text('添加账户密码'),
+            onPressed: () async {
+              if (this._key.text.length == 0) {
+                this.showSnackbar('私钥不能为空');
+              } else {
+                  this.saveWalletByKey('');
+//                SharedPreferences prefs = await SharedPreferences.getInstance();
+//                prefs.setString("new_wallet_name", _name.text);
+//                Navigator.pushNamed(context, "keyboard_main").then((data){
+//                  print('你设置的交易密码是=》${data.toString()}');
+//                  this.saveWalletByKey(data.toString());
+//                });
+              }
+            },
           ),
-          new Container(
-              margin: const EdgeInsets.only(top: 10.0),
-              child: GestureDetector(
-                child: new Image.asset(
-                    'images/fingerprint.png'
-                ),
-                onTap: () async {
-                  saveWalletByKey();
-                },
-              )
-          ),
+//          new Padding(
+//              padding: new EdgeInsets.all(30.0),
+//              child: new Text('免密设置')
+//          ),
+//          new Container(
+//              margin: const EdgeInsets.only(top: 10.0),
+//              child: GestureDetector(
+//                child: new Image.asset(
+//                    'images/fingerprint.png'
+//                ),
+//                onTap: () async {
+//                  saveWalletByKey();
+//                },
+//              )
+//          ),
         ],
       ),
     );
@@ -320,13 +339,7 @@ class Page extends State<LoadWallet> {
   }
 
   // 通过key导入钱包
-  void saveWalletByKey() async {
-
-
-    if (this._key.text.length == 0) {
-      this.showSnackbar('请输入密钥');
-      return ;
-    }
+  void saveWalletByKey(String pwd) async {
 
     if (this._key.text.length != 64) {
       this.showSnackbar('标准密钥长度64位，你的是${this._key.text.length}位');
@@ -335,6 +348,11 @@ class Page extends State<LoadWallet> {
 
     EthereumAddress ethereumAddress = await TokenService.getPublicAddress(this._key.text);
     String address = ethereumAddress.toString();
+
+    // 使用账户密码对私钥进行AES对称
+    // var encryptText = await FlutterAesEcbPkcs5.encryptString(this._key.text, pwd);
+    // print('加密后的私钥为=》${encryptText}');
+    // flutter 的aes加密库加密后解密失败，蛋疼
 
     Map item = {
       'privateKey': this._key.text,
@@ -352,10 +370,8 @@ class Page extends State<LoadWallet> {
     item.addAll({'balance': balance});
     int id = await Provider.of<myWallet.Wallet>(context).add(item);
     print('钱包插入成功：id => ${id}');
-
-
     if (id > 0) {
-      Navigator.pushNamed(context, "/");
+      Navigator.pushNamed(context, "wallet_success");
     } else {
       this.showSnackbar('钱包保存失败');
     }

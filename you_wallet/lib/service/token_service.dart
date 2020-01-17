@@ -58,7 +58,7 @@ class TokenService {
   }
 
 
-   // 助记词转密钥
+   // 助记词转私钥Private Key
   static String getPrivateKey(String mnemonic) {
     String seed = bip39.mnemonicToSeedHex(mnemonic);
     KeyData master = ED25519_HD_KEY.getMasterKeyFromSeed(seed);

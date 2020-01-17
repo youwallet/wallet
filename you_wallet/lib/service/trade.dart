@@ -11,6 +11,7 @@ import 'package:web3dart/crypto.dart';
 import 'package:web3dart/credentials.dart';
 import 'package:youwallet/util/eth_amount_formatter.dart' ;
 import 'package:youwallet/db/sql_util.dart';
+import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
 
 
 class Trade {
@@ -35,7 +36,8 @@ class Trade {
   static final Map func = {
     'filled(bytes32)':'0x288cdc91',
     'getOrderQueueInfo(address,address,bool)': '0x22f42f6b',
-    'transfer(address,uint256)': '0xa9059cbb'
+    'transfer(address,uint256)': '0xa9059cbb',
+    'getOrderInfo(bytes32,bytes32,bool)': 'b7f92b4a'
   };
 
   // Trade内的私有变量
@@ -49,21 +51,23 @@ class Trade {
   String trader = ""; // 当前交易的用户钱包地址
   String configData = ""; // 协议版本号码、是否买单，计算配置信息
   String privateKey = "";
+  String pwd = ""; // 钱包密码，要用这个密码来解密私钥
 
   String rpcUrl = "https://ropsten.infura.io/";
 
-  String odHash = "";  // od_hash,用来查询每个订单的匹配情况
+  String odHash = "";  // odHash,用来查询兑换订单
+  String bqHash = "";  // bqHash,用来查询兑换订单
 
   String txnHash = ""; // 下单成功会返回txnHash
 
 
-  Trade(String token, String tokenName, String baseToken, String baseTokenName, String amount, String price, bool isBuy) {
+  Trade(String token, String tokenName, String baseToken, String baseTokenName, String amount, String price, bool isBuy, String pwd) {
      this.tokenA = token;
      this.tokenAName = tokenName;
      this.tokenB = baseToken;
      this.tokenBName = baseTokenName;
      this.amount = amount;
-
+     this.pwd = pwd;
      //需要换一个名字
      this.price = (int.parse(amount) * int.parse(price)).toString();
      this.isBuy = isBuy;
@@ -108,8 +112,7 @@ class Trade {
     );
     print("订单的getConfigData => ${rsp.body}");
     Map result = jsonDecode(rsp.body);
-    //    return result['result'].replaceFirst('0x', '');
-    return '020000005ffb17bc000000000000000000000000000000000000000000000000';
+        return result['result'].replaceFirst('0x', '');
   }
 
   static formatParam(String para) {
@@ -136,13 +139,13 @@ class Trade {
   }
 
   // 下单，返回订单的hash
-   Future<String> takeOrder() async{
+   Future<String> takeOrder() async {
 
     String functionName = '0xefe29415';
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     this.trader =  formatParam(prefs.getString("currentWallet"));
-//     this.trader =  formatParam('0xAB890808775D51e9bF9fa76f40EE5fff124deCE5');
+
     print('当前下单的钱包地址 =》 ${this.trader}');
 
     this.configData = await getConfigData(this.isBuy);
@@ -158,15 +161,6 @@ class Trade {
     postData = postData + this.configData + signature + formatParam(this.tokenA) + formatParam(this.tokenB) + formatParam(taxAddress);
 
     print("takeOrder post => ${postData}");
-    /**
-     *  0xefe29415000000000000000000000000ab890808775d51e9bf9fa76f40ee5fff124dece5000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000020000005ff0603c000000000000000000000000000000000000000000000000000000000000000000000000e898663A2CbDf7a371bB4B6a5dd7aC93d4505C9a0000000000000000000000002e01154391F7dcBf215c77DBd7fF3026Ea7514ce0000000000000000000000003d9c6c5a7b2b2744870166eac237bd6e366fa3ef
-     *
-     *  trader=000000000000000000000000ab890808775d51e9bf9fa76f40ee5fff124dece5
-     *  formatParam(this.amount) = 0000000000000000000000000000000000000000000000000000000000000001
-     *  formatParam(this.price) = 0000000000000000000000000000000000000000000000000000000000000001
-     *  gasTokenAmount = 0000000000000000000000000000000000000000000000000000000000000000
-     */
-
 
     final client = Web3Client(rpcUrl, Client());
     var credentials = await client.credentialsFromPrivateKey(privateKey);
@@ -243,7 +237,7 @@ class Trade {
 
   // 调用web3dart，对od_hash使用私钥进行签名，这一步必须在客户端做
   Future<Map> ethSign(String od_hash) async {
-    String privateKey = await loadPrivateKey();
+    String privateKey = await loadPrivateKey(this.pwd);
     print("ethSign od_hash =》54793c08f2aa87ec02c025fbbfa7eee9ac8665088e0a28a17428a0269934f807");
     print("ethSign hexToBytes(od_hash) =》${hexToBytes('54793c08f2aa87ec02c025fbbfa7eee9ac8665088e0a28a17428a0269934f807')}");
     final key = EthPrivateKey(hexToBytes(privateKey));
@@ -266,7 +260,7 @@ class Trade {
     };
   }
 
-  Future<String> loadPrivateKey() async{
+  Future<String> loadPrivateKey(String pwd) async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String address =  prefs.getString("currentWallet");
 
@@ -274,6 +268,8 @@ class Trade {
     var map = {'address': address};
     List json = await sql.query(conditions: map);
     print("json => ${json}");
+    print("pwd => ${pwd}");
+    // this.privateKey = await FlutterAesEcbPkcs5.decryptString(json[0]['privateKey'], pwd);
     this.privateKey = json[0]['privateKey'];
     print('钱包地址 => ${address}');
     print('钱包私钥 => ${this.privateKey}');
@@ -281,13 +277,14 @@ class Trade {
   }
 
   // static 方法获取用户私钥
-  static Future<String> getPrivateKey() async{
+  static Future<String> getPrivateKey(String pwd) async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String address =  prefs.getString("currentWallet");
 
     var sql = SqlUtil.setTable("wallet");
     var map = {'address': address};
     List json = await sql.query(conditions: map);
+    // String privateKey = await FlutterAesEcbPkcs5.decryptString(json[0]['privateKey'],  pwd);
     return json[0]['privateKey'];
   }
 
@@ -344,28 +341,30 @@ class Trade {
     print("bq_hash =》 ${bq_hash}");
     print("od_hash =》 ${od_hash}");
     this.odHash = od_hash;
+    this.bqHash = bq_hash;
     return {
       'od_hash': od_hash,
       'bq_hash': bq_hash
     };
   }
 
+  // 保存兑换订单到本地数据库
   Future<void> saveTrader() async {
     var sql = SqlUtil.setTable("trade");
-    String sql_insert ='INSERT INTO trade(orderType, price, amount, token,tokenName, baseToken,baseTokenname, txnHash, odHash, createtime) VALUES(?, ?, ?, ?,?,?,?,?,?,?)';
+    String sql_insert ='INSERT INTO trade(orderType, price, amount, token,tokenName, baseToken,baseTokenname, txnHash, odHash, bqHash, createtime) VALUES(?, ?, ?, ?,?,?,?,?,?,?,?)';
     String orderType = '';
     if (this.isBuy) {
       orderType = '买入';
     } else {
       orderType = '卖出';
     }
-    List list = [orderType,this.price, this.amount, this.tokenA,this.tokenAName,this.tokenB,this.tokenBName,this.txnHash,this.odHash,DateTime.now().millisecondsSinceEpoch];
+    List list = [orderType,this.price, this.amount, this.tokenA,this.tokenAName,this.tokenB,this.tokenBName,this.txnHash,this.odHash, this.bqHash, DateTime.now().millisecondsSinceEpoch];
     int id = await sql.rawInsert(sql_insert, list);
     print("db trade id => ${id}");
     return id;
   }
 
-  /// 获取当前交易列表
+  /// 从数据库获取当前兑换列表，
   static Future<List> getTraderList() async {
     var sql = SqlUtil.setTable("trade");
     List list = await sql.get();
@@ -401,7 +400,7 @@ class Trade {
 
   // 0x22f42f6b
   // 根据token和basetoken获取订单队列
-  static Future getOrderQueueInfo(String baseToken, String quoteToken, bool isSell) async {
+  static Future<String> getOrderQueueInfo(String baseToken, String quoteToken, bool isSell) async {
     String functionName = func['getOrderQueueInfo(address,address,bool)'];
     String strSell = isSell ? '1' : '0';
     String params = formatParam(baseToken) + formatParam(quoteToken) + formatParam(strSell);
@@ -427,7 +426,8 @@ class Trade {
         body: json.encode(payload)
     );
     print("getOrderQueueInfo =》 ${rsp.body}");
-
+    Map result = jsonDecode(rsp.body);
+    return result['result'];
   }
 
   static Future<String> getNetWork() async {
@@ -443,9 +443,9 @@ class Trade {
   // + 要传递的方法参数，每个参数都为64位
   // (对transfer来说，第一个是接收人的地址去掉0x，第二个是代币数量的16进制表示，去掉前面0x，然后补齐为64位)
 
-  static Future<String> sendToken(String fromAddress, String toAddress, String num, Map token) async {
+  static Future<String> sendToken(String fromAddress, String toAddress, String num, Map token, String pwd) async {
     String rpcUrl = await getNetWork();
-    String privateKey = await getPrivateKey();
+    String privateKey = await getPrivateKey(pwd);
 
     final client = Web3Client(rpcUrl, Client());
     var credentials = await client.credentialsFromPrivateKey(privateKey);
@@ -495,6 +495,38 @@ class Trade {
     print("根据订单hash查询状态 => ${rsp.body}");
     Map result = jsonDecode(rsp.body);
     return result['result']['blockHash'];
+  }
+
+  // 获取订单中的信息
+  // String bqHash + String odHash
+  // 这里直接把bqHash和odHash拼接好传进来
+  static Future getOrderInfo(String hash, bool isSell) async {
+    String strSell = isSell ? '1' : '0';
+    String postData = func['getOrderInfo(bytes32,bytes32,bool)'] + hash.replaceFirst('0x', '') + formatParam(strSell);
+    print("getOrderInfo postData => ${postData}");
+    var client = Client();
+    var payload = {
+      "jsonrpc": "2.0",
+      "method": "eth_call",
+      "params": [
+        {
+          "from":tempMatchAddress,
+          "to": tempMatchAddress,
+          "data": postData
+        },
+        "latest"
+      ],
+      "id": DateTime.now().millisecondsSinceEpoch
+    };
+
+    var rsp = await client.post(
+        'https://ropsten.infura.io/',
+        headers:{'Content-Type':'application/json'},
+        body: json.encode(payload)
+    );
+    print("getOrderInfo =》 ${rsp.body}");
+    Map result = jsonDecode(rsp.body);
+    return result['result'];
   }
 
 
