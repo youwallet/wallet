@@ -45,7 +45,7 @@ class Page extends State {
 
   List trades = [];
 
-  // 兑换深度
+  // 兑换深度列表
   List tradesDeep = [];
 
   // 输入框右侧显示的token提示
@@ -92,22 +92,25 @@ class Page extends State {
     return new Scaffold(
       backgroundColor: _btnText == '买入' ? Colors.green[50] : Colors.red[50],
       appBar: buildAppBar(context),
-      body: new Container(
-
-        padding: const EdgeInsets.all(16.0), // 四周填充边距32像素
-        child: new Column(
-          children: <Widget>[
-            buildPageTop(context),
-            new Container(
-              height: 1.0,
-              color: Colors.black12,
-              margin: const EdgeInsets.only(top: 16.0, bottom: 16.0),
-              child: null,
-            ),
-            transferList(arr: this.trades)
-          ],
-        )
-      ),
+      body: new ListView(
+        children: <Widget>[
+          new Container(
+              padding: const EdgeInsets.all(16.0), // 四周填充边距32像素
+              child: new Column(
+                children: <Widget>[
+                  buildPageTop(context),
+                  new Container(
+                    height: 1.0,
+                    color: Colors.black12,
+                    margin: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+                    child: null,
+                  ),
+                  transferList(arr: this.trades)
+                ],
+              )
+          ),
+        ],
+      )
     );
   }
 
@@ -280,7 +283,7 @@ class Page extends State {
             ),
           ),
           new Container(
-            width: 50.0,
+            width: 30.0,
             child: null,
           ),
           // 右边一列
@@ -331,14 +334,14 @@ class Page extends State {
         ), // 设置圆角，默认有圆角
         elevation: 0, // 按钮阴影高度
         color: Colors.white,
-        child: Text(btnText)
+        child: Text(btnText + this.suffixText)
       );
     } else {
       return OutlineButton(
         onPressed: () {
           changeOrderModel(btnText);
         },
-        child: Text(btnText),
+        child: Text(btnText + this.suffixText),
         borderSide:  BorderSide(
             color: currentBtn == '买入'? Colors.green : Colors.red,
             width: 1.0,
@@ -421,7 +424,7 @@ class Page extends State {
               new Text('数量SHT'),
             ],
           ),
-          priceNum()
+          priceNum(arr: this.tradesDeep)
         ],
       ),
     );
@@ -464,6 +467,7 @@ class Page extends State {
 //    });
   }
 
+  // 获取钱包密码，然后用密码解析私钥
   void getWalletPassWord(String pwd) async {
     bool isBuy = true;
     if (this._btnText == '买入') {
@@ -502,16 +506,16 @@ class Page extends State {
      this._getTradeInfo();
    }
 
-   // 获取当前的买单和卖单前三个交易
+   // 获取当前的买单队列
    // Map obj是用户在左边选择的token，
    Future<void> updateTradeList(Map obj) async {
+      this.tradesDeep = [];
       String tokenAddress = obj['address'];
       String baseTokenAddress = this.baseToken[0]['address'];
-      bool isSell = this._btnText == '买入' ? false : true;
+      bool isSell = false;
       String hash = await Trade.getOrderQueueInfo(tokenAddress,baseTokenAddress,isSell);
-      // 把hash中的bq hash单独拿出来，队列中的bq hash都是相同的
+      // 把hash中的bq hash单独拿出来，队列中的bq hash都是相同的 拿到QueueElem的订单结构体
       String bqHash = hash.replaceFirst('0x', '').substring(0,64);
-      // 拿到QueueElem的订单结构体
       String queueElem = await Trade.getOrderInfo(hash, isSell);
       this.deepCallBackOrderInfo(queueElem, bqHash, isSell);
    }
@@ -520,20 +524,35 @@ class Page extends State {
    // queueElem后64位，是下一个订单的odHash,
    // 以前的bqHash + 下一个订单的odHash，拼接成新的hash，继续获取下一个订单
    Future<void> deepCallBackOrderInfo(String queueElem, String bqHash, bool isSell) async {
-      this.buildQueueElem(queueElem.replaceFirst('0x', ''));
+      this.buildQueueElem(queueElem.replaceFirst('0x', ''), isSell);
       String odHash = queueElem.substring(queueElem.length - 64);
       String nextHash = bqHash + odHash;
       String nextQueueElem = await Trade.getOrderInfo(nextHash, isSell);
       if (nextQueueElem != '0x' && odHash != '0000000000000000000000000000000000000000000000000000000000000000') {
         this.deepCallBackOrderInfo(nextQueueElem, bqHash, isSell);
       } else {
-        print(nextQueueElem);
+        print('订单队列结束');
+        if (!isSell) {
+          this.getSellList();
+        }
       }
    }
 
+   // 获取卖单队列
+   Future<void> getSellList() async {
+     String tokenAddress = this.value['address'];
+     String baseTokenAddress = this.baseToken[0]['address'];
+     String hash = await Trade.getOrderQueueInfo(tokenAddress, baseTokenAddress, true);
+     // 把hash中的bq hash单独拿出来，队列中的bq hash都是相同的
+     String bqHash = hash.replaceFirst('0x', '').substring(0,64);
+     // 拿到QueueElem的订单结构体
+     String queueElem = await Trade.getOrderInfo(hash, true);
+     this.deepCallBackOrderInfo(queueElem, bqHash, true);
+   }
+
    // 解析queueElem
-   void buildQueueElem(String queueElem) {
-     print('queueElem => ${queueElem}');
+   void buildQueueElem(String queueElem, bool isSell) {
+     // print('queueElem => ${queueElem}');
      BigInt filled = BigInt.parse(queueElem.substring(queueElem.length - 128, queueElem.length - 64));
      BigInt baseTokenAmount  = BigInt.parse(queueElem.replaceFirst('0x', '').substring(64, 128));
      BigInt quoteTokenAmount = BigInt.parse(queueElem.replaceFirst('0x', '').substring(128, 192));
@@ -542,6 +561,14 @@ class Page extends State {
      print("左边显示           => ${baseTokenAmount/quoteTokenAmount}");
      print("解析filled         => ${filled}");
      print("右边显示           => ${baseTokenAmount - filled}");
+     print("isSell显示         => ${isSell}");
+     setState(() {
+       this.tradesDeep.add({
+         'left': (baseTokenAmount/quoteTokenAmount).toString(),
+         'right': (baseTokenAmount - filled).toString(),
+         'isSell': isSell
+       });
+     });
    }
 
 

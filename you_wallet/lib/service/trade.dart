@@ -112,7 +112,7 @@ class Trade {
     );
     print("订单的getConfigData => ${rsp.body}");
     Map result = jsonDecode(rsp.body);
-        return result['result'].replaceFirst('0x', '');
+    return result['result'].replaceFirst('0x', '');
   }
 
   static formatParam(String para) {
@@ -404,6 +404,7 @@ class Trade {
     String strSell = isSell ? '1' : '0';
     String params = formatParam(baseToken) + formatParam(quoteToken) + formatParam(strSell);
     String postData = func['getOrderQueueInfo(address,address,bool)'] + params;
+    print(postData);
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",
@@ -523,6 +524,7 @@ class Trade {
         body: json.encode(payload)
     );
     Map result = jsonDecode(rsp.body);
+    print(rsp.body);
     return result['result'];
   }
 
