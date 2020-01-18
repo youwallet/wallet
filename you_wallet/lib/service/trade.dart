@@ -37,7 +37,7 @@ class Trade {
     'filled(bytes32)':'0x288cdc91',
     'getOrderQueueInfo(address,address,bool)': '0x22f42f6b',
     'transfer(address,uint256)': '0xa9059cbb',
-    'getOrderInfo(bytes32,bytes32,bool)': 'b7f92b4a'
+    'getOrderInfo(bytes32,bytes32,bool)': '0xb7f92b4a'
   };
 
   // Trade内的私有变量
@@ -401,10 +401,9 @@ class Trade {
   // 0x22f42f6b
   // 根据token和basetoken获取订单队列
   static Future<String> getOrderQueueInfo(String baseToken, String quoteToken, bool isSell) async {
-    String functionName = func['getOrderQueueInfo(address,address,bool)'];
     String strSell = isSell ? '1' : '0';
     String params = formatParam(baseToken) + formatParam(quoteToken) + formatParam(strSell);
-    String postData = functionName + params;
+    String postData = func['getOrderQueueInfo(address,address,bool)'] + params;
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",
@@ -503,7 +502,6 @@ class Trade {
   static Future getOrderInfo(String hash, bool isSell) async {
     String strSell = isSell ? '1' : '0';
     String postData = func['getOrderInfo(bytes32,bytes32,bool)'] + hash.replaceFirst('0x', '') + formatParam(strSell);
-    print("getOrderInfo postData => ${postData}");
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",
@@ -524,7 +522,6 @@ class Trade {
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
-    print("getOrderInfo =》 ${rsp.body}");
     Map result = jsonDecode(rsp.body);
     return result['result'];
   }

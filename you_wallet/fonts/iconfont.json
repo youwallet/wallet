@@ -13,6 +13,13 @@
       "unicode_decimal": 58902
     },
     {
+      "icon_id": "3105859",
+      "name": "成功",
+      "font_class": "chenggong",
+      "unicode": "e617",
+      "unicode_decimal": 58903
+    },
+    {
       "icon_id": "4365480",
       "name": "扫码",
       "font_class": "saoma",

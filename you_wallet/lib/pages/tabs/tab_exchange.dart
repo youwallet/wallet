@@ -44,6 +44,10 @@ class Page extends State {
   final controllerPrice = TextEditingController();
 
   List trades = [];
+
+  // 兑换深度
+  List tradesDeep = [];
+
   // 输入框右侧显示的token提示
   String suffixText = "";
   double tradePrice = 0;
@@ -505,8 +509,42 @@ class Page extends State {
       String baseTokenAddress = this.baseToken[0]['address'];
       bool isSell = this._btnText == '买入' ? false : true;
       String hash = await Trade.getOrderQueueInfo(tokenAddress,baseTokenAddress,isSell);
-      await Trade.getOrderInfo(hash, isSell);
+      // 把hash中的bq hash单独拿出来，队列中的bq hash都是相同的
+      String bqHash = hash.replaceFirst('0x', '').substring(0,64);
+      // 拿到QueueElem的订单结构体
+      String queueElem = await Trade.getOrderInfo(hash, isSell);
+      this.deepCallBackOrderInfo(queueElem, bqHash, isSell);
    }
+
+   // 递归获取订单信息
+   // queueElem后64位，是下一个订单的odHash,
+   // 以前的bqHash + 下一个订单的odHash，拼接成新的hash，继续获取下一个订单
+   Future<void> deepCallBackOrderInfo(String queueElem, String bqHash, bool isSell) async {
+      this.buildQueueElem(queueElem.replaceFirst('0x', ''));
+      String odHash = queueElem.substring(queueElem.length - 64);
+      String nextHash = bqHash + odHash;
+      String nextQueueElem = await Trade.getOrderInfo(nextHash, isSell);
+      if (nextQueueElem != '0x' && odHash != '0000000000000000000000000000000000000000000000000000000000000000') {
+        this.deepCallBackOrderInfo(nextQueueElem, bqHash, isSell);
+      } else {
+        print(nextQueueElem);
+      }
+   }
+
+   // 解析queueElem
+   void buildQueueElem(String queueElem) {
+     print('queueElem => ${queueElem}');
+     BigInt filled = BigInt.parse(queueElem.substring(queueElem.length - 128, queueElem.length - 64));
+     BigInt baseTokenAmount  = BigInt.parse(queueElem.replaceFirst('0x', '').substring(64, 128));
+     BigInt quoteTokenAmount = BigInt.parse(queueElem.replaceFirst('0x', '').substring(128, 192));
+     print("baseTokenAmount   => ${baseTokenAmount}");
+     print("quoteTokenAmount  => ${quoteTokenAmount}");
+     print("左边显示           => ${baseTokenAmount/quoteTokenAmount}");
+     print("解析filled         => ${filled}");
+     print("右边显示           => ${baseTokenAmount - filled}");
+   }
+
+
 
    // 遍历每个订单的状态
    Future<void> _getTradeInfo() async {
