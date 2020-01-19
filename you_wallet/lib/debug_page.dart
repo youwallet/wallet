@@ -18,6 +18,9 @@ import 'dart:convert';
 import 'package:web3dart/web3dart.dart';
 import 'package:web3dart/crypto.dart';
 import 'package:crypto/crypto.dart';
+import 'package:bip32/bip32.dart' as bip32;
+import 'package:hex/hex.dart';
+import 'package:bitcoin_flutter/src/payments/p2pkh.dart';
 
 
 class DebugPage extends StatefulWidget {
@@ -207,7 +210,33 @@ class _DebugPageState extends State<DebugPage> {
                 print("HMAC digest as bytes: ${digest.bytes}");
                 print("HMAC digest as hex string: $digest");
               },
-
+            ),
+            FlatButton(
+              child: Text("derivePath"),
+              textColor: Colors.blue,
+              onPressed: () async {
+                const mnemonic = 'praise you muffin lion enable neck grocery crumble super myself license ghost';
+                final seed = bip39.mnemonicToSeed(mnemonic);
+                final root = bip32.BIP32.fromSeed(seed);
+                final child1 = root.derivePath("m/44'/60'/0'/0/0");
+                print( bytesToHex(child1.publicKey));
+                print( bytesToHex(child1.privateKey));
+                final private = EthPrivateKey.fromHex(bytesToHex(child1.privateKey));
+                final address = await private.extractAddress();
+                print(address);
+              },
+            ),
+            FlatButton(
+              child: Text("BigInt"),
+              textColor: Colors.blue,
+              onPressed: () async {
+                print(BigInt.from(200));
+                print(BigInt.parse('2000'));
+                print(BigInt.from(10).pow(18)); // 10的18次方
+                print(BigInt.from(10).pow(3));
+                String val = '000000000000000000000000000000000000000000000000000000000000024e';
+                print(int.parse(val.replaceFirst("0x",''), radix: 16));
+              },
             ),
           ],
         ),

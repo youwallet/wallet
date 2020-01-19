@@ -61,7 +61,7 @@ class Page extends State {
     eventBus.on<TabChangeEvent>().listen((event) {
       print("event listen =》${event.index}");
       if (event.index == 1) {
-        this._getTradeInfo();
+        // this._getTradeInfo();
       } else {
         print('do nothing');
       }
@@ -71,7 +71,7 @@ class Page extends State {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    this.getTraderList();
+    // this.getTraderList();
   }
 
   @override
@@ -153,7 +153,8 @@ class Page extends State {
                         this.value=T;
                         this.tokenBalance = token['balance'];
                       });
-                      this.updateTradeList(T);
+                      // 切换token后，刷新当前的交易深度
+                      this.getBuyList();
                     },
                     isDense: true,
                     elevation: 24,//设置阴影的高度
@@ -432,16 +433,16 @@ class Page extends State {
 
   /// 下单
   void makeOrder() async {
-    print(this.controllerAmount.text);
-    print(this.controllerPrice.text);
-    print(Provider.of<Network>(context).network);
+    // print(this.controllerAmount.text);
+    // print(this.controllerPrice.text);
+    // print(Provider.of<Network>(context).network);
 
     if (Provider.of<Network>(context).network != 'ropsten') {
       final snackBar = new SnackBar(content: new Text('请切换到ropsten网络'));
       Scaffold.of(context).showSnackBar(snackBar);
       return ;
     }
-    print(this.value);
+    // print(this.value);
     if (this.value == null) {
       final snackBar = new SnackBar(content: new Text('请选择token'));
       Scaffold.of(context).showSnackBar(snackBar);
@@ -460,7 +461,22 @@ class Page extends State {
       Scaffold.of(context).showSnackBar(snackBar);
       return ;
     }
-    this.getWalletPassWord('');
+
+    // 进行交易授权
+    // 买入时对有变的token授权，
+    // 卖出时对左边的token授权
+    // 一句话说明：哪个token要被转出去给其他人，就给哪个token授权
+    bool tokenLeftApprove  = true;
+    bool tokenRightApprove = true;
+    // tokenLeftApprove  = await Trade.approve(this.baseToken[0]['address']);
+    // tokenRightApprove = await Trade.approve(this.value['address']);
+
+    if (tokenLeftApprove && tokenRightApprove) {
+      this.getWalletPassWord('');
+    } else {
+      this.showSnackBar('交易授权失败');
+    }
+//    this.getWalletPassWord('');
 //    Navigator.pushNamed(context, "keyboard_main").then((data){
 //      print('你设置的交易密码是=》${data.toString()}');
 //      this.getWalletPassWord(data.toString());
@@ -492,9 +508,16 @@ class Page extends State {
       final snackBar = new SnackBar(content: new Text(barText));
       Scaffold.of(context).showSnackBar(snackBar);
     } else {
-      this.getTraderList();
+      // 下单成功后，刷新用户本地的历史兑换列表
+      // this.getTraderList();
     }
   }
+
+  void showSnackBar(String text) {
+    final snackBar = new SnackBar(content: new Text(text));
+    Scaffold.of(context).showSnackBar(snackBar);
+  }
+
 
    // 获取订单列表
    void getTraderList() async {
@@ -506,16 +529,19 @@ class Page extends State {
      this._getTradeInfo();
    }
 
-   // 获取当前的买单队列
-   // Map obj是用户在左边选择的token，
-   Future<void> updateTradeList(Map obj) async {
-      this.tradesDeep = [];
-      String tokenAddress = obj['address'];
-      String baseTokenAddress = this.baseToken[0]['address'];
-      bool isSell = false;
-      String hash = await Trade.getOrderQueueInfo(tokenAddress,baseTokenAddress,isSell);
+   // 先获取当前的买单队列
+   Future<void> getBuyList() async {
+      this.tradesDeep = []; // 清空当前的深度数组
+      String tokenAddress = this.value['address']; // 左边的token
+      String baseTokenAddress = this.baseToken[0]['address']; // 右边的token
+      bool isSell =  false;
+      // 拿到队列中第一个订单的 bq_hash + od_hash
+      String hash = await Trade.getOrderQueueInfo(tokenAddress, baseTokenAddress, isSell);
       // 把hash中的bq hash单独拿出来，队列中的bq hash都是相同的 拿到QueueElem的订单结构体
+      print('getBuyList hash => ${hash}');
       String bqHash = hash.replaceFirst('0x', '').substring(0,64);
+      String odHash = hash.replaceFirst('0x', '').substring(64);
+
       String queueElem = await Trade.getOrderInfo(hash, isSell);
       this.deepCallBackOrderInfo(queueElem, bqHash, isSell);
    }
@@ -531,7 +557,7 @@ class Page extends State {
       if (nextQueueElem != '0x' && odHash != '0000000000000000000000000000000000000000000000000000000000000000') {
         this.deepCallBackOrderInfo(nextQueueElem, bqHash, isSell);
       } else {
-        print('订单队列结束');
+        print('订单队列结束, 最后一个订单的odHash => ${odHash}');
         if (!isSell) {
           this.getSellList();
         }
@@ -540,22 +566,27 @@ class Page extends State {
 
    // 获取卖单队列
    Future<void> getSellList() async {
+
      String tokenAddress = this.value['address'];
      String baseTokenAddress = this.baseToken[0]['address'];
-     String hash = await Trade.getOrderQueueInfo(tokenAddress, baseTokenAddress, true);
-     // 把hash中的bq hash单独拿出来，队列中的bq hash都是相同的
+     bool isSell = true;
+     String hash = await Trade.getOrderQueueInfo(tokenAddress, baseTokenAddress, isSell);
+     print('getSellList hash => ${hash}');
      String bqHash = hash.replaceFirst('0x', '').substring(0,64);
      // 拿到QueueElem的订单结构体
-     String queueElem = await Trade.getOrderInfo(hash, true);
-     this.deepCallBackOrderInfo(queueElem, bqHash, true);
+     String queueElem = await Trade.getOrderInfo(hash, isSell);
+     this.deepCallBackOrderInfo(queueElem, bqHash, isSell);
    }
 
    // 解析queueElem
    void buildQueueElem(String queueElem, bool isSell) {
      // print('queueElem => ${queueElem}');
-     BigInt filled = BigInt.parse(queueElem.substring(queueElem.length - 128, queueElem.length - 64));
-     BigInt baseTokenAmount  = BigInt.parse(queueElem.replaceFirst('0x', '').substring(64, 128));
-     BigInt quoteTokenAmount = BigInt.parse(queueElem.replaceFirst('0x', '').substring(128, 192));
+     print("buildQueueElem filled => ${queueElem.substring(queueElem.length - 128, queueElem.length - 64)}");
+     // BigInt filled = BigInt.parse(queueElem.substring(queueElem.length - 128, queueElem.length - 64));
+     int filled = int.parse(queueElem.substring(queueElem.length - 128, queueElem.length - 64), radix: 16);
+     int baseTokenAmount  = int.parse(queueElem.replaceFirst('0x', '').substring(64, 128), radix: 16);
+     // BigInt quoteTokenAmount = BigInt.parse(queueElem.replaceFirst('0x', '').substring(128, 192));
+     int quoteTokenAmount = int.parse(queueElem.replaceFirst('0x', '').substring(128, 192), radix: 16);
      print("baseTokenAmount   => ${baseTokenAmount}");
      print("quoteTokenAmount  => ${quoteTokenAmount}");
      print("左边显示           => ${baseTokenAmount/quoteTokenAmount}");
@@ -564,8 +595,8 @@ class Page extends State {
      print("isSell显示         => ${isSell}");
      setState(() {
        this.tradesDeep.add({
-         'left': (baseTokenAmount/quoteTokenAmount).toString(),
-         'right': (baseTokenAmount - filled).toString(),
+         'left': (baseTokenAmount/quoteTokenAmount).toStringAsFixed(5),
+       'right': (baseTokenAmount - filled).toString(),
          'isSell': isSell
        });
      });

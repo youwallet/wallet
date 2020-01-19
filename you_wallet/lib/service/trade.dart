@@ -16,28 +16,30 @@ import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
 
 class Trade {
 
-  static final tempMatchAddress= "0x3762fF9389feaE5C7C00aC765C1f0056f9B53eCB";
+  static final tempMatchAddress= "0x3edde3202e42a6c129A399a7e063C6E236239202";
 
   // 水龙头合约地址
   // static final tempMatchAddress = "0x81b7e08f65bdf5648606c89998a9cc8164397647";
 
   // 获取订单匹配情况的合约
-  static final hybridExchangeAddress = "0xC34528755ACBcf1872FeE04c5Cf4BbE112cdafA2";
+  static final hybridExchangeAddress = "0xe07554a7621D663c04082Bb1044Cf1344837BAF4";
 
 
   // 收取交易费的账户，测试阶段用SHT的合约账户代替
-   static final taxAddress = "0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef";
+  static final taxAddress = "0xA9535b10EE96b4A03269D0e0DEf417aF97477FD6";
 
-//  static final taxAddress = "0x3D9c6C5A7b2B2744870166EaC237bd6e366fa3ef";
+  static final proxy = "0x141A60c20026d88385a5339191C3950285e41072";
 
   // 这个定义多大?
   static final gasTokenAmount = "0000000000000000000000000000000000000000000000000000000000000000";
 
   static final Map func = {
-    'filled(bytes32)':'0x288cdc91',
+    'filled(bytes32)': '0x288cdc91',
     'getOrderQueueInfo(address,address,bool)': '0x22f42f6b',
     'transfer(address,uint256)': '0xa9059cbb',
-    'getOrderInfo(bytes32,bytes32,bool)': '0xb7f92b4a'
+    'getOrderInfo(bytes32,bytes32,bool)': '0xb7f92b4a',
+    'takeOrder()': '0xefe29415',
+    'approve()': '0x095ea7b3'
   };
 
   // Trade内的私有变量
@@ -71,8 +73,8 @@ class Trade {
      //需要换一个名字
      this.price = (int.parse(amount) * int.parse(price)).toString();
      this.isBuy = isBuy;
-     print('baseToken => ${baseToken}');
-     print('isBuy => ${isBuy}');
+     // print('baseToken => ${baseToken}');
+     // print('isBuy => ${isBuy}');
   }
 
   /* 获取订单参数中的data
@@ -85,9 +87,8 @@ class Trade {
    * */
   static Future<String> getConfigData(bool isBuy) async{
     String configData = '';
-    // 参数编码中0表示false，1表示你true
     if (isBuy) {
-      configData = '0';
+      configData = '0';  // 参数编码中0表示false，1表示你true
     } else {
       configData = '1';
     }
@@ -140,14 +141,8 @@ class Trade {
 
   // 下单，返回订单的hash
    Future<String> takeOrder() async {
-
-    String functionName = '0xefe29415';
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
     this.trader =  formatParam(prefs.getString("currentWallet"));
-
-    print('当前下单的钱包地址 =》 ${this.trader}');
-
     this.configData = await getConfigData(this.isBuy);
 
     String signature = await getConfigSignature();
@@ -155,9 +150,59 @@ class Trade {
      * trader 钱包地址
      * configData 买单卖单计算的config
      * signature  签名
-     * taxAddress 收手续费的一个地址
+     *
+     * 卖出
+     * 0xefe29415
+     * 000000000000000000000000ab890808775d51e9bf9fa76f40ee5fff124dece5
+     * 0000000000000000000000000000000000000000000000000000000000000001
+     * 0000000000000000000000000000000000000000000000000000000000000001
+     * 0000000000000000000000000000000000000000000000000000000000000000
+     * 020100006004eb1c025802580000000000000000000000000000000000000000
+     * 1b00000000000000000000000000000000000000000000000000000000000000
+     * f40fee199847bd1dbb48920175c8c9ca13b42318bd4efb5f97911710e22f174d3b97e191ff42f58b8ff6afd206add7fd47a91b8438500d2c677094023d0dacb9
+     * 0000000000000000000000006c3118c39fab22caf3f9910cd054f8ea435b5ffb
+     * 0000000000000000000000002e01154391f7dcbf215c77dbd7ff3026ea7514ce
+     * 000000000000000000000000ab890808775d51e9bf9fa76f40ee5fff124dece5
+     *
+     * 买入
+     * 0xefe29415
+     * 000000000000000000000000ab890808775d51e9bf9fa76f40ee5fff124dece5
+     * 0000000000000000000000000000000000000000000000000000000000000001
+     * 0000000000000000000000000000000000000000000000000000000000000001
+     * 0000000000000000000000000000000000000000000000000000000000000000
+     * 020000006004ec7a000000000000000000000000000000000000000000000000
+     * 1b00000000000000000000000000000000000000000000000000000000000000
+     * d9a6e0f5636fff54da91e8aaca7d2b324e1df36c8a4cad5437f385d3691a48516aefae51d5d519ec3ee48e9232ae535bf14273f805172e3eeef6e1156a199cc1
+     * 0000000000000000000000006c3118c39fab22caf3f9910cd054f8ea435b5ffb
+     * 0000000000000000000000002e01154391f7dcbf215c77dbd7ff3026ea7514ce
+     * 000000000000000000000000ab890808775d51e9bf9fa76f40ee5fff124dece5
+     *
+     *
+     * 0xefe29415
+     * 000000000000000000000000ab890808775d51e9bf9fa76f40ee5fff124dece5
+     * 0000000000000000000000000000000000000000000000000000000000000001
+     * 0000000000000000000000000000000000000000000000000000000000000001
+     * 0000000000000000000000000000000000000000000000000000000000000000
+     * 020100006004fa33025802580000000000000000000000000000000000000000
+     * 1b00000000000000000000000000000000000000000000000000000000000000
+     * 631e5101e33770f554eb930a9dc69267dcc63c7aa757fc6f954f0b2feefdefe11e5187129edbb55f0d70fd0c54fc615eb8bb44002ef5e94baa78dbbd7f619419
+     * 0000000000000000000000006C3118c39FAB22caF3f9910cd054F8ea435B5FFB
+     * 0000000000000000000000002e01154391f7dcbf215c77dbd7ff3026ea7514ce
+     * 000000000000000000000000ab890808775d51e9bf9fa76f40ee5fff124dece5
+     *
+     * takeOrder参数
+     * 0xefe29415
+     * 000000000000000000000000ab890808775d51e9bf9fa76f40ee5fff124dece5
+     * 0000000000000000000000000000000000000000000000000000000000000001
+     * 0000000000000000000000000000000000000000000000000000000000000001
+     * 0000000000000000000000000000000000000000000000000000000000000000
+     * 02010000600554fa025802580000000000000000000000000000000000000000
+     * 1b00000000000000000000000000000000000000000000000000000000000000e41159e632e9d1ad49a84589aa0582750673cffe32d3a8ef72eec4cdc4bc60246c87681964da757507e26cd7af89bf7bf9e355c039e3430acb8d872cdecfcf61
+     * 0000000000000000000000006c3118c39fab22caf3f9910cd054f8ea435b5ffb
+     * 0000000000000000000000002e01154391f7dcbf215c77dbd7ff3026ea7514ce
+     * 000000000000000000000000a9535b10ee96b4a03269d0e0def417af97477fd6
      */
-    String postData = functionName + trader + formatParam(this.amount) + formatParam(this.price) + gasTokenAmount;
+    String postData = func['takeOrder()'] + trader + formatParam(this.amount) + formatParam(this.price) + gasTokenAmount;
     postData = postData + this.configData + signature + formatParam(this.tokenA) + formatParam(this.tokenB) + formatParam(taxAddress);
 
     print("takeOrder post => ${postData}");
@@ -186,7 +231,6 @@ class Trade {
       print("catch error =》 ${e}");
       return e.toString();
     }
-
   }
 
   // 根据 RVS计算订单的签名
@@ -351,7 +395,7 @@ class Trade {
   // 保存兑换订单到本地数据库
   Future<void> saveTrader() async {
     var sql = SqlUtil.setTable("trade");
-    String sql_insert ='INSERT INTO trade(orderType, price, amount, token,tokenName, baseToken,baseTokenname, txnHash, odHash, bqHash, createtime) VALUES(?, ?, ?, ?,?,?,?,?,?,?,?)';
+    String sqlInsert ='INSERT INTO trade(orderType, price, amount, token,tokenName, baseToken,baseTokenname, txnHash, odHash, bqHash, createtime) VALUES(?,?,?,?,?,?,?,?,?,?,?)';
     String orderType = '';
     if (this.isBuy) {
       orderType = '买入';
@@ -359,7 +403,7 @@ class Trade {
       orderType = '卖出';
     }
     List list = [orderType,this.price, this.amount, this.tokenA,this.tokenAName,this.tokenB,this.tokenBName,this.txnHash,this.odHash, this.bqHash, DateTime.now().millisecondsSinceEpoch];
-    int id = await sql.rawInsert(sql_insert, list);
+    int id = await sql.rawInsert(sqlInsert, list);
     print("db trade id => ${id}");
     return id;
   }
@@ -425,7 +469,6 @@ class Trade {
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
-    print("getOrderQueueInfo =》 ${rsp.body}");
     Map result = jsonDecode(rsp.body);
     return result['result'];
   }
@@ -500,6 +543,18 @@ class Trade {
   // 获取订单中的信息
   // String bqHash + String odHash
   // 这里直接把bqHash和odHash拼接好传进来
+  /**
+   * 000000000000000000000000ab890808775d51e9bf9fa76f40ee5fff124dece5
+   * 0000000000000000000000000000000000000000000000000000000000000300
+   * 0000000000000000000000000000000000000000000000000000000000000900
+   * 0000000000000000000000000000000000000000000000000000000000000000
+   * 02000000600571c8000000000000000000000000000000000000000000000000
+   * 1c0000000000000000000000000000000000000000000000000000000000000074d75996ead9f1eebd2e43e14fd80fe66da236f6051aba3b3f151d093cb588153d05e9a1244a41bdf3104ca0d28d5ad375731a58f200d43c0e70e5dc1959321a
+   * 000000000000000000000000000000000000000000000000000000000000024e
+   * 0000000000000000000000000000000000000000000000000000000000000000
+   *
+   */
+
   static Future getOrderInfo(String hash, bool isSell) async {
     String strSell = isSell ? '1' : '0';
     String postData = func['getOrderInfo(bytes32,bytes32,bool)'] + hash.replaceFirst('0x', '') + formatParam(strSell);
@@ -526,6 +581,38 @@ class Trade {
     Map result = jsonDecode(rsp.body);
     print(rsp.body);
     return result['result'];
+  }
+
+  // 交易授权
+  // function approve(address spender, uint256 value);
+  // 返回1表示true，接口调用成功，0表示false失败了
+  static Future approve(String token) async {
+    String value = BigInt.from(10).pow(27) .toString();
+    String postData = func['approve()'] + formatParam(proxy) + formatParam(value);
+    print('approve proxy   => ${formatParam(proxy)}');
+    print('approve value   => ${formatParam(value)}');
+    print('approve postData=> ${postData}');
+
+    String rpcUrl = "https://ropsten.infura.io/";
+    String privateKey = await getPrivateKey('');
+    final client = Web3Client(rpcUrl, Client());
+    var credentials = await client.credentialsFromPrivateKey(privateKey);
+    try {
+      var rsp = await client.sendTransaction(
+          credentials,
+          Transaction(
+              to: EthereumAddress.fromHex(token),
+              gasPrice: EtherAmount.inWei(BigInt.from(20000000000)),
+              maxGas: 7000000,
+              value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
+              data: hexToBytes(postData)
+          ),
+          chainId: 3
+      );
+      print("approve rsp => ${rsp}");
+    } catch (e) {
+      print("catch error =》 ${e}");
+    }
   }
 
 
