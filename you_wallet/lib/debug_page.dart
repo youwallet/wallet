@@ -21,6 +21,7 @@ import 'package:crypto/crypto.dart';
 import 'package:bip32/bip32.dart' as bip32;
 import 'package:hex/hex.dart';
 import 'package:bitcoin_flutter/src/payments/p2pkh.dart';
+import 'package:convert/convert.dart';
 
 
 class DebugPage extends StatefulWidget {
@@ -188,18 +189,19 @@ class _DebugPageState extends State<DebugPage> {
               child: Text("私钥加密解密"),
               textColor: Colors.blue,
               onPressed: () async {
-                var data = "{\"username\":\"helloword\"}";
+                var data = "razor romance foot shell monkey fatal deer exile wood merge income roof";
 
-                //生成16字节的随机密钥
-                var key = await FlutterAesEcbPkcs5.generateDesKey(128);
+                var password = "123456";
 
-                print(key);
+                var digest = md5.convert(new Utf8Encoder().convert(password));
+
+                print(hex.encode(digest.bytes));
                 //加密
-                var encryptText = await FlutterAesEcbPkcs5.encryptString(data, key);
+                var encryptText = await FlutterAesEcbPkcs5.encryptString(data, hex.encode(digest.bytes));
 
                 print(encryptText);
                 //解密
-                var decryptText  = await FlutterAesEcbPkcs5.decryptString(encryptText, key);
+                var decryptText  = await FlutterAesEcbPkcs5.decryptString(encryptText, hex.encode(digest.bytes));
 
                 print(decryptText);
               },

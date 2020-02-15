@@ -22,13 +22,13 @@ class _WalletGuideState extends State<WalletSuccess> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              new Text(
-                  '创建成功',
-                  style: new TextStyle(
-                      fontSize: 28.0,
-                      color: Colors.lightBlue
-                  )
-              ),
+//              new Text(
+//                  '创建成功',
+//                  style: new TextStyle(
+//                      fontSize: 28.0,
+//                      color: Colors.lightBlue
+//                  )
+//              ),
               new Container(
                 margin: const EdgeInsets.only(top: 50.0, bottom: 60.0),
                 child: Icon(IconData(0xe617, fontFamily: 'iconfont'),size: 150.0, color: Colors.lightBlue),

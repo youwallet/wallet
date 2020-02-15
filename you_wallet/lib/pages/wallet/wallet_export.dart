@@ -181,6 +181,7 @@ class Page extends State<WalletExport> {
                 int i = await Provider.of<Wallet>(context).remove(this.wallet);
                 print('被删除的钱包id=》${i}');
                 Navigator.popAndPushNamed(context, 'manage_wallet');
+//                Navigator.of(context).pop(1);
               });
         });
   }

@@ -5,7 +5,8 @@ import 'package:youwallet/service/token_service.dart';
 import 'package:web3dart/credentials.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart' as myWallet;
-
+import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
+import 'package:youwallet/util/md5_encrypt.dart';
 
 class WalletCheck extends StatefulWidget {
   TokenService _tokenService;
@@ -45,6 +46,15 @@ class Page extends State<WalletCheck> {
     String randomMnemonic = prefs.getString("randomMnemonic");
     print("助记词=》${randomMnemonic}");
     print("私钥  =》${TokenService.getPrivateKey(randomMnemonic)}");
+
+//    String privateKey = TokenService.getPrivateKey(randomMnemonic);
+//    String passwordMd5 = Md5Encrypt('123456').init();
+//    print("password md5 =》${passwordMd5}");
+//    String encryptPrivateKey = await FlutterAesEcbPkcs5.encryptString(privateKey, passwordMd5);
+//    String encryptMnemonic = await FlutterAesEcbPkcs5.encryptString(randomMnemonic.toString(), passwordMd5);
+//    print('this is encryptPrivateKey => ${encryptPrivateKey}');
+//    print('this is encryptMnemonic => ${encryptMnemonic}');
+
     setState(() {
       this.randomMnemonic = randomMnemonic.split(' ');
       this.randomMnemonic.shuffle();
@@ -157,27 +167,11 @@ class Page extends State<WalletCheck> {
 
     if (this._name.text == randomMnemonic) {
       print("助记词备份输入一致");
+      // 助记词和私钥在这里加密
+      Navigator.of(context).pushNamed('password').then((data){
+        this.saveWallet(data);
+      });
 
-      String privateKey = TokenService.getPrivateKey(this._name.text);
-      EthereumAddress ethereumAddress = await TokenService.getPublicAddress(privateKey);
-      String address = ethereumAddress.toString();
-
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String name = await prefs.getString("new_wallet_name");
-
-      Map obj = {
-        'privateKey': privateKey,
-        'address': address,
-        'name': name,
-        'mnemonic': randomMnemonic,
-        'balance': ''
-      };
-
-      int id = await Provider.of<myWallet.Wallet>(context).add(obj);
-      print('insert into id => ${id}');
-
-      await prefs.setString("currentWallet", address);
-      Navigator.of(context).pushReplacementNamed("wallet_success");
     } else {
       Navigator.pop(context);
       if (this.randomMnemonic.length == 0) {
@@ -186,6 +180,41 @@ class Page extends State<WalletCheck> {
         print(randomMnemonic);
       }
     }
+  }
+
+  void saveWallet(String passWord) async {
+    print('this is password => ${passWord}');
+
+    String privateKey = TokenService.getPrivateKey(this._name.text);
+    EthereumAddress ethereumAddress = await TokenService.getPublicAddress(privateKey);
+    String address = ethereumAddress.toString();
+
+    print('this is privateKey     => ${privateKey}');
+    print('this is randomMnemonic => ${this._name.text}');
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String name = prefs.getString("new_wallet_name");
+
+    String passwordMd5 = Md5Encrypt(passWord).init();
+    String encryptPrivateKey = await FlutterAesEcbPkcs5.encryptString(privateKey, passwordMd5);
+    String encryptMnemonic   = await FlutterAesEcbPkcs5.encryptString(this._name.text, passwordMd5);
+
+    print('this is encryptPrivateKey => ${encryptPrivateKey}');
+    print('this is encryptMnemonic => ${encryptMnemonic}');
+
+    Map obj = {
+      'privateKey': encryptPrivateKey,
+      'address': address,
+      'name': name,
+      'mnemonic': encryptMnemonic,
+      'balance': ''
+    };
+
+    int id = await Provider.of<myWallet.Wallet>(context).add(obj);
+    print('insert into id => ${id}');
+
+    await prefs.setString("currentWallet", address);
+    Navigator.of(context).pushReplacementNamed("wallet_success");
   }
 
 
