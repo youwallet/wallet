@@ -14,8 +14,6 @@ class tokenList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("get in buid => ${this.network}");
-    print("get in buid => ${this.arr}");
     List filterArr = [];
     this.arr.forEach((element){
       // 必须当前你选择的网络和当前你的钱包地址

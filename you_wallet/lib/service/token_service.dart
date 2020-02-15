@@ -99,13 +99,10 @@ class TokenService {
   static Future<String> getBalance(String address) async {
 
       String rpcUrl = await getNetWork();
-      print(rpcUrl);
       final client = Web3Client(rpcUrl, Client(), enableBackgroundIsolate: true);
-
-
-       EtherAmount balance = await client.getBalance(EthereumAddress.fromHex(address));
-       double b = balance.getValueInUnit(EtherUnit.ether);
-       return  b.toStringAsFixed(2);
+      EtherAmount balance = await client.getBalance(EthereumAddress.fromHex(address));
+      double b = balance.getValueInUnit(EtherUnit.ether);
+      return  b.toStringAsFixed(2);
   }
 
   static Future<String> getNetWork() async {

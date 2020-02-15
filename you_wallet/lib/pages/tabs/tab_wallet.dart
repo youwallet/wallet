@@ -1,16 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:http/http.dart';
-
-import 'package:web3dart/json_rpc.dart';
 import 'package:youwallet/widgets/tokenList.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:youwallet/service/token_service.dart';
-import 'package:dart_sql/dart_sql.dart';
-//import 'package:barcode_scan/barcode_scan.dart';
 import 'package:youwallet/bus.dart';
 
 import 'package:provider/provider.dart';
@@ -32,7 +23,6 @@ class TabWallet extends StatefulWidget {
 
 class Page extends State<TabWallet> {
 
-  String _scanResultStr = "";
   List<Map> tokenArr = [];
   List<Map> wallets = []; // 用户添加的钱包数组
   int current_wallet = 0;

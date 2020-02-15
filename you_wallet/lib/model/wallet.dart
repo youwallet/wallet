@@ -84,13 +84,13 @@ class Wallet extends ChangeNotifier {
     String sql_insert ='INSERT INTO wallet(name, mnemonic, privateKey, address, balance) VALUES(?, ?, ?, ?, ?)';
     List list = [item['name'],item['mnemonic'], item['privateKey'], item['address'], item['balance']];
     int id = await sql.rawInsert(sql_insert, list);
-    print("rawInsert => ${id}");
     this.currentWallet = item['address'];
     this.currentWalletName =  item['name'].length > 0 ? item['name'] : 'Account${id}';
 
     _items.add(item);
 
-    notifyListeners();
+    // 刷新钱包列表缓存
+    this._fetchWallet();
     return id;
   }
 

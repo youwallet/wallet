@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:youwallet/bus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:youwallet/model/wallet.dart';
 import 'package:provider/provider.dart';
 
@@ -28,10 +24,6 @@ class Page extends State<ManageWallet> {
   @override // override是重写父类中的函数
   void initState() {
     super.initState();
-//    setState(() {
-//      this.currentAddress = Provider.of<Wallet>(context).currentWallet;
-//    });
-
   }
 
   @override
