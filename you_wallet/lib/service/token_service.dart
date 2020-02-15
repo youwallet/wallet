@@ -7,6 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 import 'package:web3dart/web3dart.dart';
+import 'package:bip32/bip32.dart' as bip32;
+import 'package:web3dart/crypto.dart';
 import 'dart:io';
 import 'package:path/path.dart' show join, dirname;
 import 'package:youwallet/util/eth_amount_formatter.dart' ;
@@ -61,9 +63,10 @@ class TokenService {
 
    // 助记词转私钥Private Key
   static String getPrivateKey(String mnemonic) {
-    String seed = bip39.mnemonicToSeedHex(mnemonic);
-    KeyData master = ED25519_HD_KEY.getMasterKeyFromSeed(seed);
-    return HEX.encode(master.key);
+    final seed = bip39.mnemonicToSeed(mnemonic);
+    final root = bip32.BIP32.fromSeed(seed);
+    final child1 = root.derivePath("m/44'/60'/0'/0/0");
+    return bytesToHex(child1.privateKey);
   }
 
   static Future<EthereumAddress> getPublicAddress(String privateKey) async {

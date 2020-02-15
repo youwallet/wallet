@@ -70,11 +70,12 @@ class _NewWalletNameState extends State<NewWalletName> {
                   } else {
                     SharedPreferences prefs = await SharedPreferences.getInstance();
                     prefs.setString("new_wallet_name", _name.text);
-                    Navigator.pushNamed(context, "keyboard_main").then((data){
-                      print('你设置的交易密码是=》${data.toString()}');
-                      prefs.setString("new_wallet_pw", data.toString());
-                      Navigator.pushNamed(context, "backup_wallet", arguments: <String, String>{});
-                    });
+                    Navigator.pushNamed(context, "backup_wallet", arguments: <String, String>{});
+//                    Navigator.pushNamed(context, "keyboard_main").then((data){
+//                      print('你设置的交易密码是=》${data.toString()}');
+//                      prefs.setString("new_wallet_pw", data.toString());
+//                      Navigator.pushNamed(context, "backup_wallet", arguments: <String, String>{});
+//                    });
                   }
                 },
               ),

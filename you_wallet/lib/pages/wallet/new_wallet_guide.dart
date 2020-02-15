@@ -47,8 +47,8 @@ class _WalletGuideState extends State<WalletGuide> {
                 minWidth: 300, // 控制按钮宽度
                 child: new Text('创建钱包'),
                 onPressed: () {
-                  // Navigator.pushNamed(context, "set_wallet_name");
-                  this.showSnackbar('暂时不支持创建钱包，请使用私钥导入');
+                   Navigator.pushNamed(context, "set_wallet_name");
+//                  this.showSnackbar('暂时不支持创建钱包，请使用私钥导入');
                 },
               ),
               new MaterialButton(
