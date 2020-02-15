@@ -301,6 +301,7 @@ class Page extends State<TabTransfer> {
     return new AppBar(
         title: const Text('转账'),
         actions: this.appBarActions(),
+        automaticallyImplyLeading: false //设置没有返回按钮
     );
   }
 

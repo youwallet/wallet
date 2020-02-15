@@ -121,7 +121,10 @@ class Page extends State {
 
   // 构建顶部标题栏
   Widget buildAppBar(BuildContext context) {
-    return new AppBar(title: const Text('兑换'));
+    return new AppBar(
+        title: const Text('兑换'),
+        automaticallyImplyLeading: false, //设置没有返回按钮
+    );
   }
 
   // 构建页面上半部分区域

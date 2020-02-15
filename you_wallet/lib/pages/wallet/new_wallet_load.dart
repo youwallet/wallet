@@ -16,6 +16,7 @@ import 'package:youwallet/service/service_locator.dart';
 import 'package:youwallet/service/token_service.dart';
 import 'package:youwallet/db/sql_util.dart';
 import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
+import 'package:youwallet/util/md5_encrypt.dart';
 
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart' as myWallet;
@@ -46,7 +47,8 @@ class Page extends State<LoadWallet> {
   Map arguments;
 
 
-  @override // override是重写父类中的函数 每次初始化的时候执行一次，类似于小程序中的onLoad
+  @override
+  // override是重写父类中的函数 每次初始化的时候执行一次，类似于小程序中的onLoad
   void initState() {
     super.initState();
   }
@@ -155,26 +157,45 @@ class Page extends State<LoadWallet> {
               ],
             )
           ),
-          new Padding(
-              padding: new EdgeInsets.all(30.0),
-              child: Column(
-                children: <Widget>[
-                  Text("免密设制"),
-                  Text("目前不支持指纹识别，直接点击指纹图标即可")
-                ],
-              )
+          new MaterialButton(
+            color: Colors.blue,
+            textColor: Colors.white,
+            minWidth: 150,
+            child: new Text('添加账户密码'),
+            onPressed: () async {
+              if (this._key.text.length == 0) {
+                this.showSnackbar('私钥不能为空');
+              } else {
+                this.loadWalletByMnemonic();
+//                SharedPreferences prefs = await SharedPreferences.getInstance();
+//                prefs.setString("new_wallet_name", _name.text);
+//                Navigator.pushNamed(context, "keyboard_main").then((data){
+//                  print('你设置的交易密码是=》${data.toString()}');
+//                  this.saveWalletByKey(data.toString());
+//                });
+              }
+            },
           ),
-          new Container(
-            margin: const EdgeInsets.only(top: 10.0),
-            child: GestureDetector(
-               child: new Image.asset(
-                   'images/fingerprint.png'
-               ),
-              onTap: () async {
-                 saveWallet();
-              },
-              )
-          ),
+//          new Padding(
+//              padding: new EdgeInsets.all(30.0),
+//              child: Column(
+//                children: <Widget>[
+//                  Text("免密设制"),
+//                  Text("目前不支持指纹识别，直接点击指纹图标即可")
+//                ],
+//              )
+//          ),
+//          new Container(
+//            margin: const EdgeInsets.only(top: 10.0),
+//            child: GestureDetector(
+//               child: new Image.asset(
+//                   'images/fingerprint.png'
+//               ),
+//              onTap: () async {
+//                 saveWallet();
+//              },
+//              )
+//          ),
         ],
       ),
     );
@@ -276,40 +297,8 @@ class Page extends State<LoadWallet> {
     });
   }
 
-  // bip39 https://pub.dev/packages/bip39
-
-  _generateMnemonic() async {
-    Map wallet = new Map();
-
-    // 生成助记词字符串，12个随机单词
-    String randomMnemonic = bip39.generateMnemonic();
-    setState((){
-      this._name.text = randomMnemonic; // 设置初始值
-    });
-    print('十二个助记词 ====> $randomMnemonic');
-    // 得到128位随机数, 这是一个根私钥，master priviter key
-    String hexSeed = bip39.mnemonicToSeedHex(randomMnemonic);
-    //print("hexSeed ====》${hexSeed}");
-
-    KeyData master = ED25519_HD_KEY.getMasterKeyFromSeed(hexSeed);
-    final privateKey = HEX.encode(master.key);
-    wallet['privateKey'] = privateKey;
-    print("private: $privateKey");
-
-    final private = EthPrivateKey.fromHex(privateKey);
-    final address = await private.extractAddress();
-    print("address: $address");
-    wallet['address'] = address;
-
-    wallet['name'] = this.name;
-
-//    saveWallet(wallet);
-  }
-
-  /**
-   *  通过助记词导入钱包
-   */
-  void saveWallet() async {
+  // 通过助记词导入
+  void loadWalletByMnemonic() async {
 
     if (this._name.text.length == 0) {
       this.showSnackbar('请输入助记词');
@@ -323,13 +312,8 @@ class Page extends State<LoadWallet> {
 
     String privateKey = TokenService.getPrivateKey(this._name.text);
 
-    EthereumAddress ethereumAddress = await TokenService.getPublicAddress(privateKey);
-    String address = ethereumAddress.toString();
-
-
     Map item = {
       'privateKey': privateKey,
-      'address': address,
       'name': '',
       'mnemonic': this._name.text,
       'balance':''
@@ -345,10 +329,8 @@ class Page extends State<LoadWallet> {
       this.showSnackbar('标准密钥长度64位，你的是${this._key.text.length}位');
       return ;
     }
-     print(this._key.text);
+    print(this._key.text);
     print("-------");
-    EthereumAddress ethereumAddress = await TokenService.getPublicAddress(this._key.text);
-    String address = ethereumAddress.toString();
 
     // 使用账户密码对私钥进行AES对称
     // var encryptText = await FlutterAesEcbPkcs5.encryptString(this._key.text, pwd);
@@ -357,7 +339,6 @@ class Page extends State<LoadWallet> {
 
     Map item = {
       'privateKey': this._key.text,
-      'address': address,
       'name': '',
       'mnemonic': '',
       'balance':''
@@ -367,8 +348,24 @@ class Page extends State<LoadWallet> {
   }
 
   void doSave(Map item) async {
-    // String balance = await TokenService.getBalance(item['address']);
-    item.addAll({'balance': '100'});
+    // 跳转密码设置页面
+    Navigator.of(context).pushNamed('password').then((data){
+      // 对助记词和私钥进行加密
+      // String balance = await TokenService.getBalance(item['address']);
+      this.saveDone(item, data);
+    });
+  }
+
+  void saveDone(Map item, String pwd) async {
+    // 计算钱包的public address
+    EthereumAddress ethereumAddress = await TokenService.getPublicAddress(item['privateKey']);
+    String address = ethereumAddress.toString();
+    item['address'] = address;
+
+    String passwordMd5 = Md5Encrypt(pwd).init();
+    item['privateKey'] = await FlutterAesEcbPkcs5.encryptString(item['privateKey'], passwordMd5);
+    item['mnemonic']   = await FlutterAesEcbPkcs5.encryptString(item['mnemonic'], passwordMd5);
+
     int id = await Provider.of<myWallet.Wallet>(context).add(item);
     print('钱包插入成功：id => ${id}');
     if (id > 0) {
