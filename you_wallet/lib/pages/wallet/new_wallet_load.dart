@@ -338,14 +338,15 @@ class Page extends State<LoadWallet> {
     this.doSave(item);
   }
 
-  // 通过key导入钱包
+  // 通过私钥 key导入钱包
   void saveWalletByKey(String pwd) async {
 
     if (this._key.text.length != 64) {
       this.showSnackbar('标准密钥长度64位，你的是${this._key.text.length}位');
       return ;
     }
-
+     print(this._key.text);
+    print("-------");
     EthereumAddress ethereumAddress = await TokenService.getPublicAddress(this._key.text);
     String address = ethereumAddress.toString();
 
@@ -366,8 +367,8 @@ class Page extends State<LoadWallet> {
   }
 
   void doSave(Map item) async {
-    String balance = await TokenService.getBalance(item['address']);
-    item.addAll({'balance': balance});
+    // String balance = await TokenService.getBalance(item['address']);
+    item.addAll({'balance': '100'});
     int id = await Provider.of<myWallet.Wallet>(context).add(item);
     print('钱包插入成功：id => ${id}');
     if (id > 0) {

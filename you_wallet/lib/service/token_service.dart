@@ -26,6 +26,7 @@ import 'package:flutter/services.dart';
 class TokenService {
 //  IConfigurationService _configService;
 //  AddressService(this._configService);
+  String customeAgent = "";
 
   /// 交易所合约地址
 //  static final contractAddress= "0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364";
@@ -67,7 +68,10 @@ class TokenService {
 
   static Future<EthereumAddress> getPublicAddress(String privateKey) async {
     final private = EthPrivateKey.fromHex(privateKey);
+    print('in Future');
+    print(private);
     final address = await private.extractAddress();
+    print(address);
     return address;
   }
 
@@ -92,6 +96,7 @@ class TokenService {
   static Future<String> getBalance(String address) async {
 
       String rpcUrl = await getNetWork();
+      print(rpcUrl);
       final client = Web3Client(rpcUrl, Client(), enableBackgroundIsolate: true);
 
 
@@ -103,7 +108,7 @@ class TokenService {
   static Future<String> getNetWork() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String network =  prefs.getString('network');
-    return 'https://' + network + '.infura.io/';
+    return 'https://' + network + '.infura.io/' + 'v3/37caa7b8b2c34ced8819de2b3853c8a2';
   }
 
   /// 搜索指定token
@@ -122,11 +127,12 @@ class TokenService {
     String url = await getNetWork();
     var rsp = await client.post(
         url,
-        headers:{'Content-Type':'application/json'},
+        headers:{'Content-Type':'application/json','User-Agent':'youwallet'},
         body: json.encode(payload)
     );
-    Map result = jsonDecode(rsp.body);
 
+    Map result = jsonDecode(rsp.body);
+    print(result);
     if (result.containsKey('error') ) {
       return token['error'] = result['error'];
     } else {
@@ -167,7 +173,7 @@ class TokenService {
       "jsonrpc": "2.0",
       "method": "eth_call",
       "params":  [{
-        "to": address,
+         "to": address,
          "data": "0x70a08231000000000000000000000000" + myAddress.replaceFirst('0x', '')
       },"latest"],
 
@@ -223,34 +229,34 @@ class TokenService {
   }
 
 
-  /// 通过web3dart获取代币余额
-  static Future<void> getTokenBalanceByWeb3(String address) async {
-    String rpcUrl = await getNetWork();
-    final client = Web3Client(rpcUrl, Client(), enableBackgroundIsolate: true);
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String myAddress = prefs.getString("currentWallet");
-
-    final EthereumAddress contractAddr =
-    EthereumAddress.fromHex(address);
-
-//    var appDocDir = await rootBundle.loadString('assets/TempMatch.json');
+//  /// 通过web3dart获取代币余额
+//  static Future<void> getTokenBalanceByWeb3(String address) async {
+//    String rpcUrl = await getNetWork();
+//    final client = Web3Client(rpcUrl, Client(), enableBackgroundIsolate: true);
 //
-//    print(appDocDir);
-
-
-    final abiCode = await rootBundle.loadString('assets/TempMatch.json');
-
-    final contract =
-    DeployedContract(ContractAbi.fromJson(abiCode, 'TempMatch'), contractAddr);
-
-    final balanceFunction = contract.function('getBalance');
-
-
-    final balance = await client.call(
-        contract: contract, function: balanceFunction, params: [myAddress]);
-    print('We have ${balance.first} MetaCoins');
-
-  }
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    String myAddress = prefs.getString("currentWallet");
+//
+//    final EthereumAddress contractAddr =
+//    EthereumAddress.fromHex(address);
+//
+////    var appDocDir = await rootBundle.loadString('assets/TempMatch.json');
+////
+////    print(appDocDir);
+//
+//
+//    final abiCode = await rootBundle.loadString('assets/TempMatch.json');
+//
+//    final contract =
+//    DeployedContract(ContractAbi.fromJson(abiCode, 'TempMatch'), contractAddr);
+//
+//    final balanceFunction = contract.function('getBalance');
+//
+//
+//    final balance = await client.call(
+//        contract: contract, function: balanceFunction, params: [myAddress]);
+//    print('We have ${balance.first} MetaCoins');
+//
+//  }
 
 }

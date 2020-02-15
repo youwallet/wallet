@@ -55,7 +55,7 @@ class Trade {
   String privateKey = "";
   String pwd = ""; // 钱包密码，要用这个密码来解密私钥
 
-  String rpcUrl = "https://ropsten.infura.io/";
+  String rpcUrl = "https://ropsten.infura.io/v3/37caa7b8b2c34ced8819de2b3853c8a2";
 
   String odHash = "";  // odHash,用来查询兑换订单
   String bqHash = "";  // bqHash,用来查询兑换订单
@@ -107,7 +107,7 @@ class Trade {
       "id": DateTime.now().millisecondsSinceEpoch
     };
     var rsp = await client.post(
-        "https://ropsten.infura.io/",
+        "https://ropsten.infura.io/v3/37caa7b8b2c34ced8819de2b3853c8a2",
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
@@ -269,7 +269,7 @@ class Trade {
     };
 
     var rsp = await client.post(
-        'https://ropsten.infura.io/',
+        "https://ropsten.infura.io/v3/37caa7b8b2c34ced8819de2b3853c8a2",
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
@@ -372,7 +372,7 @@ class Trade {
     };
 
     var rsp = await client.post(
-        'https://ropsten.infura.io/',
+        "https://ropsten.infura.io/v3/37caa7b8b2c34ced8819de2b3853c8a2",
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
@@ -435,7 +435,7 @@ class Trade {
     };
 
     var rsp = await client.post(
-        'https://ropsten.infura.io/',
+        "https://ropsten.infura.io/v3/37caa7b8b2c34ced8819de2b3853c8a2",
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
@@ -465,7 +465,7 @@ class Trade {
     };
 
     var rsp = await client.post(
-        'https://ropsten.infura.io/',
+        "https://ropsten.infura.io/v3/37caa7b8b2c34ced8819de2b3853c8a2",
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
@@ -476,7 +476,7 @@ class Trade {
   static Future<String> getNetWork() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String network =  prefs.getString('network');
-    return 'https://' + network + '.infura.io/';
+    return 'https://' + network + '.infura.io/' + 'v3/37caa7b8b2c34ced8819de2b3853c8a2';
   }
 
 
@@ -531,7 +531,7 @@ class Trade {
       "id": DateTime.now().millisecondsSinceEpoch
     };
     var rsp = await client.post(
-        "https://ropsten.infura.io/",
+        "https://ropsten.infura.io/v3/37caa7b8b2c34ced8819de2b3853c8a2",
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
@@ -574,7 +574,7 @@ class Trade {
     };
 
     var rsp = await client.post(
-        'https://ropsten.infura.io/',
+        "https://ropsten.infura.io/v3/37caa7b8b2c34ced8819de2b3853c8a2",
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
@@ -593,7 +593,7 @@ class Trade {
     print('approve value   => ${formatParam(value)}');
     print('approve postData=> ${postData}');
 
-    String rpcUrl = "https://ropsten.infura.io/";
+    String rpcUrl = "https://ropsten.infura.io/v3/37caa7b8b2c34ced8819de2b3853c8a2";
     String privateKey = await getPrivateKey('');
     final client = Web3Client(rpcUrl, Client());
     var credentials = await client.credentialsFromPrivateKey(privateKey);
