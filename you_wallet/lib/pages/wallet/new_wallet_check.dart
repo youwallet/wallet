@@ -186,34 +186,30 @@ class Page extends State<WalletCheck> {
     print('this is password => ${passWord}');
 
     String privateKey = TokenService.getPrivateKey(this._name.text);
-    EthereumAddress ethereumAddress = await TokenService.getPublicAddress(privateKey);
-    String address = ethereumAddress.toString();
-
-    print('this is privateKey     => ${privateKey}');
-    print('this is randomMnemonic => ${this._name.text}');
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String name = prefs.getString("new_wallet_name");
-
-    String passwordMd5 = Md5Encrypt(passWord).init();
-    String encryptPrivateKey = await FlutterAesEcbPkcs5.encryptString(privateKey, passwordMd5);
-    String encryptMnemonic   = await FlutterAesEcbPkcs5.encryptString(this._name.text, passwordMd5);
-
-    print('this is encryptPrivateKey => ${encryptPrivateKey}');
-    print('this is encryptMnemonic => ${encryptMnemonic}');
+//    EthereumAddress ethereumAddress = await TokenService.getPublicAddress(privateKey);
+//    String address = ethereumAddress.toString();
+//
+//    print('this is privateKey     => ${privateKey}');
+//    print('this is randomMnemonic => ${this._name.text}');
+//
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    String name = prefs.getString("new_wallet_name");
+//
+//    String passwordMd5 = Md5Encrypt(passWord).init();
+//    String encryptPrivateKey = await FlutterAesEcbPkcs5.encryptString(privateKey, passwordMd5);
+//    String encryptMnemonic   = await FlutterAesEcbPkcs5.encryptString(this._name.text, passwordMd5);
+//
+//    print('this is encryptPrivateKey => ${encryptPrivateKey}');
+//    print('this is encryptMnemonic => ${encryptMnemonic}');
 
     Map obj = {
-      'privateKey': encryptPrivateKey,
-      'address': address,
-      'name': name,
-      'mnemonic': encryptMnemonic,
-      'balance': ''
+      'privateKey': privateKey,
+      'mnemonic': this._name.text
     };
 
-    int id = await Provider.of<myWallet.Wallet>(context).add(obj);
+    int id = await Provider.of<myWallet.Wallet>(context).add(obj,passWord);
     print('insert into id => ${id}');
-
-    await prefs.setString("currentWallet", address);
+    
     Navigator.of(context).pushReplacementNamed("wallet_success");
   }
 

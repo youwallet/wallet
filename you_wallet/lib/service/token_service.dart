@@ -95,9 +95,8 @@ class TokenService {
     return true;
   }
 
-  /// 获取token的余额
+  /// 获取token的余额，这里获取的是ETH的余额
   static Future<String> getBalance(String address) async {
-
       String rpcUrl = await getNetWork();
       final client = Web3Client(rpcUrl, Client(), enableBackgroundIsolate: true);
       EtherAmount balance = await client.getBalance(EthereumAddress.fromHex(address));
@@ -163,7 +162,7 @@ class TokenService {
   }
 
   // https://yq.aliyun.com/articles/600706/
-  //
+  // 这里获取的是指定token的余额
   static Future<String> getTokenBalance(String address) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String myAddress = await prefs.getString("currentWallet");

@@ -329,8 +329,6 @@ class Page extends State<LoadWallet> {
       this.showSnackbar('标准密钥长度64位，你的是${this._key.text.length}位');
       return ;
     }
-    print(this._key.text);
-    print("-------");
 
     // 使用账户密码对私钥进行AES对称
     // var encryptText = await FlutterAesEcbPkcs5.encryptString(this._key.text, pwd);
@@ -339,19 +337,15 @@ class Page extends State<LoadWallet> {
 
     Map item = {
       'privateKey': this._key.text,
-      'name': '',
       'mnemonic': '',
-      'balance':''
     };
 
     this.doSave(item);
   }
 
-  void doSave(Map item) async {
-    // 跳转密码设置页面
+  // 跳转密码设置页面
+  void doSave(Map item) {
     Navigator.of(context).pushNamed('password').then((data){
-      // 对助记词和私钥进行加密
-      // String balance = await TokenService.getBalance(item['address']);
       this.saveDone(item, data);
     });
   }
@@ -362,11 +356,7 @@ class Page extends State<LoadWallet> {
     String address = ethereumAddress.toString();
     item['address'] = address;
 
-    String passwordMd5 = Md5Encrypt(pwd).init();
-    item['privateKey'] = await FlutterAesEcbPkcs5.encryptString(item['privateKey'], passwordMd5);
-    item['mnemonic']   = await FlutterAesEcbPkcs5.encryptString(item['mnemonic'], passwordMd5);
-
-    int id = await Provider.of<myWallet.Wallet>(context).add(item);
+    int id = await Provider.of<myWallet.Wallet>(context).add(item,pwd);
     print('钱包插入成功：id => ${id}');
     if (id > 0) {
       Navigator.pushNamed(context, "wallet_success");

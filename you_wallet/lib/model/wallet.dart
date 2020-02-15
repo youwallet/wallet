@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:youwallet/db/sql_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:youwallet/service/token_service.dart';
+import 'package:web3dart/credentials.dart';
+import 'package:youwallet/util/md5_encrypt.dart';
+import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
 
 /// ChangeNotifier 是 Flutter SDK 中的一个简单的类。
 /// 它用于向监听器发送通知。换言之，如果被定义为 ChangeNotifier，
@@ -78,16 +82,40 @@ class Wallet extends ChangeNotifier {
   }
 
 
-  ///  将 [item] 到列表中
-  Future<int> add(Map item) async {
+  // 将 [item] 到钱包的数据表中
+  // 0. 计算钱包的address
+  // 1. 获取钱包的balance
+  // 2. 获取钱包缓存名字
+  // 3. 加密
+  Future<int> add(Map item,String pwd) async {
+    EthereumAddress ethereumAddress = await TokenService.getPublicAddress(item['privateKey']);
+    String address = ethereumAddress.toString();
+
+    String balance = await TokenService.getBalance(address);
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String name = prefs.getString("new_wallet_name");
+
+    String passwordMd5 = Md5Encrypt(pwd).init();
+    item['privateKey'] = await FlutterAesEcbPkcs5.encryptString(item['privateKey'], passwordMd5);
+    item['mnemonic']   = await FlutterAesEcbPkcs5.encryptString(item['mnemonic'], passwordMd5);
+
+
+    print('start model add');
+    print("address  => ${address}");
+    print("balance  => ${balance}");
+
     var sql = SqlUtil.setTable("wallet");
     String sql_insert ='INSERT INTO wallet(name, mnemonic, privateKey, address, balance) VALUES(?, ?, ?, ?, ?)';
-    List list = [item['name'],item['mnemonic'], item['privateKey'], item['address'], item['balance']];
+    List list = [name,item['mnemonic'], item['privateKey'], address, balance];
     int id = await sql.rawInsert(sql_insert, list);
     this.currentWallet = item['address'];
     this.currentWalletName =  item['name'].length > 0 ? item['name'] : 'Account${id}';
 
     _items.add(item);
+
+    // 新添加的钱包，要设置为当前钱包
+    await prefs.setString("currentWallet", address);
 
     // 刷新钱包列表缓存
     this._fetchWallet();
