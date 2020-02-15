@@ -36,11 +36,17 @@ class TabExchange extends StatefulWidget {
 class Page extends State {
 
   BuildContext mContext;
+
+  // 右侧显示的token
   List baseToken = [{
     'name': 'BTD',
     'address': '0x2e01154391f7dcbf215c77dbd7ff3026ea7514ce'
   }];
+
+  // 数量编辑框
   final controllerAmount = TextEditingController();
+
+  // 价格编辑框
   final controllerPrice = TextEditingController();
 
   List trades = [];
@@ -51,6 +57,13 @@ class Page extends State {
   // 输入框右侧显示的token提示
   String suffixText = "";
   double tradePrice = 0;
+
+  // 左侧被选中的token
+  var value;
+
+  String _btnText="买入";
+  List tokens = [];
+  String tokenBalance = "";
 
   //数据初始化
   @override
@@ -78,14 +91,6 @@ class Page extends State {
   Widget build(BuildContext context) {
     return layout(context);
   }
-
-  // 左侧被选中的token
-  var value;
-
-  var _rightToken = '0x42ABeB85Edf30e470601Ef47B55B9FF1bF3dcABa';
-  String _btnText="买入";
-  List tokens = [];
-  String tokenBalance = "";
 
   // 构建页面
   Widget layout(BuildContext context) {

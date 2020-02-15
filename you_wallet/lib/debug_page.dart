@@ -188,12 +188,20 @@ class _DebugPageState extends State<DebugPage> {
               child: Text("私钥加密解密"),
               textColor: Colors.blue,
               onPressed: () async {
-                String key="279EFAC43AAE9405DCD9A470B9228C1A3C0F2DEFC930AD1D9B764E78D28DB1DF";
-                String pwd = "890726";
-                var encryptText = await FlutterAesEcbPkcs5.encryptString(key, pwd);
-                print("encryptText => ${encryptText}");
-                var decryptText = await FlutterAesEcbPkcs5.decryptString(encryptText, pwd);
-                print("str => ${decryptText}");
+                var data = "{\"username\":\"helloword\"}";
+
+                //生成16字节的随机密钥
+                var key = await FlutterAesEcbPkcs5.generateDesKey(128);
+
+                print(key);
+                //加密
+                var encryptText = await FlutterAesEcbPkcs5.encryptString(data, key);
+
+                print(encryptText);
+                //解密
+                var decryptText  = await FlutterAesEcbPkcs5.decryptString(encryptText, key);
+
+                print(decryptText);
               },
 
             ),
@@ -226,16 +234,23 @@ class _DebugPageState extends State<DebugPage> {
                 print(address);
               },
             ),
+//            FlatButton(
+//              child: Text("BigInt"),
+//              textColor: Colors.blue,
+//              onPressed: () async {
+//                print(BigInt.from(200));
+//                print(BigInt.parse('2000'));
+//                print(BigInt.from(10).pow(18)); // 10的18次方
+//                print(BigInt.from(10).pow(3));
+//                String val = '000000000000000000000000000000000000000000000000000000000000024e';
+//                print(int.parse(val.replaceFirst("0x",''), radix: 16));
+//              },
+//            ),
             FlatButton(
-              child: Text("BigInt"),
+              child: Text("密码输入"),
               textColor: Colors.blue,
-              onPressed: () async {
-                print(BigInt.from(200));
-                print(BigInt.parse('2000'));
-                print(BigInt.from(10).pow(18)); // 10的18次方
-                print(BigInt.from(10).pow(3));
-                String val = '000000000000000000000000000000000000000000000000000000000000024e';
-                print(int.parse(val.replaceFirst("0x",''), radix: 16));
+              onPressed: (){
+                Navigator.pushNamed(context, "password");
               },
             ),
           ],

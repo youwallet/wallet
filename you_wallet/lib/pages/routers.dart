@@ -22,10 +22,11 @@ import 'package:youwallet/pages/token/token_info.dart'; // 添加一种token
 
 // 设置
 import 'package:youwallet/pages/set/set_network.dart'; // 网络设置
-
 import 'package:youwallet/pages/tabs.dart';
-
 import 'package:youwallet/pages/keyboard/keyboard_main.dart';
+
+// 表单
+import 'package:youwallet/pages/form/password.dart';
 
 // 定义全局的路由对象
 final routes = {
@@ -46,7 +47,8 @@ final routes = {
   "wallet_success": (context) => new WalletSuccess(),
   "set_network":  (context) => new NetworkPage(),
   "wallet_export":  (context,{arguments}) => new WalletExport(arguments: arguments),
-  "keyboard_main":  (context) => new main_keyboard()
+  "keyboard_main":  (context) => new main_keyboard(),
+  "password":  (context) => new PasswordPage()
 //  "tabs": (context) => new ContainerPage()
 };
 
