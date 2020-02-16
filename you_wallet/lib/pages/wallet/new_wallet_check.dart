@@ -2,11 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:youwallet/service/token_service.dart';
-import 'package:web3dart/credentials.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart' as myWallet;
-import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
-import 'package:youwallet/util/md5_encrypt.dart';
+import 'package:youwallet/widgets/loadingDialog.dart';
 
 class WalletCheck extends StatefulWidget {
   TokenService _tokenService;
@@ -183,34 +181,26 @@ class Page extends State<WalletCheck> {
   }
 
   void saveWallet(String passWord) async {
-    print('this is password => ${passWord}');
-
-    String privateKey = TokenService.getPrivateKey(this._name.text);
-//    EthereumAddress ethereumAddress = await TokenService.getPublicAddress(privateKey);
-//    String address = ethereumAddress.toString();
-//
-//    print('this is privateKey     => ${privateKey}');
-//    print('this is randomMnemonic => ${this._name.text}');
-//
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-//    String name = prefs.getString("new_wallet_name");
-//
-//    String passwordMd5 = Md5Encrypt(passWord).init();
-//    String encryptPrivateKey = await FlutterAesEcbPkcs5.encryptString(privateKey, passwordMd5);
-//    String encryptMnemonic   = await FlutterAesEcbPkcs5.encryptString(this._name.text, passwordMd5);
-//
-//    print('this is encryptPrivateKey => ${encryptPrivateKey}');
-//    print('this is encryptMnemonic => ${encryptMnemonic}');
+    showDialog<Null>(
+        context: context, //BuildContext对象
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return new LoadingDialog( //调用对话框
+            text: '保存钱包...',
+          );
+        });
 
     Map obj = {
-      'privateKey': privateKey,
+      'privateKey':  TokenService.getPrivateKey(this._name.text),
       'mnemonic': this._name.text
     };
 
     int id = await Provider.of<myWallet.Wallet>(context).add(obj,passWord);
-    print('insert into id => ${id}');
-
-    Navigator.of(context).pushReplacementNamed("wallet_success");
+    if(id>0) {
+      Navigator.of(context).pushReplacementNamed("wallet_success");
+    } else {
+      this.showSnackbar('钱包保存失败，请反馈给社区');
+    }
   }
 
 

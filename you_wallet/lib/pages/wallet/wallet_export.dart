@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:youwallet/bus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:youwallet/model/wallet.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
@@ -174,14 +170,14 @@ class Page extends State<WalletExport> {
               content: '',
               onCancelChooseEvent: () {
                 Navigator.pop(context);
-//                this.showSnackbar('取消');
+                // this.showSnackbar('取消');
               },
               onSuccessChooseEvent: () async {
-                print(this.arguments);
-                int i = await Provider.of<Wallet>(context).remove(this.wallet);
-                print('被删除的钱包id=》${i}');
-                Navigator.popAndPushNamed(context, 'manage_wallet');
-//                Navigator.of(context).pop(1);
+                await Provider.of<Wallet>(context).remove(this.wallet);
+                Navigator.pop(context); //关闭对话框
+                // Navigator.popUntil(context, ModalRoute.withName("manage_wallet"));
+                // Navigator.popAndPushNamed(context, 'manage_wallet');
+                // Navigator.of(context).pop(1);
               });
         });
   }

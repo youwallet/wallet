@@ -32,6 +32,9 @@ class Wallet extends ChangeNotifier {
   // 名字
   String currentWalletName = "";
 
+  // 当前的钱包对象
+  Map currentWalletObject = {};
+
   Map _nowWallet = {};
 
   // 获取钱包列表
@@ -48,81 +51,80 @@ class Wallet extends ChangeNotifier {
     res.forEach((f){
       this._items.add(f);
     });
-    this.setWallet();
+
+    // 设置当前的钱包
+    this.changeWallet("");
   }
 
-  //设置当前的钱包
-  void setWallet() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String address = prefs.getString("currentWallet");
-    this.currentWallet = address??'--';
-
-    this._items.forEach((f){
-      if (f['address'] == address) {
-        this.currentWalletName = f['name'].length > 0 ? f['name']:'Account${f['id'].toString()}';
-        this._nowWallet = f;
-      }
-    });
-    notifyListeners();
-  }
-
-  // 切换钱包
+  // 切换钱包,如果没有参数，就从缓存中获取
   void changeWallet(String address) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString("currentWallet", address);
-    print("当前缓存钱包地址=》${address}");
+    if(address.length == 0) {
+      address = prefs.getString("currentWallet");
+    } else {
+      prefs.setString("currentWallet", address);
+    }
+
     this.currentWallet = address;
     this._items.forEach((f){
       if (f['address'] == address) {
-        this.currentWalletName = f['name'].length > 0 ? f['name']:'Account${f['id'].toString()}';
-        print("当前缓存钱包名字=》${this.currentWalletName}");
+        this.currentWalletObject = f;
       }
     });
+    print('changeWallet done');
+    print('address   => ${address}');
+    print('currentWallet   => ${this.currentWallet}');
+    print('currentWalletObject   => ${this.currentWalletObject}');
     notifyListeners();
   }
 
 
   // 将 [item] 到钱包的数据表中
-  // 0. 计算钱包的address
-  // 1. 获取钱包的balance
-  // 2. 获取钱包缓存名字
-  // 3. 加密
   Future<int> add(Map item,String pwd) async {
+    // 0. 计算钱包的address
     EthereumAddress ethereumAddress = await TokenService.getPublicAddress(item['privateKey']);
     String address = ethereumAddress.toString();
 
+    // 1. 获取钱包的balance
     String balance = await TokenService.getBalance(address);
 
+    // 2. 获取钱包缓存名字
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String name = prefs.getString("new_wallet_name");
     prefs.setString("new_wallet_name", ""); // name被使用后，要清空
 
+    // 3. 加密
     String passwordMd5 = Md5Encrypt(pwd).init();
     item['privateKey'] = await FlutterAesEcbPkcs5.encryptString(item['privateKey'], passwordMd5);
     item['mnemonic']   = await FlutterAesEcbPkcs5.encryptString(item['mnemonic'], passwordMd5);
-
-
-    print('start model add');
-    print("name        => ${name}");
-    print("address     => ${address}");
-    print("balance     => ${balance}");
-    print("privateKey  => ${item['privateKey']}");
-    print("mnemonic    => ${item['mnemonic']}");
 
     var sql = SqlUtil.setTable("wallet");
     String sql_insert ='INSERT INTO wallet(name, mnemonic, privateKey, address, balance) VALUES(?, ?, ?, ?, ?)';
     List list = [name,item['mnemonic'], item['privateKey'], address, balance];
     int id = await sql.rawInsert(sql_insert, list);
+
+    print('wallet add done');
+    print("name        => ${name}");
+    print("pwd         => ${pwd}");
+    print("address     => ${address}");
+    print("balance     => ${balance}");
+    print("privateKey  => ${item['privateKey']}");
+    print("mnemonic    => ${item['mnemonic']}");
     print("钱包id       => ${id}");
+
+    item['id'] = id;
+    item['name'] = name;
+    item['address'] = address;
+    item['balance'] = balance;
     _items.add(item);
 
-    // 新添加的钱包，要设置为当前钱包
+    // 新添加的钱包，要设置为当前钱包,当前钱包地址必须写入缓存中
     this.currentWallet = item['address'];
-    // 当前钱包地址必须写入缓存中
+    this.currentWalletObject = item;
     await prefs.setString("currentWallet", address);
 
-    // 刷新钱包列表缓存
-    this._fetchWallet();
+    // 全局广播，通知当前钱包变更
+    notifyListeners();
     return id;
   }
 

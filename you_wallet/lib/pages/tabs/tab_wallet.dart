@@ -65,14 +65,14 @@ class Page extends State<TabWallet> {
 
   @override // 页面回退时候触发
   void deactivate() async {
-    var bool = ModalRoute.of(context).isCurrent;
-    if (bool) {
-      await _getWallets();
-      String balance = await TokenService.getBalance(Provider.of<walletModel.Wallet>(context).currentWallet);
-      setState(() {
-        _balance = balance + 'Eth';
-      });
-    }
+//    var bool = ModalRoute.of(context).isCurrent;
+//    if (bool) {
+//      await _getWallets();
+//      String balance = await TokenService.getBalance(Provider.of<walletModel.Wallet>(context).currentWallet);
+//      setState(() {
+//        _balance = balance + 'Eth';
+//      });
+//    }
   }
 
   @override
@@ -220,6 +220,7 @@ class Page extends State<TabWallet> {
 
   // 构建顶部卡片
   Widget topCard(BuildContext context) {
+
     return new Container(
         padding: const EdgeInsets.all(16.0), // 四周填充边距32像素
         margin: const EdgeInsets.all(16.0),
@@ -243,7 +244,8 @@ class Page extends State<TabWallet> {
                       Row(
                         children: <Widget>[
                           new Text(
-                              Wallet.currentWalletName,
+                              Wallet.currentWalletObject['name'].length > 0 ? Wallet.currentWalletObject['name']:'Account${Wallet.currentWalletObject['id'].toString()}',
+                              // Wallet.currentWalletObject['name']??'--',
                               style: new TextStyle(
                                   color: Colors.white,
                                   fontSize: 24.0
@@ -283,7 +285,7 @@ class Page extends State<TabWallet> {
                     children: <Widget>[
                       new Text(''),
                       new Text(
-                          this._balance,
+                          Wallet.currentWalletObject['balance'] + 'ETH',
                           style: new TextStyle(
                               fontSize: 32.0, color: Colors.white
                           )
