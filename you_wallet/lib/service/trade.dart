@@ -1,15 +1,11 @@
 
-import 'package:bip39/bip39.dart' as bip39;
-import 'package:ed25519_hd_key/ed25519_hd_key.dart';
-import "package:hex/hex.dart";
 import 'package:web3dart/credentials.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 import 'package:web3dart/web3dart.dart';
 import 'package:web3dart/crypto.dart';
-import 'package:web3dart/credentials.dart';
-import 'package:youwallet/util/eth_amount_formatter.dart' ;
+
 import 'package:youwallet/db/sql_util.dart';
 import 'package:youwallet/util/md5_encrypt.dart';
 import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
@@ -17,9 +13,6 @@ import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
 class Trade {
 
   static final tempMatchAddress= "0x3edde3202e42a6c129A399a7e063C6E236239202";
-
-  // 水龙头合约地址
-  // static final tempMatchAddress = "0x81b7e08f65bdf5648606c89998a9cc8164397647";
 
   // 获取订单匹配情况的合约
   static final hybridExchangeAddress = "0xe07554a7621D663c04082Bb1044Cf1344837BAF4";
@@ -204,8 +197,6 @@ class Trade {
      */
     String postData = func['takeOrder()'] + trader + formatParam(this.amount) + formatParam(this.price) + gasTokenAmount;
     postData = postData + this.configData + signature + formatParam(this.tokenA) + formatParam(this.tokenB) + formatParam(taxAddress);
-
-    print("takeOrder post => ${postData}");
 
     final client = Web3Client(rpcUrl, Client());
     var credentials = await client.credentialsFromPrivateKey(privateKey);
@@ -591,15 +582,18 @@ class Trade {
   // 交易授权
   // function approve(address spender, uint256 value);
   // 返回1表示true，接口调用成功，0表示false失败了
-  static Future approve(String token) async {
+  static Future approve(String token, String pwd) async {
     String value = BigInt.from(10).pow(27) .toString();
     String postData = func['approve()'] + formatParam(proxy) + formatParam(value);
+
+    String rpcUrl = "https://ropsten.infura.io/v3/37caa7b8b2c34ced8819de2b3853c8a2";
+    String privateKey = await getPrivateKey(pwd);
+
     print('approve proxy   => ${formatParam(proxy)}');
     print('approve value   => ${formatParam(value)}');
     print('approve postData=> ${postData}');
+    print('privateKey      => ${privateKey}');
 
-    String rpcUrl = "https://ropsten.infura.io/v3/37caa7b8b2c34ced8819de2b3853c8a2";
-    String privateKey = await getPrivateKey('');
     final client = Web3Client(rpcUrl, Client());
     var credentials = await client.credentialsFromPrivateKey(privateKey);
     try {
@@ -614,7 +608,7 @@ class Trade {
           ),
           chainId: 3
       );
-      print("approve rsp => ${rsp}");
+      return rsp;
     } catch (e) {
       print("catch error =》 ${e}");
     }
