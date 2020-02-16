@@ -160,4 +160,16 @@ class Wallet extends ChangeNotifier {
     return i;
   }
 
+  // 根据address刷新指定wallet
+  Future<int> updateWallet(String address) async{
+    String balance = await TokenService.getBalance(address);
+    var sql = SqlUtil.setTable("wallet");
+    int i = await sql.update({'balance': balance}, 'address', address);
+    print('updateWallet done');
+    print("balance  => ${balance}");
+    print("address  => ${address}");
+    this._fetchWallet();
+    return i;
+  }
+
 }

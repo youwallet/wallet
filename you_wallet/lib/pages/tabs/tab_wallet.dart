@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:youwallet/widgets/tokenList.dart';
 import 'package:flutter/services.dart';
-import 'package:youwallet/service/token_service.dart';
 import 'package:youwallet/bus.dart';
 
 import 'package:provider/provider.dart';
@@ -321,8 +320,13 @@ class Page extends State<TabWallet> {
     );
   }
 
+  // 首页下拉刷洗
   Future<void> _refresh() async {
-    print('下拉刷新');
+    String address = Provider.of<walletModel.Wallet>(context).currentWalletObject['address'];
+    await Provider.of<walletModel.Wallet>(context).updateWallet(address);
+    final snackBar = new SnackBar(content: new Text('刷新结束'));
+    Scaffold.of(context).showSnackBar(snackBar);
+
   }
 }
 
