@@ -373,10 +373,8 @@ class Page extends State {
   List<DropdownMenuItem> getListData(List tokens) {
     List<DropdownMenuItem> items=new List();
 
-//    String network = Provider.of<Netwotk>(context).network;
     String network = Provider.of<Network>(context).network;
-    String currentWallet =  Provider.of<walletModel.Wallet>(context).currentWallet;
-
+    String currentWallet =  Provider.of<walletModel.Wallet>(context).currentWalletObject['address'];
     for (var value in tokens) {
       if (value['network'] == network && value['wallet'] == currentWallet) {
         items.add(new DropdownMenuItem(
@@ -471,7 +469,7 @@ class Page extends State {
     }
 
     // 进行交易授权
-    // 买入时对有变的token授权，
+    // 买入时对右边的token授权，
     // 卖出时对左边的token授权
     // 一句话说明：哪个token要被转出去给其他人，就给哪个token授权
     bool tokenLeftApprove  = true;
@@ -480,19 +478,17 @@ class Page extends State {
     // tokenRightApprove = await Trade.approve(this.value['address']);
 
     if (tokenLeftApprove && tokenRightApprove) {
-      this.getWalletPassWord('');
+      Navigator.pushNamed(context, "getPassword").then((data){
+        this.startTrade(data);
+      });
     } else {
       this.showSnackBar('交易授权失败');
     }
-//    this.getWalletPassWord('');
-//    Navigator.pushNamed(context, "keyboard_main").then((data){
-//      print('你设置的交易密码是=》${data.toString()}');
-//      this.getWalletPassWord(data.toString());
-//    });
+
   }
 
   // 获取钱包密码，然后用密码解析私钥
-  void getWalletPassWord(String pwd) async {
+  void startTrade(String pwd) async {
     bool isBuy = true;
     if (this._btnText == '买入') {
       isBuy = true;
@@ -501,6 +497,7 @@ class Page extends State {
     }
 
     final snackBar = new SnackBar(content: new Text('下单中···'));
+
     Scaffold.of(context).showSnackBar(snackBar);
 
     Trade trade = new Trade(this.value['address'], this.value['name'], this.baseToken[0]['address'], this.baseToken[0]['name'], this.controllerAmount.text, this.controllerPrice.text, isBuy, pwd);
@@ -517,7 +514,7 @@ class Page extends State {
       Scaffold.of(context).showSnackBar(snackBar);
     } else {
       // 下单成功后，刷新用户本地的历史兑换列表
-      // this.getTraderList();
+       this.getTraderList();
     }
   }
 

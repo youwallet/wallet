@@ -27,6 +27,7 @@ import 'package:youwallet/pages/keyboard/keyboard_main.dart';
 
 // 表单
 import 'package:youwallet/pages/form/password.dart';
+import 'package:youwallet/pages/form/getPassword.dart';
 
 // 定义全局的路由对象
 final routes = {
@@ -48,7 +49,8 @@ final routes = {
   "set_network":  (context) => new NetworkPage(),
   "wallet_export":  (context,{arguments}) => new WalletExport(arguments: arguments),
   "keyboard_main":  (context) => new main_keyboard(),
-  "password":  (context) => new PasswordPage()
+  "password":  (context) => new PasswordPage(),
+  "getPassword":  (context) => new GetPasswordPage()
 //  "tabs": (context) => new ContainerPage()
 };
 

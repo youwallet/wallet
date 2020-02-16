@@ -107,7 +107,8 @@ class TokenService {
   static Future<String> getNetWork() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String network =  prefs.getString('network');
-    return 'https://' + network + '.infura.io/' + 'v3/37caa7b8b2c34ced8819de2b3853c8a2';
+    String myKey = 'v3/37caa7b8b2c34ced8819de2b3853c8a2';
+    return 'https://' + network + '.infura.io/' + myKey;
   }
 
   /// 搜索指定token

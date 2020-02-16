@@ -11,8 +11,8 @@ import 'package:web3dart/crypto.dart';
 import 'package:web3dart/credentials.dart';
 import 'package:youwallet/util/eth_amount_formatter.dart' ;
 import 'package:youwallet/db/sql_util.dart';
+import 'package:youwallet/util/md5_encrypt.dart';
 import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
-
 
 class Trade {
 
@@ -311,10 +311,11 @@ class Trade {
     var sql = SqlUtil.setTable("wallet");
     var map = {'address': address};
     List json = await sql.query(conditions: map);
-    print("json => ${json}");
-    print("pwd => ${pwd}");
-    // this.privateKey = await FlutterAesEcbPkcs5.decryptString(json[0]['privateKey'], pwd);
-    this.privateKey = json[0]['privateKey'];
+
+    String md5Pwd = Md5Encrypt(pwd).init();
+    String privateKey = await FlutterAesEcbPkcs5.decryptString(json[0]['privateKey'], md5Pwd);
+    this.privateKey = privateKey;
+    print('解密钱包 done');
     print('钱包地址 => ${address}');
     print('钱包私钥 => ${this.privateKey}');
     return this.privateKey;
@@ -325,11 +326,15 @@ class Trade {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String address =  prefs.getString("currentWallet");
 
+    // 这里的操作优化到model中去
     var sql = SqlUtil.setTable("wallet");
     var map = {'address': address};
     List json = await sql.query(conditions: map);
-    // String privateKey = await FlutterAesEcbPkcs5.decryptString(json[0]['privateKey'],  pwd);
-    return json[0]['privateKey'];
+
+    String md5Pwd = Md5Encrypt(pwd).init();
+    String privateKey = await FlutterAesEcbPkcs5.decryptString(json[0]['privateKey'], md5Pwd);
+
+    return privateKey;
   }
 
   /*
