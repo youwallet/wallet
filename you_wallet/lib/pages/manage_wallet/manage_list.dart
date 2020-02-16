@@ -75,7 +75,7 @@ class Page extends State<ManageWallet> {
 
 
   Widget walletCard(item) {
-//    print(item);
+    print(item);
     String name = item['name'].length > 0 ? item['name']:'Account${item['id']}';
     return new Card(
         color: Colors.white, //背景色

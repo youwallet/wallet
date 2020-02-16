@@ -209,7 +209,7 @@ class Page extends State<WalletCheck> {
 
     int id = await Provider.of<myWallet.Wallet>(context).add(obj,passWord);
     print('insert into id => ${id}');
-    
+
     Navigator.of(context).pushReplacementNamed("wallet_success");
   }
 

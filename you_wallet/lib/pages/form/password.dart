@@ -30,85 +30,26 @@ class _LoginPageState extends State<PasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Form(
-            key: _formKey,
-            child: ListView(
-              padding: EdgeInsets.symmetric(horizontal: 22.0),
-              children: <Widget>[
-                SizedBox(
-                  height: kToolbarHeight,
-                ),
-                buildTitle(),
-                buildTitleLine(),
-                SizedBox(height: 70.0),
-                buildEmailTextField(),
-                SizedBox(height: 30.0),
-                buildPasswordTextField(context),
-//                buildForgetPasswordText(context),
-                SizedBox(height: 60.0),
-                buildLoginButton(context),
-              ],
-            )));
-  }
-
-  Align buildRegisterText(BuildContext context) {
-    return Align(
-      alignment: Alignment.center,
-      child: Padding(
-        padding: EdgeInsets.only(top: 10.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text('没有账号？'),
-            GestureDetector(
-              child: Text(
-                '点击注册',
-                style: TextStyle(color: Colors.green),
-              ),
-              onTap: () {
-                //TODO 跳转到注册页面
-                print('去注册');
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        ),
-      ),
+        body: new Builder(builder: (BuildContext context) {
+            return Form(
+                key: _formKey,
+                child: ListView(
+                  padding: EdgeInsets.symmetric(horizontal: 22.0),
+                  children: <Widget>[
+                    SizedBox(height: kToolbarHeight,),
+                    buildTitle(),
+                    buildTitleLine(),
+                    SizedBox(height: 70.0),
+                    buildEmailTextField(),
+                    SizedBox(height: 30.0),
+                    buildPasswordTextField(context),
+                    SizedBox(height: 60.0),
+                    buildLoginButton(context),
+                  ],
+                )
+            );
+          })
     );
-  }
-
-  ButtonBar buildOtherMethod(BuildContext context) {
-    return ButtonBar(
-      alignment: MainAxisAlignment.center,
-      children: _loginMethod
-          .map((item) => Builder(
-        builder: (context) {
-          return IconButton(
-              icon: Icon(item['icon'],
-                  color: Theme.of(context).iconTheme.color),
-              onPressed: () {
-                //TODO : 第三方登录方法
-                Scaffold.of(context).showSnackBar(new SnackBar(
-                  content: new Text("${item['title']}登录"),
-                  action: new SnackBarAction(
-                    label: "取消",
-                    onPressed: () {},
-                  ),
-                ));
-              });
-        },
-      ))
-          .toList(),
-    );
-  }
-
-  Align buildOtherLoginText() {
-    return Align(
-        alignment: Alignment.center,
-        child: Text(
-          '其他账号登录',
-          style: TextStyle(color: Colors.grey, fontSize: 14.0),
-        ));
   }
 
   // 获取用户两次输入的密码，两次密码必须相同
@@ -124,8 +65,16 @@ class _LoginPageState extends State<PasswordPage> {
           child: new Text('确定'),
           onPressed: () {
             _formKey.currentState.save();
-            if (_email == _password) {
+            if (_email == _password && !_email.isEmpty) {
               Navigator.of(context).pop(_email);
+            } else {
+              if (_email.isEmpty || _password.isEmpty) {
+                final snackBar = new SnackBar(content: new Text('不能为空'));
+                Scaffold.of(context).showSnackBar(snackBar);
+              } else {
+                final snackBar = new SnackBar(content: new Text('两次输入密码不同'));
+                Scaffold.of(context).showSnackBar(snackBar);
+              }
             }
           },
         ),
@@ -133,33 +82,10 @@ class _LoginPageState extends State<PasswordPage> {
     );
   }
 
-  Padding buildForgetPasswordText(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0),
-      child: Align(
-        alignment: Alignment.centerRight,
-        child: FlatButton(
-          child: Text(
-            '忘记密码？',
-            style: TextStyle(fontSize: 14.0, color: Colors.grey),
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
-    );
-  }
 
   TextFormField buildPasswordTextField(BuildContext context) {
     return TextFormField(
       onSaved: (String value) => _password = value,
-//      obscureText: _isObscure,
-//      validator: (String value) {
-//        if (value.isEmpty) {
-//          return '请再次输入密码';
-//        }
-//      },
       decoration: InputDecoration(
           labelText: '请再次输入密码',
 //          suffixIcon: IconButton(

@@ -95,6 +95,7 @@ class Wallet extends ChangeNotifier {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String name = prefs.getString("new_wallet_name");
+    prefs.setString("new_wallet_name", ""); // name被使用后，要清空
 
     String passwordMd5 = Md5Encrypt(pwd).init();
     item['privateKey'] = await FlutterAesEcbPkcs5.encryptString(item['privateKey'], passwordMd5);
@@ -102,19 +103,22 @@ class Wallet extends ChangeNotifier {
 
 
     print('start model add');
-    print("address  => ${address}");
-    print("balance  => ${balance}");
+    print("name        => ${name}");
+    print("address     => ${address}");
+    print("balance     => ${balance}");
+    print("privateKey  => ${item['privateKey']}");
+    print("mnemonic    => ${item['mnemonic']}");
 
     var sql = SqlUtil.setTable("wallet");
     String sql_insert ='INSERT INTO wallet(name, mnemonic, privateKey, address, balance) VALUES(?, ?, ?, ?, ?)';
     List list = [name,item['mnemonic'], item['privateKey'], address, balance];
     int id = await sql.rawInsert(sql_insert, list);
-    this.currentWallet = item['address'];
-    this.currentWalletName =  item['name'].length > 0 ? item['name'] : 'Account${id}';
-
+    print("钱包id       => ${id}");
     _items.add(item);
 
     // 新添加的钱包，要设置为当前钱包
+    this.currentWallet = item['address'];
+    // 当前钱包地址必须写入缓存中
     await prefs.setString("currentWallet", address);
 
     // 刷新钱包列表缓存

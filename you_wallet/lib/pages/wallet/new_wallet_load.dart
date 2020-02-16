@@ -14,9 +14,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:youwallet/service/local_authentication_service.dart';
 import 'package:youwallet/service/service_locator.dart';
 import 'package:youwallet/service/token_service.dart';
-import 'package:youwallet/db/sql_util.dart';
-import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
-import 'package:youwallet/util/md5_encrypt.dart';
+import 'package:youwallet/widgets/loadingDialog.dart';
+
 
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart' as myWallet;
@@ -351,13 +350,16 @@ class Page extends State<LoadWallet> {
   }
 
   void saveDone(Map item, String pwd) async {
-    // 计算钱包的public address
-    EthereumAddress ethereumAddress = await TokenService.getPublicAddress(item['privateKey']);
-    String address = ethereumAddress.toString();
-    item['address'] = address;
+    showDialog<Null>(
+        context: context, //BuildContext对象
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return new LoadingDialog( //调用对话框
+            text: '保存钱包...',
+          );
+        });
 
     int id = await Provider.of<myWallet.Wallet>(context).add(item,pwd);
-    print('钱包插入成功：id => ${id}');
     if (id > 0) {
       Navigator.pushNamed(context, "wallet_success");
     } else {
