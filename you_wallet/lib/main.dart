@@ -37,6 +37,7 @@ void main() async {
   );
 }
 
+// APP最外层的widget，每个app都是这样
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -46,7 +47,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         primaryColor: Colors.white
       ),
-      initialRoute: '/',
+      initialRoute: 'splash',
       //routes: routes, // 因为定义了onGenerateRoute，所以就不需要routes这个参数了
       onGenerateRoute: onGenerateRoute // 为了传递参数
       //home: new SplashWidget(tabIndex: 0)

@@ -31,7 +31,7 @@ import 'package:youwallet/pages/form/getPassword.dart';
 
 // 定义全局的路由对象
 final routes = {
-  '/': (context) => new ContainerPage(),
+  '/': (context) => new TabsPage(),
   "debug_page": (context) => new DebugPage(),
   "wallet_guide": (context) => new WalletGuide(),
   "set_wallet_name": (context) => new NewWalletName(),
@@ -50,7 +50,8 @@ final routes = {
   "wallet_export":  (context,{arguments}) => new WalletExport(arguments: arguments),
   "keyboard_main":  (context) => new main_keyboard(),
   "password":  (context) => new PasswordPage(),
-  "getPassword":  (context) => new GetPasswordPage()
+  "getPassword":  (context) => new GetPasswordPage(),
+  "splash":  (context) => new Splash()
 //  "tabs": (context) => new ContainerPage()
 };
 

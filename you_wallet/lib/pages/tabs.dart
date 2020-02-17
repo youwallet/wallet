@@ -17,10 +17,10 @@ class _Item {
 
 
 ///这个页面是作为四个tab页的容器，以Tab为基础控制每个item的显示与隐藏
-class ContainerPage extends StatefulWidget {
+class TabsPage extends StatefulWidget {
 
   // 实例化
-  ContainerPage({Key key}) : super(key: key);
+  TabsPage({Key key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -29,7 +29,7 @@ class ContainerPage extends StatefulWidget {
 }
 
 
-class _ContainerPageState extends State<ContainerPage> {
+class _ContainerPageState extends State<TabsPage> {
 
   List<Widget> pages; // 存放tab页面的数组
 
@@ -113,7 +113,7 @@ class _ContainerPageState extends State<ContainerPage> {
 
 
   @override
-  void didUpdateWidget(ContainerPage oldWidget) {
+  void didUpdateWidget(TabsPage oldWidget) {
     super.didUpdateWidget(oldWidget);
   }
 

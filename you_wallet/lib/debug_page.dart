@@ -121,17 +121,17 @@ class _DebugPageState extends State<DebugPage> {
                 await provider.clearTrade();
               },
             ),
-            FlatButton(
-              child: Text("输入支付密码"),
-              textColor: Colors.blue,
-              onPressed: () async {
-                print('开始输入支付');
-                Navigator.pushNamed(context, "keyboard_main").then((data){
-                  //接受返回的参数
-                  print(data.toString());
-                });
-              },
-            ),
+//            FlatButton(
+//              child: Text("输入支付密码"),
+//              textColor: Colors.blue,
+//              onPressed: () async {
+//                print('开始输入支付');
+//                Navigator.pushNamed(context, "keyboard_main").then((data){
+//                  //接受返回的参数
+//                  print(data.toString());
+//                });
+//              },
+//            ),
             FlatButton(
               child: Text("点击生成助记词"),
               textColor: Colors.blue,
@@ -236,18 +236,18 @@ class _DebugPageState extends State<DebugPage> {
                 print(address);
               },
             ),
-//            FlatButton(
-//              child: Text("BigInt"),
-//              textColor: Colors.blue,
-//              onPressed: () async {
-//                print(BigInt.from(200));
-//                print(BigInt.parse('2000'));
-//                print(BigInt.from(10).pow(18)); // 10的18次方
-//                print(BigInt.from(10).pow(3));
-//                String val = '000000000000000000000000000000000000000000000000000000000000024e';
-//                print(int.parse(val.replaceFirst("0x",''), radix: 16));
-//              },
-//            ),
+            FlatButton(
+              child: Text("BigInt"),
+              textColor: Colors.blue,
+              onPressed: () async {
+                print(BigInt.from(200));
+                print(BigInt.parse('2000'));
+                print(BigInt.from(10).pow(18)); // 10的18次方
+                print(BigInt.from(10).pow(3));
+                String val = '000000000000000000000000000000000000000000000000000000000000024e';
+                print(int.parse(val.replaceFirst("0x",''), radix: 16));
+              },
+            ),
             FlatButton(
               child: Text("密码输入"),
               textColor: Colors.blue,

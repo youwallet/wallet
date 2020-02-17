@@ -175,9 +175,14 @@ class Page extends State<WalletExport> {
               onSuccessChooseEvent: () async {
                 await Provider.of<Wallet>(context).remove(this.wallet);
                 Navigator.pop(context); //关闭对话框
-                // Navigator.popUntil(context, ModalRoute.withName("manage_wallet"));
-                // Navigator.popAndPushNamed(context, 'manage_wallet');
-                // Navigator.of(context).pop(1);
+
+                // 每次删除钱包后，判断当前还有多少个钱包
+                // 如果钱包没有钱包，则自动跳转新建钱包引导页
+                if (Provider.of<Wallet>(context).items.length == 0) {
+                  // Navigator.pushReplacementNamed(context, 'wallet_guide');
+                  // 销毁当前路由栈，跳转指定页面
+                  Navigator.of(context).pushNamedAndRemoveUntil('wallet_guide', (Route<dynamic> route) => false);
+                }
               });
         });
   }
