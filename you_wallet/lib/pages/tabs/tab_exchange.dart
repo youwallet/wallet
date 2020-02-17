@@ -33,7 +33,11 @@ class Page extends State {
   // 价格编辑框
   final controllerPrice = TextEditingController();
 
+  // 底部交易列表
   List trades = [];
+
+  // 匹配的数量数组
+  List filledAmount = [];
 
   // 兑换深度列表
   List tradesDeep = [];
@@ -56,9 +60,9 @@ class Page extends State {
 
     // 监听页面切换，刷新交易的状态
     eventBus.on<TabChangeEvent>().listen((event) {
-      print("event listen =》${event.index}");
+      // print("event listen =》${event.index}");
       if (event.index == 1) {
-        // this._getTradeInfo();
+         this._getTradeInfo();
       } else {
         print('do nothing');
       }
@@ -81,24 +85,27 @@ class Page extends State {
     return new Scaffold(
       backgroundColor: _btnText == '买入' ? Colors.green[50] : Colors.red[50],
       appBar: buildAppBar(context),
-      body: new ListView(
-        children: <Widget>[
-          new Container(
-              padding: const EdgeInsets.all(16.0), // 四周填充边距32像素
-              child: new Column(
-                children: <Widget>[
-                  buildPageTop(context),
-                  new Container(
-                    height: 1.0,
-                    color: Colors.black12,
-                    margin: const EdgeInsets.only(top: 16.0, bottom: 16.0),
-                    child: null,
-                  ),
-                  transferList(arr: this.trades)
-                ],
-              )
-          ),
-        ],
+      body: RefreshIndicator(
+      onRefresh: _refresh,
+        child: new ListView(
+          children: <Widget>[
+            new Container(
+                padding: const EdgeInsets.all(16.0), // 四周填充边距32像素
+                child: new Column(
+                  children: <Widget>[
+                    buildPageTop(context),
+                    new Container(
+                      height: 1.0,
+                      color: Colors.black12,
+                      margin: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+                      child: null,
+                    ),
+                    transferList(arr: this.trades, filledAmount: this.filledAmount)
+                  ],
+                )
+            ),
+          ],
+        )
       )
     );
   }
@@ -473,7 +480,7 @@ class Page extends State {
 //      await Trade.approve(this.value['address'], pwd);
 //    }
 
-    this.startTrade(pwd);
+     this.startTrade(pwd);
   }
 
   // 获取钱包密码，然后用密码解析私钥
@@ -502,8 +509,11 @@ class Page extends State {
       final snackBar = new SnackBar(content: new Text(barText));
       Scaffold.of(context).showSnackBar(snackBar);
     } else {
-      // 下单成功后，刷新用户本地的历史兑换列表
+       // 下单成功后，刷新用户本地的历史兑换列表
        this.getTraderList();
+
+       // 刷新交易深度
+       this.getBuyList();
     }
   }
 
@@ -516,6 +526,11 @@ class Page extends State {
    // 获取订单列表
    void getTraderList() async {
      List list = await Trade.getTraderList();
+//     List newArr = List<Map<String, dynamic>>.generate(
+//       list.length,
+//           (index) => Map<String, dynamic>.from(list[index]),
+//       growable: true,
+//     );
      setState(() {
        this.trades = list;
      });
@@ -582,18 +597,23 @@ class Page extends State {
      int baseTokenAmount  = int.parse(queueElem.replaceFirst('0x', '').substring(64, 128), radix: 16);
      // BigInt quoteTokenAmount = BigInt.parse(queueElem.replaceFirst('0x', '').substring(128, 192));
      int quoteTokenAmount = int.parse(queueElem.replaceFirst('0x', '').substring(128, 192), radix: 16);
-//     print("baseTokenAmount   => ${baseTokenAmount}");
-//     print("quoteTokenAmount  => ${quoteTokenAmount}");
-//     print("左边显示价格        => ${baseTokenAmount/quoteTokenAmount}");
-//     print("解析filled         => ${filled}");
-//     print("右边显示数量        => ${baseTokenAmount - filled}");
-//     print("isSell显示         => ${isSell}");
+     print("baseTokenAmount   => ${baseTokenAmount}");
+     print("quoteTokenAmount  => ${quoteTokenAmount}");
+     print("左边显示价格        => ${baseTokenAmount/quoteTokenAmount}");
+     print("解析filled         => ${filled}");
+     print("右边显示数量        => ${baseTokenAmount - filled}");
+     print("isSell显示         => ${isSell}");
      if (quoteTokenAmount != 0) {
-       String left = (baseTokenAmount/quoteTokenAmount).toStringAsFixed(5);
-       int right = baseTokenAmount - filled;
+
+       String left = (quoteTokenAmount/baseTokenAmount).toStringAsFixed(5);
+
+       // 这里的baseTokenAmount是包含18小数位数的10进制数据，先砍掉小数位
+       // 标准做法是根据token对应的小数位
+       double right = baseTokenAmount/1000000000000000000 - filled;
+
        print(this.tradesDeep);
        int index = this.tradesDeep.indexWhere((element) => element['left']==left && element['isSell']== isSell);
-       print("start compare => ${index}--${left}");
+       // print("start compare => ${index}--${left}");
        if (index == -1) {
          setState(() {
            this.tradesDeep.add({
@@ -613,15 +633,25 @@ class Page extends State {
 
    // 遍历每个订单的状态
    Future<void> _getTradeInfo() async {
+     List filled = [];
      for(var i = 0; i<this.trades.length; i++) {
-       print('查询订单=》${this.trades[i]}');
-       // await Trade.getFilled(this.trades[i]['odHash']);
-       if (this.trades[i]['bqHash'] != null && this.trades[i]['odHash'] != null) {
-         String hash = this.trades[i]['bqHash'] + this.trades[i]['odHash'];
-         bool isSell = this.trades[i]['orderType'] == '买入' ? false : true;
-         await Trade.getOrderInfo(hash, isSell);
-       }
+       int amount = await Trade.getFilled(this.trades[i]['odHash']);
+       print('查询订单   =》${this.trades[i]['txnHash']}');
+       print('匹配情况   =》${amount}');
+        //List myTest = this.trades;
+        // myTest[i]['filledAmount'] = filledAmount + 1;
+       filled.add(amount);
+
+       // await Trade.getTransactionByHash(this.trades[i]['txnHash']);
+//       if (this.trades[i]['bqHash'] != null && this.trades[i]['odHash'] != null) {
+//         String hash = this.trades[i]['bqHash'] + this.trades[i]['odHash'];
+//         bool isSell = this.trades[i]['orderType'] == '买入' ? false : true;
+//         await Trade.getOrderInfo(hash, isSell);
+//       }
      }
+     setState(() {
+       this.filledAmount = filled;
+     });
    }
 
    // 计算交易额度
@@ -638,5 +668,12 @@ class Page extends State {
        this.tradePrice = double.parse(this.controllerAmount.text) * double.parse(this.controllerPrice.text);
      });
    }
+
+  // 下拉刷新底部交易列表
+  Future<void> _refresh() async {
+    this._getTradeInfo();
+    final snackBar = new SnackBar(content: new Text('刷新结束'));
+    Scaffold.of(context).showSnackBar(snackBar);
+  }
 
 }

@@ -9,6 +9,9 @@ import 'package:web3dart/crypto.dart';
 import 'package:youwallet/db/sql_util.dart';
 import 'package:youwallet/util/md5_encrypt.dart';
 import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
+import 'package:youwallet/service/token_service.dart';
+
+import 'token_service.dart';
 
 class Trade {
 
@@ -62,14 +65,12 @@ class Trade {
      this.tokenB = baseToken;
      this.tokenBName = baseTokenName;
      // 数量需要转化成16进制，
-     this.amount = BigInt.parse(amount).toRadixString(16);
+     this.amount = amount;
      // 密码，先进行md5加密，再使用AES揭秘私钥
      this.pwd = pwd;
      //需要换一个名字
-     this.price = (int.parse(amount) * int.parse(price)).toString();
+     this.price = price;
      this.isBuy = isBuy;
-     // print('baseToken => ${baseToken}');
-     // print('isBuy => ${isBuy}');
   }
 
   /* 获取订单参数中的data
@@ -134,10 +135,21 @@ class Trade {
   }
 
   // 下单，返回订单的hash
+  // 用户输入的价格和数量在提交时需要转化，规则如下
+  // https://github.com/youwallet/wallet/issues/35#issuecomment-586881171
    Future<String> takeOrder() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     this.trader =  formatParam(prefs.getString("currentWallet"));
     this.configData = await getConfigData(this.isBuy);
+
+    // 获取小数位数，暂时不获取，默认18位
+    // int decimals = TokenService.getDecimals('');
+    // int decimals = 18;
+    this.price = (int.parse(this.amount) * int.parse(price)).toString() + BigInt.from(10).pow(18).toString().replaceFirst('1', '');
+    this.price = BigInt.parse(this.price).toRadixString(16);
+
+    this.amount = this.amount + BigInt.from(10).pow(18).toString().replaceFirst('1', '');
+    this.amount = BigInt.parse(this.amount).toRadixString(16);
 
     String signature = await getConfigSignature();
     /**
@@ -436,7 +448,10 @@ class Trade {
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
-    print("getFilled =》 ${rsp.body}");
+//    print("getFilled =》 ${rsp.body}");
+    Map result = jsonDecode(rsp.body);
+//    String res = rsp.body;
+    return int.parse(result['result'].replaceFirst("0x",''), radix: 16);
   }
 
   // 0x22f42f6b
@@ -519,6 +534,8 @@ class Trade {
   }
 
   // 根据hash查询订单
+  // 下面这个订单是没有授权交易的失败订单
+  // 0x7e6c3534a5acdaf52aef4f13b2dd6cdd2f9496098cd59728c5c065fb0d5f4b7a
   static Future<String> getTransactionByHash(String hash) async{
     var client = Client();
     var payload = {
@@ -551,7 +568,6 @@ class Trade {
    * 0000000000000000000000000000000000000000000000000000000000000000
    *
    */
-
   static Future getOrderInfo(String hash, bool isSell) async {
     String strSell = isSell ? '1' : '0';
     String postData = func['getOrderInfo(bytes32,bytes32,bool)'] + hash.replaceFirst('0x', '') + formatParam(strSell);
@@ -576,7 +592,7 @@ class Trade {
         body: json.encode(payload)
     );
     Map result = jsonDecode(rsp.body);
-    // print(rsp.body);
+    print(rsp.body);
     return result['result'];
   }
 
@@ -593,7 +609,6 @@ class Trade {
     print('approve proxy   => ${formatParam(proxy)}');
     print('approve value   => ${formatParam(value)}');
     print('approve postData=> ${postData}');
-    print('privateKey      => ${privateKey}');
 
     final client = Web3Client(rpcUrl, Client());
     var credentials = await client.credentialsFromPrivateKey(privateKey);
@@ -609,6 +624,7 @@ class Trade {
           ),
           chainId: 3
       );
+      print('approve res   => ${rsp}');
       return rsp;
     } catch (e) {
       print("catch error =》 ${e}");

@@ -5,8 +5,9 @@ class transferList extends StatelessWidget {
 
   final color = Color.fromARGB(255, 255, 170, 71);
   List arr = [];
+  List filledAmount = [];
 
-  transferList({Key key, this.arr }) : super(key: key);
+  transferList({Key key, this.arr, this.filledAmount }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
