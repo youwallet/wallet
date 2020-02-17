@@ -576,7 +576,7 @@ class Trade {
         body: json.encode(payload)
     );
     Map result = jsonDecode(rsp.body);
-    print(rsp.body);
+    // print(rsp.body);
     return result['result'];
   }
 

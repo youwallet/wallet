@@ -29,7 +29,7 @@ class priceNum extends StatelessWidget {
               size: 20.0,
               color: arr[i]['isSell'] ? Colors.deepOrange : Colors.green
             ),
-            new Text(this.arr[i]['right']),
+            new Text(this.arr[i]['right'].toString()),
           ],
         ),
       ));

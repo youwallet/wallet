@@ -1,24 +1,8 @@
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:youwallet/service/token_service.dart';
 import 'package:youwallet/widgets/priceNum.dart';
 import 'package:youwallet/widgets/transferList.dart';
-import 'package:youwallet/widgets/loadingDialog.dart';
 
-import 'package:http/http.dart';
-import 'dart:convert';
-import 'package:steel_crypt/steel_crypt.dart';
-import 'package:web3dart/web3dart.dart';
-import 'package:web3dart/credentials.dart';
-import 'package:web3dart/crypto.dart';
-import 'dart:convert';
-import 'package:dart_sql/dart_sql.dart';
-
-import 'package:sqflite/sqflite.dart' as sqllite;
-import 'package:path_provider/path_provider.dart';
-
-import 'package:event_bus/event_bus.dart';
 import 'package:youwallet/bus.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
@@ -567,7 +551,7 @@ class Page extends State {
       if (nextQueueElem != '0x' && odHash != '0000000000000000000000000000000000000000000000000000000000000000') {
         this.deepCallBackOrderInfo(nextQueueElem, bqHash, isSell);
       } else {
-        print('订单队列结束, 最后一个订单的odHash => ${odHash}');
+        //print('订单队列结束, 最后一个订单的odHash => ${odHash}');
         if (!isSell) {
           this.getSellList();
         }
@@ -588,29 +572,41 @@ class Page extends State {
      this.deepCallBackOrderInfo(queueElem, bqHash, isSell);
    }
 
-   // 解析queueElem
+   // 解析queueElem 深度列表的数据需要合并处理，规则如下
+   // https://github.com/youwallet/wallet/issues/44#issuecomment-575859132
    void buildQueueElem(String queueElem, bool isSell) {
-     print('queueElem => ${queueElem}');
-     print("buildQueueElem filled => ${queueElem.substring(queueElem.length - 128, queueElem.length - 64)}");
+     // print('queueElem => ${queueElem}');
+     // print("buildQueueElem filled => ${queueElem.substring(queueElem.length - 128, queueElem.length - 64)}");
      // BigInt filled = BigInt.parse(queueElem.substring(queueElem.length - 128, queueElem.length - 64));
      int filled = int.parse(queueElem.substring(queueElem.length - 128, queueElem.length - 64), radix: 16);
      int baseTokenAmount  = int.parse(queueElem.replaceFirst('0x', '').substring(64, 128), radix: 16);
      // BigInt quoteTokenAmount = BigInt.parse(queueElem.replaceFirst('0x', '').substring(128, 192));
      int quoteTokenAmount = int.parse(queueElem.replaceFirst('0x', '').substring(128, 192), radix: 16);
-     print("baseTokenAmount   => ${baseTokenAmount}");
-     print("quoteTokenAmount  => ${quoteTokenAmount}");
-     print("左边显示           => ${baseTokenAmount/quoteTokenAmount}");
-     print("解析filled         => ${filled}");
-     print("右边显示           => ${baseTokenAmount - filled}");
-     print("isSell显示         => ${isSell}");
+//     print("baseTokenAmount   => ${baseTokenAmount}");
+//     print("quoteTokenAmount  => ${quoteTokenAmount}");
+//     print("左边显示价格        => ${baseTokenAmount/quoteTokenAmount}");
+//     print("解析filled         => ${filled}");
+//     print("右边显示数量        => ${baseTokenAmount - filled}");
+//     print("isSell显示         => ${isSell}");
      if (quoteTokenAmount != 0) {
-       setState(() {
-         this.tradesDeep.add({
-           'left': (baseTokenAmount/quoteTokenAmount).toStringAsFixed(5),
-           'right': (baseTokenAmount - filled).toString(),
-           'isSell': isSell
+       String left = (baseTokenAmount/quoteTokenAmount).toStringAsFixed(5);
+       int right = baseTokenAmount - filled;
+       print(this.tradesDeep);
+       int index = this.tradesDeep.indexWhere((element) => element['left']==left && element['isSell']== isSell);
+       print("start compare => ${index}--${left}");
+       if (index == -1) {
+         setState(() {
+           this.tradesDeep.add({
+             'left': left,
+             'right': right,
+             'isSell': isSell
+           });
          });
-       });
+       } else {
+         setState(() {
+           this.tradesDeep[index]['right'] = this.tradesDeep[index]['right'] + right ;
+         });
+       }
      }
    }
 
