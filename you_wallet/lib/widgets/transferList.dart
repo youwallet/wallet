@@ -21,7 +21,8 @@ class transferList extends StatelessWidget {
 
   Widget buildItem(item, context) {
     String date = DateUtil.formatDateMs( int.parse( item['createTime']), format: DataFormats.full);
-//    double singlePrice = int.parse(item['price']) / int.parse(item['amount']);
+    // double singlePrice = int.parse(item['price']) / int.parse(item['amount']);
+    int amount = int.parse(item['amount'], radix: 16);
     return new Container(
         padding: const EdgeInsets.all(10.0), // 四周填充边距32像素
         decoration: new BoxDecoration(
@@ -59,7 +60,7 @@ class transferList extends StatelessWidget {
                   '${item['price']} (${item['baseTokenName']})',
               ),
               new Text(
-                  '0/${item['amount']}(${item['tokenName']})',
+                  '0/${amount}(${item['tokenName']})',
                   style: new TextStyle(
                       color: Colors.lightBlue
                   )

@@ -50,6 +50,7 @@ class _LoginPageState extends State<GetPasswordPage> {
           onPressed: () {
             _formKey.currentState.save();
             if (!_email.isEmpty) {
+              FocusScope.of(context).requestFocus(FocusNode());
               Navigator.of(context).pop(_email);
             } else {
               final snackBar = new SnackBar(content: new Text('密码不能为空'));

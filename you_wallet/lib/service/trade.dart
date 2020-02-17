@@ -61,7 +61,9 @@ class Trade {
      this.tokenAName = tokenName;
      this.tokenB = baseToken;
      this.tokenBName = baseTokenName;
-     this.amount = amount;
+     // 数量需要转化成16进制，
+     this.amount = BigInt.parse(amount).toRadixString(16);
+     // 密码，先进行md5加密，再使用AES揭秘私钥
      this.pwd = pwd;
      //需要换一个名字
      this.price = (int.parse(amount) * int.parse(price)).toString();
@@ -104,7 +106,6 @@ class Trade {
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
-    print("订单的getConfigData => ${rsp.body}");
     Map result = jsonDecode(rsp.body);
     return result['result'].replaceFirst('0x', '');
   }
@@ -273,14 +274,14 @@ class Trade {
   // 调用web3dart，对od_hash使用私钥进行签名，这一步必须在客户端做
   Future<Map> ethSign(String od_hash) async {
     String privateKey = await loadPrivateKey(this.pwd);
-    print("ethSign od_hash =》54793c08f2aa87ec02c025fbbfa7eee9ac8665088e0a28a17428a0269934f807");
-    print("ethSign hexToBytes(od_hash) =》${hexToBytes('54793c08f2aa87ec02c025fbbfa7eee9ac8665088e0a28a17428a0269934f807')}");
+    // print("ethSign od_hash =》54793c08f2aa87ec02c025fbbfa7eee9ac8665088e0a28a17428a0269934f807");
+    // print("ethSign hexToBytes(od_hash) =》${hexToBytes('54793c08f2aa87ec02c025fbbfa7eee9ac8665088e0a28a17428a0269934f807')}");
     final key = EthPrivateKey(hexToBytes(privateKey));
     //final signature = await key.sign(hexToBytes(od_hash), chainId: 3);
     //final signature = await key.sign(hexToBytes('54793c08f2aa87ec02c025fbbfa7eee9ac8665088e0a28a17428a0269934f807'));
     //final signature = await key.sign('54793c08f2aa87ec02c025fbbfa7eee9ac8665088e0a28a17428a0269934f807');
     final signature = await key.signPersonalMessage(hexToBytes(od_hash));
-    print("ethSign signature =》${signature}");
+    // print("ethSign signature =》${signature}");
     final sign = bytesToHex(signature);
     final r = sign.substring(0,64);
     final s = sign.substring(64,128);

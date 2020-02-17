@@ -439,9 +439,8 @@ class Page extends State {
 
   /// 下单
   void makeOrder() async {
-    // print(this.controllerAmount.text);
-    // print(this.controllerPrice.text);
-    // print(Provider.of<Network>(context).network);
+    // 关闭键盘
+    FocusScope.of(context).requestFocus(FocusNode());
 
     if (Provider.of<Network>(context).network != 'ropsten') {
       final snackBar = new SnackBar(content: new Text('请切换到ropsten网络'));

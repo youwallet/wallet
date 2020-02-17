@@ -244,8 +244,11 @@ class _DebugPageState extends State<DebugPage> {
                 print(BigInt.parse('2000'));
                 print(BigInt.from(10).pow(18)); // 10的18次方
                 print(BigInt.from(10).pow(3));
+                // 16进制转10进制
                 String val = '000000000000000000000000000000000000000000000000000000000000024e';
-                print(int.parse(val.replaceFirst("0x",''), radix: 16));
+                print(int.parse(val, radix: 16));
+                // 10进制转16进制
+                print(BigInt.parse('20').toRadixString(16));
               },
             ),
             FlatButton(
