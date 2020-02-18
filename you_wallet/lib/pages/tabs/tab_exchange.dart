@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:youwallet/widgets/priceNum.dart';
 import 'package:youwallet/widgets/transferList.dart';
-
+import 'package:youwallet/widgets/bottomSheetDialog.dart';
 import 'package:youwallet/bus.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
@@ -134,34 +134,16 @@ class Page extends State {
               children: <Widget>[
                 new Text('Token'),
                 new Container(
-                  padding: const EdgeInsets.only(left: 10.0),
+                  padding: const EdgeInsets.all(4.0),
                   margin: const EdgeInsets.only(bottom: 10.0),
                   decoration: new BoxDecoration(
                     borderRadius: new BorderRadius.all(new Radius.circular(6.0)),
                     border: new Border.all(width: 1.0, color: Colors.black12),
                     color: Colors.black12,
                   ),
-                  child: new DropdownButton(
-                    items: getListData(Provider.of<Token>(context).items),
-                    hint:new Text('选择币种'),//当没有默认值的时候可以设置的提示
-                    value: value,//下拉菜单选择完之后显示给用户的值
-                    onChanged: (T) async {
-                      // 每次切换token，动态获取当前token的余额
-                      // String tokenBalance = await TokenService.getTokenBalance(T['address']);
-                      Map token = Provider.of<Token>(context).items.firstWhere((element)=>(element['address'] == T['address']));
-                      setState(() {
-                        this.suffixText = token['name'];
-                        this.value=T;
-                        this.tokenBalance = token['balance'];
-                      });
-                      // 切换token后，刷新当前的交易深度
-                      this.getBuyList();
-                    },
-                    isDense: true,
-                    elevation: 24,//设置阴影的高度
-                    style: new TextStyle(//设置文本框里面文字的样式
-                        color: Colors.black
-                    ),
+                  child: GestureDetector(
+                    onTap: this.selectToken,//写入方法名称就可以了，但是是无参的
+                    child: Text(this.value==null?'选择币种':this.value['name']),
                   ),
                 ),
                 new Container(
@@ -683,6 +665,25 @@ class Page extends State {
     this.getTraderList();
     final snackBar = new SnackBar(content: new Text('刷新结束'));
     Scaffold.of(context).showSnackBar(snackBar);
+  }
+
+
+  // 选择token
+  void selectToken() async {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return BottomSheetDialog(
+              content: Provider.of<Token>(context).items,
+              onSuccessChooseEvent: (res) {
+                print(res);
+                setState(() {
+                  this.value = res;
+                });
+                this.getBuyList();
+              });
+        }
+    );
   }
 
 }
