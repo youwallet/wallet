@@ -83,22 +83,24 @@ class Token extends ChangeNotifier {
   }
 
   /// 在授权表中增加一份记录
-  Future<int> approveAdd(Map item) async {
+  Future<int> approveAdd(String address) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var sql = SqlUtil.setTable("approve");
     String sqlInsert ='INSERT INTO approve(tokenAddress, walletAddress) VALUES(?, ?)';
     String walletAddress = prefs.getString("currentWallet");
-    List list = [item['address'], walletAddress];
+    List list = [address, walletAddress];
     int id = await sql.rawInsert(sqlInsert, list);
     return id;
   }
 
   /// 在授权表中查询该token是否被授权
-  Future<List> approveSearch(String address) async {
+  Future<int> approveSearch(String address) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String walletAddress = prefs.getString("currentWallet");
     var sql = SqlUtil.setTable("approve");
-    var map = {'phone': '123', 'nickName': '654321'};
+    var map = {'tokenAddress': address, 'walletAddress': walletAddress};
     List json = await sql.query(conditions: map);
-    return json;
+    return json.length;
   }
 
 }

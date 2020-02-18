@@ -14,7 +14,7 @@ class transferList extends StatelessWidget {
     return new Container(
         padding: const EdgeInsets.only(bottom: 12.0), // 四周填充边距32像素
         child: new Column(
-          children: this.arr.map((item) => buildItem(item, context)).toList()
+          children: this.arr.reversed.map((item) => buildItem(item, context)).toList()
         )
     );
   }
@@ -23,7 +23,7 @@ class transferList extends StatelessWidget {
   Widget buildItem(item, context) {
     print(item);
     String date = DateUtil.formatDateMs( int.parse( item['createTime']), format: DataFormats.full);
-    double filled = filledAmount.containsKey(item['txnHash'])?filledAmount[item['txnHash'].toString()]:'0';
+    String filled = filledAmount.containsKey(item['txnHash'])?filledAmount[item['txnHash'].toString()]:'0';
     return new Container(
         padding: const EdgeInsets.all(10.0), // 四周填充边距32像素
         decoration: new BoxDecoration(

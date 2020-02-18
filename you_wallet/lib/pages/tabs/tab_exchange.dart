@@ -10,6 +10,8 @@ import 'package:youwallet/model/network.dart';
 import 'package:youwallet/model/wallet.dart' as walletModel;
 import 'package:youwallet/service/trade.dart';
 
+import '../../model/token.dart';
+
 
 class TabExchange extends StatefulWidget {
 
@@ -474,13 +476,27 @@ class Page extends State {
     // 买入时对右边的token授权，
     // 卖出时对左边的token授权
     // 一句话说明：哪个token要被转出去给其他人，就给哪个token授权
-//    if (this._btnText == '买入') {
-//      await Trade.approve(this.baseToken[0]['address'], pwd);
-//    } else {
-//      await Trade.approve(this.value['address'], pwd);
-//    }
+    String need_approve_token = "";
+    if (this._btnText == '买入') {
+      need_approve_token = this.baseToken[0]['address'];
+    } else {
+      need_approve_token = this.value['address'];
+    }
 
-     this.startTrade(pwd);
+     int len = await Provider.of<Token>(context).approveSearch(need_approve_token);
+     if (len == 0) {
+       this.showSnackBar('每一种token首次交易都需要对合约授权，正在授权中···');
+       await Trade.approve(need_approve_token, pwd);
+       int index = await Provider.of<Token>(context).approveAdd(need_approve_token);
+       print('inser id => ${index}');
+       this.showSnackBar('授权结束，请重新下单');
+     } else {
+       print("已经授权，直接交易 =》${len}");
+       this.startTrade(pwd);
+     }
+
+      //await Trade.approve(this.value['address'], pwd)
+
   }
 
   // 获取钱包密码，然后用密码解析私钥
@@ -636,7 +652,7 @@ class Page extends State {
        print('匹配情况   =》${amount/1000000000000000000}');
         //List myTest = this.trades;
         // myTest[i]['filledAmount'] = filledAmount + 1;
-       filled[this.trades[i]['txnHash']] = amount/1000000000000000000;
+       filled[this.trades[i]['txnHash']] = (amount/1000000000000000000).toString();
      }
      setState(() {
        this.filledAmount = filled;
