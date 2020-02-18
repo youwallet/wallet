@@ -23,7 +23,7 @@ class ProviderSql {
 
   // 检查数据库中, 表是否完整, 在部份android中, 会出现表丢失的情况
   Future checkTableIsRight() async {
-    List<String> expectTables = ['tokens','wallet','trade','transfer']; //将项目中使用的表的表名添加集合中
+    List<String> expectTables = ['tokens','wallet','trade','transfer','approve']; //将项目中使用的表的表名添加集合中
 
     List<String> tables = await getTables();
 
@@ -64,6 +64,7 @@ class ProviderSql {
         await db.execute(SqlTable.sql_createTable_wallet);
         await db.execute(SqlTable.sql_createTable_trade);
         await db.execute(SqlTable.sql_createTable_transfer);
+        await db.execute(SqlTable.sql_createTable_approve);
         print('db created version is $version');
       }, onOpen: (Database db) async {
         print('new db opened');

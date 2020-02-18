@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:youwallet/db/sql_util.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// ChangeNotifier 是 Flutter SDK 中的一个简单的类。
 /// 它用于向监听器发送通知。换言之，如果被定义为 ChangeNotifier，
@@ -82,9 +82,15 @@ class Token extends ChangeNotifier {
     notifyListeners();
   }
 
-  // 获取token列表
-//  List get(){
-//    return _items;
-//  }
+  /// 在授权表中增加一份记录
+  Future<int> approveAdd(Map item) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var sql = SqlUtil.setTable("approve");
+    String sqlInsert ='INSERT INTO approve(tokenAddress, walletAddress) VALUES(?, ?)';
+    String walletAddress = prefs.getString("currentWallet");
+    List list = [item['address'], walletAddress];
+    int id = await sql.rawInsert(sqlInsert, list);
+    return id;
+  }
 
 }

@@ -4,9 +4,6 @@ import 'package:youwallet/pages/tabs/tab_wallet.dart'; // 钱包引导页TabExch
 import 'package:youwallet/pages/tabs/tab_exchange.dart'; // 钱包引导页
 import 'package:youwallet/pages/tabs/tab_receive.dart'; // 钱包引导页
 import 'package:youwallet/pages/tabs/tab_transfer.dart'; // 钱包引导页
-import 'package:provider/provider.dart';
-import 'package:youwallet/model/wallet.dart';
-import 'package:youwallet/pages/wallet/new_wallet_guide.dart'; // 钱包引导页
 import 'package:youwallet/db/sql_util.dart';
 import 'package:youwallet/bus.dart';
 
@@ -77,7 +74,7 @@ class _ContainerPageState extends State<TabsPage> {
           ),
           title: Text(
             item.name,
-            style: TextStyle(fontSize: 10.0),
+            style: TextStyle(fontSize: 10.0,color: Colors.lightBlue),
           ),
           activeIcon:
           Image.asset(item.activeIcon, width: 30.0, height: 30.0)))

@@ -7,10 +7,6 @@ import 'package:youwallet/widgets/menu.dart';
 import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:youwallet/widgets/tokenList.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path_provider/path_provider.dart';
-
-import 'package:youwallet/bus.dart';
 
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
@@ -227,6 +223,9 @@ class Page extends State<AddWallet> {
       this.showSnackbar('数据库写失败，插入结果为0');
     } else {
       this.showSnackbar('token添加成功');
+
+      // token添加成功后，对这个token进行授权
+      // this.
     }
   }
 }

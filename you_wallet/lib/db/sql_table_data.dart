@@ -12,6 +12,15 @@ class SqlTable{
     rmb TEXT,
     network TEXT);
     """;
+
+  // token授权记录
+  static final String sql_createTable_approve = """
+    CREATE TABLE approve (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, 
+    tokenAddress TEXT, 
+    walletAddress TEXT);
+    """;
+
   // 钱包
   static final String sql_createTable_wallet = """
     CREATE TABLE wallet (
