@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:youwallet/service/token_service.dart';
 import 'package:youwallet/widgets/customStepper.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
-
+import 'package:youwallet/widgets/bottomSheetDialog.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
 import 'package:youwallet/model/wallet.dart';
@@ -14,11 +14,6 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
 import 'package:youwallet/db/sql_util.dart';
 
-//import 'package:web3dart/web3dart.dart';
-//import 'package:web_socket_channel/io.dart';
-//import 'package:http/http.dart';
-//import 'package:path/path.dart' show join, dirname;
-//import 'dart:io';
 
 class TabTransfer extends StatefulWidget {
   @override
@@ -249,26 +244,26 @@ class Page extends State<TabTransfer> {
               textColor: Colors.white,
               minWidth: 300,
               child: new Text('确认转账'),
-              onPressed: () {
-                if (this.value == null) {
-                  this.showSnackbar('请选择token');
-                  return;
-                }
-
-                if (this.controllerPrice.text == '') {
-                  this.showSnackbar('请输入转账金额');
-                  return;
-                }
-
-                if (this.controllerAddress.text == '') {
-                  this.showSnackbar('请输入转账地址');
-                  return;
-                }
-
-                if (this.controllerAddress.text.length != 42) {
-                  this.showSnackbar('转账地址长度不符合42位长度要求');
-                  return;
-                }
+              onPressed: () async {
+//                if (this.value == null) {
+//                  this.showSnackbar('请选择token');
+//                  return;
+//                }
+//
+//                if (this.controllerPrice.text == '') {
+//                  this.showSnackbar('请输入转账金额');
+//                  return;
+//                }
+//
+//                if (this.controllerAddress.text == '') {
+//                  this.showSnackbar('请输入转账地址');
+//                  return;
+//                }
+//
+//                if (this.controllerAddress.text.length != 42) {
+//                  this.showSnackbar('转账地址长度不符合42位长度要求');
+//                  return;
+//                }
                 showDialog(
                     context: context,
                     barrierDismissible: false,
@@ -293,7 +288,6 @@ class Page extends State<TabTransfer> {
       ),
     );
   }
-
 
 
   // 定义bar上的内容
@@ -390,17 +384,27 @@ class Page extends State<TabTransfer> {
 
   // 开始转账
   Future<void> startTransfer() async{
-    this.showSnackbar('转账中···');
-    print(controllerPrice.text);
-    String from = Provider.of<Wallet>(context).currentWallet;
-    String to = controllerAddress.text;
-    String num = controllerPrice.text;
-    String txnHash = await Trade.sendToken(from, to, num, this.value, '');
-    if (txnHash.contains('replacement transaction underpriced')) {
-      this.showSnackbar('等待上一笔交易确认中···');
-    } else {
-      this.saveTransfer(from, to, num, txnHash, this.value);
-    }
+//    this.showSnackbar('转账中···');
+//    print(controllerPrice.text);
+//    String from = Provider.of<Wallet>(context).currentWallet;
+//    String to = controllerAddress.text;
+//    String num = controllerPrice.text;
+//    String txnHash = await Trade.sendToken(from, to, num, this.value, '');
+//    if (txnHash.contains('replacement transaction underpriced')) {
+//      this.showSnackbar('等待上一笔交易确认中···');
+//    } else {
+//      this.saveTransfer(from, to, num, txnHash, this.value);
+//    }
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return BottomSheetDialog(
+              content: Provider.of<Token>(context).items,
+              onSuccessChooseEvent: (res) {
+                print(res);
+              });
+        }
+    );
   }
 
   // 保存转账记录进数据库
@@ -425,5 +429,27 @@ class Page extends State<TabTransfer> {
     if (id > 0) {
       Navigator.pushNamed(context, "token_history");
     }
+  }
+
+  // 底部
+  Future _openModalBottomSheet() async {
+    final option = await showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            child: Column(
+              children: <Widget>[
+                ListTile(
+                  title: Text('拍照',textAlign: TextAlign.center),
+                  onTap: () {
+                    Navigator.pop(context, '拍照');
+                  },
+                )
+              ],
+            ),
+          );
+        }
+    );
+    return option;
   }
 }
