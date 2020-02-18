@@ -512,13 +512,9 @@ class Trade {
     final client = Web3Client(rpcUrl, Client());
     var credentials = await client.credentialsFromPrivateKey(privateKey);
 
-    // 用户输入的是10进制的整数，这里要根据该token的小数位数计算它的16进制
-    // 先直接使用10进制
-    //    String tokenNum = num + padingZero(token['decimals']);
-    //    print("tokenNum => ${tokenNum}");
-    //    print("token['address'] => ${token['address']}");
-
-    String postData = '${func['transfer(address,uint256)']}${formatParam(toAddress)}${formatParam(num)}';
+    final hexNum = (BigInt.parse(num)*BigInt.from(1000000000000000000)).toRadixString(16);
+    print(hexNum);
+    String postData = '${func['transfer(address,uint256)']}${formatParam(toAddress)}${formatParam(hexNum)}';
     print("postData=>${postData}");
     try {
       var rsp = await client.sendTransaction(

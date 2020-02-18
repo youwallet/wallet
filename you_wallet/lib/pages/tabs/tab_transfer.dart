@@ -30,6 +30,7 @@ class Page extends State<TabTransfer> {
   // 定义TextEditingController()接收编辑框的输入值
   final controllerPrice = TextEditingController();
   final controllerAddress = TextEditingController();
+  Map token = {}; // 选择的token
 
   //数据初始化
   @override
@@ -65,7 +66,7 @@ class Page extends State<TabTransfer> {
         child: new Column(
           children: <Widget>[
             new Text(
-              '余额：${this.balance}ETH',
+              '余额：${Provider.of<Wallet>(context).currentWalletObject['balance']}ETH',
                 style: new TextStyle(
                     fontSize: 26.0,
                     color: Colors.lightBlue
@@ -76,29 +77,16 @@ class Page extends State<TabTransfer> {
               children: <Widget>[
                 new Container(
                   margin: const EdgeInsets.only(right: 40.0),
+                  padding: const EdgeInsets.all(6.0),
                   decoration: new BoxDecoration(
                     borderRadius: new BorderRadius.all(new Radius.circular(6.0)),
                     border: new Border.all(width: 1.0, color: Colors.black12),
                   ),
-                  child: new DropdownButton(
-                    items: getListData(Provider.of<Token>(context).items),
-                    hint:new Text('选择币种'),//当没有默认值的时候可以设置的提示
-                    value: value,//下拉菜单选择完之后显示给用户的值
-                    onChanged: (T){//下拉菜单item点击之后的回调
-                      print(T);
-                      setState(() {
-                        value=T;
-                      });
-                    },
-                    isDense: true,
-                    elevation: 24,//设置阴影的高度
-                    style: new TextStyle(//设置文本框里面文字的样式
-                        color: Colors.black
-                    ),
-
-                    // isDense: false,//减少按钮的高度。默认情况下，此按钮的高度与其菜单项的高度相同。如果isDense为true，则按钮的高度减少约一半。 这个当按钮嵌入添加的容器中时，非常有用
-                    // iconSize: 50.0,//设置三角标icon的大小
+                  child: GestureDetector(
+                    onTap: this.selectToken,//写入方法名称就可以了，但是是无参的
+                    child: Text(this.token['name']??'选择币种'),
                   ),
+
                 ),
                 new  Expanded(
                     child: new Container(
@@ -384,27 +372,20 @@ class Page extends State<TabTransfer> {
 
   // 开始转账
   Future<void> startTransfer() async{
-//    this.showSnackbar('转账中···');
-//    print(controllerPrice.text);
-//    String from = Provider.of<Wallet>(context).currentWallet;
-//    String to = controllerAddress.text;
-//    String num = controllerPrice.text;
-//    String txnHash = await Trade.sendToken(from, to, num, this.value, '');
-//    if (txnHash.contains('replacement transaction underpriced')) {
-//      this.showSnackbar('等待上一笔交易确认中···');
-//    } else {
-//      this.saveTransfer(from, to, num, txnHash, this.value);
-//    }
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return BottomSheetDialog(
-              content: Provider.of<Token>(context).items,
-              onSuccessChooseEvent: (res) {
-                print(res);
-              });
-        }
-    );
+    this.showSnackbar('转账中···');
+    print(controllerPrice.text);
+    String from = Provider.of<Wallet>(context).currentWallet;
+    String to = controllerAddress.text;
+    String num = controllerPrice.text;
+    Navigator.pushNamed(context, "getPassword").then((pwd) async{
+      String txnHash = await Trade.sendToken(from, to, num, this.token, pwd);
+      if (txnHash.contains('replacement transaction underpriced')) {
+        this.showSnackbar('等待上一笔交易确认中···');
+      } else {
+        this.saveTransfer(from, to, num, txnHash, this.token);
+      }
+    });
+
   }
 
   // 保存转账记录进数据库
@@ -431,25 +412,22 @@ class Page extends State<TabTransfer> {
     }
   }
 
-  // 底部
-  Future _openModalBottomSheet() async {
-    final option = await showModalBottomSheet(
+
+
+  // 选择token
+  void selectToken() async {
+    showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
-          return Container(
-            child: Column(
-              children: <Widget>[
-                ListTile(
-                  title: Text('拍照',textAlign: TextAlign.center),
-                  onTap: () {
-                    Navigator.pop(context, '拍照');
-                  },
-                )
-              ],
-            ),
-          );
+          return BottomSheetDialog(
+              content: Provider.of<Token>(context).items,
+              onSuccessChooseEvent: (res) {
+                 print(res);
+                 setState(() {
+                   this.token = res;
+                 });
+              });
         }
     );
-    return option;
   }
 }
