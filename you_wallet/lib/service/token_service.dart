@@ -189,16 +189,16 @@ class TokenService {
     );
 
     Map body = jsonDecode(rsp.body);
-    print('token balance => ${body}');
-    String balance = BigInt.parse(body['result']).toString();
-    print('token balance => ${balance}');
-    int decimals = await getDecimals(address);
-    print("token decimals => ${decimals}");
-    if (balance == '0') {
+    // print('token balance => ${body}');
+    double balance = BigInt.parse(body['result'])/BigInt.from(1000000000000000000);
+    // print('token balance => ${balance}');
+    // int decimals = await getDecimals(address);
+    // print("token decimals => ${decimals}");
+    if (balance == 0.0) {
       return '0';
     } else {
-      int len = balance.length;
-      return balance.substring(0,len-decimals );
+      //int len = balance.length;
+      return balance.toStringAsFixed(3);
     }
   }
 

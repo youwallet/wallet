@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:youwallet/db/sql_util.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:youwallet/service/token_service.dart';
 
 /// ChangeNotifier 是 Flutter SDK 中的一个简单的类。
 /// 它用于向监听器发送通知。换言之，如果被定义为 ChangeNotifier，
@@ -20,12 +21,14 @@ class Token extends ChangeNotifier {
   }
 
   void _fetchToken() async {
+    this._items = [];
     var sql = SqlUtil.setTable("tokens");
-    sql.get().then((res) {
-      res.forEach((f){
-        this._items.add(f);
-      });
-    });
+    this._items = await sql.get();
+//        .then((res) {
+//      res.forEach((f){
+//        this._items.add(f);
+//      });
+//    });
     notifyListeners();
   }
 
@@ -82,6 +85,14 @@ class Token extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// 更新指定的token余额
+  void updateTokenBalance(Map item,String balance) async {
+    var sql = SqlUtil.setTable("tokens");
+    int i = await sql.update({'balance': balance}, 'id', item['id']);
+    print('updateTokenBalance => ${i}');
+    // notifyListeners();
+  }
+
   /// 在授权表中增加一份记录
   Future<int> approveAdd(String address) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -101,6 +112,19 @@ class Token extends ChangeNotifier {
     var map = {'tokenAddress': address, 'walletAddress': walletAddress};
     List json = await sql.query(conditions: map);
     return json.length;
+  }
+
+  /// 刷新token的余额
+  Future updateBalance(String address) async{
+    for(var i = 0; i<this.items.length; i++) {
+      // print(this.items[i]);
+      String balance = await TokenService.getTokenBalance(this.items[i]['address']);
+      print(balance);
+      this.updateTokenBalance(this.items[i], balance);
+      // print(balance);
+    }
+
+    this._fetchToken();
   }
 
 }

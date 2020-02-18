@@ -50,12 +50,13 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    //
     signingConfigs {
         release {
             keyAlias 'key'
-            keyPassword 'youwallet'
-            storeFile file('/Users/zhaobinglong/key.jks')
-            storePassword 'youwallet'
+            keyPassword '123456'
+            storeFile file('/Users/udo/key.jks')
+            storePassword '123456'
         }
     }
     buildTypes {

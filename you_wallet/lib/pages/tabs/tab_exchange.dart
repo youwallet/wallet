@@ -602,26 +602,28 @@ class Page extends State {
    // 解析queueElem 深度列表的数据需要合并处理，规则如下
    // https://github.com/youwallet/wallet/issues/44#issuecomment-575859132
    void buildQueueElem(String queueElem, bool isSell) {
-     // print('queueElem => ${queueElem}');
-     // print("buildQueueElem filled => ${queueElem.substring(queueElem.length - 128, queueElem.length - 64)}");
-     // BigInt filled = BigInt.parse(queueElem.substring(queueElem.length - 128, queueElem.length - 64));
-     int filled = int.parse(queueElem.substring(queueElem.length - 128, queueElem.length - 64), radix: 16);
-     int baseTokenAmount  = int.parse(queueElem.replaceFirst('0x', '').substring(64, 128), radix: 16);
+     print('1 =>${queueElem.substring(queueElem.length - 128, queueElem.length - 64)}');
+     BigInt filled = BigInt.parse(queueElem.substring(queueElem.length - 128, queueElem.length - 64), radix: 16);
+     print(filled);
+     print(queueElem.replaceFirst('0x', '').substring(64, 128));
+     BigInt baseTokenAmount  = BigInt.parse(queueElem.replaceFirst('0x', '').substring(64, 128), radix: 16);
+     print(baseTokenAmount);
      // BigInt quoteTokenAmount = BigInt.parse(queueElem.replaceFirst('0x', '').substring(128, 192));
-     int quoteTokenAmount = int.parse(queueElem.replaceFirst('0x', '').substring(128, 192), radix: 16);
+     BigInt quoteTokenAmount = BigInt.parse(queueElem.replaceFirst('0x', '').substring(128, 192), radix: 16);
+
      print("baseTokenAmount   => ${baseTokenAmount}");
      print("quoteTokenAmount  => ${quoteTokenAmount}");
      print("左边显示价格        => ${baseTokenAmount/quoteTokenAmount}");
      print("解析filled         => ${filled}");
      print("右边显示数量        => ${baseTokenAmount - filled}");
      print("isSell显示         => ${isSell}");
-     if (quoteTokenAmount != 0) {
+     if (baseTokenAmount != BigInt.from(0)) {
 
        String left = (quoteTokenAmount/baseTokenAmount).toStringAsFixed(5);
 
        // 这里的baseTokenAmount是包含18小数位数的10进制数据，先砍掉小数位
        // 标准做法是根据token对应的小数位
-       double right = baseTokenAmount/1000000000000000000 - filled;
+       BigInt right = baseTokenAmount - filled;
 
        print(this.tradesDeep);
        int index = this.tradesDeep.indexWhere((element) => element['left']==left && element['isSell']== isSell);
@@ -630,7 +632,7 @@ class Page extends State {
          setState(() {
            this.tradesDeep.add({
              'left': left,
-             'right': right,
+             'right': right/BigInt.from(1000000000000000000),
              'isSell': isSell
            });
          });

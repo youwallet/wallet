@@ -21,7 +21,7 @@ class transferList extends StatelessWidget {
 
 
   Widget buildItem(item, context) {
-    print(item);
+//    print(item);
     String date = DateUtil.formatDateMs( int.parse( item['createTime']), format: DataFormats.full);
     String filled = filledAmount.containsKey(item['txnHash'])?filledAmount[item['txnHash'].toString()]:'0';
     return new Container(

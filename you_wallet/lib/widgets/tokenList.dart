@@ -22,7 +22,7 @@ class tokenList extends StatelessWidget {
       }
     });
     return Column(
-        children: filterArr.map((item) => walletCard(item, context)).toList(),
+        children: filterArr.reversed.map((item) => walletCard(item, context)).toList(),
     );
   }
 }
@@ -93,7 +93,7 @@ Widget walletCard(item, context) {
                     ),
                   ),
                   new Container(
-                      width: 60.0,
+                      width: 70.0,
                       child: new Column(
                         children: <Widget>[
                           new Text(
