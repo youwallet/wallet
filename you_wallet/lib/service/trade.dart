@@ -58,6 +58,9 @@ class Trade {
 
   String txnHash = ""; // 下单成功会返回txnHash
 
+  String oldPrice = ""; // 保留原始的价格数据
+  String oldAmount = ""; // 保留原始的数量
+
 
   Trade(String token, String tokenName, String baseToken, String baseTokenName, String amount, String price, bool isBuy, String pwd) {
      this.tokenA = token;
@@ -66,11 +69,15 @@ class Trade {
      this.tokenBName = baseTokenName;
      // 数量需要转化成16进制，
      this.amount = amount;
+     this.oldAmount = amount;
      // 密码，先进行md5加密，再使用AES揭秘私钥
      this.pwd = pwd;
      //需要换一个名字
      this.price = price;
+     this.oldPrice = price;
      this.isBuy = isBuy;
+
+
   }
 
   /* 获取订单参数中的data
@@ -411,7 +418,7 @@ class Trade {
     } else {
       orderType = '卖出';
     }
-    List list = [orderType,this.price, this.amount, this.tokenA,this.tokenAName,this.tokenB,this.tokenBName,this.txnHash,this.odHash, this.bqHash, DateTime.now().millisecondsSinceEpoch];
+    List list = [orderType,this.oldPrice, this.oldAmount, this.tokenA,this.tokenAName,this.tokenB,this.tokenBName,this.txnHash,this.odHash, this.bqHash, DateTime.now().millisecondsSinceEpoch];
     int id = await sql.rawInsert(sqlInsert, list);
     print("db trade id => ${id}");
     return id;

@@ -19,7 +19,7 @@ class Token extends ChangeNotifier {
     this._fetchToken();
   }
 
-  Future<List> _fetchToken() async {
+  void _fetchToken() async {
     var sql = SqlUtil.setTable("tokens");
     sql.get().then((res) {
       res.forEach((f){
@@ -91,6 +91,14 @@ class Token extends ChangeNotifier {
     List list = [item['address'], walletAddress];
     int id = await sql.rawInsert(sqlInsert, list);
     return id;
+  }
+
+  /// 在授权表中查询该token是否被授权
+  Future<List> approveSearch(String address) async {
+    var sql = SqlUtil.setTable("approve");
+    var map = {'phone': '123', 'nickName': '654321'};
+    List json = await sql.query(conditions: map);
+    return json;
   }
 
 }

@@ -37,7 +37,7 @@ class Page extends State {
   List trades = [];
 
   // 匹配的数量数组
-  List filledAmount = [];
+  Map filledAmount = {};
 
   // 兑换深度列表
   List tradesDeep = [];
@@ -526,15 +526,11 @@ class Page extends State {
    // 获取订单列表
    void getTraderList() async {
      List list = await Trade.getTraderList();
-//     List newArr = List<Map<String, dynamic>>.generate(
-//       list.length,
-//           (index) => Map<String, dynamic>.from(list[index]),
-//       growable: true,
-//     );
+
      setState(() {
        this.trades = list;
      });
-     //
+
      this._getTradeInfo();
    }
 
@@ -633,25 +629,19 @@ class Page extends State {
 
    // 遍历每个订单的状态
    Future<void> _getTradeInfo() async {
-     List filled = [];
+     Map filled = {};
      for(var i = 0; i<this.trades.length; i++) {
        int amount = await Trade.getFilled(this.trades[i]['odHash']);
        print('查询订单   =》${this.trades[i]['txnHash']}');
-       print('匹配情况   =》${amount}');
+       print('匹配情况   =》${amount/1000000000000000000}');
         //List myTest = this.trades;
         // myTest[i]['filledAmount'] = filledAmount + 1;
-       filled.add(amount);
-
-       // await Trade.getTransactionByHash(this.trades[i]['txnHash']);
-//       if (this.trades[i]['bqHash'] != null && this.trades[i]['odHash'] != null) {
-//         String hash = this.trades[i]['bqHash'] + this.trades[i]['odHash'];
-//         bool isSell = this.trades[i]['orderType'] == '买入' ? false : true;
-//         await Trade.getOrderInfo(hash, isSell);
-//       }
+       filled[this.trades[i]['txnHash']] = amount/1000000000000000000;
      }
      setState(() {
        this.filledAmount = filled;
      });
+     print(this.filledAmount);
    }
 
    // 计算交易额度
@@ -672,6 +662,7 @@ class Page extends State {
   // 下拉刷新底部交易列表
   Future<void> _refresh() async {
     this._getTradeInfo();
+    this.getTraderList();
     final snackBar = new SnackBar(content: new Text('刷新结束'));
     Scaffold.of(context).showSnackBar(snackBar);
   }

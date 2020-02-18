@@ -5,7 +5,7 @@ class transferList extends StatelessWidget {
 
   final color = Color.fromARGB(255, 255, 170, 71);
   List arr = [];
-  List filledAmount = [];
+  Map filledAmount = {};
 
   transferList({Key key, this.arr, this.filledAmount }) : super(key: key);
 
@@ -21,9 +21,9 @@ class transferList extends StatelessWidget {
 
 
   Widget buildItem(item, context) {
+    print(item);
     String date = DateUtil.formatDateMs( int.parse( item['createTime']), format: DataFormats.full);
-    // double singlePrice = int.parse(item['price']) / int.parse(item['amount']);
-    int amount = int.parse(item['amount'], radix: 16);
+    double filled = filledAmount.containsKey(item['txnHash'])?filledAmount[item['txnHash'].toString()]:'0';
     return new Container(
         padding: const EdgeInsets.all(10.0), // 四周填充边距32像素
         decoration: new BoxDecoration(
@@ -61,7 +61,7 @@ class transferList extends StatelessWidget {
                   '${item['price']} (${item['baseTokenName']})',
               ),
               new Text(
-                  '0/${amount}(${item['tokenName']})',
+                  '${filled.toString()}/${item['amount']}(${item['tokenName']})',
                   style: new TextStyle(
                       color: Colors.lightBlue
                   )
