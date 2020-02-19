@@ -417,6 +417,7 @@ class Page extends State<TabTransfer> {
   // 选择token
   void selectToken() async {
     showModalBottomSheet(
+        backgroundColor: Colors.transparent,
         context: context,
         builder: (BuildContext context) {
           return BottomSheetDialog(

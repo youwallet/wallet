@@ -15,19 +15,33 @@ class BottomSheetDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Column(
-        children: this.content.map((item) => this.buildItem(item, context)).toList()
-      ),
-    );
+            decoration: new BoxDecoration(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(18),
+                topRight: Radius.circular(18)
+              ),
+              color: Colors.white
+            ),
+            padding: const EdgeInsets.only(top:18.0), // 四周填充边距32像素,
+            height: 57.0*this.content.length + 18,
+            child: Column(
+              children: this.content.map((item) => this.buildItem(item, context)).toList()
+            ),
+        );
   }
 
   Widget buildItem(item, context) {
-    return ListTile(
-      title: Text(item['name'],textAlign: TextAlign.center),
-      onTap: () {
-        this.onSuccessChooseEvent(item);
-        Navigator.of(context).pop();
-      },
+    return Container(
+      decoration: new BoxDecoration(
+        border: Border(bottom: BorderSide(color: Colors.grey,width: 0.5))
+      ),
+      child: ListTile(
+          title: Text(item['name'],textAlign: TextAlign.center),
+          onTap: () {
+            this.onSuccessChooseEvent(item);
+            Navigator.of(context).pop();
+          },
+      )
     );
   }
 

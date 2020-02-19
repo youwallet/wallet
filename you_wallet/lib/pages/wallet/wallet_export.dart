@@ -135,7 +135,13 @@ class Page extends State<WalletExport> {
               new Container(
                 padding: const EdgeInsets.all(40.0),
                 child: new RaisedButton(
-                  child: Text("删除钱包"),
+                  shape: StadiumBorder(),
+                  child: Text(
+                      "删除钱包",
+                      style: new TextStyle(
+                      fontSize: 18.0
+                  )),
+                  padding: EdgeInsets.fromLTRB(0,10,0,10),
                   elevation: 0, // 按钮阴影高度
                   color: Colors.red,
                   textColor: Colors.white,

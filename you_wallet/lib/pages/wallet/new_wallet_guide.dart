@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-
+import 'package:youwallet/widgets/customButton.dart';
 
 class WalletGuide extends StatefulWidget {
   WalletGuide() : super();
@@ -41,25 +41,18 @@ class _WalletGuideState extends State<WalletGuide> {
                       'images/new_wallet.png'
                   ),
               ),
-              new MaterialButton(
-                color: Colors.blue,
-                textColor: Colors.white,
-                minWidth: 300, // 控制按钮宽度
-                child: new Text('创建钱包'),
-                onPressed: () {
-                   Navigator.pushNamed(context, "set_wallet_name");
-//                  this.showSnackbar('暂时不支持创建钱包，请使用私钥导入');
-                },
+              new CustomButton(
+                content: '创建钱包',
+                onSuccessChooseEvent:(res){
+                  Navigator.pushNamed(context, "set_wallet_name");
+                }
               ),
-              new MaterialButton(
-                color: Colors.blue,
-                textColor: Colors.white,
-                minWidth: 300, // 控制按钮宽度
-                child: new Text('导入钱包'),
-                onPressed: () {
-                  Navigator.pushNamed(context, "load_wallet");
-                },
-              ),
+              new CustomButton(
+                  content: '导入钱包',
+                  onSuccessChooseEvent:(res){
+                    Navigator.pushNamed(context, "load_wallet");
+                  }
+              )
             ],
           ),
         )
