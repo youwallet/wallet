@@ -40,11 +40,12 @@ class Page extends State<WalletCheck> {
     setRandomMnemonic();
   }
 
+  /// 从本地缓存中拿出上一步的助记词，准备初始化
   void setRandomMnemonic() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String randomMnemonic = prefs.getString("randomMnemonic");
+    this.randomMnemonic = [];
     print("助记词=》${randomMnemonic}");
-    print("私钥  =》${TokenService.getPrivateKey(randomMnemonic)}");
 
 //    String privateKey = TokenService.getPrivateKey(randomMnemonic);
 //    String passwordMd5 = Md5Encrypt('123456').init();
@@ -55,8 +56,15 @@ class Page extends State<WalletCheck> {
 //    print('this is encryptMnemonic => ${encryptMnemonic}');
 
     setState(() {
-      this.randomMnemonic = randomMnemonic.split(' ');
+      List temp = randomMnemonic.split(' ');
+      temp.forEach((element){
+        this.randomMnemonic.add({
+          'val': element,
+          'active': false
+        });
+      });
       this.randomMnemonic.shuffle();
+      print(this.randomMnemonic);
 //      this._name.text = randomMnemonic;
     });
   }
@@ -69,6 +77,7 @@ class Page extends State<WalletCheck> {
           title: Text("确认助记词"),
         ),
         body: new Container(
+          alignment: Alignment.center,
           padding: const EdgeInsets.all(16.0), // 四周填充边距32像素
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -80,38 +89,43 @@ class Page extends State<WalletCheck> {
                     'images/new_wallet.png'
                 ),
               ),
-              new TextField(
-                controller: this._name,
-                maxLines: 3,
-                decoration: InputDecoration(
-                    filled: true,
-                    hintText: "请依次点击助记词",
-                    enabled: false,
-                    fillColor: Colors.black12,
-                    contentPadding: new EdgeInsets.all(6.0), // 内部边距，默认不是0
-                    border:InputBorder.none, // 没有任何边线
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(6.0),
-                      borderSide: BorderSide(
-                        width: 0, //边线宽度为2
-                      ),
-                    )
-                ),
-
-                onSubmitted: (text) {
-                  print('change $text');
-                },
-              ),
+              Text('请按照顺序依次点击助记词'),
+//              new TextField(
+//                controller: this._name,
+//                maxLines: 3,
+//                decoration: InputDecoration(
+//                    filled: true,
+//                    hintText: "请依次点击助记词",
+//                    enabled: false,
+//                    fillColor: Colors.black12,
+//                    contentPadding: new EdgeInsets.all(6.0), // 内部边距，默认不是0
+//                    border:InputBorder.none, // 没有任何边线
+//                    enabledBorder: OutlineInputBorder(
+//                      borderRadius: BorderRadius.circular(6.0),
+//                      borderSide: BorderSide(
+//                        width: 0, //边线宽度为2
+//                      ),
+//                    )
+//                ),
+//
+//                onSubmitted: (text) {
+//                  print('change $text');
+//                },
+//              ),
               Wrap(
+                alignment: WrapAlignment.spaceBetween,
                 spacing: 8.0, // gap between adjacent chips
                 runSpacing: 4.0, // gap between lines
                 children: this.randomMnemonic.map((item) => buildItem(item)).toList()
+              ),
+              SizedBox(
+                height: 10.0
               ),
               new CustomButton(
                   content: '清空重试',
                   onSuccessChooseEvent:(res){
                     this._name.text = ""; // 设置初始值
-                    this.randomMnemonicAgain = [];
+//                    this.randomMnemonicAgain = [];
                     this.setRandomMnemonic();
                   }
               )
@@ -121,25 +135,52 @@ class Page extends State<WalletCheck> {
     );
   }
 
+  //构建每一个助记词
   Widget buildItem(item){
-    return Chip(
-      label: InkWell(
-        onTap: () {
-          this.clickItem(item);
-        },
-        child: Text(item,style: new TextStyle(fontSize: 18.0))
-      )
+    MediaQueryData mediaQuery = MediaQuery.of(context);
+    var _screenWidth = mediaQuery.size.width;
+    return Container(
+      alignment:  Alignment.center,
+      padding: const EdgeInsets.all(8.0), // 四周填充边距32像素
+      decoration: new BoxDecoration(
+        borderRadius: new BorderRadius.all(new Radius.circular(8.0)),
+        color: item['active']? Colors.lightBlue:Colors.grey,
+      ),
+
+      width: _screenWidth/4,
+      child: GestureDetector(
+        onTap: () => this.clickItem(item), //写入方法名称就可以了，但是是无参的
+        child: Text(
+            item['val'],
+            style: new TextStyle(
+                fontSize: 18.0,
+                color:Colors.white
+            )),
+      ),
+
     );
+//    return Chip(
+//      label: InkWell(
+//        onTap: () {
+//          this.clickItem(item);
+//        },
+//        child: Text(item,style: new TextStyle(fontSize: 18.0))
+//      )
+//    );
   }
 
   // 点击助记词
   void clickItem(item) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String randomMnemonic = prefs.getString("randomMnemonic");
+    print(item);
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    String randomMnemonic = prefs.getString("randomMnemonic");
+    int index = this.randomMnemonic.indexWhere((element) => element==item);
     setState((){
-      this.randomMnemonicAgain.add(item);
-      this._name.text = this.randomMnemonicAgain.reduce((a,b)=>(a + " " +b));
-      this.randomMnemonic.remove(item);
+      //this.randomMnemonicAgain.add(item['val']);
+      this.randomMnemonic[index]['active'] = !item['active'];
+      //this._name.text = this.randomMnemonicAgain.reduce((a,b)=>(a + " " +b));
+      // this.randomMnemonic.remove(item);
+
     });
 
     print(this.randomMnemonic.length);
