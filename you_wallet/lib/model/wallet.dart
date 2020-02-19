@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:youwallet/service/token_service.dart';
 import 'package:web3dart/credentials.dart';
 import 'package:youwallet/util/md5_encrypt.dart';
+import 'package:youwallet/util/wallet_crypt.dart';
 import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
 
 /// ChangeNotifier 是 Flutter SDK 中的一个简单的类。
@@ -94,14 +95,13 @@ class Wallet extends ChangeNotifier {
     prefs.setString("new_wallet_name", ""); // name被使用后，要清空
 
     // 3. 加密
-    String passwordMd5 = Md5Encrypt(pwd).init();
-    item['privateKey'] = await FlutterAesEcbPkcs5.encryptString(item['privateKey'], passwordMd5);
-    item['mnemonic']   = await FlutterAesEcbPkcs5.encryptString(item['mnemonic'], passwordMd5);
+    item['privateKey'] = await WalletCrypt(pwd,item['privateKey']).encrypt();
+    item['mnemonic']   = await WalletCrypt(pwd,item['mnemonic']).encrypt();
 
     var sql = SqlUtil.setTable("wallet");
-    String sql_insert ='INSERT INTO wallet(name, mnemonic, privateKey, address, balance) VALUES(?, ?, ?, ?, ?)';
+    String sqlInsert ='INSERT INTO wallet(name, mnemonic, privateKey, address, balance) VALUES(?, ?, ?, ?, ?)';
     List list = [name,item['mnemonic'], item['privateKey'], address, balance];
-    int id = await sql.rawInsert(sql_insert, list);
+    int id = await sql.rawInsert(sqlInsert, list);
 
     print('wallet add done');
     print("name        => ${name}");

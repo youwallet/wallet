@@ -115,13 +115,15 @@ class Page extends State<WalletExport> {
                 title: Text('导出助记词'),
                 trailing: new Icon(Icons.keyboard_arrow_right),
                 onTap: () {
-                  Navigator.of(context).pushNamed('getPassword').then((data){
-                    if (this.wallet['mnemonic'].length > 0) {
+                  Navigator.of(context).pushNamed('getPassword').then((data) async {
+                    final mnemonic = await WalletCrypt(data, this.wallet['mnemonic']).decrypt();
+                    print(mnemonic);
+                    if (mnemonic.split(" ").length == 12) {
                       ClipboardData data = new ClipboardData(text:this.wallet['mnemonic']);
                       Clipboard.setData(data);
                       this.showSnackbar('助记词已复制');
                     } else {
-                      this.showSnackbar('私钥导入的钱包没有助记词');
+                      this.showSnackbar('助记词导出错误，请核对密码');
                     }
                   });
                 },

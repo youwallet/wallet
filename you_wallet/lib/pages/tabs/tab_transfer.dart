@@ -6,13 +6,12 @@ import 'package:youwallet/widgets/bottomSheetDialog.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
 import 'package:youwallet/model/wallet.dart';
-import 'package:youwallet/model/network.dart';
 import 'package:youwallet/service/trade.dart';
 import 'package:youwallet/bus.dart';
-import 'package:youwallet/service/token_service.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
 import 'package:youwallet/db/sql_util.dart';
+import 'package:youwallet/widgets/customButton.dart';
 
 
 class TabTransfer extends StatefulWidget {
@@ -65,12 +64,15 @@ class Page extends State<TabTransfer> {
         margin: const EdgeInsets.only(left: 60.0, right: 60.0, top: 20.0),
         child: new Column(
           children: <Widget>[
-            new Text(
-              '余额：${Provider.of<Wallet>(context).currentWalletObject['balance']}ETH',
-                style: new TextStyle(
-                    fontSize: 26.0,
-                    color: Colors.lightBlue
-                )
+            new Container(
+              padding: const EdgeInsets.all(20.0),
+              child: new Text(
+                  '余额：${Provider.of<Wallet>(context).currentWalletObject['balance']}ETH',
+                  style: new TextStyle(
+                      fontSize: 26.0,
+                      color: Colors.lightBlue
+                  )
+              )
             ),
             new Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -181,12 +183,15 @@ class Page extends State<TabTransfer> {
 //                print('change $text');
 //              },
 //            ),
-            new Text(
-                '矿工费用：0.6%',
-                style: new TextStyle(
-                    fontSize: 16.0,
-                    color: Colors.lightBlue,
-                    height: 2
+            new Container(
+                padding: const EdgeInsets.all(20.0),
+                child: new Text(
+                    '矿工费用：0.6%',
+                    style: new TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.lightBlue,
+                        height: 2
+                    )
                 )
             ),
 //            new Row(
@@ -227,54 +232,54 @@ class Page extends State<TabTransfer> {
 //                    height: 3,
 //                )
 //            ),
-            new MaterialButton(
-              color: Colors.blue,
-              textColor: Colors.white,
-              minWidth: 300,
-              child: new Text('确认转账'),
-              onPressed: () async {
-//                if (this.value == null) {
-//                  this.showSnackbar('请选择token');
-//                  return;
-//                }
-//
-//                if (this.controllerPrice.text == '') {
-//                  this.showSnackbar('请输入转账金额');
-//                  return;
-//                }
-//
-//                if (this.controllerAddress.text == '') {
-//                  this.showSnackbar('请输入转账地址');
-//                  return;
-//                }
-//
-//                if (this.controllerAddress.text.length != 42) {
-//                  this.showSnackbar('转账地址长度不符合42位长度要求');
-//                  return;
-//                }
-                showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (BuildContext context) {
-                      return GenderChooseDialog(
-                          title: '确认付款?',
-                          content: '',
-                          onCancelChooseEvent: () {
-                            Navigator.pop(context);
-                            this.showSnackbar('取消转账');
-                          },
-                          onSuccessChooseEvent: () {
-                            Navigator.pop(context);
-                            this.startTransfer();
-                          });
-                });
-              },
-            ),
-
+            new CustomButton(
+                content: '确认转账',
+                onSuccessChooseEvent:(res) async{
+                   this.checkInput();
+                }
+            )
           ],
         ),
       ),
     );
+  }
+
+  void checkInput() {
+    if (this.value == null) {
+      this.showSnackbar('请选择token');
+      return;
+    }
+
+    if (this.controllerPrice.text == '') {
+      this.showSnackbar('请输入转账金额');
+      return;
+    }
+
+    if (this.controllerAddress.text == '') {
+      this.showSnackbar('请输入转账地址');
+      return;
+    }
+
+    if (this.controllerAddress.text.length != 42) {
+      this.showSnackbar('转账地址长度不符合42位长度要求');
+      return;
+    }
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return GenderChooseDialog(
+              title: '确认付款?',
+              content: '',
+              onCancelChooseEvent: () {
+                Navigator.pop(context);
+                this.showSnackbar('取消转账');
+              },
+              onSuccessChooseEvent: () {
+                Navigator.pop(context);
+                this.startTransfer();
+              });
+        });
   }
 
 

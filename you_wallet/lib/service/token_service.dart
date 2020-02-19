@@ -71,10 +71,7 @@ class TokenService {
 
   static Future<EthereumAddress> getPublicAddress(String privateKey) async {
     final private = EthPrivateKey.fromHex(privateKey);
-    print('in Future');
-    print(private);
     final address = await private.extractAddress();
-    print(address);
     return address;
   }
 
@@ -189,7 +186,7 @@ class TokenService {
     );
 
     Map body = jsonDecode(rsp.body);
-    // print('token balance => ${body}');
+    // print('token balance getPublicAddress=> ${body}');
     double balance = BigInt.parse(body['result'])/BigInt.from(1000000000000000000);
     // print('token balance => ${balance}');
     // int decimals = await getDecimals(address);

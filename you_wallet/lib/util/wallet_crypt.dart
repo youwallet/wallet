@@ -15,8 +15,12 @@ class WalletCrypt {
     var content = new Utf8Encoder().convert(this.pwd);
     var digest = md5.convert(content);
     final passwordMd5 =  hex.encode(digest.bytes);
-    String res = await FlutterAesEcbPkcs5.encryptString(this.data, passwordMd5);
-    return res;
+    try{
+      String res = await FlutterAesEcbPkcs5.encryptString(this.data, passwordMd5);
+      return res;
+    } catch(e){
+      return e.toString();
+    }
   }
 
   // 给钱包解密
