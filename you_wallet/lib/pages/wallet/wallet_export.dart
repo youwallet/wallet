@@ -3,6 +3,9 @@ import 'package:youwallet/model/wallet.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
 import 'package:youwallet/widgets/inputDialog.dart';
+import 'package:youwallet/widgets/customButton.dart';
+import 'package:youwallet/util/wallet_crypt.dart';
+import 'package:flutter/services.dart';
 
 class WalletExport extends StatefulWidget {
 
@@ -112,45 +115,44 @@ class Page extends State<WalletExport> {
                 title: Text('导出助记词'),
                 trailing: new Icon(Icons.keyboard_arrow_right),
                 onTap: () {
-                  if (this.wallet['mnemonic'].length > 0) {
-                    Navigator.pushNamed(context, "wallet_mnemonic",arguments:{
-                      'mnemonic': this.wallet['mnemonic'],
-                    });
-                  } else {
-                    this.showSnackbar('私钥导入的钱包没有助记词');
-                  }
+                  Navigator.of(context).pushNamed('getPassword').then((data){
+                    if (this.wallet['mnemonic'].length > 0) {
+                      ClipboardData data = new ClipboardData(text:this.wallet['mnemonic']);
+                      Clipboard.setData(data);
+                      this.showSnackbar('助记词已复制');
+                    } else {
+                      this.showSnackbar('私钥导入的钱包没有助记词');
+                    }
+                  });
                 },
               ),
               ListTile(
                 title: Text('导出私钥'),
                 trailing: new Icon(Icons.keyboard_arrow_right),
                 onTap: () {
-                  // 跳转load_wallet页面，然后通过address查询对应的key
-                  Navigator.pushNamed(context, "load_wallet",arguments:{
-                    'address': this.wallet['address'],
-                    'initialIndex': 1
+                  Navigator.of(context).pushNamed('getPassword').then((pwd) async{
+                     final key = await WalletCrypt(pwd,this.wallet['privateKey']).decrypt();
+                     if (key.length != 64){
+                       this.showSnackbar('导出失败，请核对密码');
+                     } else {
+                       ClipboardData data = new ClipboardData(text:key);
+                       Clipboard.setData(data);
+                       this.showSnackbar('已复制');
+                     }
                   });
+
                 },
               ),
-              new Container(
-                padding: const EdgeInsets.all(40.0),
-                child: new RaisedButton(
-                  shape: StadiumBorder(),
-                  child: Text(
-                      "删除钱包",
-                      style: new TextStyle(
-                      fontSize: 18.0
-                  )),
-                  padding: EdgeInsets.fromLTRB(0,10,0,10),
-                  elevation: 0, // 按钮阴影高度
-                  color: Colors.red,
-                  textColor: Colors.white,
-                  onPressed: () {
-                    this.delWallet();
-                  },
-                ),
+              Container(
+                  padding: const EdgeInsets.all(80.0),
+                  child: new CustomButton(
+                    content: '删除钱包',
+                    type:"danger",
+                    onSuccessChooseEvent:(res){
+                      this.delWallet();
+                    }
+                  )
               )
-
             ],
         )
 

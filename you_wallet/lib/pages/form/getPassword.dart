@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:groovin_material_icons/groovin_material_icons.dart';
+import 'package:youwallet/widgets/customButton.dart';
 
 class GetPasswordPage extends StatefulWidget {
   @override
@@ -37,28 +37,18 @@ class _LoginPageState extends State<GetPasswordPage> {
   }
 
   // 获取用户两次输入的密码，两次密码必须相同
-  Align buildLoginButton(BuildContext context) {
-    return Align(
-      child: SizedBox(
-        height: 45.0,
-        width: 270.0,
-        child: new MaterialButton(
-          color: Colors.blue,
-          textColor: Colors.white,
-          minWidth: 300, // 控制按钮宽度
-          child: new Text('确定'),
-          onPressed: () {
-            _formKey.currentState.save();
-            if (!_email.isEmpty) {
-              FocusScope.of(context).requestFocus(FocusNode());
-              Navigator.of(context).pop(_email);
-            } else {
-              final snackBar = new SnackBar(content: new Text('密码不能为空'));
-              Scaffold.of(context).showSnackBar(snackBar);
-            }
-          },
-        ),
-      ),
+  Widget buildLoginButton(BuildContext context) {
+    return new CustomButton(
+        onSuccessChooseEvent:(res){
+          _formKey.currentState.save();
+          if (!_email.isEmpty) {
+            FocusScope.of(context).requestFocus(FocusNode());
+            Navigator.of(context).pop(_email);
+          } else {
+            final snackBar = new SnackBar(content: new Text('密码不能为空'));
+            Scaffold.of(context).showSnackBar(snackBar);
+          }
+        }
     );
   }
 

@@ -64,8 +64,9 @@ class Page extends State<WalletCheck> {
         });
       });
       this.randomMnemonic.shuffle();
-      print(this.randomMnemonic);
-//      this._name.text = randomMnemonic;
+      this.randomMnemonicAgain = [];
+      // print(this.randomMnemonic);
+      // this._name.text = randomMnemonic;
     });
   }
 
@@ -172,36 +173,39 @@ class Page extends State<WalletCheck> {
   // 点击助记词
   void clickItem(item) async {
     print(item);
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-//    String randomMnemonic = prefs.getString("randomMnemonic");
-    int index = this.randomMnemonic.indexWhere((element) => element==item);
+    final index = this.randomMnemonic.indexWhere((element) => element['val']==item['val']);
+    bool active = item['active'];
+    print(index);
     setState((){
-      //this.randomMnemonicAgain.add(item['val']);
       this.randomMnemonic[index]['active'] = !item['active'];
       //this._name.text = this.randomMnemonicAgain.reduce((a,b)=>(a + " " +b));
       // this.randomMnemonic.remove(item);
-
     });
 
-    print(this.randomMnemonic.length);
-    if (this.randomMnemonic.length > 0) {
+    if (active) {
+      this.randomMnemonicAgain.removeWhere((element)=> element==item['val']);
+    } else {
+      this.randomMnemonicAgain.add(item['val']);
+    }
+
+
+    if (this.randomMnemonicAgain.length < 12) {
       return ;
     }
 
-    if (this._name.text == randomMnemonic) {
-      print("助记词备份输入一致");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String randomMnemonic = prefs.getString("randomMnemonic");
+
+    if (this.randomMnemonicAgain.join(" ") == randomMnemonic) {
+      print("助记词一致性确认完毕");
       // 助记词和私钥在这里加密
       Navigator.of(context).pushNamed('password').then((data){
         this.saveWallet(data);
       });
 
     } else {
-      Navigator.pop(context);
-      if (this.randomMnemonic.length == 0) {
-        print("助记词点击完毕，但是不一致");
-        print(this._name.text);
-        print(randomMnemonic);
-      }
+      this.showSnackbar('助记词不一致，请重试');
+      this.setRandomMnemonic();
     }
   }
 
