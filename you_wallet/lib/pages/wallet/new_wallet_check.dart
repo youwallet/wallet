@@ -5,6 +5,7 @@ import 'package:youwallet/service/token_service.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart' as myWallet;
 import 'package:youwallet/widgets/loadingDialog.dart';
+import 'package:youwallet/widgets/customButton.dart';
 
 class WalletCheck extends StatefulWidget {
   TokenService _tokenService;
@@ -106,31 +107,14 @@ class Page extends State<WalletCheck> {
                 runSpacing: 4.0, // gap between lines
                 children: this.randomMnemonic.map((item) => buildItem(item)).toList()
               ),
-              new MaterialButton(
-                color: Colors.blue,
-                textColor: Colors.white,
-                minWidth: 150,
-                child: new Text('清空重试'),
-                onPressed: () {
-                  this._name.text = ""; // 设置初始值
-                  this.randomMnemonicAgain = [];
-                  this.setRandomMnemonic();
-                },
-              ),
-//              RaisedButton(
-//                  child: Text('清空重试',
-//                      style: new TextStyle(
-//                        color: Colors.white
-//                  )),
-//                  minWidth:150.0,
-//                  color: Colors.lightBlue,
-//                  onPressed: () {
-//                    this._name.text = ""; // 设置初始值
-//                    this.randomMnemonicAgain = [];
-//                    this.setRandomMnemonic();
-//
-//                  },
-//              ),
+              new CustomButton(
+                  content: '清空重试',
+                  onSuccessChooseEvent:(res){
+                    this._name.text = ""; // 设置初始值
+                    this.randomMnemonicAgain = [];
+                    this.setRandomMnemonic();
+                  }
+              )
             ],
           ),
         )

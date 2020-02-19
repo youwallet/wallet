@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:youwallet/service/token_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:youwallet/widgets/customButton.dart';
 
 class WalletMnemonic extends StatefulWidget {
   final arguments;
@@ -87,54 +88,20 @@ class Page extends State<WalletMnemonic> {
               new SizedBox(
                 height: 50.0,
               ),
-              buildButton(),
-//              RaisedButton(
-//                child: Text('点击前往成功页面',
-//                    style: new TextStyle(
-//                        color: Colors.white
-//                    )),
-//                color: Colors.lightBlue,
-//                onPressed: () async {
-//                  Navigator.of(context).pushReplacementNamed("wallet_success");
-//                },
-//              ),
-//              Text(''),
+              new CustomButton(
+                  content: '我已备份，下一步',
+                  onSuccessChooseEvent:(res) async {
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    prefs.setString("randomMnemonic", this._name.text );
+                    Navigator.of(context).pushReplacementNamed("wallet_check");
+                  }
+              ),
 
             ],
           ),
         )
     );
   }
-
-  Widget buildButton(){
-    if (this.showBtn) {
-      return  RaisedButton(
-        child: Text('我已备份，下一步',
-            style: new TextStyle(
-                color: Colors.white
-            )),
-        color: Colors.lightBlue,
-        onPressed: () async {
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString("randomMnemonic", this._name.text );
-          Navigator.of(context).pushReplacementNamed("wallet_check");
-        },
-      );
-    } else {
-      return Text('');
-    }
-  }
-
-//  Widget buildItem(item){
-//    return Chip(
-//        label: InkWell(
-//            onTap: () {
-//              this.clickItem(item);
-//            },
-//            child: Text(item)
-//        )
-//    );
-//  }
 
   // 点击助记词
 //  void clickItem(item) async {

@@ -10,7 +10,7 @@ class CustomButton extends StatelessWidget {
   Function onSuccessChooseEvent;
   Map buttonMap = {
     'default': Color(0xff409eff),
-    'danger': Colors.red
+    'danger': Color(0xfff56c6c)
   };
 
   // 构造函数

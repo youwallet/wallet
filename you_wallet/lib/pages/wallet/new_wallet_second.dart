@@ -1,10 +1,7 @@
 
 
 import 'package:flutter/material.dart';
-
-import 'package:youwallet/widgets/loadingDialog.dart';
-
-import 'package:youwallet/widgets/modalDialog.dart';
+import 'package:youwallet/widgets/customButton.dart';
 
 class BackupWallet extends StatefulWidget {
 
@@ -55,16 +52,12 @@ class BackupWalletState extends State<BackupWallet> {
                 new SizedBox(
                   height: 50.0,
                 ),
-                new MaterialButton(
-                  color: Colors.blue,
-                  textColor: Colors.white,
-                  minWidth: 150,
-                  child: new Text('下一步'),
-                  onPressed: () {
-                    Navigator.of(context).pushReplacementNamed("wallet_mnemonic");
-                  },
+                new CustomButton(
+                    content: '下一步',
+                    onSuccessChooseEvent:(res){
+                      Navigator.of(context).pushReplacementNamed("wallet_mnemonic");
+                    }
                 ),
-
               ],
             ),
         )
