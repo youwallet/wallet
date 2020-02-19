@@ -2,6 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:youwallet/widgets/customButton.dart';
 
+import 'package:provider/provider.dart';
+import 'package:youwallet/model/wallet.dart';
+
 class WalletGuide extends StatefulWidget {
   WalletGuide() : super();
   @override
@@ -21,6 +24,7 @@ class _WalletGuideState extends State<WalletGuide> {
     return Scaffold(
         key: globalKey,
         appBar: AppBar(
+          elevation: Provider.of<Wallet>(context).items.length > 0 ? 3:0,
           title: Text(""),
         ),
         body: Center(

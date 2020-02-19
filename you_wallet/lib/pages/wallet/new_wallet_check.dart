@@ -45,7 +45,7 @@ class Page extends State<WalletCheck> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String randomMnemonic = prefs.getString("randomMnemonic");
     this.randomMnemonic = [];
-    print("助记词=》${randomMnemonic}");
+//    print("助记词=》${randomMnemonic}");
 
 //    String privateKey = TokenService.getPrivateKey(randomMnemonic);
 //    String passwordMd5 = Md5Encrypt('123456').init();
@@ -218,10 +218,12 @@ class Page extends State<WalletCheck> {
             text: '保存钱包...',
           );
         });
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String randomMnemonic = prefs.getString("randomMnemonic");
 
     Map obj = {
       'privateKey':  TokenService.getPrivateKey(this._name.text),
-      'mnemonic': this._name.text
+      'mnemonic': randomMnemonic
     };
 
     int id = await Provider.of<myWallet.Wallet>(context).add(obj,passWord);
