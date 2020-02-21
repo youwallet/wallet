@@ -95,7 +95,7 @@ class TokenService {
   /// 获取token的余额，这里获取的是ETH的余额
   static Future<String> getBalance(String address) async {
       String rpcUrl = await getNetWork();
-      final client = Web3Client(rpcUrl, Client(), enableBackgroundIsolate: true);
+      final client = Web3Client(rpcUrl, Client());
       EtherAmount balance = await client.getBalance(EthereumAddress.fromHex(address));
       double b = balance.getValueInUnit(EtherUnit.ether);
       return  b.toStringAsFixed(2);
