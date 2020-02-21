@@ -39,6 +39,7 @@ class SqlTable{
     orderType TEXT, 
     price TEXT,
     amount TEXT, 
+    filled TEXT,
     token TEXT,
     tokenName TEXT,
     baseToken TEXT,

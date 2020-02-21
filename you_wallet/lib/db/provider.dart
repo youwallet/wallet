@@ -80,13 +80,8 @@ class ProviderSql {
     String databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'wallet.db');
     print(path);
-    try {
-      db = await openDatabase(path);
-    } catch (e) {
-      print("Error $e");
-    }
-
     await deleteDatabase(path);
+    print('结束');
   }
 
   // 删除交易数据表，然后新建交易数据表

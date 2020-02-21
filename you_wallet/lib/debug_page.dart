@@ -256,6 +256,14 @@ class _DebugPageState extends State<DebugPage> {
                 Navigator.pushNamed(context, "password");
               },
             ),
+            FlatButton(
+              child: Text("int测试"),
+              textColor: Colors.blue,
+              onPressed: (){
+//                print(int.parse('2.0'));
+                print(double.parse('2'));
+              },
+            ),
           ],
         ),
       )

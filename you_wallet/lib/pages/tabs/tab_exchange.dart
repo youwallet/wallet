@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
 import 'package:youwallet/model/network.dart';
 import 'package:youwallet/model/wallet.dart' as walletModel;
+import 'package:youwallet/model/deal.dart';
 import 'package:youwallet/service/trade.dart';
 
 import '../../model/token.dart';
@@ -627,16 +628,20 @@ class Page extends State {
    }
 
 
-   // 遍历每个订单的状态
+   /// 遍历每个订单的状态
+   /// 将查询到的匹配数量保存在数据库中
+   /// 如果订单中的数量已经匹配完毕，则代表这个订单转账成功，刷新的时候不再遍历
    Future<void> _getTradeInfo() async {
      Map filled = {};
      for(var i = 0; i<this.trades.length; i++) {
-       int amount = await Trade.getFilled(this.trades[i]['odHash']);
+       double amount = await Trade.getFilled(this.trades[i]['odHash'])/1000000000000000000;
        print('查询订单   =》${this.trades[i]['txnHash']}');
-       print('匹配情况   =》${amount/1000000000000000000}');
-        //List myTest = this.trades;
-        // myTest[i]['filledAmount'] = filledAmount + 1;
-       filled[this.trades[i]['txnHash']] = (amount/1000000000000000000).toString();
+       print('匹配情况   =》${amount}');
+       // 保存匹配的数量进入数据库
+       // await Trade.getFilled(this.trades[i]['odHash']);
+       int sqlRes = await Provider.of<Deal>(context).updateFilled(this.trades[i],amount.toString() );
+       print('sqlRes  => ${sqlRes}');
+       filled[this.trades[i]['txnHash']] = (amount).toString();
      }
      setState(() {
        this.filledAmount = filled;

@@ -21,9 +21,9 @@ class transferList extends StatelessWidget {
 
 
   Widget buildItem(item, context) {
-//    print(item);
+    print(item);
     String date = DateUtil.formatDateMs( int.parse( item['createTime']), format: DataFormats.full);
-    String filled = filledAmount.containsKey(item['txnHash'])?filledAmount[item['txnHash'].toString()]:'0';
+    String filled = filledAmount.containsKey(item['txnHash'])?filledAmount[item['txnHash'].toString()]:'0.0';
     return new Container(
         padding: const EdgeInsets.all(10.0), // 四周填充边距32像素
         decoration: new BoxDecoration(
@@ -47,7 +47,7 @@ class transferList extends StatelessWidget {
                 ],
               ),
               new Text(
-                  '转账中',
+                  item['status']??'转账中',
                   style: new TextStyle(
                       color: Colors.deepOrange
                   )
