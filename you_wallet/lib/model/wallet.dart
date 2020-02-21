@@ -69,6 +69,9 @@ class Wallet extends ChangeNotifier {
     this.currentWallet = address;
     this._items.forEach((f){
       if (f['address'] == address) {
+        if(f['name'].length == 0) {
+          f['name'] = 'Account' + f['id'].toString();
+        }
         this.currentWalletObject = f;
       }
     });

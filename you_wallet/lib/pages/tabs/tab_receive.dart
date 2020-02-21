@@ -49,7 +49,7 @@ class Page extends State<TabReceive> {
               child: new Column(
                 children: <Widget>[
                   new Text(
-                      Provider.of<Wallet>(context).currentWalletName,
+                      Provider.of<Wallet>(context).currentWalletObject['name'],
                       style: new TextStyle(
                           fontSize: 24.0,
                           color: Colors.white

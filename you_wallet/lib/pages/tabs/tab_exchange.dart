@@ -634,14 +634,16 @@ class Page extends State {
    Future<void> _getTradeInfo() async {
      Map filled = {};
      for(var i = 0; i<this.trades.length; i++) {
-       double amount = await Trade.getFilled(this.trades[i]['odHash'])/1000000000000000000;
-       print('查询订单   =》${this.trades[i]['txnHash']}');
-       print('匹配情况   =》${amount}');
-       // 保存匹配的数量进入数据库
-       // await Trade.getFilled(this.trades[i]['odHash']);
-       int sqlRes = await Provider.of<Deal>(context).updateFilled(this.trades[i],amount.toString() );
-       print('sqlRes  => ${sqlRes}');
-       filled[this.trades[i]['txnHash']] = (amount).toString();
+       if(this.trades[i]['status'] != '成功') {
+         double amount = await Trade.getFilled(this.trades[i]['odHash']) /
+             1000000000000000000;
+         print('查询订单   =》${this.trades[i]['txnHash']}');
+         print('匹配情况   =》${amount}');
+         // 保存匹配的数量进入数据库
+         int sqlRes = await Provider.of<Deal>(context).updateFilled(
+             this.trades[i], amount.toString());
+         filled[this.trades[i]['txnHash']] = (amount).toString();
+       }
      }
      setState(() {
        this.filledAmount = filled;
