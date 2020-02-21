@@ -232,7 +232,7 @@ class Page extends State<TabWallet> {
 
   // 构建顶部卡片
   Widget topCard(BuildContext context) {
-
+    print('top card build');
     return new Container(
         padding: const EdgeInsets.all(16.0), // 四周填充边距32像素
         margin: const EdgeInsets.all(16.0),
@@ -256,7 +256,7 @@ class Page extends State<TabWallet> {
                       Row(
                         children: <Widget>[
                           new Text(
-                              Wallet.currentWalletObject['name'].length > 0 ? Wallet.currentWalletObject['name']:'Account${Wallet.currentWalletObject['id'].toString()}',
+                              Wallet.currentWalletObject['name'].length==0?'Account${Wallet.currentWalletObject['id']}':Wallet.currentWalletObject['name'],
                               // Wallet.currentWalletObject['name']??'--',
                               style: new TextStyle(
                                   color: Colors.white,
@@ -297,7 +297,7 @@ class Page extends State<TabWallet> {
                     children: <Widget>[
                       new Text(''),
                       new Text(
-                          Wallet.currentWalletObject['balance'] + 'ETH',
+                          Wallet.currentWalletObject['balance']??'~' + 'ETH',
                           style: new TextStyle(
                               fontSize: 32.0, color: Colors.white
                           )

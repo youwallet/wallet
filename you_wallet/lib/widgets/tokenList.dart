@@ -15,13 +15,16 @@ class tokenList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List filterArr = [];
+    return new ListEmpty(
+        text: '还没有token，请先添加'
+    );
     this.arr.forEach((element){
       // 必须当前你选择的网络和当前你的钱包地址
       if (element['network'] == this.network && element['wallet'] == this.currentWallet) {
         filterArr.add(element);
       }
     });
-    if (filterArr.length == 0) {
+    if (filterArr!= null && filterArr.length == 0) {
       return new ListEmpty(
         text: '还没有token，请先添加'
       );

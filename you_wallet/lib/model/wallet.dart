@@ -60,7 +60,8 @@ class Wallet extends ChangeNotifier {
   // 切换钱包,如果没有参数，就从缓存中获取
   void changeWallet(String address) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    if(address.length == 0) {
+    print('changeWallet  => ${address}');
+    if(address != null && address.length == 0) {
       address = prefs.getString("currentWallet");
     } else {
       prefs.setString("currentWallet", address);
@@ -69,11 +70,16 @@ class Wallet extends ChangeNotifier {
     this.currentWallet = address;
     this._items.forEach((f){
       if (f['address'] == address) {
-        if(f['name'].length == 0) {
-          f['name'] = 'Account' + f['id'].toString();
-        }
         this.currentWalletObject = f;
+//        this.currentWalletObject.putIfAbsent("name", (){
+//          if (this.currentWalletObject['name'].length > 0) {
+//            return this.currentWalletObject['name'] + '123';
+//          } else {
+//            return 'Account${this.currentWalletObject['id']}';
+//          }
+//        });
       }
+      print(this.currentWalletObject);
     });
     print('changeWallet done');
     print('address   => ${address}');
