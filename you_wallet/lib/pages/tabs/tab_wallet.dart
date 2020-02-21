@@ -11,6 +11,7 @@ import 'package:youwallet/db/sql_util.dart';
 import 'package:youwallet/db/provider.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:youwallet/widgets/loadingDialog.dart';
 
 
 class TabWallet extends StatefulWidget {
@@ -138,14 +139,15 @@ class Page extends State<TabWallet> {
                   ),
                   accountEmail: Text('sibbay@example.com'),
                   //currentAccountPicture: CircleAvatar( backgroundImage: NetworkImage('https://upyun-assets.ethfans.org/assets/ethereum-logo-fe43a240b78711a6d427e9638f03163f3dc88ca8c112510644ce7b5f6be07dbe.png')),
-                  currentAccountPicture : Icon(IconData(0xe648, fontFamily: 'iconfont'),size: 60.0, color: Colors.black26),
+                  currentAccountPicture : Icon(IconData(0xe648, fontFamily: 'iconfont'),size: 60.0),
                   decoration: BoxDecoration(
                       color: Colors.black12,
-                      image: DecorationImage(
-                        image: NetworkImage( 'url'),
-                        fit: BoxFit.cover,
-                        colorFilter: ColorFilter.mode( Colors.yellow.withOpacity(0.3), BlendMode.lighten, ),
-                      )),
+//                      image: DecorationImage(
+//                        image: NetworkImage( 'url'),
+//                        fit: BoxFit.cover,
+//                        colorFilter: ColorFilter.mode( Colors.yellow.withOpacity(0.3), BlendMode.lighten, ),
+//                      )
+                  ),
                 ),
 
                 ListTile(
@@ -155,13 +157,24 @@ class Page extends State<TabWallet> {
                     Navigator.pushNamed(context, "set_network");
                   },
                 ),
-//                ListTile(
-//                  title: Text('检查更新'),
-//                  leading: Icon(Icons.update),
-//                  onTap: () {
+                ListTile(
+                  title: Text('检查更新'),
+                  leading: Icon(Icons.update),
+                  onTap: () {
+                    Navigator.of(context).pop();
+//                    showDialog<Null>(
+//                        context: context, //BuildContext对象
+//                        barrierDismissible: false,
+//                        builder: (BuildContext context) {
+//                          return new LoadingDialog( //调用对话框
+//                            text: '检查中...',
+//                          );
+//                        });
 //                    Navigator.of(context).pop();
-//                  },
-//                ),
+                    final snackBar = new SnackBar(content: new Text('没有检测到新版本'));
+                    Scaffold.of(context).showSnackBar(snackBar);
+                  },
+                ),
                 ListTile(
                   title: Text('进入调试'),
                   leading: Icon(Icons.adb),
