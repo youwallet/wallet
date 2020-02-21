@@ -54,7 +54,6 @@ class Page extends State<AddWallet> {
 
   Widget buildItem(Map item){
     if (item.containsKey('name')) {
-      print('start card');
       return new Card(
         color: Colors.white, //背景色
         child: new Container(
@@ -107,7 +106,7 @@ class Page extends State<AddWallet> {
                     child: new Column(
                       children: <Widget>[
                         new Text(
-                          item['balance'],
+                          item['balance'].toString(),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                           style: new TextStyle(fontSize: 16.0,
@@ -150,19 +149,19 @@ class Page extends State<AddWallet> {
             this.showSnackbar('地址长度不42位');
             return;
           }
-//          showDialog<Null>(
-//              context: context, //BuildContext对象
-//              barrierDismissible: false,
-//              builder: (BuildContext context) {
-//                return new LoadingDialog( //调用对话框
-//                  text: '搜索中...',
-//                );
-//              });
-          print('搜索的token是=》 ${text}');
-          this.showSnackbar('搜索中···');
+          showDialog<Null>(
+              context: context, //BuildContext对象
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return new LoadingDialog( //调用对话框
+                  text: '搜索中...',
+                );
+              });
+//          print('搜索的token是=》 ${text}');
+//          this.showSnackbar('搜索中···');
           try {
             Map token = await TokenService.searchToken(text);
-            //          Navigator.pop(context);
+             Navigator.pop(context);
             print("搜索结果是${token}");
             if (token.containsKey('name')) {
               setState(() {
@@ -173,6 +172,7 @@ class Page extends State<AddWallet> {
               this.showSnackbar('没有搜索到token');
             }
           } catch (e) {
+            Navigator.pop(context);
             if(e.toString().contains('FormatException: Could not parse BigInt')) {
               this.showSnackbar('搜索不到该token');
             } else {

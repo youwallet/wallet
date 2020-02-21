@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:youwallet/service/token_service.dart' ;
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
-
+import 'package:youwallet/widgets/listEmpty.dart';
 
 // 类的名字需要大写字母开头
 class tokenList extends StatelessWidget {
@@ -21,9 +21,16 @@ class tokenList extends StatelessWidget {
         filterArr.add(element);
       }
     });
-    return Column(
-        children: filterArr.reversed.map((item) => walletCard(item, context)).toList(),
-    );
+    if (filterArr.length == 0) {
+      return new ListEmpty(
+        text: '还没有token，请先添加'
+      );
+    } else {
+      return Column(
+        children: filterArr.reversed.map((item) => walletCard(item, context))
+            .toList(),
+      );
+    }
   }
 }
 

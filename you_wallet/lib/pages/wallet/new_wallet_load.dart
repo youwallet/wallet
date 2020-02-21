@@ -15,6 +15,7 @@ import 'package:youwallet/service/local_authentication_service.dart';
 import 'package:youwallet/service/service_locator.dart';
 import 'package:youwallet/service/token_service.dart';
 import 'package:youwallet/widgets/loadingDialog.dart';
+import 'package:youwallet/widgets/customButton.dart';
 
 
 import 'package:provider/provider.dart';
@@ -156,25 +157,12 @@ class Page extends State<LoadWallet> {
               ],
             )
           ),
-          new MaterialButton(
-            color: Colors.blue,
-            textColor: Colors.white,
-            minWidth: 150,
-            child: new Text('添加账户密码'),
-            onPressed: () async {
-              if (this._key.text.length == 0) {
-                this.showSnackbar('私钥不能为空');
-              } else {
+          new CustomButton(
+              content: '添加账户密码',
+              onSuccessChooseEvent:(res){
                 this.loadWalletByMnemonic();
-//                SharedPreferences prefs = await SharedPreferences.getInstance();
-//                prefs.setString("new_wallet_name", _name.text);
-//                Navigator.pushNamed(context, "keyboard_main").then((data){
-//                  print('你设置的交易密码是=》${data.toString()}');
-//                  this.saveWalletByKey(data.toString());
-//                });
               }
-            },
-          ),
+          )
 //          new Padding(
 //              padding: new EdgeInsets.all(30.0),
 //              child: Column(
@@ -235,24 +223,11 @@ class Page extends State<LoadWallet> {
                 ],
               )
           ),
-          new MaterialButton(
-            color: Colors.blue,
-            textColor: Colors.white,
-            minWidth: 150,
-            child: new Text('添加账户密码'),
-            onPressed: () async {
-              if (this._key.text.length == 0) {
-                this.showSnackbar('私钥不能为空');
-              } else {
-                  this.saveWalletByKey('');
-//                SharedPreferences prefs = await SharedPreferences.getInstance();
-//                prefs.setString("new_wallet_name", _name.text);
-//                Navigator.pushNamed(context, "keyboard_main").then((data){
-//                  print('你设置的交易密码是=》${data.toString()}');
-//                  this.saveWalletByKey(data.toString());
-//                });
+          new CustomButton(
+              content: '添加账户密码',
+              onSuccessChooseEvent:(res){
+                this.saveWalletByKey('');
               }
-            },
           ),
 //          new Padding(
 //              padding: new EdgeInsets.all(30.0),
@@ -313,9 +288,7 @@ class Page extends State<LoadWallet> {
 
     Map item = {
       'privateKey': privateKey,
-      'name': '',
       'mnemonic': this._name.text,
-      'balance':''
     };
 
     this.doSave(item);
@@ -324,9 +297,14 @@ class Page extends State<LoadWallet> {
   // 通过私钥 key导入钱包
   void saveWalletByKey(String pwd) async {
 
+    if (this._key.text.length == 0) {
+      this.showSnackbar('私钥不能为空');
+      return;
+    }
+
     if (this._key.text.length != 64) {
       this.showSnackbar('标准密钥长度64位，你的是${this._key.text.length}位');
-      return ;
+      return;
     }
 
     // 使用账户密码对私钥进行AES对称

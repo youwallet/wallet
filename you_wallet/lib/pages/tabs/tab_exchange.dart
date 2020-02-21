@@ -670,6 +670,10 @@ class Page extends State {
 
   // 选择token
   void selectToken() async {
+    if (Provider.of<Token>(context).items.length == 0) {
+      this.showSnackBar('请先添加token');
+      return;
+    }
     showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {
