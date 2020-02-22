@@ -67,7 +67,7 @@ class Page extends State<TabTransfer> {
             new Container(
               padding: const EdgeInsets.all(20.0),
               child: new Text(
-                  '余额：${Provider.of<Wallet>(context).currentWalletObject['balance']}ETH',
+                  '余额：${token['balance']??"~"}${token['name']??"~"}',
                   style: new TextStyle(
                       fontSize: 26.0,
                       color: Colors.lightBlue
@@ -245,7 +245,7 @@ class Page extends State<TabTransfer> {
   }
 
   void checkInput() {
-    if (this.value == null) {
+    if (this.token == null) {
       this.showSnackbar('请选择token');
       return;
     }
@@ -355,19 +355,6 @@ class Page extends State<TabTransfer> {
     }
   }
 
-
-  // 构建页面下拉列表
-  List<DropdownMenuItem> getListData(List tokens){
-    List<DropdownMenuItem> items=new List();
-
-    for (var value in tokens) {
-      items.add(new DropdownMenuItem(
-        child:new Text(value['name']),
-        value: value,
-      ));
-    }
-    return items;
-  }
 
   // 显示提示
   void showSnackbar(String text) {
