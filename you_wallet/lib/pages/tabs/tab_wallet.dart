@@ -11,7 +11,6 @@ import 'package:youwallet/db/sql_util.dart';
 import 'package:youwallet/db/provider.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:youwallet/widgets/loadingDialog.dart';
 
 
 class TabWallet extends StatefulWidget {
@@ -121,7 +120,7 @@ class Page extends State<TabWallet> {
               padding: const EdgeInsets.only(left: 16.0, right: 16.0), // 四周填充边距32像素
               child: Consumer<Token>(
                 builder: (context, Token, child) {
-                  return tokenList(arr: Token.items,network: Provider.of<Network>(context).network, currentWallet: Provider.of<walletModel.Wallet>(context).currentWallet);
+                  return tokenList(arr: Token.items,network: Provider.of<Network>(context).network, currentWalletObject: Provider.of<walletModel.Wallet>(context).currentWalletObject);
                 },
               ),
             )
@@ -175,13 +174,13 @@ class Page extends State<TabWallet> {
                     Scaffold.of(context).showSnackBar(snackBar);
                   },
                 ),
-                ListTile(
-                  title: Text('进入调试'),
-                  leading: Icon(Icons.adb),
-                  onTap: () {
-                    Navigator.pushNamed(context, "debug_page");
-                  },
-                ),
+//                ListTile(
+//                  title: Text('进入调试'),
+//                  leading: Icon(Icons.adb),
+//                  onTap: () {
+//                    Navigator.pushNamed(context, "debug_page");
+//                  },
+//                ),
                 ListTile(
                   title: Text('清空缓存'),
                   leading: Icon(Icons.cached),
@@ -340,6 +339,7 @@ class Page extends State<TabWallet> {
     String address = Provider.of<walletModel.Wallet>(context).currentWalletObject['address'];
     // await Provider.of<walletModel.Wallet>(context).updateWallet(address);
     await Provider.of<Token>(context).updateBalance(address);
+    await Provider.of<walletModel.Wallet>(context).updateWallet(address);
     final snackBar = new SnackBar(content: new Text('刷新结束'));
     Scaffold.of(context).showSnackBar(snackBar);
 

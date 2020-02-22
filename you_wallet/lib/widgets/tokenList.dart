@@ -9,18 +9,15 @@ class tokenList extends StatelessWidget {
 
   List arr = [];
   String network = "ropsten";
-  String currentWallet = "";
-  tokenList({Key key, this.arr, this.network="ropsten", this.currentWallet}) : super(key: key);
+  Map currentWalletObject = {};
+  tokenList({Key key, this.arr, this.network="ropsten", this.currentWalletObject}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     List filterArr = [];
-    return new ListEmpty(
-        text: '还没有token，请先添加'
-    );
     this.arr.forEach((element){
       // 必须当前你选择的网络和当前你的钱包地址
-      if (element['network'] == this.network && element['wallet'] == this.currentWallet) {
+      if (element['network'] == this.network && element['wallet'] == this.currentWalletObject['address']) {
         filterArr.add(element);
       }
     });
@@ -50,10 +47,10 @@ Widget walletCard(item, context) {
             ),
           )
       ),
-      key: new Key(item['id'].toString()),
-      onDismissed: (direction) {
+      key: Key(UniqueKey().toString()),
+      onDismissed: (direction) async {
         // 更新token model中的token数组
-        Provider.of<Token>(context).remove(item);
+        await Provider.of<Token>(context).remove(item);
         final snackBar =  SnackBar(content: new Text("移除成功"));
         Scaffold.of(context).showSnackBar(snackBar);
       },

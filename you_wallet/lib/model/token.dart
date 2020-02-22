@@ -72,13 +72,11 @@ class Token extends ChangeNotifier {
   }
 
   /// 移除一个token
-  void remove(Map item) {
+  Future<int> remove(Map item) async {
     _items.remove(item);
     var sql = SqlUtil.setTable("tokens");
-    sql.delete('id', item['id']).then((result) {
-      print("remove =》 ${result}");
-    });
-    notifyListeners();
+    int id = await sql.delete('id', item['id']);
+    this._fetchToken();
   }
 
   /// 更新指定的token余额
@@ -113,7 +111,7 @@ class Token extends ChangeNotifier {
   /// 刷新token的余额
   Future updateBalance(String address) async{
     for(var i = 0; i<this.items.length; i++) {
-      // print(this.items[i]);
+      print(this.items[i]);
       String balance = await TokenService.getTokenBalance(this.items[i]['address']);
       print(balance);
       this.updateTokenBalance(this.items[i], balance);
