@@ -24,7 +24,9 @@ void main() async {
   final provider = new ProviderSql();
   await provider.init();
 
-  await Global.init(); // 全局变量, 还没想清楚怎么用
+  // 全局变量, 其他页面导入global类即可以使用其中的变量
+  // 全局变量就只是变量，它一般不更改，即使更改，也不需要通知其他组件
+  await Global.init();
   Provider.debugCheckInvalidValueType = null;
   runApp(
     MultiProvider(

@@ -1,7 +1,5 @@
 
 import 'package:bip39/bip39.dart' as bip39;
-import 'package:ed25519_hd_key/ed25519_hd_key.dart';
-import "package:hex/hex.dart";
 import 'package:web3dart/credentials.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart';
@@ -9,11 +7,10 @@ import 'dart:convert';
 import 'package:web3dart/web3dart.dart';
 import 'package:bip32/bip32.dart' as bip32;
 import 'package:web3dart/crypto.dart';
-import 'dart:io';
-import 'package:path/path.dart' show join, dirname;
-import 'package:youwallet/util/eth_amount_formatter.dart' ;
 
-import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:youwallet/model/wallet.dart' as walletModel;
+import 'package:youwallet/global.dart';
 
 //abstract class TokenService {
 //  String generateMnemonic();
@@ -224,6 +221,55 @@ class TokenService {
     Map body = jsonDecode(rsp.body);
     return int.parse(body['result'].replaceFirst("0x",''), radix: 16);
   }
+
+
+  /* 获取授权代理额度 - R
+   * owner: 授权人账户地址，就是用户钱包地址
+   * spender: 代理人账户地址,就是proxy的合约地址
+   *
+   * 返回值
+   * uint256 value: 代理额度
+   */
+  static Future<String> allowance(context,String token) async{
+    String myAddress = Provider.of<walletModel.Wallet>(context).currentWalletObject['address'];
+    String postData = '0xdd62ed3e000000000000000000000000' + formatParam(myAddress) + formatParam(Global.proxy);
+    print("allowance => ${myAddress}");
+    print("postData  => ${postData}");
+    print("token     => ${token}");
+    var client = Client();
+    var payload = {
+      "jsonrpc": "2.0",
+      "method": "eth_call",
+      "params":  [{
+        "to": token,
+        "data": postData
+      },"latest"],
+
+      "id": DateTime.now().millisecondsSinceEpoch
+    };
+
+    String rpcUrl = await getNetWork();
+
+    var rsp = await client.post(
+        rpcUrl,
+        headers:{'Content-Type':'application/json'},
+        body: json.encode(payload)
+    );
+    Map body = jsonDecode(rsp.body);
+    print(body);
+  }
+  static formatParam(String para) {
+    para = para.replaceFirst('0x', '');
+    String str = '';
+    int i = 0;
+    while(i < 64 - para.length)
+    {
+      str = str + '0';
+      i++;
+    }
+    return str + para;
+  }
+
 
 
 //  /// 通过web3dart获取代币余额

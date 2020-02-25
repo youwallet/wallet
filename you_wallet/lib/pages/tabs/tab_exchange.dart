@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:youwallet/service/token_service.dart';
 import 'package:youwallet/widgets/priceNum.dart';
 import 'package:youwallet/widgets/transferList.dart';
 import 'package:youwallet/widgets/bottomSheetDialog.dart';
@@ -10,9 +11,9 @@ import 'package:youwallet/model/network.dart';
 import 'package:youwallet/model/wallet.dart' as walletModel;
 import 'package:youwallet/model/deal.dart';
 import 'package:youwallet/service/trade.dart';
-
+import 'package:youwallet/widgets/modalDialog.dart';
 import '../../model/token.dart';
-
+import 'package:youwallet/global.dart';
 
 class TabExchange extends StatefulWidget {
 
@@ -133,7 +134,7 @@ class Page extends State {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                new Text('Token'),
+//                new Text('Token'),
                 new Container(
                   padding: const EdgeInsets.all(4.0),
                   margin: const EdgeInsets.only(bottom: 10.0),
@@ -142,9 +143,15 @@ class Page extends State {
                     border: new Border.all(width: 1.0, color: Colors.black12),
                     color: Colors.black12,
                   ),
+                  height: 36.0,
                   child: GestureDetector(
                     onTap: this.selectToken,//写入方法名称就可以了，但是是无参的
-                    child: Text(this.value==null?'选择币种':this.value['name']),
+                    child: Text(
+                      this.value==null?'选择币种':this.value['name'],
+                      style: TextStyle(
+                          fontSize: 24.0
+                      ),
+                    ),
                   ),
                 ),
                 new Container(
@@ -234,7 +241,7 @@ class Page extends State {
 
                 ),
 
-                new Text('当前账户余额${tokenBalance}'),
+                new Text('当前账户余额${this.value!=null?this.value["balance"]:"~"}'),
                 new Container(
 
                   padding: new EdgeInsets.only(top: 30.0),
@@ -277,7 +284,7 @@ class Page extends State {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                new Text('Base Token'),
+                //new Text('Base Token'),
                 new Container(
                   padding: const EdgeInsets.only(left: 10.0),
                   margin: const EdgeInsets.only(bottom: 10.0),
@@ -286,7 +293,13 @@ class Page extends State {
                     border: new Border.all(width: 1.0, color: Colors.black12),
                     color: Colors.black12,
                   ),
-                  child: Text('BTD')
+                  height: 40.0,
+                  child: Text(
+                      'BTD',
+                    style: TextStyle(
+                      fontSize: 24.0
+                    )
+                  )
                 ),
                 buildRightWidget()
               ],
@@ -307,7 +320,7 @@ class Page extends State {
     );
   }
 
-  // 获取按钮
+  // 构建一组颜色会动态变更的按钮
   Widget getButton(String btnText, String currentBtn) {
     if (btnText != currentBtn) {
       return RaisedButton(
@@ -345,56 +358,6 @@ class Page extends State {
     });
   }
 
-  // 构建页面下拉列表
-  List<DropdownMenuItem> getListData(List tokens) {
-    List<DropdownMenuItem> items=new List();
-
-    String network = Provider.of<Network>(context).network;
-    String currentWallet =  Provider.of<walletModel.Wallet>(context).currentWalletObject['address'];
-    for (var value in tokens) {
-      if (value['network'] == network && value['wallet'] == currentWallet) {
-        items.add(new DropdownMenuItem(
-          child:new Text(value['name']),
-          value: value,
-        ));
-      }
-    }
-    return items;
-  }
-
-  // 构建左侧区域
-  Widget buildLeftWidget() {
-    return Container(
-      child: new Column(
-        children: <Widget>[
-          new Container(
-            child: new TextField(
-              onChanged: (text) {//内容改变的回调
-                print('change $text');
-              },
-              onSubmitted: (text) {//内容提交(按回车)的回调
-                print('submit $text');
-              },
-            ),
-          ),
-          new Row(
-            children: <Widget>[
-              new MaterialButton(
-                color: Colors.blue,
-                textColor: Colors.white,
-                child: new Text('买入SHT'),
-                onPressed: () {
-                  // ...
-                  Navigator.pushNamed(context, "token_history");
-                },
-              ),
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
   // 构建右侧区域
   Widget buildRightWidget() {
     return Container(
@@ -417,6 +380,8 @@ class Page extends State {
   void makeOrder() async {
     // 关闭键盘
     FocusScope.of(context).requestFocus(FocusNode());
+    TokenService.allowance(context, this.value['address']);
+    return;
 
     if (Provider.of<Network>(context).network != 'ropsten') {
       final snackBar = new SnackBar(content: new Text('请切换到ropsten网络'));
@@ -443,7 +408,27 @@ class Page extends State {
       return ;
     }
 
-    this.getPwd();
+    this.showAuthTips();
+  }
+
+  /// 提示授权需要密码
+  void showAuthTips() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return GenderChooseDialog(
+              title: '授权交易',
+              content: '为了便于后续兑换，需要您授权youwallet代理。youwallet只会在你授权的情况下才会执行交易，请放心授权！',
+              onCancelChooseEvent: () {
+                 Navigator.pop(context);
+                 this.showSnackBar('取消交易');
+              },
+              onSuccessChooseEvent: () async {
+                 Navigator.pop(context);
+                 this.getPwd();
+              });
+        });
   }
 
   // 获取用户密码
@@ -466,20 +451,11 @@ class Page extends State {
       need_approve_token = this.value['address'];
     }
 
-     int len = await Provider.of<Token>(context).approveSearch(need_approve_token);
-     if (len == 0) {
-       this.showSnackBar('每一种token首次交易都需要对合约授权，正在授权中···');
-       await Trade.approve(need_approve_token, pwd);
-       int index = await Provider.of<Token>(context).approveAdd(need_approve_token);
-       print('inser id => ${index}');
-       this.showSnackBar('授权结束，请重新下单');
-     } else {
-       print("已经授权，直接交易 =》${len}");
-       this.startTrade(pwd);
-     }
+     // 等待授权，这里如果已经授权，则不需要再次授权
+     //await Trade.approve(need_approve_token, pwd);
 
-      //await Trade.approve(this.value['address'], pwd)
-
+     // 开始交易
+     this.startTrade(pwd);
   }
 
   // 获取钱包密码，然后用密码解析私钥
@@ -675,7 +651,7 @@ class Page extends State {
   }
 
 
-  // 选择token
+  // 选左边的token
   void selectToken() async {
     if (Provider.of<Token>(context).items.length == 0) {
       this.showSnackBar('请先添加token');
@@ -690,6 +666,7 @@ class Page extends State {
                 print(res);
                 setState(() {
                   this.value = res;
+                  this.suffixText = res['name'];
                 });
                 this.getBuyList();
               });

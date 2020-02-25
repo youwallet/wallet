@@ -633,6 +633,4 @@ class Trade {
       print("catch error =》 ${e}");
     }
   }
-
-
 }

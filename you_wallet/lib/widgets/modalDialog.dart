@@ -67,13 +67,16 @@ class GenderChooseDialog extends Dialog {
     return GestureDetector(
         onTap: gender == 1 ? this.onCancelChooseEvent : this.onSuccessChooseEvent,
         child: Container(
-          alignment: Alignment.center,
-          width: 100,
+            decoration: new BoxDecoration(
+              borderRadius: new BorderRadius.all(new Radius.circular(40.0)),
+              color: gender == 1 ? Colors.black12: Colors.lightBlue,
+            ),
+            alignment: Alignment.center,
+            width: 100,
             height: 40,
-            color: gender == 1 ? Colors.black12: Colors.lightBlue,
             child: Text(gender == 1 ? '取消' : '确定',
                   style: TextStyle(
-                      color: gender == 1 ? Colors.white : Colors.white,
+                      color: gender == 1 ? Colors.grey : Colors.white,
                       fontSize: 15.0)),
           )
         );
