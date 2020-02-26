@@ -174,13 +174,13 @@ class Page extends State<TabWallet> {
                     Scaffold.of(context).showSnackBar(snackBar);
                   },
                 ),
-//                ListTile(
-//                  title: Text('进入调试'),
-//                  leading: Icon(Icons.adb),
-//                  onTap: () {
-//                    Navigator.pushNamed(context, "debug_page");
-//                  },
-//                ),
+                ListTile(
+                  title: Text('进入调试'),
+                  leading: Icon(Icons.adb),
+                  onTap: () {
+                    Navigator.pushNamed(context, "debug_page");
+                  },
+                ),
                 ListTile(
                   title: Text('清空缓存'),
                   leading: Icon(Icons.cached),
@@ -339,7 +339,7 @@ class Page extends State<TabWallet> {
     String address = Provider.of<walletModel.Wallet>(context).currentWalletObject['address'];
     // await Provider.of<walletModel.Wallet>(context).updateWallet(address);
     await Provider.of<Token>(context).updateBalance(address);
-    await Provider.of<walletModel.Wallet>(context).updateWallet(address);
+    //await Provider.of<walletModel.Wallet>(context).updateWallet(address);
     final snackBar = new SnackBar(content: new Text('刷新结束'));
     Scaffold.of(context).showSnackBar(snackBar);
 

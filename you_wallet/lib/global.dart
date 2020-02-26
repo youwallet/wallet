@@ -28,16 +28,44 @@ class Global {
   // 代理合约，用来给token授权
   static final proxy = "0x141A60c20026d88385a5339191C3950285e41072";
 
+  // youwallet钱包合约
+  static final tempMatchAddress= "0x3edde3202e42a6c129A399a7e063C6E236239202";
+
+  // 当前用户的钱包地址，就是单纯的地址，0x开头的字符串
+  static String currentWallet = '';
+
+  // 所有function hash
+  static final funcHashes= {
+    'filled(bytes32)': '0x288cdc91',
+    'getOrderQueueInfo(address,address,bool)': '0x22f42f6b',
+    'transfer(address,uint256)': '0xa9059cbb',
+    'getOrderInfo(bytes32,bytes32,bool)': '0xb7f92b4a',
+    'takeOrder()': '0xefe29415',
+    'approve()': '0x095ea7b3',
+    'allowance': '0xdd62ed3e'
+  };
+
+  static final myKey = "v3/37caa7b8b2c34ced8819de2b3853c8a2";
 
   // 是否为release版
   static bool get isRelease => bool.fromEnvironment("dart.vm.product");
 
   static Future init() async {
     _prefs = await SharedPreferences.getInstance();
+
+    // 获取当前的以太坊网络
     network =  _prefs.getString("network");
 
+    currentWallet = _prefs.getString("currentWallet");
     //初始化网络请求相关配置
     //Git.init();
   }
+
+  static Future<String> rpcUrl() async {
+    String network =  _prefs.getString("network");
+    return "https://" + network + ".infura.io/" + myKey;
+  }
+
+
 
 }

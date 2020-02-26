@@ -245,8 +245,9 @@ class _DebugPageState extends State<DebugPage> {
                 print(BigInt.from(10).pow(18)); // 10的18次方
                 print(BigInt.from(10).pow(3));
 //                print(1234 * BigInt.from(10).pow(18));
-                String val = '8ac7230489e80000';
-                print(int.parse(val.replaceFirst("0x",''), radix: 16));
+               // String val = '8ac7230489e80000';
+                // print(int.parse(val.replaceFirst("0x",''), radix: 16));
+                print(BigInt.parse('0x000000000000000000008ac7230489e80000'));
               },
             ),
             FlatButton(

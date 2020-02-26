@@ -146,18 +146,15 @@ class Page extends State<TabTransfer> {
                       width: 1, //边线宽度为2
                     ),
                   ),
-                  suffixIcon: new IconButton(
-                    icon: new Icon(IconData(0xe61d, fontFamily: 'iconfont'),size:16.0),
-                    onPressed: () {
-                      _scan();
-                    },
-                  ),
+//                  suffixIcon: new IconButton(
+//                    icon: new Icon(IconData(0xe61d, fontFamily: 'iconfont'),size:16.0),
+//                    onPressed: () {
+//                      _scan();
+//                    },
+//                  ),
                   hintText: "输入以太坊地址",
                   contentPadding: new EdgeInsets.only(left: 10.0), // 内部边距，默认不是0
-                ),
-                onChanged: (text) {//内容改变的回调
-                  print('change $text');
-                },
+                )
               ),
             ),
 //            new TextField(

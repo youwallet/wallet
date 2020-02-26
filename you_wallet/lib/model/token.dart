@@ -108,14 +108,14 @@ class Token extends ChangeNotifier {
     return json.length;
   }
 
-  /// 刷新token的余额
+  /// 刷新当前用户token列表中所有token的余额
+  /// address：用户当前钱包地址
   Future updateBalance(String address) async{
     for(var i = 0; i<this.items.length; i++) {
       print(this.items[i]);
       String balance = await TokenService.getTokenBalance(this.items[i]['address']);
       print(balance);
       this.updateTokenBalance(this.items[i], balance);
-      // print(balance);
     }
 
     this._fetchToken();

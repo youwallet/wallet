@@ -7,24 +7,19 @@ import 'package:web3dart/web3dart.dart';
 import 'package:web3dart/crypto.dart';
 
 import 'package:youwallet/db/sql_util.dart';
+import 'package:youwallet/global.dart';
 import 'package:youwallet/util/md5_encrypt.dart';
 import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
-import 'package:youwallet/service/token_service.dart';
 
-import 'token_service.dart';
 
 class Trade {
-
-  static final tempMatchAddress= "0x3edde3202e42a6c129A399a7e063C6E236239202";
-
+  
   // 获取订单匹配情况的合约
   static final hybridExchangeAddress = "0xe07554a7621D663c04082Bb1044Cf1344837BAF4";
 
 
   // 收取交易费的账户，测试阶段用SHT的合约账户代替
   static final taxAddress = "0xA9535b10EE96b4A03269D0e0DEf417aF97477FD6";
-
-  static final proxy = "0x141A60c20026d88385a5339191C3950285e41072";
 
   // 这个定义多大?
   static final gasTokenAmount = "0000000000000000000000000000000000000000000000000000000000000000";
@@ -101,8 +96,8 @@ class Trade {
       "method": "eth_call",
       "params": [
         {
-          "from": tempMatchAddress, // 这里的form随便写一个
-          "to": tempMatchAddress,
+          "from": Global.tempMatchAddress, // 这里的form随便写一个
+          "to": Global.tempMatchAddress,
           "data": "0xfeee047e000000000000000000000000000000000000000000000000000000000000000${configData}"
         },
         "latest"
@@ -225,7 +220,7 @@ class Trade {
       var rsp = await client.sendTransaction(
           credentials,
           Transaction(
-              to: EthereumAddress.fromHex(tempMatchAddress),
+              to: EthereumAddress.fromHex(Global.tempMatchAddress),
               gasPrice: EtherAmount.inWei(BigInt.from(20000000000)),
               maxGas: 7000000,
               value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
@@ -270,8 +265,8 @@ class Trade {
       "method": "eth_call",
       "params": [
         {
-          "from": tempMatchAddress,
-          "to": tempMatchAddress, // 合约地址
+          "from": Global.tempMatchAddress,
+          "to": Global.tempMatchAddress, // 合约地址
           "data": postData
         },
         "latest"
@@ -378,8 +373,8 @@ class Trade {
       "method": "eth_call",
       "params": [
         {
-          "from":tempMatchAddress,
-          "to": tempMatchAddress,
+          "from":Global.tempMatchAddress,
+          "to": Global.tempMatchAddress,
           "data": postData
         },
         "latest"
@@ -474,8 +469,8 @@ class Trade {
       "method": "eth_call",
       "params": [
         {
-          "from":tempMatchAddress,
-          "to": tempMatchAddress,
+          "from":Global.tempMatchAddress,
+          "to": Global.tempMatchAddress,
           "data": postData
         },
         "latest"
@@ -580,8 +575,8 @@ class Trade {
       "method": "eth_call",
       "params": [
         {
-          "from":tempMatchAddress,
-          "to": tempMatchAddress,
+          "from":Global.tempMatchAddress,
+          "to": Global.tempMatchAddress,
           "data": postData
         },
         "latest"
@@ -604,12 +599,12 @@ class Trade {
   // 返回1表示true，接口调用成功，0表示false失败了
   static Future approve(String token, String pwd) async {
     String value = BigInt.from(10).pow(27) .toString();
-    String postData = func['approve()'] + formatParam(proxy) + formatParam(value);
+    String postData = Global.funcHashes['approve()'] + formatParam(Global.proxy) + formatParam(value);
 
-    String rpcUrl = "https://ropsten.infura.io/v3/37caa7b8b2c34ced8819de2b3853c8a2";
+    String rpcUrl = await Global.rpcUrl();
     String privateKey = await getPrivateKey(pwd);
-
-    print('approve proxy   => ${formatParam(proxy)}');
+    print('approve rpcUrl  => ${rpcUrl}');
+    print('approve proxy   => ${formatParam(Global.proxy)}');
     print('approve value   => ${formatParam(value)}');
     print('approve postData=> ${postData}');
 

@@ -53,6 +53,9 @@ class Page extends State {
   String suffixText = "";
   double tradePrice = 0;
 
+  // 需要授权的token
+  String needApproveToken = '';
+
   // 左侧被选中的token
   var value;
 
@@ -320,36 +323,62 @@ class Page extends State {
   void makeOrder() async {
     // 关闭键盘
     FocusScope.of(context).requestFocus(FocusNode());
-    TokenService.allowance(context, this.value['address']);
-    this.getPwd();
-    return;
-
-    if (Provider.of<Network>(context).network != 'ropsten') {
-      final snackBar = new SnackBar(content: new Text('请切换到ropsten网络'));
-      Scaffold.of(context).showSnackBar(snackBar);
+    if (Global.network != 'ropsten') {
+      this.showSnackBar('请切换到ropsten网络');
       return ;
     }
-    // print(this.value);
+
     if (this.value == null) {
-      final snackBar = new SnackBar(content: new Text('请选择token'));
-      Scaffold.of(context).showSnackBar(snackBar);
+      this.showSnackBar('请选择左侧token');
       return ;
     }
 
 
     if (this.controllerAmount.text.length == 0) {
-      final snackBar = new SnackBar(content: new Text('请输入数量'));
-      Scaffold.of(context).showSnackBar(snackBar);
+      this.showSnackBar('请输入数量');
       return ;
     }
 
     if (this.controllerPrice.text.length == 0) {
-      final snackBar = new SnackBar(content: new Text('请输入价格'));
-      Scaffold.of(context).showSnackBar(snackBar);
+      this.showSnackBar('请输入价格');
       return ;
     }
 
-    this.showAuthTips();
+    // 先检查授权
+    this.checkApprove();
+  }
+
+  // 交易授权
+  // 进行交易授权, 每一种token，只需要授权一次，目前没有接口确定token是否授权
+  // 买入时对右边的token授权，
+  // 卖出时对左边的token授权
+  // 一句话说明：哪个token要被转出去给其他人，就给哪个token授权
+  void checkApprove() async{
+    if (this._btnText == '买入') {
+      needApproveToken = this.baseToken[0]['address'];
+    } else {
+      needApproveToken = this.value['address'];
+    }
+
+    String res = await TokenService.allowance(context, needApproveToken);
+    if (res == '0') {
+      // 授权额度为0，发起提示
+      this.showAuthTips();
+    } else {
+      // 已经授权
+      this.getPwd(true);
+    }
+  }
+
+  /// 获取用户密码
+  /// approve 是否授权
+  void getPwd(bool approve) {
+    Navigator.pushNamed(context, "getPassword").then((data) async{
+      if (!approve) {
+        await Trade.approve(needApproveToken, data);
+      }
+      // this.startTrade(data);
+    });
   }
 
   /// 提示授权需要密码
@@ -362,44 +391,14 @@ class Page extends State {
               title: '授权交易',
               content: '为了便于后续兑换，需要您授权youwallet代理。youwallet只会在你授权的情况下才会执行交易，请放心授权！',
               onCancelChooseEvent: () {
-                 Navigator.pop(context);
-                 this.showSnackBar('取消交易');
+                Navigator.pop(context);
+                this.showSnackBar('取消交易');
               },
               onSuccessChooseEvent: () async {
-                 Navigator.pop(context);
-                 this.getPwd();
+                Navigator.pop(context);
+                this.getPwd(false);
               });
         });
-  }
-
-  // 获取用户密码
-  void getPwd() {
-    Navigator.pushNamed(context, "getPassword").then((data){
-      this.tradeApprove(data);
-    });
-  }
-
-  // 交易授权
-  void tradeApprove(String pwd) async{
-    print('test tradeApprove');
-    print(this.inputPrice);
-    return;
-    // 进行交易授权, 每一种token，只需要授权一次，目前没有接口确定token是否授权
-    // 买入时对右边的token授权，
-    // 卖出时对左边的token授权
-    // 一句话说明：哪个token要被转出去给其他人，就给哪个token授权
-    String need_approve_token = "";
-    if (this._btnText == '买入') {
-      need_approve_token = this.baseToken[0]['address'];
-    } else {
-      need_approve_token = this.value['address'];
-    }
-
-     // 等待授权，这里如果已经授权，则不需要再次授权
-     //await Trade.approve(need_approve_token, pwd);
-
-     // 开始交易
-     this.startTrade(pwd);
   }
 
   // 获取钱包密码，然后用密码解析私钥
@@ -410,10 +409,7 @@ class Page extends State {
     } else {
       isBuy = false;
     }
-
-    final snackBar = new SnackBar(content: new Text('下单中···'));
-
-    Scaffold.of(context).showSnackBar(snackBar);
+    this.showSnackBar('下单中···');
 
     Trade trade = new Trade(this.value['address'], this.value['name'], this.baseToken[0]['address'], this.baseToken[0]['name'], this.controllerAmount.text, this.controllerPrice.text, isBuy, pwd);
     String hash = await trade.takeOrder();
@@ -505,12 +501,11 @@ class Page extends State {
    // 解析queueElem 深度列表的数据需要合并处理，规则如下
    // https://github.com/youwallet/wallet/issues/44#issuecomment-575859132
    void buildQueueElem(String queueElem, bool isSell) {
-     print('1 =>${queueElem.substring(queueElem.length - 128, queueElem.length - 64)}');
      BigInt filled = BigInt.parse(queueElem.substring(queueElem.length - 128, queueElem.length - 64), radix: 16);
-     print(filled);
-     print(queueElem.replaceFirst('0x', '').substring(64, 128));
+     // print(filled);
+     // print(queueElem.replaceFirst('0x', '').substring(64, 128));
      BigInt baseTokenAmount  = BigInt.parse(queueElem.replaceFirst('0x', '').substring(64, 128), radix: 16);
-     print(baseTokenAmount);
+     // print(baseTokenAmount);
      // BigInt quoteTokenAmount = BigInt.parse(queueElem.replaceFirst('0x', '').substring(128, 192));
      BigInt quoteTokenAmount = BigInt.parse(queueElem.replaceFirst('0x', '').substring(128, 192), radix: 16);
 
@@ -527,10 +522,8 @@ class Page extends State {
        // 这里的baseTokenAmount是包含18小数位数的10进制数据，先砍掉小数位
        // 标准做法是根据token对应的小数位
        BigInt right = baseTokenAmount - filled;
-
-       print(this.tradesDeep);
        int index = this.tradesDeep.indexWhere((element) => element['left']==left && element['isSell']== isSell);
-       // print("start compare => ${index}--${left}");
+
        if (index == -1) {
          setState(() {
            this.tradesDeep.add({

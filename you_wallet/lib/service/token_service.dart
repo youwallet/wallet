@@ -232,7 +232,7 @@ class TokenService {
    */
   static Future<String> allowance(context,String token) async{
     String myAddress = Provider.of<walletModel.Wallet>(context).currentWalletObject['address'];
-    String postData = '0xdd62ed3e000000000000000000000000' + formatParam(myAddress) + formatParam(Global.proxy);
+    String postData = Global.funcHashes['allowance'] + '000000000000000000000000' + formatParam(myAddress) + formatParam(Global.proxy);
     print("allowance => ${myAddress}");
     print("postData  => ${postData}");
     print("token     => ${token}");
@@ -256,7 +256,7 @@ class TokenService {
         body: json.encode(payload)
     );
     Map body = jsonDecode(rsp.body);
-    print(body);
+    return BigInt.parse(body['result']).toString();
   }
   static formatParam(String para) {
     para = para.replaceFirst('0x', '');
