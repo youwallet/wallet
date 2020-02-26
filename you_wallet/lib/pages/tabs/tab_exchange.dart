@@ -526,14 +526,22 @@ class Page extends State {
        int index = this.tradesDeep.indexWhere((element) => element['left']==left && element['isSell']== isSell);
 
        if (index == -1) {
-         setState(() {
-           this.tradesDeep.add({
-             'left': left,
-             'right': right/BigInt.from(1000000000000000000),
-             'isSell': isSell
+         Map obj = {
+           'left': left,
+           'right': right/BigInt.from(1000000000000000000),
+           'isSell': isSell
+         };
+         if (isSell) {
+           setState(() {
+             this.tradesDeep.insert(0,obj);
            });
-         });
+         } else {
+           setState(() {
+             this.tradesDeep.add(obj);
+           });
+         }
        } else {
+         // 价格相同的订单合并，数量相加即可
          setState(() {
            this.tradesDeep[index]['right'] = this.tradesDeep[index]['right'] + right ;
          });
