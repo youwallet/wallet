@@ -13,7 +13,7 @@ import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
 
 
 class Trade {
-  
+
   // 获取订单匹配情况的合约
   static final hybridExchangeAddress = "0xe07554a7621D663c04082Bb1044Cf1344837BAF4";
 

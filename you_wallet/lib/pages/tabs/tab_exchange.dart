@@ -361,6 +361,7 @@ class Page extends State {
     }
 
     String res = await TokenService.allowance(context, needApproveToken);
+    print('checkApprove res=> ${res}');
     if (res == '0') {
       // 授权额度为0，发起提示
       this.showAuthTips();
@@ -377,7 +378,7 @@ class Page extends State {
       if (!approve) {
         await Trade.approve(needApproveToken, data);
       }
-      // this.startTrade(data);
+       this.startTrade(data);
     });
   }
 
