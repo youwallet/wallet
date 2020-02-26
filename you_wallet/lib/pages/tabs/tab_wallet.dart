@@ -337,7 +337,7 @@ class Page extends State<TabWallet> {
   // 刷新每个token的余额
   Future<void> _refresh() async {
     String address = Provider.of<walletModel.Wallet>(context).currentWalletObject['address'];
-    // await Provider.of<walletModel.Wallet>(context).updateWallet(address);
+    await Provider.of<walletModel.Wallet>(context).updateWallet(address);
     await Provider.of<Token>(context).updateBalance(address);
     //await Provider.of<walletModel.Wallet>(context).updateWallet(address);
     final snackBar = new SnackBar(content: new Text('刷新结束'));

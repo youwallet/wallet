@@ -378,6 +378,7 @@ class Page extends State {
   }
 
   /// 获取用户密码
+  /// 4E5398791AD2F8226CD134F0046138EAB5CAB8E3AA1D8887CB057E14ABC14E059F22DEB5117A5ECFFA5120F24B091415BD8ADF4E685877AFB2FCAB2C204F1DBF0F9D0A0C67D363B551CE5022D370B9EF
   /// approve 是否授权
   ///  发起授权之前，要先确认用户的钱包ETH有余额，否则无法授权
   void getPwd(bool approve) {
@@ -516,13 +517,13 @@ class Page extends State {
      // print(baseTokenAmount);
      // BigInt quoteTokenAmount = BigInt.parse(queueElem.replaceFirst('0x', '').substring(128, 192));
      BigInt quoteTokenAmount = BigInt.parse(queueElem.replaceFirst('0x', '').substring(128, 192), radix: 16);
-
+     print("=======================================");
      print("baseTokenAmount   => ${baseTokenAmount}");
      print("quoteTokenAmount  => ${quoteTokenAmount}");
      print("左边显示价格        => ${baseTokenAmount/quoteTokenAmount}");
-     print("解析filled         => ${filled}");
+     print("filled            => ${filled}");
      print("右边显示数量        => ${baseTokenAmount - filled}");
-     print("isSell显示         => ${isSell}");
+     print("isSell            => ${isSell}");
      if (baseTokenAmount != BigInt.from(0)) {
 
        String left = (quoteTokenAmount/baseTokenAmount).toStringAsFixed(5);

@@ -568,7 +568,7 @@ class Trade {
    */
   static Future getOrderInfo(String hash, bool isSell) async {
     String strSell = isSell ? '1' : '0';
-    String postData = func['getOrderInfo(bytes32,bytes32,bool)'] + hash.replaceFirst('0x', '') + formatParam(strSell);
+    String postData = Global.funcHashes['getOrderInfo(bytes32,bytes32,bool)'] + hash.replaceFirst('0x', '') + formatParam(strSell);
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",
@@ -583,14 +583,14 @@ class Trade {
       ],
       "id": DateTime.now().millisecondsSinceEpoch
     };
-
+    var rpcUrl = await Global.rpcUrl();
     var rsp = await client.post(
-        "https://ropsten.infura.io/v3/37caa7b8b2c34ced8819de2b3853c8a2",
+        rpcUrl,
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
     Map result = jsonDecode(rsp.body);
-    print(rsp.body);
+//    print(rsp.body);
     return result['result'];
   }
 

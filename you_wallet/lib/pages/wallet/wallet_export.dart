@@ -119,8 +119,7 @@ class Page extends State<WalletExport> {
                     final mnemonic = await WalletCrypt(data, this.wallet['mnemonic']).decrypt();
                     print(mnemonic);
                     if (mnemonic.split(" ").length == 12) {
-                      ClipboardData data = new ClipboardData(text:this.wallet['mnemonic']);
-                      Clipboard.setData(data);
+                      Clipboard.setData(new ClipboardData(text: mnemonic));
                       this.showSnackbar('助记词已复制');
                     } else {
                       this.showSnackbar('助记词导出错误，请核对密码');
