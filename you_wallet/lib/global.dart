@@ -17,9 +17,9 @@ class Global {
 
   // 全局调用_prefs实现KV保存和读取
   static SharedPreferences _prefs;
-//  static Profile profile = Profile();
-//  // 网络缓存对象
-//  static NetCache netCache = NetCache();
+  // static Profile profile = Profile();
+  // 网络缓存对象
+  // static NetCache netCache = NetCache();
   static String network = "";
 
   // 可选的主题列表
