@@ -9,6 +9,7 @@ import 'package:youwallet/bus.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
 import 'package:youwallet/model/network.dart';
+import 'package:youwallet/model/wallet.dart' as walletModel;
 import 'package:youwallet/model/deal.dart';
 import 'package:youwallet/service/trade.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
@@ -364,7 +365,12 @@ class Page extends State {
     print('checkApprove res=> ${res}');
     if (res == '0') {
       // 授权额度为0，发起提示
-      this.showAuthTips();
+      Map currentWallet = Provider.of<walletModel.Wallet>(context).currentWalletObject;
+      if (currentWallet['balance'] == '0.00') {
+        this.showSnackBar('您的钱包ETH余额为0，无法授权，不可以交易');
+      } else {
+        this.showAuthTips();
+      }
     } else {
       // 已经授权
       this.getPwd(true);
@@ -373,6 +379,7 @@ class Page extends State {
 
   /// 获取用户密码
   /// approve 是否授权
+  ///  发起授权之前，要先确认用户的钱包ETH有余额，否则无法授权
   void getPwd(bool approve) {
     Navigator.pushNamed(context, "getPassword").then((data) async{
       if (!approve) {
@@ -429,7 +436,7 @@ class Page extends State {
        this.getTraderList();
 
        // 刷新交易深度
-       this.getBuyList();
+       this.getSellList();
     }
   }
 
