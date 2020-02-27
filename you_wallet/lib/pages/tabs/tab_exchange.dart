@@ -449,13 +449,11 @@ class Page extends State {
 
 
    // 获取订单列表
-   void getTraderList() async {
+   Future<void> getTraderList() async {
      List list = await Trade.getTraderList();
-
      setState(() {
        this.trades = list;
      });
-
      this._getTradeInfo();
    }
 
@@ -580,14 +578,18 @@ class Page extends State {
      Map filled = {};
      for(var i = 0; i<this.trades.length; i++) {
        if(this.trades[i]['status'] != '成功') {
-         double amount = await Trade.getFilled(this.trades[i]['odHash']) /
-             1000000000000000000;
+         //double amount = await Trade.getFilled(this.trades[i]['odHash']) /
+
+         double amount = await Trade.getFilled(this.trades[i]['odHash']);
+         //double amount = BigInt.parse(res, radix: 16)/BigInt.from(pow(10 ,18));
          print('查询订单   =》${this.trades[i]['txnHash']}');
          print('匹配情况   =》${amount}');
          // 保存匹配的数量进入数据库
          int sqlRes = await Provider.of<Deal>(context).updateFilled(
              this.trades[i], amount.toString());
          filled[this.trades[i]['txnHash']] = (amount).toString();
+       } else {
+         print('查询订单   =》${this.trades[i]['txnHash']}，该订单已经匹配完毕');
        }
      }
      setState(() {
@@ -613,10 +615,9 @@ class Page extends State {
 
   // 下拉刷新底部交易列表
   Future<void> _refresh() async {
-    this._getTradeInfo();
-    this.getTraderList();
-    final snackBar = new SnackBar(content: new Text('刷新结束'));
-    Scaffold.of(context).showSnackBar(snackBar);
+//    await this._getTradeInfo();
+    await this.getTraderList();
+    this.showSnackBar('刷新结束');
   }
 
 

@@ -396,10 +396,8 @@ class Trade {
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
-//    print("getFilled =》 ${rsp.body}");
     Map result = jsonDecode(rsp.body);
-//    String res = rsp.body;
-    return int.parse(result['result'].replaceFirst("0x",''), radix: 16);
+    return BigInt.parse(result['result'].replaceFirst("0x",''), radix: 16)/BigInt.from(pow(10 ,18));
   }
 
   // 0x22f42f6b
