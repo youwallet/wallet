@@ -28,8 +28,11 @@ class Global {
   // 代理合约，用来给token授权
   static final proxy = "0x141A60c20026d88385a5339191C3950285e41072";
 
-  // youwallet钱包合约
+  // youWallet钱包合约
   static final tempMatchAddress= "0x3edde3202e42a6c129A399a7e063C6E236239202";
+
+  // 收取交易费的账户，测试阶段用SHT的合约账户代替
+  static final taxAddress = "0xA9535b10EE96b4A03269D0e0DEf417aF97477FD6";
 
   // 当前用户的钱包地址，就是单纯的地址，0x开头的字符串
   static String currentWallet = '';
@@ -64,6 +67,11 @@ class Global {
   static Future<String> rpcUrl() async {
     String network =  _prefs.getString("network");
     return "https://" + network + ".infura.io/" + myKey;
+  }
+
+  // 获取缓存中数据
+  static String getPrefs(String key) {
+    return _prefs.getString(key);
   }
 
 

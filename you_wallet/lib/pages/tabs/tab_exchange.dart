@@ -8,7 +8,6 @@ import 'package:youwallet/widgets/input.dart';
 import 'package:youwallet/bus.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
-import 'package:youwallet/model/network.dart';
 import 'package:youwallet/model/wallet.dart' as walletModel;
 import 'package:youwallet/model/deal.dart';
 import 'package:youwallet/service/trade.dart';
@@ -324,10 +323,10 @@ class Page extends State {
   void makeOrder() async {
     // 关闭键盘
     FocusScope.of(context).requestFocus(FocusNode());
-    if (Global.network != 'ropsten') {
-      this.showSnackBar('请切换到ropsten网络');
-      return ;
-    }
+//    if (Global._prefsnetwork != 'ropsten') {
+//      this.showSnackBar('请切换到ropsten网络');
+//      return ;
+//    }
 
     if (this.value == null) {
       this.showSnackBar('请选择左侧token');
@@ -419,10 +418,11 @@ class Page extends State {
       isBuy = false;
     }
     this.showSnackBar('下单中···');
-
+    if (this.controllerAmount.text is String) {
+      print("this.controllerAmount.text is string");
+    }
     Trade trade = new Trade(this.value['address'], this.value['name'], this.baseToken[0]['address'], this.baseToken[0]['name'], this.controllerAmount.text, this.controllerPrice.text, isBuy, pwd);
     String hash = await trade.takeOrder();
-
     if (hash.contains('RPCError')) {
       String barText = '';
       if (hash.contains('insufficient funds for gas * price + value')){

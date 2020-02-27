@@ -37,7 +37,7 @@ class Page extends State<TabWallet> {
   @override // override是重写父类中的函数
   void initState()  {
     super.initState();
-    _getWallets();
+    // _getWallets();
     // 监听钱包切换事件
 //    eventBus.on<WalletChangeEvent>().listen((event) {
 //      print(event.address);

@@ -1,4 +1,6 @@
 
+import 'dart:math';
+
 import 'package:web3dart/credentials.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart';
@@ -17,9 +19,7 @@ class Trade {
   // 获取订单匹配情况的合约
   static final hybridExchangeAddress = "0xe07554a7621D663c04082Bb1044Cf1344837BAF4";
 
-
-  // 收取交易费的账户，测试阶段用SHT的合约账户代替
-  static final taxAddress = "0xA9535b10EE96b4A03269D0e0DEf417aF97477FD6";
+  //  static final taxAddress = "0xA9535b10EE96b4A03269D0e0DEf417aF97477FD6";
 
   // 这个定义多大?
   static final gasTokenAmount = "0000000000000000000000000000000000000000000000000000000000000000";
@@ -137,81 +137,27 @@ class Trade {
   }
 
   // 下单，返回订单的hash
-  // 用户输入的价格和数量在提交时需要转化，规则如下
+  // 用户输入的价格和数量在提交时需要格式化，规则如下
   // https://github.com/youwallet/wallet/issues/35#issuecomment-586881171
    Future<String> takeOrder() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    this.trader =  formatParam(prefs.getString("currentWallet"));
+    this.trader =  formatParam(Global.getPrefs("currentWallet"));
     this.configData = await getConfigData(this.isBuy);
 
-    // 获取小数位数，暂时不获取，默认18位
-    // int decimals = TokenService.getDecimals('');
-    // int decimals = 18;
-    this.price = (int.parse(this.amount) * int.parse(price)).toString() + BigInt.from(10).pow(18).toString().replaceFirst('1', '');
+    // token的小数位数默认18位
+
+    this.price = (double.parse(this.amount) * double.parse(price)*pow(10, 18)).toStringAsFixed(0) ;
     this.price = BigInt.parse(this.price).toRadixString(16);
 
-    this.amount = this.amount + BigInt.from(10).pow(18).toString().replaceFirst('1', '');
+    this.amount = (double.parse(this.amount) * pow(10, 18)).toStringAsFixed(0) ;
     this.amount = BigInt.parse(this.amount).toRadixString(16);
 
+    print("takeOrder price  => ${this.price}");
+    print("takeOrder amount  => ${this.amount}");
+
     String signature = await getConfigSignature();
-    /**
-     * trader 钱包地址
-     * configData 买单卖单计算的config
-     * signature  签名
-     *
-     * 卖出
-     * 0xefe29415
-     * 000000000000000000000000ab890808775d51e9bf9fa76f40ee5fff124dece5
-     * 0000000000000000000000000000000000000000000000000000000000000001
-     * 0000000000000000000000000000000000000000000000000000000000000001
-     * 0000000000000000000000000000000000000000000000000000000000000000
-     * 020100006004eb1c025802580000000000000000000000000000000000000000
-     * 1b00000000000000000000000000000000000000000000000000000000000000
-     * f40fee199847bd1dbb48920175c8c9ca13b42318bd4efb5f97911710e22f174d3b97e191ff42f58b8ff6afd206add7fd47a91b8438500d2c677094023d0dacb9
-     * 0000000000000000000000006c3118c39fab22caf3f9910cd054f8ea435b5ffb
-     * 0000000000000000000000002e01154391f7dcbf215c77dbd7ff3026ea7514ce
-     * 000000000000000000000000ab890808775d51e9bf9fa76f40ee5fff124dece5
-     *
-     * 买入
-     * 0xefe29415
-     * 000000000000000000000000ab890808775d51e9bf9fa76f40ee5fff124dece5
-     * 0000000000000000000000000000000000000000000000000000000000000001
-     * 0000000000000000000000000000000000000000000000000000000000000001
-     * 0000000000000000000000000000000000000000000000000000000000000000
-     * 020000006004ec7a000000000000000000000000000000000000000000000000
-     * 1b00000000000000000000000000000000000000000000000000000000000000
-     * d9a6e0f5636fff54da91e8aaca7d2b324e1df36c8a4cad5437f385d3691a48516aefae51d5d519ec3ee48e9232ae535bf14273f805172e3eeef6e1156a199cc1
-     * 0000000000000000000000006c3118c39fab22caf3f9910cd054f8ea435b5ffb
-     * 0000000000000000000000002e01154391f7dcbf215c77dbd7ff3026ea7514ce
-     * 000000000000000000000000ab890808775d51e9bf9fa76f40ee5fff124dece5
-     *
-     *
-     * 0xefe29415
-     * 000000000000000000000000ab890808775d51e9bf9fa76f40ee5fff124dece5
-     * 0000000000000000000000000000000000000000000000000000000000000001
-     * 0000000000000000000000000000000000000000000000000000000000000001
-     * 0000000000000000000000000000000000000000000000000000000000000000
-     * 020100006004fa33025802580000000000000000000000000000000000000000
-     * 1b00000000000000000000000000000000000000000000000000000000000000
-     * 631e5101e33770f554eb930a9dc69267dcc63c7aa757fc6f954f0b2feefdefe11e5187129edbb55f0d70fd0c54fc615eb8bb44002ef5e94baa78dbbd7f619419
-     * 0000000000000000000000006C3118c39FAB22caF3f9910cd054F8ea435B5FFB
-     * 0000000000000000000000002e01154391f7dcbf215c77dbd7ff3026ea7514ce
-     * 000000000000000000000000ab890808775d51e9bf9fa76f40ee5fff124dece5
-     *
-     * takeOrder参数
-     * 0xefe29415
-     * 000000000000000000000000ab890808775d51e9bf9fa76f40ee5fff124dece5
-     * 0000000000000000000000000000000000000000000000000000000000000001
-     * 0000000000000000000000000000000000000000000000000000000000000001
-     * 0000000000000000000000000000000000000000000000000000000000000000
-     * 02010000600554fa025802580000000000000000000000000000000000000000
-     * 1b00000000000000000000000000000000000000000000000000000000000000e41159e632e9d1ad49a84589aa0582750673cffe32d3a8ef72eec4cdc4bc60246c87681964da757507e26cd7af89bf7bf9e355c039e3430acb8d872cdecfcf61
-     * 0000000000000000000000006c3118c39fab22caf3f9910cd054f8ea435b5ffb
-     * 0000000000000000000000002e01154391f7dcbf215c77dbd7ff3026ea7514ce
-     * 000000000000000000000000a9535b10ee96b4a03269d0e0def417af97477fd6
-     */
-    String postData = func['takeOrder()'] + trader + formatParam(this.amount) + formatParam(this.price) + gasTokenAmount;
-    postData = postData + this.configData + signature + formatParam(this.tokenA) + formatParam(this.tokenB) + formatParam(taxAddress);
+
+    String postData = Global.funcHashes['takeOrder()'] + trader + formatParam(this.amount) + formatParam(this.price) + gasTokenAmount;
+    postData = postData + this.configData + signature + formatParam(this.tokenA) + formatParam(this.tokenB) + formatParam(Global.taxAddress);
 
     final client = Web3Client(rpcUrl, Client());
     var credentials = await client.credentialsFromPrivateKey(privateKey);
@@ -363,8 +309,8 @@ class Trade {
     print('getBQODHash signature                =》${signature}');
     print('getBQODHash formatParam(this.tokenA) =》${formatParam(this.tokenA)}');
     print('getBQODHash formatParam(this.tokenB) =》${formatParam(this.tokenB)}');
-    print('getBQODHash formatParam(taxAddress)  =》${formatParam(taxAddress)}');
-    String postData = functionName + this.trader + formatParam(this.amount) + formatParam(this.price) + gasTokenAmount + this.configData + signature + formatParam(this.tokenA) + formatParam(this.tokenB) + formatParam(taxAddress);
+    print('getBQODHash formatParam(taxAddress)  =》${formatParam(Global.taxAddress)}');
+    String postData = functionName + this.trader + formatParam(this.amount) + formatParam(this.price) + gasTokenAmount + this.configData + signature + formatParam(this.tokenA) + formatParam(this.tokenB) + formatParam(Global.taxAddress);
 
     print('getBQODHash postData=》${postData}');
     var client = Client();
