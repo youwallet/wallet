@@ -620,9 +620,12 @@ class Page extends State {
   }
 
 
-  // 选左边的token
+  /// 选左边的token
+  /// token只显示当前钱包的token，其他钱包添加的token不显示
   void selectToken() async {
-    if (Provider.of<Token>(context).items.length == 0) {
+    String wallet = Provider.of<walletModel.Wallet>(context).currentWalletObject['address'];
+    List tokens = Provider.of<Token>(context).items.where((e)=>(e['wallet'] == wallet)).toList();
+    if (tokens.length == 0) {
       this.showSnackBar('请先添加token');
       return;
     }
@@ -630,7 +633,7 @@ class Page extends State {
         context: context,
         builder: (BuildContext context) {
           return BottomSheetDialog(
-              content: Provider.of<Token>(context).items,
+              content: tokens,
               onSuccessChooseEvent: (res) {
                 print(res);
                 setState(() {
