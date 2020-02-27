@@ -542,13 +542,20 @@ class Page extends State {
            'isSell': isSell
          };
          if (isSell) {
-           setState(() {
-             this.tradesDeep.insert(0,obj);
-           });
+           // 如果队列中买单数量已经达到三个，就不要再向队列中增加
+           int lenSellOrder = this.tradesDeep.where((e)=>(e['isSell'])).length;
+           if (lenSellOrder < 3) {
+             setState(() {
+               this.tradesDeep.insert(0,obj);
+             });
+           } else {
+             print('卖单队列已经到达三个，第四个开始不显示 => ${obj}');
+           }
+
          } else {
            // 如果队列中买单数量已经达到三个，就不要再向队列中增加
-           int lenSellOrder = this.tradesDeep.where((e)=>(!e['isSell'])).length;
-           if (lenSellOrder < 3) {
+           int lenBuyOrder = this.tradesDeep.where((e)=>(!e['isSell'])).length;
+           if (lenBuyOrder < 3) {
              setState(() {
                this.tradesDeep.add(obj);
              });
