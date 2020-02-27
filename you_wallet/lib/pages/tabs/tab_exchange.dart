@@ -14,6 +14,7 @@ import 'package:youwallet/service/trade.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
 import '../../model/token.dart';
 import 'package:youwallet/global.dart';
+import 'dart:math';
 
 
 class TabExchange extends StatefulWidget {
@@ -483,6 +484,7 @@ class Page extends State {
       String nextHash = bqHash + odHash;
       String nextQueueElem = await Trade.getOrderInfo(nextHash, isSell);
       if (nextQueueElem != '0x' && odHash != '0000000000000000000000000000000000000000000000000000000000000000') {
+        // 同一种类型的订单，达到三个就不再继续获取
         this.deepCallBackOrderInfo(nextQueueElem, bqHash, isSell);
       } else {
         //print('订单队列结束, 最后一个订单的odHash => ${odHash}');
@@ -530,13 +532,13 @@ class Page extends State {
 
        // 这里的baseTokenAmount是包含18小数位数的10进制数据，先砍掉小数位
        // 标准做法是根据token对应的小数位
-       BigInt right = baseTokenAmount - filled;
+       double right = (baseTokenAmount - filled) / BigInt.from(pow(10, 18));
        int index = this.tradesDeep.indexWhere((element) => element['left']==left && element['isSell']== isSell);
 
        if (index == -1) {
          Map obj = {
            'left': left,
-           'right': right/BigInt.from(1000000000000000000),
+           'right': right.toStringAsFixed(2),
            'isSell': isSell
          };
          if (isSell) {
@@ -544,14 +546,20 @@ class Page extends State {
              this.tradesDeep.insert(0,obj);
            });
          } else {
-           setState(() {
-             this.tradesDeep.add(obj);
-           });
+           // 如果队列中买单数量已经达到三个，就不要再向队列中增加
+           int lenSellOrder = this.tradesDeep.where((e)=>(!e['isSell'])).length;
+           if (lenSellOrder < 3) {
+             setState(() {
+               this.tradesDeep.add(obj);
+             });
+           } else {
+             print('买单队列已经到达三个，第四个开始不显示 => ${obj}');
+           }
          }
        } else {
          // 价格相同的订单合并，数量相加即可
          setState(() {
-           this.tradesDeep[index]['right'] = this.tradesDeep[index]['right'] + right ;
+           this.tradesDeep[index]['right'] = double.parse(this.tradesDeep[index]['right']) + right ;
          });
        }
      }
