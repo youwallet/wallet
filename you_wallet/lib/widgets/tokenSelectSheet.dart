@@ -49,6 +49,7 @@ class Page extends State<TokenSelectSheet> {
     );
   }
 
+  /// 弹出底部的选择列表
   selectToken(context) async {
     String wallet = Provider.of<walletModel.Wallet>(context).currentWalletObject['address'];
     List tokens = Provider.of<Token>(context).items.where((e)=>(e['wallet'] == wallet)).toList();

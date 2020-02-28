@@ -28,11 +28,8 @@ class Page extends State {
 
   BuildContext mContext;
 
-  // 右侧显示的token
-  List baseToken = [{
-    'name': 'BTD',
-    'address': '0x2e01154391f7dcbf215c77dbd7ff3026ea7514ce'
-  }];
+  // 右边的token对象
+  Map rightToken = {};
 
   // 数量编辑框
   final controllerAmount = TextEditingController();
@@ -142,25 +139,6 @@ class Page extends State {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-//                new Container(
-//                  padding: const EdgeInsets.all(4.0),
-//                  margin: const EdgeInsets.only(bottom: 10.0),
-//                  decoration: new BoxDecoration(
-//                    borderRadius: new BorderRadius.all(new Radius.circular(6.0)),
-//                    border: new Border.all(width: 1.0, color: Colors.black12),
-//                    color: Colors.black12,
-//                  ),
-//                  height: 36.0,
-//                  child: GestureDetector(
-//                    onTap: this.selectToken,//写入方法名称就可以了，但是是无参的
-//                    child: Text(
-//                      this.value==null?'选择币种':this.value['name'],
-//                      style: TextStyle(
-//                          fontSize: 24.0
-//                      ),
-//                    ),
-//                  ),
-//                ),
                 new TokenSelectSheet(
                     onCallBackEvent: (res){
                        print('成功，在顶级页面看到${res}');
@@ -247,22 +225,13 @@ class Page extends State {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                //new Text('Base Token'),
-                new Container(
-                  padding: const EdgeInsets.only(left: 10.0),
-                  margin: const EdgeInsets.only(bottom: 10.0),
-                  decoration: new BoxDecoration(
-                    borderRadius: new BorderRadius.all(new Radius.circular(6.0)),
-                    border: new Border.all(width: 1.0, color: Colors.black12),
-                    color: Colors.black12,
-                  ),
-                  height: 40.0,
-                  child: Text(
-                      'BTD',
-                    style: TextStyle(
-                      fontSize: 24.0
-                    )
-                  )
+                new TokenSelectSheet(
+                    onCallBackEvent: (res){
+                      print('页面右侧token选择 = > ${res}');
+                      this.rightToken = res;
+                      // 刷新交易深度列表
+                      this.getSellList();
+                    }
                 ),
                 buildRightWidget()
               ],
@@ -367,7 +336,7 @@ class Page extends State {
   // 一句话说明：哪个token要被转出去给其他人，就给哪个token授权
   void checkApprove() async{
     if (this._btnText == '买入') {
-      needApproveToken = this.baseToken[0]['address'];
+      needApproveToken = this.rightToken['address'];
     } else {
       needApproveToken = this.value['address'];
     }
@@ -433,7 +402,7 @@ class Page extends State {
     if (this.controllerAmount.text is String) {
       print("this.controllerAmount.text is string");
     }
-    Trade trade = new Trade(this.value['address'], this.value['name'], this.baseToken[0]['address'], this.baseToken[0]['name'], this.controllerAmount.text, this.controllerPrice.text, isBuy, pwd);
+    Trade trade = new Trade(this.value['address'], this.value['name'], this.rightToken['address'], this.rightToken['name'], this.controllerAmount.text, this.controllerPrice.text, isBuy, pwd);
     String hash = await trade.takeOrder();
     if (hash.contains('RPCError')) {
       String barText = '';
@@ -471,7 +440,7 @@ class Page extends State {
    // 获取当前的买单队列
    Future<void> getBuyList() async {
       String tokenAddress = this.value['address']; // 左边的token
-      String baseTokenAddress = this.baseToken[0]['address']; // 右边的token
+      String baseTokenAddress = this.rightToken['address']; // 右边的token
       bool isSell =  false;
       // 拿到队列中第一个订单的 bq_hash + od_hash
       String hash = await Trade.getOrderQueueInfo(tokenAddress, baseTokenAddress, isSell);
@@ -506,11 +475,19 @@ class Page extends State {
       }
    }
 
-   // 获取卖单队列
+   /// 先获取卖单队列，再获取买单队列
+   /// 如果有一边的token还没有选择，则不更新
    Future<void> getSellList() async {
-     this.tradesDeep = []; // 清空当前的深度数组
+     if (this.rightToken.isEmpty || this.value.isEmpty) {
+       print('token not sellect');
+       return;
+     }
+     setState(() {
+       this.tradesDeep = [];// 清空当前的深度数组
+     });
+
      String tokenAddress = this.value['address'];
-     String baseTokenAddress = this.baseToken[0]['address'];
+     String baseTokenAddress = this.rightToken['address'];
      bool isSell = true;
      String hash = await Trade.getOrderQueueInfo(tokenAddress, baseTokenAddress, isSell);
      String bqHash = hash.replaceFirst('0x', '').substring(0,64);
@@ -630,11 +607,6 @@ class Page extends State {
     await this.getTraderList();
     this.showSnackBar('刷新结束');
   }
-
-  // 构建token选择
-//  Widget buildTokenSelect() {
-//    return
-//  }
 
 
   /// 选左边的token
