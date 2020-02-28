@@ -4,6 +4,7 @@ import 'package:youwallet/service/token_service.dart';
 import 'package:youwallet/widgets/priceNum.dart';
 import 'package:youwallet/widgets/transferList.dart';
 import 'package:youwallet/widgets/bottomSheetDialog.dart';
+import 'package:youwallet/widgets/tokenSelectSheet.dart';
 import 'package:youwallet/widgets/input.dart';
 import 'package:youwallet/bus.dart';
 import 'package:provider/provider.dart';
@@ -141,24 +142,34 @@ class Page extends State {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                new Container(
-                  padding: const EdgeInsets.all(4.0),
-                  margin: const EdgeInsets.only(bottom: 10.0),
-                  decoration: new BoxDecoration(
-                    borderRadius: new BorderRadius.all(new Radius.circular(6.0)),
-                    border: new Border.all(width: 1.0, color: Colors.black12),
-                    color: Colors.black12,
-                  ),
-                  height: 36.0,
-                  child: GestureDetector(
-                    onTap: this.selectToken,//写入方法名称就可以了，但是是无参的
-                    child: Text(
-                      this.value==null?'选择币种':this.value['name'],
-                      style: TextStyle(
-                          fontSize: 24.0
-                      ),
-                    ),
-                  ),
+//                new Container(
+//                  padding: const EdgeInsets.all(4.0),
+//                  margin: const EdgeInsets.only(bottom: 10.0),
+//                  decoration: new BoxDecoration(
+//                    borderRadius: new BorderRadius.all(new Radius.circular(6.0)),
+//                    border: new Border.all(width: 1.0, color: Colors.black12),
+//                    color: Colors.black12,
+//                  ),
+//                  height: 36.0,
+//                  child: GestureDetector(
+//                    onTap: this.selectToken,//写入方法名称就可以了，但是是无参的
+//                    child: Text(
+//                      this.value==null?'选择币种':this.value['name'],
+//                      style: TextStyle(
+//                          fontSize: 24.0
+//                      ),
+//                    ),
+//                  ),
+//                ),
+                new TokenSelectSheet(
+                    onCallBackEvent: (res){
+                       print('成功，在顶级页面看到${res}');
+                       setState(() {
+                         this.value = res;
+                         this.suffixText = res['name'];
+                       });
+                       this.getSellList();
+                    }
                 ),
                 new Container(
                   child: new Row(
@@ -227,7 +238,7 @@ class Page extends State {
             ),
           ),
           new Container(
-            width: 30.0,
+            width: 20.0,
             child: null,
           ),
           // 右边一列
@@ -619,6 +630,11 @@ class Page extends State {
     await this.getTraderList();
     this.showSnackBar('刷新结束');
   }
+
+  // 构建token选择
+//  Widget buildTokenSelect() {
+//    return
+//  }
 
 
   /// 选左边的token

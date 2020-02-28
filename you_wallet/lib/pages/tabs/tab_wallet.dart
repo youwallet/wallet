@@ -296,7 +296,7 @@ class Page extends State<TabWallet> {
                     children: <Widget>[
                       new Text(''),
                       new Text(
-                          Wallet.currentWalletObject['balance']??'~' + 'ETH',
+                          Wallet.currentWalletObject['balance'] + 'ETH',
                           style: new TextStyle(
                               fontSize: 32.0, color: Colors.white
                           )
