@@ -45,17 +45,15 @@ class Page extends State<TokenInfo> {
       key: globalKey,
       appBar: buildAppBar(context),
       body: new Center(
-          child: new Stack(
-              fit: StackFit.loose,
-              overflow: Overflow.visible,
-              children: <Widget>[
-                new Container(
+          child: new Container(
                   padding: const EdgeInsets.only(top: 40.0),
                   width: 300.0,
-                  height: 280.0,
                   decoration: new BoxDecoration(
                     borderRadius: new BorderRadius.all(new Radius.circular(8.0)),
                     color: Colors.lightBlue,
+                  ),
+                  constraints: BoxConstraints(
+                    maxHeight: 279.0,
                   ),
                   child: new Column(
                     children: <Widget>[
@@ -91,8 +89,6 @@ class Page extends State<TokenInfo> {
                       new Container(
                           alignment: Alignment.center,
                           padding: const EdgeInsets.only(bottom: 20.0), // 四周填充边距32像素
-
-
                           color: Color(0xFFFFFFFF),
                           child: new Column(
                             children: <Widget>[
@@ -107,6 +103,7 @@ class Page extends State<TokenInfo> {
                                 ),
                               ),
                               QrImage(
+//                                backgroundColor:Colors.white,
                                 data: Provider.of<Wallet>(context).currentWallet,
                                 size: 100.0,
                               ),
@@ -117,17 +114,9 @@ class Page extends State<TokenInfo> {
                     ],
                   ),
                 ),
-//            new Positioned(
-//              child:  new Image.asset('images/icon.png'),
-//              left: 125,
-//              top: -25,
-//              width: 50,
-//              height: 50,
-//            ),
-              ]
-          )
-      ),
-    );
+
+          ),
+      );
   }
 
   Widget buildAppBar(BuildContext context) {
@@ -162,10 +151,4 @@ class Page extends State<TokenInfo> {
     globalKey.currentState.showSnackBar(snackBar);
   }
 
-//  Widget header(BuildContext context) {
-//    return new Image.network(
-//      'http://i2.yeyou.itc.cn/2014/huoying/hd_20140925/hyimage06.jpg',
-//
-//    );
-//  }
 }
