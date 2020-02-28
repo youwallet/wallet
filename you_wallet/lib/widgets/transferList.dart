@@ -23,7 +23,12 @@ class transferList extends StatelessWidget {
   Widget buildItem(item, context) {
 //    print(item);
     String date = DateUtil.formatDateMs( int.parse( item['createTime']), format: DataFormats.full);
-    String filled = filledAmount.containsKey(item['txnHash'])?filledAmount[item['txnHash'].toString()]:'0.0';
+    String filled = '';
+    if (item['status'] == '成功'){
+      filled = item['filled'];
+    } else {
+      filled = filledAmount.containsKey(item['txnHash'])?filledAmount[item['txnHash'].toString()]:'0.0';
+    }
     return new Container(
         padding: const EdgeInsets.all(10.0), // 四周填充边距32像素
         decoration: new BoxDecoration(
