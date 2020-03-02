@@ -367,6 +367,8 @@ class Page extends State {
         return;
       }
 
+      final res = await Trade.getPrivateKey(data);
+      print("getpwd => ${res}");
       if (!approve) {
         await Trade.approve(needApproveToken, data);
       }

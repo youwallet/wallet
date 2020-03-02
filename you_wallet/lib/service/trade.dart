@@ -11,6 +11,7 @@ import 'package:web3dart/crypto.dart';
 import 'package:youwallet/db/sql_util.dart';
 import 'package:youwallet/global.dart';
 import 'package:youwallet/util/md5_encrypt.dart';
+import 'package:youwallet/util/wallet_crypt.dart';
 import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
 
 
@@ -282,11 +283,8 @@ class Trade {
     var sql = SqlUtil.setTable("wallet");
     var map = {'address': address};
     List json = await sql.query(conditions: map);
-
-    String md5Pwd = Md5Encrypt(pwd).init();
-    String privateKey = await FlutterAesEcbPkcs5.decryptString(json[0]['privateKey'], md5Pwd);
-
-    return privateKey;
+    
+    return await WalletCrypt(pwd, json[0]['privateKey']).decrypt();
   }
 
   /*
