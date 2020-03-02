@@ -598,7 +598,7 @@ class Page extends State {
 
   // 下拉刷新底部交易列表
   Future<void> _refresh() async {
-//    await this._getTradeInfo();
+    await this.getSellList();
     await this.getTraderList();
     this.showSnackBar('刷新结束');
   }
