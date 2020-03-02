@@ -24,22 +24,27 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialButton(
-      shape: StadiumBorder(),
-      child: Text(
-          this.content,
-          style: new TextStyle(
-              fontSize: 18.0
-          )),
-      padding: EdgeInsets.fromLTRB(0,8,0,8),
-      minWidth: 200,
-      elevation: 0, // 按钮阴影高度
-      color: this.buttonMap[this.type],
-      textColor: Colors.white,
-      onPressed: () {
-        this.onSuccessChooseEvent(this.customData);
-      },
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        RaisedButton(
+          shape: StadiumBorder(),
+          child: Text(
+              this.content,
+              style: new TextStyle(
+                  fontSize: 18.0
+              )),
+          padding: EdgeInsets.fromLTRB(60,8,60,8),
+          elevation: 0, // 按钮阴影高度
+          color: this.buttonMap[this.type],
+          textColor: Colors.white,
+          onPressed: () {
+            this.onSuccessChooseEvent(this.customData);
+          },
+        )
+      ],
     );
+
 
   }
 
