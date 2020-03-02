@@ -52,7 +52,7 @@ class transferList extends StatelessWidget {
                 ],
               ),
               new Text(
-                  item['status']??'转账中',
+                  item['status']??'进行中',
                   style: new TextStyle(
                       color: Colors.deepOrange
                   )

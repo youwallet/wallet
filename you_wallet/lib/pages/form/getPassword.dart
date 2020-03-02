@@ -14,6 +14,7 @@ class _LoginPageState extends State<GetPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: buildAppBar(context),
         body: new Builder(builder: (BuildContext context) {
           return Form(
               key: _formKey,
@@ -25,8 +26,6 @@ class _LoginPageState extends State<GetPasswordPage> {
                   buildTitleLine(),
                   SizedBox(height: 70.0),
                   buildEmailTextField(),
-//                  SizedBox(height: 30.0),
-//                  buildPasswordTextField(context),
                   SizedBox(height: 60.0),
                   buildLoginButton(context),
                 ],
@@ -36,7 +35,16 @@ class _LoginPageState extends State<GetPasswordPage> {
     );
   }
 
-  // 获取用户两次输入的密码，两次密码必须相同
+  // 构建AppBar
+  Widget buildAppBar(BuildContext context) {
+    return new AppBar(
+      title: const Text('youwallet'),
+      elevation:.0,
+    );
+  }
+
+
+  // 获取用户密码
   Widget buildLoginButton(BuildContext context) {
     return new CustomButton(
         onSuccessChooseEvent:(res){
@@ -78,13 +86,14 @@ class _LoginPageState extends State<GetPasswordPage> {
   TextFormField buildEmailTextField() {
     return TextFormField(
       decoration: InputDecoration(
-        labelText: '请输入密码',
+        hintText: '请输入密码',
+        filled: true,
+        fillColor: Colors.black12,
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(6.0),
+            borderSide: BorderSide.none
+        ),
       ),
-      validator: (String value) {
-        if (value.isEmpty) {
-          return '请输入密码';
-        }
-      },
       onSaved: (String value) => _email = value,
     );
   }

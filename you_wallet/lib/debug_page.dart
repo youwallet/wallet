@@ -254,7 +254,9 @@ class _DebugPageState extends State<DebugPage> {
               child: Text("密码输入"),
               textColor: Colors.blue,
               onPressed: (){
-                Navigator.pushNamed(context, "password");
+                //Navigator.pushNamed(context, "password");
+
+                Navigator.pushNamed(context, "getPassword");
               },
             ),
             FlatButton(

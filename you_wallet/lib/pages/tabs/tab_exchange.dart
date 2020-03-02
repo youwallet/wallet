@@ -362,10 +362,15 @@ class Page extends State {
   ///  发起授权之前，要先确认用户的钱包ETH有余额，否则无法授权
   void getPwd(bool approve) {
     Navigator.pushNamed(context, "getPassword").then((data) async{
+      if(data == null) {
+        this.showSnackBar('交易撤回');
+        return;
+      }
+
       if (!approve) {
         await Trade.approve(needApproveToken, data);
       }
-       this.startTrade(data);
+      this.startTrade(data);
     });
   }
 
