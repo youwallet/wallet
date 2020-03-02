@@ -20,8 +20,8 @@ class Input extends StatelessWidget {
   Widget build(BuildContext context) {
     return new ConstrainedBox(
       constraints: BoxConstraints(
-          maxHeight: 25,
-          maxWidth: 200
+          maxWidth: 200,
+          maxHeight: 40.0
       ),
       child: new TextField(
         controller: this.controllerEdit,
@@ -35,15 +35,11 @@ class Input extends StatelessWidget {
             hintText: this.hintText,
             filled: true, // 填充背景颜色
             fillColor: Colors.black12,
-            contentPadding: new EdgeInsets.all(6.0), // 内部边距，默认不是0
-            border:InputBorder.none, // 没有任何边线
-            enabledBorder: OutlineInputBorder(
+            contentPadding: new EdgeInsets.only(left: 6.0), // 内部边距，默认不是0
+            border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6.0),
-              borderSide: BorderSide(
-                color: Colors.black12, //边线颜色为黄色
-                width: 1, //边线宽度为2
-              ),
-            )
+              borderSide: BorderSide.none
+            ),
         ),
         onChanged: (text) {
           //内容输入完成的回调

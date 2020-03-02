@@ -141,7 +141,6 @@ class Page extends State {
               children: <Widget>[
                 new TokenSelectSheet(
                     onCallBackEvent: (res){
-                       print('成功，在顶级页面看到${res}');
                        setState(() {
                          this.value = res;
                          this.suffixText = res['name'];
