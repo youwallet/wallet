@@ -520,7 +520,7 @@ class Page extends State {
      print("isSell            => ${isSell}");
      if (baseTokenAmount != BigInt.from(0)) {
 
-       String left = (quoteTokenAmount/baseTokenAmount).toStringAsFixed(5);
+       String left = (quoteTokenAmount/baseTokenAmount).toStringAsFixed(Global.priceDecimal);
 
        // 这里的baseTokenAmount是包含18小数位数的10进制数据，先砍掉小数位
        // 标准做法是根据token对应的小数位
@@ -530,7 +530,7 @@ class Page extends State {
        if (index == -1) {
          Map obj = {
            'left': left,
-           'right': right.toStringAsFixed(2),
+           'right': right.toStringAsFixed(Global.numDecimal),
            'isSell': isSell
          };
          if (isSell) {

@@ -283,7 +283,7 @@ class Trade {
     var sql = SqlUtil.setTable("wallet");
     var map = {'address': address};
     List json = await sql.query(conditions: map);
-    
+
     return await WalletCrypt(pwd, json[0]['privateKey']).decrypt();
   }
 

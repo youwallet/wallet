@@ -37,6 +37,12 @@ class Global {
   // 当前用户的钱包地址，就是单纯的地址，0x开头的字符串
   static String currentWallet = '';
 
+  // 全局配置数量的小数位数
+  static int numDecimal = 4;
+
+  // 全局配置价格的小数位数
+  static int priceDecimal = 6;
+
   // 所有function hash
   static final funcHashes= {
     'filled(bytes32)': '0x288cdc91',
