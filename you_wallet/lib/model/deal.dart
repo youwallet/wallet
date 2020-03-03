@@ -43,4 +43,11 @@ class Deal extends ChangeNotifier {
     return i;
   }
 
+  /// 根据id删除指定的交易记录
+  Future<int> deleteTrader(int id) async {
+    var sql = SqlUtil.setTable("trade");
+    int i = await sql.delete('id', id);
+    return i;
+  }
+
 }

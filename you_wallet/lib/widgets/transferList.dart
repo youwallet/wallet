@@ -1,42 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:youwallet/widgets/modalDialog.dart';
+import 'package:provider/provider.dart';
+import 'package:youwallet/model/deal.dart';
 
-class transferList extends StatelessWidget {
+class transferList extends StatefulWidget {
 
-  final color = Color.fromARGB(255, 255, 170, 71);
   List arr = [];
   Map filledAmount = {};
 
   transferList({Key key, this.arr, this.filledAmount }) : super(key: key);
+
+  Page createState() => new Page();
+}
+
+class Page extends State<transferList> {
 
   @override
   Widget build(BuildContext context) {
     return new Container(
         padding: const EdgeInsets.only(bottom: 12.0), // 四周填充边距32像素
         child: new Column(
-          children: this.arr.reversed.map((item) => buildsilde(item, context)).toList()
+          children: widget.arr.reversed.map((item) => buildsilde(item, context)).toList()
         )
     );
   }
 
+
+
+  // 给数据列表中的每一个项包裹一层滑动组件
   Widget buildsilde(item, context) {
     return Slidable(
       actionPane: SlidableScrollActionPane(),//滑出选项的面板 动画
       actionExtentRatio: 0.25,
       child: this.buildItem(item, context),
       secondaryActions: <Widget>[//右侧按钮列表
-        IconSlideAction(
-          caption: '撤销',
-          color: Colors.red,
-          icon: Icons.undo,
-          closeOnTap: false,
-          onTap: (){
-            print('Delete');
-          },
-        ),
+        this.buildRightAction(context, item)
       ],
     );
+  }
+
+  // 构建滑动后右侧出现的小部件
+  Widget buildRightAction(context, item){
+    if (item['status'] == '转账中' || item['status'] == '进行中' || item['status'] == '') {
+      return IconSlideAction(
+        caption: '撤销',
+        color: Colors.red,
+        icon: Icons.undo,
+        closeOnTap: false,
+        onTap: () {
+          this.cancelTrade(context, item);
+        },
+      );
+    } else {
+      return IconSlideAction(
+        caption: '删除',
+        color: Colors.red,
+        icon: Icons.delete,
+        closeOnTap: false,
+        onTap: () {
+          this.delTrade(context, item);
+        },
+      );
+    }
   }
 
 
@@ -47,7 +74,7 @@ class transferList extends StatelessWidget {
     if (item['status'] == '成功'){
       filled = item['filled'];
     } else {
-      filled = filledAmount.containsKey(item['txnHash'])?filledAmount[item['txnHash'].toString()]:'0.0';
+      filled = widget.filledAmount.containsKey(item['txnHash'])?widget.filledAmount[item['txnHash'].toString()]:'0.0';
     }
     return new Container(
         padding: const EdgeInsets.all(10.0), // 四周填充边距32像素
@@ -97,6 +124,46 @@ class transferList extends StatelessWidget {
       )
     );
 
+  }
+
+  // 取消交易
+  void cancelTrade(BuildContext context, Map item){
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return GenderChooseDialog(
+              title: '确定取消交易?',
+              content: '',
+              onSuccessChooseEvent: () async {
+                print('cancel ok');
+                Navigator.pop(context);
+              });
+        });
+  }
+
+  // 删除历史记录
+  void delTrade(BuildContext context, Map item){
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return GenderChooseDialog(
+              title: '确定删除记录?',
+              content: '',
+              onSuccessChooseEvent: () async {
+                Navigator.pop(context);
+                int i = await Provider.of<Deal>(context).deleteTrader(item['id']);
+                // 用bus向兑换页面发出删除成功的通知，兑换页面显示toast
+                if (i == 1) {
+                  widget.arr.removeWhere((element) => element['id']==item['id']);
+                  // 提示数据 read-only，这个问题我一直没搞懂什么情况下才会 read-only
+                  setState(() {
+                    widget.arr;
+                  });
+                }
+              });
+        });
   }
 
 }

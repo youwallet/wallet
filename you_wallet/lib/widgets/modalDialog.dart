@@ -12,7 +12,7 @@ class GenderChooseDialog extends Dialog {
     Key key,
     this.title = "提示",
     this.content,
-    @required this.onCancelChooseEvent,
+    this.onCancelChooseEvent,
     @required this.onSuccessChooseEvent,
   }) : super(key: key);
 
