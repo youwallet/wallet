@@ -109,10 +109,48 @@ class Page extends State {
                       margin: const EdgeInsets.only(top: 16.0, bottom: 16.0),
                       child: null,
                     ),
-                    transferList(arr: this.trades, filledAmount: this.filledAmount)
+//                    Slidable(
+//                      actionPane: SlidableScrollActionPane(),//滑出选项的面板 动画
+//                      actionExtentRatio: 0.25,
+//                      child: Text('你好'),
+//                      actions: <Widget>[//左侧按钮列表
+//                        IconSlideAction(
+//                          caption: 'Archive',
+//                          color: Colors.blue,
+//                          icon: Icons.archive,
+//                          onTap: () => this.showSnackBar('Archive'),
+//                        ),
+//                        IconSlideAction(
+//                          caption: 'Share',
+//                          color: Colors.indigo,
+//                          icon: Icons.share,
+//                          onTap: () => this.showSnackBar('Share'),
+//                        ),
+//                      ],
+//                      secondaryActions: <Widget>[//右侧按钮列表
+//                        IconSlideAction(
+//                          caption: 'More',
+//                          color: Colors.black45,
+//                          icon: Icons.more_horiz,
+//                          onTap: () => this.showSnackBar('More'),
+//                        ),
+//                        IconSlideAction(
+//                          caption: 'Delete',
+//                          color: Colors.red,
+//                          icon: Icons.delete,
+//                          closeOnTap: false,
+//                          onTap: (){
+//                            this.showSnackBar('Delete');
+//                          },
+//                        ),
+//                      ],
+//                    )
+
                   ],
                 )
             ),
+            transferList(arr: this.trades, filledAmount: this.filledAmount),
+
           ],
         )
       )

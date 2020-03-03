@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:common_utils/common_utils.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class transferList extends StatelessWidget {
 
@@ -14,8 +15,27 @@ class transferList extends StatelessWidget {
     return new Container(
         padding: const EdgeInsets.only(bottom: 12.0), // 四周填充边距32像素
         child: new Column(
-          children: this.arr.reversed.map((item) => buildItem(item, context)).toList()
+          children: this.arr.reversed.map((item) => buildsilde(item, context)).toList()
         )
+    );
+  }
+
+  Widget buildsilde(item, context) {
+    return Slidable(
+      actionPane: SlidableScrollActionPane(),//滑出选项的面板 动画
+      actionExtentRatio: 0.25,
+      child: this.buildItem(item, context),
+      secondaryActions: <Widget>[//右侧按钮列表
+        IconSlideAction(
+          caption: '撤销',
+          color: Colors.red,
+          icon: Icons.undo,
+          closeOnTap: false,
+          onTap: (){
+            print('Delete');
+          },
+        ),
+      ],
     );
   }
 
@@ -73,7 +93,6 @@ class transferList extends StatelessWidget {
               )
             ],
           ),
-
         ],
       )
     );
