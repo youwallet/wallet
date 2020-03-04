@@ -17,7 +17,7 @@ import '../../model/token.dart';
 import 'package:youwallet/global.dart';
 import 'dart:math';
 import 'package:youwallet/widgets/loadingDialog.dart';
-
+import 'package:youwallet/widgets/customTab.dart';
 
 class TabExchange extends StatefulWidget {
 
@@ -111,52 +111,23 @@ class Page extends State {
                     buildPageTop(context),
                     new Container(
                       height: 1.0,
-                      color: Colors.black12,
-                      margin: const EdgeInsets.only(top: 16.0, bottom: 16.0),
+                      color: Color(0xFF919D97),
+                      margin: const EdgeInsets.only(top: 16.0, bottom: 0),
                       child: null,
                     ),
-//                    Slidable(
-//                      actionPane: SlidableScrollActionPane(),//滑出选项的面板 动画
-//                      actionExtentRatio: 0.25,
-//                      child: Text('你好'),
-//                      actions: <Widget>[//左侧按钮列表
-//                        IconSlideAction(
-//                          caption: 'Archive',
-//                          color: Colors.blue,
-//                          icon: Icons.archive,
-//                          onTap: () => this.showSnackBar('Archive'),
-//                        ),
-//                        IconSlideAction(
-//                          caption: 'Share',
-//                          color: Colors.indigo,
-//                          icon: Icons.share,
-//                          onTap: () => this.showSnackBar('Share'),
-//                        ),
-//                      ],
-//                      secondaryActions: <Widget>[//右侧按钮列表
-//                        IconSlideAction(
-//                          caption: 'More',
-//                          color: Colors.black45,
-//                          icon: Icons.more_horiz,
-//                          onTap: () => this.showSnackBar('More'),
-//                        ),
-//                        IconSlideAction(
-//                          caption: 'Delete',
-//                          color: Colors.red,
-//                          icon: Icons.delete,
-//                          closeOnTap: false,
-//                          onTap: (){
-//                            this.showSnackBar('Delete');
-//                          },
-//                        ),
-//                      ],
-//                    )
-
                   ],
                 )
             ),
-            transferList(arr: this.trades, filledAmount: this.filledAmount),
-
+            new Container(
+              margin: const EdgeInsets.only(left:16.0,right:16.0),
+              child: new CustomTab(
+                buttons:['当前兑换','历史兑换']
+              )
+            ),
+            new Container(
+              padding: const EdgeInsets.only(left:16.0,right:16.0),
+              child: transferList(arr: this.trades, filledAmount: this.filledAmount),
+            )
           ],
         )
       )
@@ -167,6 +138,7 @@ class Page extends State {
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
         title: const Text('兑换'),
+        elevation: 4.0,
         automaticallyImplyLeading: false, //设置没有返回按钮
     );
   }
@@ -225,14 +197,19 @@ class Page extends State {
                     this.computeTrade();
                   },
                 ),
-                new Text('当前账户余额${this.value!=null?this.value["balance"]:"~"}'),
+                new Text('当前账户余额：${this.value!=null?this.value["balance"]:"~"}'),
                 new Container(
 
                   padding: new EdgeInsets.only(top: 30.0),
                   child: new Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                      new Text('交易额${tradePrice}BTD'),
+                      new Text(
+                          '交易额${tradePrice}BTD',
+                          style: new TextStyle(
+                            color: _btnText == '买入'? Colors.green : Colors.red
+                          ),
+                      ),
                       new SizedBox(
                         width: double.infinity,
                         height: 30,

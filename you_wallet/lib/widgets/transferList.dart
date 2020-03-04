@@ -81,9 +81,10 @@ class Page extends State<transferList> {
       filled = widget.filledAmount.containsKey(item['txnHash'])?widget.filledAmount[item['txnHash'].toString()]:'0.0';
     }
     return new Container(
-        padding: const EdgeInsets.all(10.0), // 四周填充边距32像素
+        padding: const EdgeInsets.only(top:10.0, bottom: 10.0), // 四周填充边距32像素
         decoration: new BoxDecoration(
            border: Border(bottom: BorderSide(color: Colors.black26,width: 1.0)),
+//           color: Colors.lightBlue,
         ),
         child: new Column(
         crossAxisAlignment: CrossAxisAlignment.center,
