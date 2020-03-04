@@ -76,6 +76,11 @@ class Page extends State {
         print('do nothing');
       }
     });
+
+    /// 监听订单操作结果
+    eventBus.on<TransferDoneEvent>().listen((event) {
+      this.showSnackBar(event.res);
+    });
   }
 
   @override

@@ -4,6 +4,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/deal.dart';
+import 'package:youwallet/bus.dart';
 
 class transferList extends StatefulWidget {
 
@@ -51,7 +52,7 @@ class Page extends State<transferList> {
         caption: '撤销',
         color: Colors.red,
         icon: Icons.undo,
-        closeOnTap: false,
+        closeOnTap: true,
         onTap: () {
           this.cancelTrade(context, item);
         },
@@ -61,7 +62,7 @@ class Page extends State<transferList> {
         caption: '删除',
         color: Colors.red,
         icon: Icons.delete,
-        closeOnTap: false,
+        closeOnTap: true,
         onTap: () {
           this.delTrade(context, item);
         },
@@ -156,7 +157,7 @@ class Page extends State<transferList> {
               content: '',
               onSuccessChooseEvent: () async {
                 Navigator.pop(context);
-                int i = await Provider.of<Deal>(context).deleteTrader(item['id']);
+                //int i = await Provider.of<Deal>(context).deleteTrader(item['id']);
                 // 用bus向兑换页面发出删除成功的通知，兑换页面显示toast
                 if (1 == 1) {
                   widget.arr.removeWhere((element) => element['id']==item['id']);
@@ -165,6 +166,7 @@ class Page extends State<transferList> {
                   setState(() {
                     widget.arr;
                   });
+                  eventBus.fire(TransferDoneEvent('删除成功'));
                 }
               });
         });

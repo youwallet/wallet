@@ -26,3 +26,9 @@ class TabChangeEvent{
   int index = 0;
   TabChangeEvent(this.index);
 }
+
+/// 交易历史记录操作结果通知
+class TransferDoneEvent{
+  String res = '';
+  TransferDoneEvent(this.res);
+}
