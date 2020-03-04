@@ -16,6 +16,7 @@ import 'package:youwallet/widgets/modalDialog.dart';
 import '../../model/token.dart';
 import 'package:youwallet/global.dart';
 import 'dart:math';
+import 'package:youwallet/widgets/loadingDialog.dart';
 
 
 class TabExchange extends StatefulWidget {
@@ -215,7 +216,7 @@ class Page extends State {
                     this.computeTrade();
                   },
                 ),
-                new Text('≈'),
+                new Text(''),
                 new Container(height: 10.0, child: null),
                 new Input(
                   hintText: '输入买入数量',
@@ -241,6 +242,7 @@ class Page extends State {
                             onPressed: () async {
                                this.makeOrder();
                             },
+
                             child: Text(
                                 this._btnText + this.suffixText,
                                 style: TextStyle(
@@ -344,26 +346,34 @@ class Page extends State {
 
   /// 下单
   void makeOrder() async {
+    showDialog<Null>(
+        context: context, //BuildContext对象
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return new LoadingDialog( //调用对话框
+            text: '挂单中...',
+          );
+        }
+    );
     // 关闭键盘
-    FocusScope.of(context).requestFocus(FocusNode());
-//    if (Global._prefsnetwork != 'ropsten') {
-//      this.showSnackBar('请切换到ropsten网络');
-//      return ;
-//    }
+    // FocusScope.of(context).requestFocus(FocusNode());
 
     if (this.value == null) {
       this.showSnackBar('请选择左侧token');
+      Navigator.of(context).pop();
       return ;
     }
 
 
     if (this.controllerAmount.text.length == 0) {
       this.showSnackBar('请输入数量');
+      Navigator.of(context).pop();
       return ;
     }
 
     if (this.controllerPrice.text.length == 0) {
       this.showSnackBar('请输入价格');
+      Navigator.of(context).pop();
       return ;
     }
 
@@ -391,6 +401,7 @@ class Page extends State {
       if (currentWallet['balance'] == '0.00') {
         this.showSnackBar('您的钱包ETH余额为0，无法授权，不可以交易');
       } else {
+        Navigator.of(context).pop();
         this.showAuthTips();
       }
     } else {
@@ -406,7 +417,8 @@ class Page extends State {
   void getPwd(bool approve) {
     Navigator.pushNamed(context, "getPassword").then((data) async{
       if(data == null) {
-        this.showSnackBar('交易撤回');
+        this.showSnackBar('交易终止');
+        Navigator.of(context).pop();
         return;
       }
 
@@ -434,6 +446,15 @@ class Page extends State {
               },
               onSuccessChooseEvent: () async {
                 Navigator.pop(context);
+                showDialog<Null>(
+                    context: context, //BuildContext对象
+                    barrierDismissible: false,
+                    builder: (BuildContext context) {
+                      return new LoadingDialog( //调用对话框
+                        text: '挂单中...',
+                      );
+                    }
+                );
                 this.getPwd(false);
               });
         });
@@ -447,12 +468,15 @@ class Page extends State {
     } else {
       isBuy = false;
     }
-    this.showSnackBar('下单中···');
     if (this.controllerAmount.text is String) {
       print("this.controllerAmount.text is string");
     }
     Trade trade = new Trade(this.value['address'], this.value['name'], this.rightToken['address'], this.rightToken['name'], this.controllerAmount.text, this.controllerPrice.text, isBuy, pwd);
     String hash = await trade.takeOrder();
+
+    // 关闭挂单中的全局提示
+    Navigator.of(context).pop();
+
     if (hash.contains('RPCError')) {
       String barText = '';
       if (hash.contains('insufficient funds for gas * price + value')){
@@ -477,7 +501,9 @@ class Page extends State {
   }
 
 
-   // 获取订单列表
+   /// 获取订单列表
+   /// 这里必须使用List.from深度拷贝数组，
+   /// 否则你在其他地方操作这个list会提示read only
    Future<void> getTraderList() async {
      List list = await Provider.of<Deal>(context).getTraderList();
      setState(() {

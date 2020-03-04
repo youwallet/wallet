@@ -157,12 +157,10 @@ class Page extends State<transferList> {
               content: '',
               onSuccessChooseEvent: () async {
                 Navigator.pop(context);
-                //int i = await Provider.of<Deal>(context).deleteTrader(item['id']);
+                int i = await Provider.of<Deal>(context).deleteTrader(item['id']);
                 // 用bus向兑换页面发出删除成功的通知，兑换页面显示toast
-                if (1 == 1) {
+                if (i == 1) {
                   widget.arr.removeWhere((element) => element['id']==item['id']);
-                  // 提示数据 read-only，
-                  // 需要搞清楚什么情况下才会 read-only
                   setState(() {
                     widget.arr;
                   });
