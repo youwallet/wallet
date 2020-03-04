@@ -180,17 +180,18 @@ class Page extends State<TabTransfer> {
 //                print('change $text');
 //              },
 //            ),
-            new Container(
-                padding: const EdgeInsets.all(20.0),
-                child: new Text(
-                    '矿工费用：0.6%',
-                    style: new TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.lightBlue,
-                        height: 2
-                    )
-                )
-            ),
+//            new Container(
+//                padding: const EdgeInsets.all(20.0),
+//                child: new Text(
+//                    '矿工费用：0.6%',
+//                    style: new TextStyle(
+//                        fontSize: 16.0,
+//                        color: Colors.lightBlue,
+//                        height: 2
+//                    )
+//                )
+//            ),
+
 //            new Row(
 //              children: <Widget>[
 //                new Text(
@@ -229,6 +230,9 @@ class Page extends State<TabTransfer> {
 //                    height: 3,
 //                )
 //            ),
+            SizedBox(
+              height: 40.0,
+            ),
             new CustomButton(
                 content: '确认转账',
                 onSuccessChooseEvent:(res) async{

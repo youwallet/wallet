@@ -32,7 +32,7 @@ class Deal extends ChangeNotifier {
   // 更新订单匹配的交易额到数据库
   Future<int> updateFilled(Map item, String filled ) async {
     var sql = SqlUtil.setTable("trade");
-    String status = '转账中';
+    String status = '进行中';
     if(double.parse(item['amount']) == double.parse(filled)) {
       status = '成功';
     }
