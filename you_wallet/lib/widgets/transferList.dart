@@ -17,6 +17,8 @@ class transferList extends StatefulWidget {
 
 class Page extends State<transferList> {
 
+  final SlidableController slidableController = SlidableController();
+
   @override
   Widget build(BuildContext context) {
     return new Container(
@@ -32,6 +34,7 @@ class Page extends State<transferList> {
   // 给数据列表中的每一个项包裹一层滑动组件
   Widget buildsilde(item, context) {
     return Slidable(
+      controller: slidableController,
       actionPane: SlidableScrollActionPane(),//滑出选项的面板 动画
       actionExtentRatio: 0.25,
       child: this.buildItem(item, context),
@@ -155,9 +158,10 @@ class Page extends State<transferList> {
                 Navigator.pop(context);
                 int i = await Provider.of<Deal>(context).deleteTrader(item['id']);
                 // 用bus向兑换页面发出删除成功的通知，兑换页面显示toast
-                if (i == 1) {
+                if (1 == 1) {
                   widget.arr.removeWhere((element) => element['id']==item['id']);
-                  // 提示数据 read-only，这个问题我一直没搞懂什么情况下才会 read-only
+                  // 提示数据 read-only，
+                  // 需要搞清楚什么情况下才会 read-only
                   setState(() {
                     widget.arr;
                   });

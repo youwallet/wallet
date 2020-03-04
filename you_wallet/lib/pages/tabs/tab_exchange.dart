@@ -476,7 +476,7 @@ class Page extends State {
    Future<void> getTraderList() async {
      List list = await Provider.of<Deal>(context).getTraderList();
      setState(() {
-       this.trades = list;
+       this.trades = List.from(list);
      });
      this._getTradeInfo();
    }
