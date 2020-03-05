@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:youwallet/service/token_service.dart';
 import 'package:youwallet/widgets/priceNum.dart';
 import 'package:youwallet/widgets/transferList.dart';
-import 'package:youwallet/widgets/bottomSheetDialog.dart';
 import 'package:youwallet/widgets/tokenSelectSheet.dart';
 import 'package:youwallet/widgets/input.dart';
 import 'package:youwallet/bus.dart';
@@ -13,7 +12,6 @@ import 'package:youwallet/model/wallet.dart' as walletModel;
 import 'package:youwallet/model/deal.dart';
 import 'package:youwallet/service/trade.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
-import '../../model/token.dart';
 import 'package:youwallet/global.dart';
 import 'dart:math';
 import 'package:youwallet/widgets/loadingDialog.dart';
@@ -142,7 +140,7 @@ class Page extends State {
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
         title: const Text('兑换'),
-        elevation: 4.0,
+        elevation: 0.0,
         automaticallyImplyLeading: false, //设置没有返回按钮
     );
   }
@@ -295,7 +293,12 @@ class Page extends State {
         onPressed: () {
           changeOrderModel(btnText);
         },
-        child: Text(btnText + this.suffixText),
+        child: Text(
+            btnText + this.suffixText,
+            style: TextStyle(
+              color: currentBtn == '买入'? Colors.green : Colors.red
+            )
+        ),
         borderSide:  BorderSide(
             color: currentBtn == '买入'? Colors.green : Colors.red,
             width: 1.0,
