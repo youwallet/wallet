@@ -38,3 +38,8 @@ class CustomTabChangeEvent{
   String res = '';
   CustomTabChangeEvent(this.res);
 }
+
+/// 挂单成功通知
+class OrderSuccessEvent{
+  OrderSuccessEvent();
+}

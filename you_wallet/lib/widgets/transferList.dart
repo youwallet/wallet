@@ -7,6 +7,7 @@ import 'package:youwallet/model/deal.dart';
 import 'package:youwallet/bus.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/deal.dart';
+import 'package:youwallet/service/trade.dart';
 
 class transferList extends StatefulWidget {
 
@@ -21,7 +22,7 @@ class transferList extends StatefulWidget {
 class Page extends State<transferList> {
 
   final SlidableController slidableController = SlidableController();
-  List arr = [];
+  List arr = []; // 控制当前页面中显示的兑换数组
   Map filledAmount = {};
 
   //数据初始化
@@ -33,6 +34,11 @@ class Page extends State<transferList> {
     eventBus.on<CustomTabChangeEvent>().listen((event) {
       print('change in component');
       this.tabChange(event.res);
+    });
+
+    /// 用户挂单成功
+    eventBus.on<OrderSuccessEvent>().listen((event) {
+      this.tabChange('当前兑换');
     });
   }
 
@@ -214,6 +220,31 @@ class Page extends State<transferList> {
     setState(() {
       this.arr = list;
     });
+    this._getTradeInfo();
   }
+
+  /// 遍历每个订单的状态
+  /// 将查询到的匹配数量保存在数据库中
+  /// 如果订单中的数量已经匹配完毕，则代表这个订单转账成功，刷新的时候不再遍历
+  Future<void> _getTradeInfo() async {
+    Map filled = {};
+    for(var i = 0; i<this.arr.length; i++) {
+      print('查询订单   =》${this.arr[i]['txnHash']}');
+      if(this.arr[i]['status'] != '成功') {
+        double amount = await Trade.getFilled(this.arr[i]['odHash']);
+        print('匹配情况   =》${amount}');
+        int sqlRes = await Provider.of<Deal>(context).updateFilled(
+            this.arr[i], amount.toStringAsFixed(2));
+        filled[this.arr[i]['txnHash']] = amount.toStringAsFixed(2);
+      } else {
+        print('该订单状态为${this.arr[i]['status']},已匹配完毕');
+      }
+    }
+    setState(() {
+      this.filledAmount = filled;
+    });
+    print(this.filledAmount);
+  }
+
 
 }

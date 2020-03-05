@@ -72,7 +72,7 @@ class Page extends State {
     eventBus.on<TabChangeEvent>().listen((event) {
       // print("event listen =》${event.index}");
       if (event.index == 1) {
-         this._getTradeInfo();
+         //this._getTradeInfo();
       } else {
         print('do nothing');
       }
@@ -87,7 +87,6 @@ class Page extends State {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // this.getTraderList();
   }
 
   @override
@@ -469,9 +468,8 @@ class Page extends State {
       final snackBar = new SnackBar(content: new Text(barText));
       Scaffold.of(context).showSnackBar(snackBar);
     } else {
-       // 下单成功后，刷新用户本地的历史兑换列表
-       this.getTraderList();
-
+       // 下单成功后，通知transferList组件刷新数据
+       eventBus.fire(OrderSuccessEvent());
        // 刷新交易深度
        this.getSellList();
     }
@@ -483,16 +481,16 @@ class Page extends State {
   }
 
 
-   /// 获取订单列表
-   /// 这里必须使用List.from深度拷贝数组，
-   /// 否则你在其他地方操作这个list会提示read only
-   Future<void> getTraderList() async {
-     List list = await Provider.of<Deal>(context).getTraderList();
-     setState(() {
-       this.trades = List.from(list);
-     });
-     this._getTradeInfo();
-   }
+//   /// 获取订单列表
+//   /// 这里必须使用List.from深度拷贝数组，
+//   /// 否则你在其他地方操作这个list会提示read only
+//   Future<void> getTraderList() async {
+//     List list = await Provider.of<Deal>(context).getTraderList();
+//     setState(() {
+//       this.trades = List.from(list);
+//     });
+//     this._getTradeInfo();
+//   }
 
    // 获取当前的买单队列
    Future<void> getBuyList() async {
@@ -615,30 +613,6 @@ class Page extends State {
      }
    }
 
-
-   /// 遍历每个订单的状态
-   /// 将查询到的匹配数量保存在数据库中
-   /// 如果订单中的数量已经匹配完毕，则代表这个订单转账成功，刷新的时候不再遍历
-   Future<void> _getTradeInfo() async {
-     Map filled = {};
-     for(var i = 0; i<this.trades.length; i++) {
-       print('查询订单   =》${this.trades[i]['txnHash']}');
-       if(this.trades[i]['status'] != '成功') {
-         double amount = await Trade.getFilled(this.trades[i]['odHash']);
-         print('匹配情况   =》${amount}');
-         int sqlRes = await Provider.of<Deal>(context).updateFilled(
-             this.trades[i], amount.toStringAsFixed(2));
-         filled[this.trades[i]['txnHash']] = amount.toStringAsFixed(2);
-       } else {
-         print('该订单状态为${this.trades[i]['status']},已匹配完毕');
-       }
-     }
-     setState(() {
-       this.filledAmount = filled;
-     });
-     print(this.filledAmount);
-   }
-
    // 计算交易额度
    void computeTrade() {
      if (this.controllerAmount.text.length == 0) {
@@ -657,7 +631,6 @@ class Page extends State {
   // 下拉刷新底部交易列表
   Future<void> _refresh() async {
     await this.getSellList();
-    await this.getTraderList();
     this.showSnackBar('刷新结束');
   }
 
