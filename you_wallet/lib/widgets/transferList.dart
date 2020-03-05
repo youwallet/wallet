@@ -109,7 +109,7 @@ class Page extends State<transferList> {
     if (item['status'] == '成功'){
       filled = item['filled'];
     } else {
-      filled = this.filledAmount.containsKey(item['txnHash'])?this.filledAmount[item['txnHash'].toString()]:'0.0';
+      filled = this.filledAmount.containsKey(item['txnHash'])?this.filledAmount[item['txnHash'].toString()]:item['filled'];
     }
     return new Container(
         padding: const EdgeInsets.only(top:10.0, bottom: 10.0), // 四周填充边距32像素
@@ -214,6 +214,7 @@ class Page extends State<transferList> {
 
     if (tab == '当前兑换') {
       list.retainWhere((element)=>(element['status']=='进行中' ));
+      print(list);
     } else {
       list.retainWhere((element)=>(element['status']!='进行中'));
     }
@@ -229,7 +230,7 @@ class Page extends State<transferList> {
   Future<void> _getTradeInfo() async {
     Map filled = {};
     for(var i = 0; i<this.arr.length; i++) {
-      print('查询订单   =》${this.arr[i]['txnHash']}');
+      //print('查询订单   =》${this.arr[i]['txnHash']}');
       if(this.arr[i]['status'] != '成功') {
         double amount = await Trade.getFilled(this.arr[i]['odHash']);
         print('匹配情况   =》${amount}');
@@ -237,7 +238,7 @@ class Page extends State<transferList> {
             this.arr[i], amount.toStringAsFixed(2));
         filled[this.arr[i]['txnHash']] = amount.toStringAsFixed(2);
       } else {
-        print('该订单状态为${this.arr[i]['status']},已匹配完毕');
+        //print('该订单状态为${this.arr[i]['status']},已匹配完毕');
       }
     }
     setState(() {

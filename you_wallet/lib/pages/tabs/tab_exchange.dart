@@ -392,7 +392,6 @@ class Page extends State {
   }
 
   /// 获取用户密码
-  /// 4E5398791AD2F8226CD134F0046138EAB5CAB8E3AA1D8887CB057E14ABC14E059F22DEB5117A5ECFFA5120F24B091415BD8ADF4E685877AFB2FCAB2C204F1DBF0F9D0A0C67D363B551CE5022D370B9EF
   /// approve 是否授权
   ///  发起授权之前，要先确认用户的钱包ETH有余额，否则无法授权
   void getPwd(bool approve) {
@@ -632,33 +631,6 @@ class Page extends State {
   Future<void> _refresh() async {
     await this.getSellList();
     this.showSnackBar('刷新结束');
-  }
-
-
-  /// 选左边的token
-  /// token只显示当前钱包的token，其他钱包添加的token不显示
-  void selectToken() async {
-    String wallet = Provider.of<walletModel.Wallet>(context).currentWalletObject['address'];
-    List tokens = Provider.of<Token>(context).items.where((e)=>(e['wallet'] == wallet)).toList();
-    if (tokens.length == 0) {
-      this.showSnackBar('请先添加token');
-      return;
-    }
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return BottomSheetDialog(
-              content: tokens,
-              onSuccessChooseEvent: (res) {
-                print(res);
-                setState(() {
-                  this.value = res;
-                  this.suffixText = res['name'];
-                });
-                this.getSellList();
-              });
-        }
-    );
   }
 
 }

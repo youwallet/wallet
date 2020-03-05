@@ -26,26 +26,28 @@ class Page extends State<TokenSelectSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return new Container(
-      padding: const EdgeInsets.all(4.0),
-      margin: const EdgeInsets.only(bottom: 10.0),
-      decoration: new BoxDecoration(
-        borderRadius: new BorderRadius.all(new Radius.circular(6.0)),
-        border: new Border.all(width: 1.0, color: Colors.black12),
-        color: Colors.black12,
-      ),
-      height: 36.0,
-      child: GestureDetector(
+    return GestureDetector(
         onTap: (){
           this.selectToken(context);
-        },//写入方法名称就可以了，但是是无参的
-        child: Text(
-          this.showText,
-          style: TextStyle(
-              fontSize: 24.0
-          ),
+        },
+        child: new Container(
+            padding: const EdgeInsets.all(4.0),
+            margin: const EdgeInsets.only(bottom: 10.0),
+            width: MediaQuery.of(context).size.width/2,
+            alignment: Alignment.centerLeft,
+            height: 36.0,
+            decoration: new BoxDecoration(
+              borderRadius: new BorderRadius.all(new Radius.circular(6.0)),
+              border: new Border.all(width: 1.0, color: Colors.black12),
+              color: Colors.black12,
+            ),
+            child: Text(
+              this.showText,
+              style: TextStyle(
+                  fontSize: 18.0
+              ),
+            ),
         ),
-      ),
     );
   }
 
