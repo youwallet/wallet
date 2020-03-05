@@ -110,7 +110,7 @@ Widget walletCard(item, context) {
                             style: new TextStyle(fontSize: 16.0,
                                 color: Color.fromARGB(100, 6, 147, 193)),
                           ),
-                          new Text('￥${item['rmb']??'-'}'),
+//                          new Text('￥${item['rmb']??'-'}'),
                         ],
                       )
 
