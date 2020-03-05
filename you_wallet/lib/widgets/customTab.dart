@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
+import 'package:youwallet/bus.dart';
 
 class CustomTab extends StatefulWidget {
 
@@ -52,6 +53,7 @@ class Page extends State<CustomTab> {
             setState(() {
               widget.activeIndex = item;
             });
+            eventBus.fire(CustomTabChangeEvent(item));
           },//写入方法名称就可以了，但是是无参的
           child: new Text(
               item,
@@ -62,22 +64,5 @@ class Page extends State<CustomTab> {
         ),
     );
   }
-
-  // 取消交易
-  void cancelTrade(BuildContext context, Map item){
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return GenderChooseDialog(
-              title: '确定取消交易?',
-              content: '',
-              onSuccessChooseEvent: () async {
-                print('cancel ok');
-                Navigator.pop(context);
-              });
-        });
-  }
-
 
 }

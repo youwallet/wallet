@@ -121,13 +121,18 @@ class Page extends State {
             new Container(
               margin: const EdgeInsets.only(left:16.0,right:16.0),
               child: new CustomTab(
-                buttons:['当前兑换','历史兑换']
+                buttons:['当前兑换','历史兑换'],
+                activeIndex: '当前兑换'
               )
             ),
             new Container(
               padding: const EdgeInsets.only(left:16.0,right:16.0),
-              child: transferList(arr: this.trades, filledAmount: this.filledAmount),
+              child: new transferList(),
             )
+//            new Container(
+//              padding: const EdgeInsets.only(left:16.0,right:16.0),
+//              child: transferList(arr: this.trades, filledAmount: this.filledAmount),
+//            )
           ],
         )
       )

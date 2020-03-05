@@ -5,13 +5,15 @@ import 'package:youwallet/widgets/modalDialog.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/deal.dart';
 import 'package:youwallet/bus.dart';
+import 'package:provider/provider.dart';
+import 'package:youwallet/model/deal.dart';
 
 class transferList extends StatefulWidget {
 
-  List arr = [];
-  Map filledAmount = {};
+//  List arr = [];
+//  Map filledAmount = {};
 
-  transferList({Key key, this.arr, this.filledAmount }) : super(key: key);
+  transferList({Key key}) : super(key: key);
 
   Page createState() => new Page();
 }
@@ -19,18 +21,41 @@ class transferList extends StatefulWidget {
 class Page extends State<transferList> {
 
   final SlidableController slidableController = SlidableController();
+  List arr = [];
+  Map filledAmount = {};
+
+  //数据初始化
+  @override
+  void initState() {
+    super.initState();
+
+    /// tab切换
+    eventBus.on<CustomTabChangeEvent>().listen((event) {
+      print('change in component');
+      this.tabChange(event.res);
+    });
+  }
+
+  @override
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+//    List list = await Provider.of<Deal>(context).getTraderList();
+//    setState(() {
+//      this.arr = List.from(list);
+//    });
+      this.tabChange('当前兑换');
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return new Container(
         padding: const EdgeInsets.only(bottom: 12.0), // 四周填充边距32像素
         child: new Column(
-          children: widget.arr.reversed.map((item) => buildsilde(item, context)).toList()
+          children: this.arr.reversed.map((item) => buildsilde(item, context)).toList()
         )
     );
   }
-
-
 
   // 给数据列表中的每一个项包裹一层滑动组件
   Widget buildsilde(item, context) {
@@ -78,7 +103,7 @@ class Page extends State<transferList> {
     if (item['status'] == '成功'){
       filled = item['filled'];
     } else {
-      filled = widget.filledAmount.containsKey(item['txnHash'])?widget.filledAmount[item['txnHash'].toString()]:'0.0';
+      filled = this.filledAmount.containsKey(item['txnHash'])?this.filledAmount[item['txnHash'].toString()]:'0.0';
     }
     return new Container(
         padding: const EdgeInsets.only(top:10.0, bottom: 10.0), // 四周填充边距32像素
@@ -161,14 +186,34 @@ class Page extends State<transferList> {
                 int i = await Provider.of<Deal>(context).deleteTrader(item['id']);
                 // 用bus向兑换页面发出删除成功的通知，兑换页面显示toast
                 if (i == 1) {
-                  widget.arr.removeWhere((element) => element['id']==item['id']);
+                  this.arr.removeWhere((element) => element['id']==item['id']);
                   setState(() {
-                    widget.arr;
+                    this.arr;
                   });
                   eventBus.fire(TransferDoneEvent('删除成功'));
                 }
               });
         });
+  }
+
+  // tab切换
+  // 这里list需要用List.from转化一次，否则会提示read only
+  void tabChange(String tab) async {
+    List list = List.from(await Provider.of<Deal>(context).getTraderList());
+//    int now = DateTime.now().millisecondsSinceEpoch;
+//    int hour = DateTime.now().hour;
+//    int minute = DateTime.now().minute;
+//    int second = DateTime.now().second;
+//    int today = now - (hour*60*60 + minute*60 + second)*1000;
+
+    if (tab == '当前兑换') {
+      list.retainWhere((element)=>(element['status']=='进行中' ));
+    } else {
+      list.retainWhere((element)=>(element['status']!='进行中'));
+    }
+    setState(() {
+      this.arr = list;
+    });
   }
 
 }

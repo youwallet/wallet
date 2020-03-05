@@ -32,3 +32,9 @@ class TransferDoneEvent{
   String res = '';
   TransferDoneEvent(this.res);
 }
+
+/// tab切换时候的事件通知
+class CustomTabChangeEvent{
+  String res = '';
+  CustomTabChangeEvent(this.res);
+}
