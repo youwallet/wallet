@@ -242,7 +242,14 @@ class Page extends State {
           ),
           new Container(
             width: 20.0,
-            child: null,
+            alignment: Alignment.topCenter,
+            child: Text(
+                '/',
+                style: TextStyle(
+                  fontSize: 28.0,
+                  color: Colors.black38,
+                ),
+            ),
           ),
           // 右边一列
           new  Expanded(
