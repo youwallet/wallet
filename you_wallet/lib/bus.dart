@@ -43,3 +43,10 @@ class CustomTabChangeEvent{
 class OrderSuccessEvent{
   OrderSuccessEvent();
 }
+
+///
+class UpdateTeadeDeepEvent{
+  String leftToken = '';
+  String rightToken = '';
+  UpdateTeadeDeepEvent(this.leftToken, this.rightToken);
+}

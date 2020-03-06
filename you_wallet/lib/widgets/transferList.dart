@@ -169,12 +169,16 @@ class Page extends State<transferList> {
         barrierDismissible: false,
         builder: (BuildContext context) {
           return GenderChooseDialog(
-              title: '确定取消交易?',
+              title: '确定撤销交易?',
               content: '',
               onSuccessChooseEvent: () async {
-                print('cancel ok');
+                eventBus.fire(TransferDoneEvent('撤销交易失败，接口暂不可用'));
+                Navigator.pop(context);
+              },
+              onCancelChooseEvent: () {
                 Navigator.pop(context);
               });
+
         });
   }
 

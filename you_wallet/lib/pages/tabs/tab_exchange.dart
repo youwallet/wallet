@@ -16,6 +16,7 @@ import 'package:youwallet/global.dart';
 import 'dart:math';
 import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:youwallet/widgets/customTab.dart';
+import 'package:youwallet/widgets/tradesDeep.dart';
 
 class TabExchange extends StatefulWidget {
 
@@ -26,9 +27,6 @@ class TabExchange extends StatefulWidget {
 class Page extends State {
 
   BuildContext mContext;
-
-  // 右边的token对象
-  Map rightToken = {};
 
   // 数量编辑框
   final controllerAmount = TextEditingController();
@@ -56,6 +54,8 @@ class Page extends State {
 
   // 左侧被选中的token
   var value;
+  // 右边的token对象
+  var rightToken;
 
   String _btnText="买入";
   List tokens = [];
@@ -201,7 +201,6 @@ class Page extends State {
                 ),
                 new Text('当前账户余额：${this.value!=null?this.value["balance"]:"~"}'),
                 new Container(
-
                   padding: new EdgeInsets.only(top: 30.0),
                   child: new Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -329,7 +328,11 @@ class Page extends State {
               new Text('数量'),
             ],
           ),
-          priceNum(arr: this.tradesDeep)
+//          priceNum(arr: this.tradesDeep)
+          new TradesDeep(
+              leftToken: this.value != null?this.value['address']:'',
+              rightToken: this.rightToken != null?this.rightToken['address']:''
+          )
         ],
       ),
     );
