@@ -209,40 +209,41 @@ class Page extends State<transferList> {
   // tab切换
   // 这里list需要用List.from转化一次，否则会提示read only
   void tabChange(String tab) async {
-    print("tabChange start");
+    print("tabChange start new ");
     List list = List.from(await Provider.of<Deal>(context).getTraderList());
-    print(list);
-    //    int now = DateTime.now().millisecondsSinceEpoch;
+//    int now = DateTime.now().millisecondsSinceEpoch;
 //    int hour = DateTime.now().hour;
 //    int minute = DateTime.now().minute;
 //    int second = DateTime.now().second;
 //    int today = now - (hour*60*60 + minute*60 + second)*1000;
-
+    for(var i=1;i<list.length;i++){
+      print(list[i]['status']);
+    }
     if (tab == '当前兑换') {
       list.retainWhere((element)=>(element['status']=='进行中' ));
       print(list);
+      this._getTradeInfo(list);
     } else {
       list.retainWhere((element)=>(element['status']!='进行中'));
     }
     setState(() {
       this.arr = list;
     });
-    this._getTradeInfo();
   }
 
   /// 遍历每个订单的状态
   /// 将查询到的匹配数量保存在数据库中
   /// 如果订单中的数量已经匹配完毕，则代表这个订单转账成功，刷新的时候不再遍历
-  Future<void> _getTradeInfo() async {
+  Future<void> _getTradeInfo(list) async {
     Map filled = {};
-    for(var i = 0; i<this.arr.length; i++) {
+    for(var i = 0; i<list.length; i++) {
       //print('查询订单   =》${this.arr[i]['txnHash']}');
-      if(this.arr[i]['status'] != '成功') {
-        double amount = await Trade.getFilled(this.arr[i]['odHash']);
+      if(list[i]['status'] != '成功') {
+        double amount = await Trade.getFilled(list[i]['odHash']);
         print('匹配情况   =》${amount}');
         int sqlRes = await Provider.of<Deal>(context).updateFilled(
-            this.arr[i], amount.toStringAsFixed(2));
-        filled[this.arr[i]['txnHash']] = amount.toStringAsFixed(2);
+            list[i], amount.toStringAsFixed(2));
+        filled[list[i]['txnHash']] = amount.toStringAsFixed(2);
       } else {
         //print('该订单状态为${this.arr[i]['status']},已匹配完毕');
       }

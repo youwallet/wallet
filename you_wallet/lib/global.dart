@@ -75,6 +75,10 @@ class Global {
     return "https://" + network + ".infura.io/" + myKey;
   }
 
+  static String getBaseUrl() {
+    return "https://" + getPrefs('network') + ".infura.io/" + myKey;
+  }
+
   // 获取缓存中数据
   static String getPrefs(String key) {
     return _prefs.getString(key);
