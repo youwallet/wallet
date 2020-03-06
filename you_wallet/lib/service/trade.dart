@@ -163,27 +163,23 @@ class Trade {
     final client = Web3Client(rpcUrl, Client());
     var credentials = await client.credentialsFromPrivateKey(privateKey);
 
-    try {
-      var rsp = await client.sendTransaction(
-          credentials,
-          Transaction(
-              to: EthereumAddress.fromHex(Global.tempMatchAddress),
-              gasPrice: EtherAmount.inWei(BigInt.from(20000000000)),
-              maxGas: 7000000,
-              value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
-              data: hexToBytes(postData)
-          ),
-          chainId: 3
-      );
-      print("transaction => ${rsp}");
-      await client.dispose();
-      this.txnHash = rsp;
-      await this.saveTrader();
-      return this.txnHash;
-    } catch (e) {
-      print("catch error =》 ${e}");
-      return e.toString();
-    }
+    var rsp = await client.sendTransaction(
+        credentials,
+        Transaction(
+            to: EthereumAddress.fromHex(Global.tempMatchAddress),
+            gasPrice: EtherAmount.inWei(BigInt.from(20000000000)),
+            maxGas: 7000000,
+            value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
+            data: hexToBytes(postData)
+        ),
+        chainId: 3
+    );
+    print("transaction => ${rsp}");
+    await client.dispose();
+    this.txnHash = rsp;
+    await this.saveTrader();
+    return this.txnHash;
+
   }
 
   // 根据 RVS计算订单的签名
@@ -235,21 +231,12 @@ class Trade {
   // 调用web3dart，对od_hash使用私钥进行签名，这一步必须在客户端做
   Future<Map> ethSign(String od_hash) async {
     String privateKey = await loadPrivateKey(this.pwd);
-    // print("ethSign od_hash =》54793c08f2aa87ec02c025fbbfa7eee9ac8665088e0a28a17428a0269934f807");
-    // print("ethSign hexToBytes(od_hash) =》${hexToBytes('54793c08f2aa87ec02c025fbbfa7eee9ac8665088e0a28a17428a0269934f807')}");
     final key = EthPrivateKey(hexToBytes(privateKey));
-    //final signature = await key.sign(hexToBytes(od_hash), chainId: 3);
-    //final signature = await key.sign(hexToBytes('54793c08f2aa87ec02c025fbbfa7eee9ac8665088e0a28a17428a0269934f807'));
-    //final signature = await key.sign('54793c08f2aa87ec02c025fbbfa7eee9ac8665088e0a28a17428a0269934f807');
     final signature = await key.signPersonalMessage(hexToBytes(od_hash));
-    // print("ethSign signature =》${signature}");
     final sign = bytesToHex(signature);
     final r = sign.substring(0,64);
     final s = sign.substring(64,128);
     final v = sign.substring(128);
-    print('r => ${r}');
-    print('s => ${s}');
-    print('v => ${v}');
     return {
       'r': r,
       's': s,
@@ -268,10 +255,11 @@ class Trade {
     String md5Pwd = Md5Encrypt(pwd).init();
     String privateKey = await FlutterAesEcbPkcs5.decryptString(json[0]['privateKey'], md5Pwd);
     this.privateKey = privateKey;
-    print('解密钱包 done');
-    print('钱包地址 => ${address}');
-    print('钱包私钥 => ${this.privateKey}');
-    return this.privateKey;
+    if (this.privateKey == null) {
+      throw '钱包解密失败，请确认密码是否正确';
+    } else {
+      return this.privateKey;
+    }
   }
 
   // static 方法获取用户私钥
@@ -283,8 +271,14 @@ class Trade {
     var sql = SqlUtil.setTable("wallet");
     var map = {'address': address};
     List json = await sql.query(conditions: map);
-
-    return await WalletCrypt(pwd, json[0]['privateKey']).decrypt();
+    var res = await WalletCrypt(pwd, json[0]['privateKey']).decrypt();
+    print('================');
+    print('WalletCrypt done => ${res}');
+    if (res == null) {
+      throw FormatException('钱包密码错误');
+    } else {
+      return res;
+    }
   }
 
   /*
@@ -350,14 +344,14 @@ class Trade {
   // 保存兑换订单到本地数据库
   Future<void> saveTrader() async {
     var sql = SqlUtil.setTable("trade");
-    String sqlInsert ='INSERT INTO trade(orderType, price, amount, token,tokenName, baseToken,baseTokenname, txnHash, odHash, bqHash, createtime) VALUES(?,?,?,?,?,?,?,?,?,?,?)';
+    String sqlInsert ='INSERT INTO trade(orderType, price, amount, token,tokenName, baseToken,baseTokenname, txnHash, odHash, bqHash, createtime,status) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)';
     String orderType = '';
     if (this.isBuy) {
       orderType = '买入';
     } else {
       orderType = '卖出';
     }
-    List list = [orderType,this.oldPrice, this.oldAmount, this.tokenA,this.tokenAName,this.tokenB,this.tokenBName,this.txnHash,this.odHash, this.bqHash, DateTime.now().millisecondsSinceEpoch];
+    List list = [orderType,this.oldPrice, this.oldAmount, this.tokenA,this.tokenAName,this.tokenB,this.tokenBName,this.txnHash,this.odHash, this.bqHash, DateTime.now().millisecondsSinceEpoch,'进行中'];
     int id = await sql.rawInsert(sqlInsert, list);
     print("db trade id => ${id}");
     return id;

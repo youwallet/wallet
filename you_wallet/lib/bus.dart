@@ -44,9 +44,7 @@ class OrderSuccessEvent{
   OrderSuccessEvent();
 }
 
-///
+/// 交易深度列表刷新通知
 class UpdateTeadeDeepEvent{
-  String leftToken = '';
-  String rightToken = '';
-  UpdateTeadeDeepEvent(this.leftToken, this.rightToken);
+  UpdateTeadeDeepEvent();
 }

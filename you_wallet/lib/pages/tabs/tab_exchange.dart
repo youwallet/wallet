@@ -1,19 +1,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:youwallet/service/token_service.dart';
-import 'package:youwallet/widgets/priceNum.dart';
 import 'package:youwallet/widgets/transferList.dart';
 import 'package:youwallet/widgets/tokenSelectSheet.dart';
 import 'package:youwallet/widgets/input.dart';
 import 'package:youwallet/bus.dart';
 import 'package:provider/provider.dart';
-import 'package:youwallet/model/token.dart';
 import 'package:youwallet/model/wallet.dart' as walletModel;
-import 'package:youwallet/model/deal.dart';
 import 'package:youwallet/service/trade.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
-import 'package:youwallet/global.dart';
-import 'dart:math';
 import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:youwallet/widgets/customTab.dart';
 import 'package:youwallet/widgets/tradesDeep.dart';
@@ -41,9 +36,6 @@ class Page extends State {
 
   // 匹配的数量数组
   Map filledAmount = {};
-
-  // 兑换深度列表
-  List tradesDeep = [];
 
   // 输入框右侧显示的token提示
   String suffixText = "";
@@ -163,7 +155,7 @@ class Page extends State {
                          this.value = res;
                          this.suffixText = res['name'];
                        });
-                       this.getSellList();
+                       eventBus.fire(UpdateTeadeDeepEvent());
                     }
                 ),
                 new Container(
@@ -257,9 +249,10 @@ class Page extends State {
                 new TokenSelectSheet(
                     onCallBackEvent: (res){
                       print('页面右侧token选择 = > ${res}');
-                      this.rightToken = res;
-                      // 刷新交易深度列表
-                      this.getSellList();
+                      setState(() {
+                        rightToken = res;
+                      });
+                      eventBus.fire(UpdateTeadeDeepEvent());
                     }
                 ),
                 buildRightWidget()
@@ -415,8 +408,6 @@ class Page extends State {
         return;
       }
 
-      final res = await Trade.getPrivateKey(data);
-      print("getpwd => ${res}");
       if (!approve) {
         await Trade.approve(needApproveToken, data);
       }
@@ -465,165 +456,26 @@ class Page extends State {
       print("this.controllerAmount.text is string");
     }
     Trade trade = new Trade(this.value['address'], this.value['name'], this.rightToken['address'], this.rightToken['name'], this.controllerAmount.text, this.controllerPrice.text, isBuy, pwd);
-    String hash = await trade.takeOrder();
+    try {
+      await trade.takeOrder();
+      // 下单成功后，刷新交易深度和交易记录
+      eventBus.fire(OrderSuccessEvent());
+      eventBus.fire(UpdateTeadeDeepEvent());
+
+    } catch(e) {
+      print('+++++++++++++++');
+      print(e);
+      this.showSnackBar(e.toString());
+    }
 
     // 关闭挂单中的全局提示
     Navigator.of(context).pop();
-
-    if (hash.contains('RPCError')) {
-      String barText = '';
-      if (hash.contains('insufficient funds for gas * price + value')){
-        barText = 'eth手续费不足，请先获取测试所需以太币';
-      } else {
-        barText = hash;
-      }
-      final snackBar = new SnackBar(content: new Text(barText));
-      Scaffold.of(context).showSnackBar(snackBar);
-    } else {
-       // 下单成功后，通知transferList组件刷新数据
-       eventBus.fire(OrderSuccessEvent());
-       // 刷新交易深度
-       this.getSellList();
-    }
   }
 
   void showSnackBar(String text) {
     final snackBar = new SnackBar(content: new Text(text));
     Scaffold.of(context).showSnackBar(snackBar);
   }
-
-
-//   /// 获取订单列表
-//   /// 这里必须使用List.from深度拷贝数组，
-//   /// 否则你在其他地方操作这个list会提示read only
-//   Future<void> getTraderList() async {
-//     List list = await Provider.of<Deal>(context).getTraderList();
-//     setState(() {
-//       this.trades = List.from(list);
-//     });
-//     this._getTradeInfo();
-//   }
-
-   // 获取当前的买单队列
-   Future<void> getBuyList() async {
-      String tokenAddress = this.value['address']; // 左边的token
-      String baseTokenAddress = this.rightToken['address']; // 右边的token
-      bool isSell =  false;
-      // 拿到队列中第一个订单的 bq_hash + od_hash
-      String hash = await Trade.getOrderQueueInfo(tokenAddress, baseTokenAddress, isSell);
-      // 把hash中的bq hash单独拿出来，同一个队列中的bq hash都是相同的 拿到QueueElem的订单结构体
-      print('getBuyList hash => ${hash}');
-      String bqHash = hash.replaceFirst('0x', '').substring(0,64);
-      String odHash = hash.replaceFirst('0x', '').substring(64);
-
-      String queueElem = await Trade.getOrderInfo(hash, isSell);
-      this.deepCallBackOrderInfo(queueElem, bqHash, isSell);
-   }
-
-   // 递归获取订单信息
-   // queueElem后64位，是下一个订单的odHash,
-   // 以前的bqHash + 下一个订单的odHash，拼接成新的hash，继续获取下一个订单
-   Future<void> deepCallBackOrderInfo(String queueElem, String bqHash, bool isSell) async {
-      this.buildQueueElem(queueElem.replaceFirst('0x', ''), isSell);
-      String odHash = queueElem.substring(queueElem.length - 64);
-      String nextHash = bqHash + odHash;
-      String nextQueueElem = await Trade.getOrderInfo(nextHash, isSell);
-      if (nextQueueElem != '0x' && odHash != '0000000000000000000000000000000000000000000000000000000000000000') {
-        // 同一种类型的订单，达到三个就不再继续获取
-        this.deepCallBackOrderInfo(nextQueueElem, bqHash, isSell);
-      } else {
-        //print('订单队列结束, 最后一个订单的odHash => ${odHash}');
-        if (isSell) {
-          // 卖单队列获取完毕，开始获取买单队列
-          this.getBuyList();
-        } else {
-          print('deepCallBackOrderInfo =》 done');
-        }
-      }
-   }
-
-   /// 先获取卖单队列，再获取买单队列
-   /// 如果有一边的token还没有选择，则不更新
-   Future<void> getSellList() async {
-     if (this.rightToken.isEmpty || this.value.isEmpty) {
-       print('token not sellect');
-       return;
-     }
-     setState(() {
-       this.tradesDeep = [];// 清空当前的深度数组
-     });
-
-     String tokenAddress = this.value['address'];
-     String baseTokenAddress = this.rightToken['address'];
-     bool isSell = true;
-     String hash = await Trade.getOrderQueueInfo(tokenAddress, baseTokenAddress, isSell);
-     String bqHash = hash.replaceFirst('0x', '').substring(0,64);
-     String queueElem = await Trade.getOrderInfo(hash, isSell);
-     this.deepCallBackOrderInfo(queueElem, bqHash, isSell);
-   }
-
-   // 解析queueElem 深度列表的数据需要合并处理，规则如下
-   // https://github.com/youwallet/wallet/issues/44#issuecomment-575859132
-   void buildQueueElem(String queueElem, bool isSell) {
-     BigInt filled = BigInt.parse(queueElem.substring(queueElem.length - 128, queueElem.length - 64), radix: 16);
-     // print(filled);
-     // print(queueElem.replaceFirst('0x', '').substring(64, 128));
-     BigInt baseTokenAmount  = BigInt.parse(queueElem.replaceFirst('0x', '').substring(64, 128), radix: 16);
-     // print(baseTokenAmount);
-     // BigInt quoteTokenAmount = BigInt.parse(queueElem.replaceFirst('0x', '').substring(128, 192));
-     BigInt quoteTokenAmount = BigInt.parse(queueElem.replaceFirst('0x', '').substring(128, 192), radix: 16);
-     print("=======================================");
-     print("baseTokenAmount   => ${baseTokenAmount}");
-     print("quoteTokenAmount  => ${quoteTokenAmount}");
-     print("左边显示价格        => ${baseTokenAmount/quoteTokenAmount}");
-     print("filled            => ${filled}");
-     print("右边显示数量        => ${baseTokenAmount - filled}");
-     print("isSell            => ${isSell}");
-     if (baseTokenAmount != BigInt.from(0)) {
-
-       String left = (quoteTokenAmount/baseTokenAmount).toStringAsFixed(Global.priceDecimal);
-
-       // 这里的baseTokenAmount是包含18小数位数的10进制数据，先砍掉小数位
-       // 标准做法是根据token对应的小数位
-       double right = (baseTokenAmount - filled) / BigInt.from(pow(10, 18));
-       int index = this.tradesDeep.indexWhere((element) => element['left']==left && element['isSell']== isSell);
-
-       if (index == -1) {
-         Map obj = {
-           'left': left,
-           'right': right.toStringAsFixed(Global.numDecimal),
-           'isSell': isSell
-         };
-         if (isSell) {
-           // 如果队列中买单数量已经达到三个，就不要再向队列中增加
-           int lenSellOrder = this.tradesDeep.where((e)=>(e['isSell'])).length;
-           if (lenSellOrder < 3) {
-             setState(() {
-               this.tradesDeep.insert(0,obj);
-             });
-           } else {
-             print('卖单队列已经到达三个，第四个开始不显示 => ${obj}');
-           }
-
-         } else {
-           // 如果队列中买单数量已经达到三个，就不要再向队列中增加
-           int lenBuyOrder = this.tradesDeep.where((e)=>(!e['isSell'])).length;
-           if (lenBuyOrder < 3) {
-             setState(() {
-               this.tradesDeep.add(obj);
-             });
-           } else {
-             print('买单队列已经到达三个，第四个开始不显示 => ${obj}');
-           }
-         }
-       } else {
-         // 价格相同的订单合并，数量相加即可
-         setState(() {
-           this.tradesDeep[index]['right'] = double.parse(this.tradesDeep[index]['right']) + right ;
-         });
-       }
-     }
-   }
 
    // 计算交易额度
    void computeTrade() {
@@ -642,7 +494,7 @@ class Page extends State {
 
   // 下拉刷新底部交易列表
   Future<void> _refresh() async {
-    await this.getSellList();
+    eventBus.fire(UpdateTeadeDeepEvent());
     this.showSnackBar('刷新结束');
   }
 

@@ -209,8 +209,10 @@ class Page extends State<transferList> {
   // tab切换
   // 这里list需要用List.from转化一次，否则会提示read only
   void tabChange(String tab) async {
+    print("tabChange start");
     List list = List.from(await Provider.of<Deal>(context).getTraderList());
-//    int now = DateTime.now().millisecondsSinceEpoch;
+    print(list);
+    //    int now = DateTime.now().millisecondsSinceEpoch;
 //    int hour = DateTime.now().hour;
 //    int minute = DateTime.now().minute;
 //    int second = DateTime.now().second;
