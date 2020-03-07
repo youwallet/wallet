@@ -23,7 +23,7 @@ class Http{
         baseUrl: Global.getBaseUrl(),
 //        connectTimeout: _config.connectTimeout,
 //        receiveTimeout: _config.receiveTimeout,
-        headers: {}
+       headers: {'Content-Type':'application/json','User-Agent':'youwallet'},
     );
 
     _dio = new Dio(_options);
@@ -76,9 +76,12 @@ class Http{
     Response response;
 
     try{
+      data['jsonrpc'] = "2.0";
+      data["method"] = "eth_call";
+      data['id'] = DateTime.now().millisecondsSinceEpoch;
       response = await _dio.post(
           url,
-          data:data !=null ? data : {},
+          data:data,
           cancelToken:cancelToken
       );
       print(response);

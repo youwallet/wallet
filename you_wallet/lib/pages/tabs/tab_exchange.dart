@@ -155,7 +155,10 @@ class Page extends State {
                          this.value = res;
                          this.suffixText = res['name'];
                        });
-                       eventBus.fire(UpdateTeadeDeepEvent());
+                       Future.delayed(Duration(seconds: 1), (){
+                         eventBus.fire(UpdateTeadeDeepEvent());
+                         print('延时1s执行，因为立即执行收不到setState设置的值');
+                       });
                     }
                 ),
                 new Container(
@@ -252,7 +255,10 @@ class Page extends State {
                       setState(() {
                         rightToken = res;
                       });
-                      eventBus.fire(UpdateTeadeDeepEvent());
+                      Future.delayed(Duration(seconds: 1), (){
+                        eventBus.fire(UpdateTeadeDeepEvent());
+                        print('延时1s执行，因为立即执行收不到setState设置的值');
+                      });
                     }
                 ),
                 buildRightWidget()

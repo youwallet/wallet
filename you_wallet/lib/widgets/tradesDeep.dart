@@ -41,13 +41,13 @@ class Page extends State<TradesDeep> {
 //      this.updateDeep();
       this.getSellList();
     });
-
+    this.getSellList();
   }
 
   @override
   void didChangeDependencies() async {
     super.didChangeDependencies();
-    this.getSellList();
+
   }
 
 
@@ -87,12 +87,15 @@ class Page extends State<TradesDeep> {
   /// 先获取卖单队列，再获取买单队列
   /// 如果有一边的token还没有选择，则不更新
   Future<void> getSellList() async {
-    if (widget.leftToken.isEmpty) {
+    print('getSellList start');
+    print(widget.leftToken);
+    print(widget.rightToken);
+    if (widget.leftToken.length == 0) {
       print('left not sellect');
       return;
     }
 
-    if (widget.rightToken.isEmpty) {
+    if (widget.rightToken.length == 0) {
       print('right not sellect');
       return;
     }
@@ -205,7 +208,7 @@ class Page extends State<TradesDeep> {
       } else {
         // 价格相同的订单合并，数量相加即可
         setState(() {
-          this.arr[index]['right'] = double.parse(this.arr[index]['right']) + right ;
+          this.arr[index]['right'] = (double.parse(this.arr[index]['right']) + right).toStringAsFixed(Global.numDecimal);
         });
         print(this.arr);
       }
