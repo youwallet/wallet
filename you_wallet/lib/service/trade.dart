@@ -292,19 +292,19 @@ class Trade {
 
     // 此时还没有signature字段，所以随便填充三个32byte的字段
     String signature = this.configData + this.configData + this.configData;
-    print('getBQODHash functionName             =》${functionName}');
-    print('getBQODHash this.trader              =》${this.trader}');
-    print('getBQODHash formatParam(this.amount) =》${formatParam(this.amount)}');
-    print('getBQODHash formatParam(this.price)  =》${formatParam(this.price)}');
-    print('getBQODHash gasTokenAmount           =》${gasTokenAmount}');
-    print('getBQODHash this.configData          =》${this.configData}');
-    print('getBQODHash signature                =》${signature}');
-    print('getBQODHash formatParam(this.tokenA) =》${formatParam(this.tokenA)}');
-    print('getBQODHash formatParam(this.tokenB) =》${formatParam(this.tokenB)}');
-    print('getBQODHash formatParam(taxAddress)  =》${formatParam(Global.taxAddress)}');
+//    print('getBQODHash functionName             =》${functionName}');
+//    print('getBQODHash this.trader              =》${this.trader}');
+//    print('getBQODHash formatParam(this.amount) =》${formatParam(this.amount)}');
+//    print('getBQODHash formatParam(this.price)  =》${formatParam(this.price)}');
+//    print('getBQODHash gasTokenAmount           =》${gasTokenAmount}');
+//    print('getBQODHash this.configData          =》${this.configData}');
+//    print('getBQODHash signature                =》${signature}');
+//    print('getBQODHash formatParam(this.tokenA) =》${formatParam(this.tokenA)}');
+//    print('getBQODHash formatParam(this.tokenB) =》${formatParam(this.tokenB)}');
+//    print('getBQODHash formatParam(taxAddress)  =》${formatParam(Global.taxAddress)}');
     String postData = functionName + this.trader + formatParam(this.amount) + formatParam(this.price) + gasTokenAmount + this.configData + signature + formatParam(this.tokenA) + formatParam(this.tokenB) + formatParam(Global.taxAddress);
 
-    print('getBQODHash postData=》${postData}');
+//    print('getBQODHash postData=》${postData}');
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",
@@ -325,14 +325,14 @@ class Trade {
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
-    print("getBQODHash =》 ${rsp.body}");
+//    print("getBQODHash =》 ${rsp.body}");
     Map result = jsonDecode(rsp.body);
 
     String  res = result['result'].replaceFirst("0x", ""); // 得到一个64字节的数据
     String bq_hash = res.substring(0,64);
     String od_hash = res.substring(64);
-    print("bq_hash =》 ${bq_hash}");
-    print("od_hash =》 ${od_hash}");
+//    print("bq_hash =》 ${bq_hash}");
+//    print("od_hash =》 ${od_hash}");
     this.odHash = od_hash;
     this.bqHash = bq_hash;
     return {
@@ -398,7 +398,7 @@ class Trade {
     String strSell = isSell ? '1' : '0';
     String params = formatParam(baseToken) + formatParam(quoteToken) + formatParam(strSell);
     String postData = func['getOrderQueueInfo(address,address,bool)'] + params;
-    print(postData);
+//    print(postData);
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",

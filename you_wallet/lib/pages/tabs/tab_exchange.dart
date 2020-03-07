@@ -5,6 +5,7 @@ import 'package:youwallet/widgets/transferList.dart';
 import 'package:youwallet/widgets/tokenSelectSheet.dart';
 import 'package:youwallet/widgets/input.dart';
 import 'package:youwallet/bus.dart';
+import 'package:youwallet/global.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart' as walletModel;
 import 'package:youwallet/service/trade.dart';
@@ -467,10 +468,16 @@ class Page extends State {
     Trade trade = new Trade(this.value['address'], this.value['name'], this.rightToken['address'], this.rightToken['name'], this.controllerAmount.text, this.controllerPrice.text, isBuy, pwd);
     try {
       await trade.takeOrder();
+      this.showSnackBar('挂单成功');
+
       // 下单成功后，刷新交易深度和交易记录
       eventBus.fire(OrderSuccessEvent());
       eventBus.fire(UpdateTeadeDeepEvent());
 
+      // 通知钱包更新余额，这里延迟2s通知，实际测试发现立即更新余额的话额度不会变
+      Future.delayed(Duration(seconds: 2), (){
+        Provider.of<walletModel.Wallet>(context).updateWallet(Global.getPrefs('currentWallet'));
+      });
     } catch(e) {
       print('+++++++++++++++');
       print(e);

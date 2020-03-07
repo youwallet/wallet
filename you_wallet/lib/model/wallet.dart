@@ -6,6 +6,7 @@ import 'package:web3dart/credentials.dart';
 import 'package:youwallet/util/md5_encrypt.dart';
 import 'package:youwallet/util/wallet_crypt.dart';
 import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
+import 'package:youwallet/global.dart';
 
 /// ChangeNotifier 是 Flutter SDK 中的一个简单的类。
 /// 它用于向监听器发送通知。换言之，如果被定义为 ChangeNotifier，
@@ -59,12 +60,11 @@ class Wallet extends ChangeNotifier {
 
   // 切换钱包,如果没有参数，就从缓存中获取
   void changeWallet(String address) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     print('changeWallet  => ${address}');
     if(address != null && address.length == 0) {
-      address = prefs.getString("currentWallet");
+      address = Global.getPrefs("currentWallet");
     } else {
-      prefs.setString("currentWallet", address);
+      await Global.setPrefs("currentWallet", address);
     }
 
     this.currentWallet = address;
@@ -169,7 +169,7 @@ class Wallet extends ChangeNotifier {
     return i;
   }
 
-  // 根据address刷新指定wallet
+  // 更新wallet的ETH余额
   Future<int> updateWallet(String address) async{
     String balance = await TokenService.getBalance(address);
     var sql = SqlUtil.setTable("wallet");

@@ -85,6 +85,9 @@ class Global {
     return _prefs.getString(key);
   }
 
-
+  // 设置缓存中数据
+  static Future<bool> setPrefs(String key, String value) async {
+    return _prefs.setString(key, value);
+  }
 
 }

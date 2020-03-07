@@ -121,7 +121,7 @@ class Page extends State<TradesDeep> {
     // 拿到队列中第一个订单的 bq_hash + od_hash
     String hash = await Trade.getOrderQueueInfo(widget.leftToken, widget.rightToken, isSell);
     // 把hash中的bq hash单独拿出来，同一个队列中的bq hash都是相同的 拿到QueueElem的订单结构体
-    print('getBuyList hash => ${hash}');
+//    print('getBuyList hash => ${hash}');
     String bqHash = hash.replaceFirst('0x', '').substring(0,64);
     String odHash = hash.replaceFirst('0x', '').substring(64);
 

@@ -8,6 +8,7 @@ import 'package:youwallet/bus.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/deal.dart';
 import 'package:youwallet/service/trade.dart';
+import 'package:flutter/services.dart';
 
 class transferList extends StatefulWidget {
 
@@ -71,6 +72,15 @@ class Page extends State<transferList> {
       actionExtentRatio: 0.25,
       child: this.buildItem(item, context),
       secondaryActions: <Widget>[//右侧按钮列表
+        IconSlideAction(
+          caption: '复制Hash',
+          color: Colors.blue,
+          icon: Icons.content_copy,
+          onTap: () {
+            //print(item);
+            this.copyHash(item);
+          },
+        ),
         this.buildRightAction(context, item)
       ],
     );
@@ -216,12 +226,9 @@ class Page extends State<transferList> {
 //    int minute = DateTime.now().minute;
 //    int second = DateTime.now().second;
 //    int today = now - (hour*60*60 + minute*60 + second)*1000;
-    for(var i=1;i<list.length;i++){
-      print(list[i]['status']);
-    }
+
     if (tab == '当前兑换') {
       list.retainWhere((element)=>(element['status']=='进行中' ));
-      print(list);
       this._getTradeInfo(list);
     } else {
       list.retainWhere((element)=>(element['status']!='进行中'));
@@ -243,7 +250,7 @@ class Page extends State<transferList> {
       //print('查询订单   =》${this.arr[i]['txnHash']}');
       if(list[i]['status'] != '成功') {
         double amount = await Trade.getFilled(list[i]['odHash']);
-        print('匹配情况   =》${amount}');
+//        print('匹配情况   =》${amount}');
         int sqlRes = await Provider.of<Deal>(context).updateFilled(
             list[i], amount.toStringAsFixed(2));
         filled[list[i]['txnHash']] = amount.toStringAsFixed(2);
@@ -254,7 +261,14 @@ class Page extends State<transferList> {
     setState(() {
       this.filledAmount = filled;
     });
-    print(this.filledAmount);
+//    print(this.filledAmount);
+  }
+
+  /// 点击订单复制订单的hash
+  void copyHash(Map item) {
+    ClipboardData data = new ClipboardData(text: item['txnHash']);
+    Clipboard.setData(data);
+    eventBus.fire(TransferDoneEvent('订单复制成功'));
   }
 
 
