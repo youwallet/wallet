@@ -22,6 +22,8 @@ import 'package:bip32/bip32.dart' as bip32;
 import 'package:hex/hex.dart';
 import 'package:bitcoin_flutter/src/payments/p2pkh.dart';
 import 'package:convert/convert.dart';
+import 'package:decimal/decimal.dart';
+import 'dart:math';
 
 
 class DebugPage extends StatefulWidget {
@@ -117,8 +119,9 @@ class _DebugPageState extends State<DebugPage> {
               child: Text("删除交易记录数据库"),
               textColor: Colors.blue,
               onPressed: () async {
-                final provider = new ProviderSql();
-                await provider.clearTrade();
+//                final provider = new ProviderSql();
+//                await provider.clearTrade();
+                print(Decimal.parse(pow(10, 18).toString()));
               },
             ),
 //            FlatButton(

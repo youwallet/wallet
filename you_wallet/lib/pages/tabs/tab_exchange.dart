@@ -12,6 +12,7 @@ import 'package:youwallet/widgets/modalDialog.dart';
 import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:youwallet/widgets/customTab.dart';
 import 'package:youwallet/widgets/tradesDeep.dart';
+import 'package:decimal/decimal.dart';
 
 class TabExchange extends StatefulWidget {
 
@@ -39,7 +40,9 @@ class Page extends State {
 
   // 输入框右侧显示的token提示
   String suffixText = "";
-  double tradePrice = 0;
+
+  // 输入价格和数量后计算的交易额度
+  Decimal tradePrice;
 
   // 需要授权的token
   String needApproveToken = '';
@@ -201,7 +204,7 @@ class Page extends State {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                       new Text(
-                          '交易额${tradePrice}BTD',
+                          '交易额${tradePrice??""}',
                           style: new TextStyle(
                             color: _btnText == '买入'? Colors.green : Colors.red
                           ),
@@ -471,7 +474,12 @@ class Page extends State {
     } catch(e) {
       print('+++++++++++++++');
       print(e);
-      this.showSnackBar(e.toString());
+      if(e.toString() == 'RPCError: got code -32000 with msg "insufficient funds for gas * price + value".') {
+
+        this.showSnackBar('钱包ETH余额不足');
+      } else {
+        this.showSnackBar(e.toString());
+      }
     }
 
     // 关闭挂单中的全局提示
@@ -494,7 +502,7 @@ class Page extends State {
      }
 
      setState(() {
-       this.tradePrice = double.parse(this.controllerAmount.text) * double.parse(this.controllerPrice.text);
+       this.tradePrice = Decimal.parse(this.controllerAmount.text) * Decimal.parse(this.controllerPrice.text);
      });
    }
 

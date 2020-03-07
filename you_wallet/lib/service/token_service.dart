@@ -72,22 +72,6 @@ class TokenService {
     return address;
   }
 
-  @override
-  Future<bool> setupFromMnemonic(String mnemonic) async {
-    final cryptMnemonic = bip39.mnemonicToEntropy(mnemonic);
-//    await _configService.setPrivateKey(null);
-//    await _configService.setMnemonic(cryptMnemonic);
-//    await _configService.setupDone(true);
-    return true;
-  }
-
-  @override
-  Future<bool> setupFromPrivateKey(String privateKey) async {
-//    await _configService.setMnemonic(null);
-//    await _configService.setPrivateKey(privateKey);
-//    await _configService.setupDone(true);
-    return true;
-  }
 
   /// 获取token的余额，这里获取的是ETH的余额
   static Future<String> getBalance(String address) async {
@@ -95,7 +79,7 @@ class TokenService {
       final client = Web3Client(rpcUrl, Client());
       EtherAmount balance = await client.getBalance(EthereumAddress.fromHex(address));
       double b = balance.getValueInUnit(EtherUnit.ether);
-      return  b.toStringAsFixed(2);
+      return  b.toStringAsFixed(4);
   }
 
   static Future<String> getNetWork() async {

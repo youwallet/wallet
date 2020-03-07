@@ -234,6 +234,9 @@ class Page extends State<transferList> {
   /// 遍历每个订单的状态
   /// 将查询到的匹配数量保存在数据库中
   /// 如果订单中的数量已经匹配完毕，则代表这个订单转账成功，刷新的时候不再遍历
+  /// 两个失败的订单
+  /// 0x82455ac541bac4f69294ca6329ed04a4513d86038e020a89fb011ba5424cf0c2
+  /// 0xa03869701750008d86003f2dcc27a503f3888c99acef53c72b7e0bb22136cdeb
   Future<void> _getTradeInfo(list) async {
     Map filled = {};
     for(var i = 0; i<list.length; i++) {

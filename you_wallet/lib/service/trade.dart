@@ -13,7 +13,7 @@ import 'package:youwallet/global.dart';
 import 'package:youwallet/util/md5_encrypt.dart';
 import 'package:youwallet/util/wallet_crypt.dart';
 import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
-
+import 'package:decimal/decimal.dart';
 
 class Trade {
 
@@ -146,10 +146,10 @@ class Trade {
 
     // token的小数位数默认18位
 
-    this.price = (double.parse(this.amount) * double.parse(price)*pow(10, 18)).toStringAsFixed(0) ;
+    this.price = (Decimal.parse(this.amount) * Decimal.parse(price)*Decimal.parse(pow(10, 18).toString())).toStringAsFixed(0) ;
     this.price = BigInt.parse(this.price).toRadixString(16);
 
-    this.amount = (double.parse(this.amount) * pow(10, 18)).toStringAsFixed(0) ;
+    this.amount = (Decimal.parse(this.amount) * Decimal.parse(pow(10, 18).toString())).toStringAsFixed(0) ;
     this.amount = BigInt.parse(this.amount).toRadixString(16);
 
     print("takeOrder price  => ${this.price}");
