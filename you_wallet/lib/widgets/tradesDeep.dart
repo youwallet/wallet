@@ -161,13 +161,13 @@ class Page extends State<TradesDeep> {
     // print(baseTokenAmount);
     // BigInt quoteTokenAmount = BigInt.parse(queueElem.replaceFirst('0x', '').substring(128, 192));
     BigInt quoteTokenAmount = BigInt.parse(queueElem.replaceFirst('0x', '').substring(128, 192), radix: 16);
-    print("=======================================");
-    print("baseTokenAmount   => ${baseTokenAmount}");
-    print("quoteTokenAmount  => ${quoteTokenAmount}");
-    print("左边显示价格        => ${baseTokenAmount/quoteTokenAmount}");
-    print("filled            => ${filled}");
-    print("右边显示数量        => ${baseTokenAmount - filled}");
-    print("isSell            => ${isSell}");
+//    print("=======================================");
+//    print("baseTokenAmount   => ${baseTokenAmount}");
+//    print("quoteTokenAmount  => ${quoteTokenAmount}");
+//    print("左边显示价格        => ${baseTokenAmount/quoteTokenAmount}");
+//    print("filled            => ${filled}");
+//    print("右边显示数量        => ${baseTokenAmount - filled}");
+//    print("isSell            => ${isSell}");
     if (baseTokenAmount != BigInt.from(0)) {
 
       String left = (quoteTokenAmount/baseTokenAmount).toStringAsFixed(Global.priceDecimal);

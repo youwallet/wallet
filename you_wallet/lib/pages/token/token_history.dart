@@ -242,9 +242,9 @@ class Page extends State<TokenHistory> {
       print('开始查询${item}');
       if(item['status'] == null && item['txnHash'].length == 66) {
 
-        String blockHash = await Trade.getTransactionByHash(item['txnHash']);
+        Map blockHash = await Trade.getTransactionByHash(item['txnHash']);
         print('进入查询, 查询到blockHash=>${blockHash}');
-        if(blockHash != null) {
+        if(blockHash['blockHash'] != null) {
           await this.updateTransferStatus(item['txnHash']);
         } else {
           print('blockHash为null');

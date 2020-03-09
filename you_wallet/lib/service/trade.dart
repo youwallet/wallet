@@ -470,7 +470,7 @@ class Trade {
   // 根据hash查询订单
   // 下面这个订单是没有授权交易的失败订单
   // 0x7e6c3534a5acdaf52aef4f13b2dd6cdd2f9496098cd59728c5c065fb0d5f4b7a
-  static Future<String> getTransactionByHash(String hash) async{
+  static Future<Map> getTransactionByHash(String hash) async{
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",
@@ -483,9 +483,11 @@ class Trade {
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
-    print("根据订单hash查询状态 => ${rsp.body}");
+
     Map result = jsonDecode(rsp.body);
-    return result['result']['blockHash'];
+    result['result']['input'] = '';
+    print(result.toString());
+    return result['result'];
   }
 
   // 获取订单中的信息
@@ -539,29 +541,26 @@ class Trade {
 
     String rpcUrl = await Global.rpcUrl();
     String privateKey = await getPrivateKey(pwd);
-    print('approve rpcUrl  => ${rpcUrl}');
-    print('approve proxy   => ${formatParam(Global.proxy)}');
-    print('approve value   => ${formatParam(value)}');
-    print('approve postData=> ${postData}');
+//    print('approve rpcUrl  => ${rpcUrl}');
+//    print('approve proxy   => ${formatParam(Global.proxy)}');
+//    print('approve value   => ${formatParam(value)}');
+//    print('approve postData=> ${postData}');
 
     final client = Web3Client(rpcUrl, Client());
     var credentials = await client.credentialsFromPrivateKey(privateKey);
-    try {
-      var rsp = await client.sendTransaction(
-          credentials,
-          Transaction(
-              to: EthereumAddress.fromHex(token),
-              gasPrice: EtherAmount.inWei(BigInt.from(20000000000)),
-              maxGas: 7000000,
-              value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
-              data: hexToBytes(postData)
-          ),
-          chainId: 3
-      );
-      print('approve res   => ${rsp}');
-      return rsp;
-    } catch (e) {
-      print("catch error =》 ${e}");
-    }
+
+    var rsp = await client.sendTransaction(
+        credentials,
+        Transaction(
+            to: EthereumAddress.fromHex(token),
+            gasPrice: EtherAmount.inWei(BigInt.from(20000000000)),
+            maxGas: 7000000,
+            value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
+            data: hexToBytes(postData)
+        ),
+        chainId: 3
+    );
+    return rsp.toString();
+
   }
 }

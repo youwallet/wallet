@@ -228,8 +228,9 @@ class Page extends State<transferList> {
 //    int today = now - (hour*60*60 + minute*60 + second)*1000;
 
     if (tab == '当前兑换') {
+      print('here tab is => ${tab}');
       list.retainWhere((element)=>(element['status']=='进行中' ));
-      this._getTradeInfo(list);
+//      this._getTradeInfo(list);
     } else {
       list.retainWhere((element)=>(element['status']!='进行中'));
     }
@@ -242,15 +243,22 @@ class Page extends State<transferList> {
   /// 将查询到的匹配数量保存在数据库中
   /// 如果订单中的数量已经匹配完毕，则代表这个订单转账成功，刷新的时候不再遍历
   /// 两个失败的订单
-  /// 0x82455ac541bac4f69294ca6329ed04a4513d86038e020a89fb011ba5424cf0c2
-  /// 0xa03869701750008d86003f2dcc27a503f3888c99acef53c72b7e0bb22136cdeb
+  ///
   Future<void> _getTradeInfo(list) async {
+
+//    print('查询一个失败的的订单:');
+//    Map res1 = await Trade.getTransactionByHash('0xa03869701750008d86003f2dcc27a503f3888c99acef53c72b7e0bb22136cdeb');
+
+//    print('查询一个成功的的订单:');
+//    Map res = await Trade.getTransactionByHash('0x82455ac541bac4f69294ca6329ed04a4513d86038e020a89fb011ba5424cf0c2');
+
+
     Map filled = {};
     for(var i = 0; i<list.length; i++) {
       //print('查询订单   =》${this.arr[i]['txnHash']}');
       if(list[i]['status'] != '成功') {
         double amount = await Trade.getFilled(list[i]['odHash']);
-//        print('匹配情况   =》${amount}');
+        print('匹配情况   =》${amount}');
         int sqlRes = await Provider.of<Deal>(context).updateFilled(
             list[i], amount.toStringAsFixed(2));
         filled[list[i]['txnHash']] = amount.toStringAsFixed(2);
@@ -261,7 +269,7 @@ class Page extends State<transferList> {
     setState(() {
       this.filledAmount = filled;
     });
-//    print(this.filledAmount);
+    print(this.filledAmount);
   }
 
   /// 点击订单复制订单的hash

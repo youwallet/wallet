@@ -392,13 +392,15 @@ class Page extends State {
 
     String res = await TokenService.allowance(context, needApproveToken);
     print('checkApprove res=> ${res}');
+
+//    this.getPwd(false);
     if (res == '0') {
+      Navigator.of(context).pop();
       // 授权额度为0，发起提示
       Map currentWallet = Provider.of<walletModel.Wallet>(context).currentWalletObject;
       if (currentWallet['balance'] == '0.00') {
         this.showSnackBar('您的钱包ETH余额为0，无法授权，不可以交易');
       } else {
-        Navigator.of(context).pop();
         this.showAuthTips();
       }
     } else {
@@ -409,7 +411,7 @@ class Page extends State {
 
   /// 获取用户密码
   /// approve 是否授权
-  ///  发起授权之前，要先确认用户的钱包ETH有余额，否则无法授权
+  /// 发起授权之前，要先确认用户的钱包ETH有余额，否则无法授权
   void getPwd(bool approve) {
     Navigator.pushNamed(context, "getPassword").then((data) async{
       if(data == null) {
@@ -418,11 +420,48 @@ class Page extends State {
         return;
       }
 
-      if (!approve) {
-        await Trade.approve(needApproveToken, data);
+      // 已经授权过
+      if (approve) {
+        this.startTrade(data);
+      } else {
+        try {
+          // 授权接口可以立刻拿到Hash，但是授权不一定成功，
+          // 需要利用hash查询接口，查询这个订单有没有上链
+          // 如果没有上链，就一直给用户loading
+          String hash = await Trade.approve(needApproveToken, data);
+          print('授权Hash=> ${hash}');
+          // 这里不能用await，否则会黑屏
+          this.checkAuthResponse(hash, 0);
+        } catch(e) {
+          Navigator.of(context).pop();
+        }
       }
-      this.startTrade(data);
+
     });
+  }
+
+  /// 发起授权后，轮询授权结果
+  Future<bool> checkAuthResponse(String hash, int index) async {
+    Map response = await Trade.getTransactionByHash(hash);
+    print("第${index}次查询");
+    print(response);
+    if(response['blockHash'] != null) {
+      print('授权成功，以太坊返回了交易的blockHash');
+      Navigator.of(context).pop();
+      this.showSnackBar('授权成功，请重新挂单');
+      return true;
+    } else {
+      if (index > 10) {
+        print('已经轮询了10次，授权失败');
+        Navigator.of(context).pop();
+        this.showSnackBar('授权响应超时，请重新授权');
+        return false;
+      } else {
+        Future.delayed(Duration(seconds: 2), (){
+          this.checkAuthResponse(hash, index+1);
+        });
+      }
+    }
   }
 
   /// 提示授权需要密码
@@ -445,7 +484,7 @@ class Page extends State {
                     barrierDismissible: false,
                     builder: (BuildContext context) {
                       return new LoadingDialog( //调用对话框
-                        text: '挂单中...',
+                        text: '授权中...',
                       );
                     }
                 );
