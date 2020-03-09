@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
+import 'package:youwallet/widgets/customButton.dart';
 
 class PasswordPage extends StatefulWidget {
   @override
@@ -44,8 +45,10 @@ class _LoginPageState extends State<PasswordPage> {
                     SizedBox(height: 30.0),
                     buildPasswordTextField(context),
                     SizedBox(height: 60.0),
-                    buildLoginButton(context),
+//                    buildLoginButton(context),
+                    buildButton(context)
                   ],
+
                 )
             );
           })
@@ -82,39 +85,52 @@ class _LoginPageState extends State<PasswordPage> {
     );
   }
 
+  Widget buildButton(BuildContext context) {
+    return new CustomButton(
+        onSuccessChooseEvent:(res){
+          _formKey.currentState.save();
+          if (_email == _password && !_email.isEmpty) {
+            Navigator.of(context).pop(_email);
+          } else {
+            if (_email.isEmpty || _password.isEmpty) {
+              final snackBar = new SnackBar(content: new Text('不能为空'));
+              Scaffold.of(context).showSnackBar(snackBar);
+            } else {
+              final snackBar = new SnackBar(content: new Text('两次输入密码不同'));
+              Scaffold.of(context).showSnackBar(snackBar);
+            }
+          }
+        }
+    );
+  }
+
 
   TextFormField buildPasswordTextField(BuildContext context) {
     return TextFormField(
       onSaved: (String value) => _password = value,
       decoration: InputDecoration(
-          labelText: '请再次输入密码',
-//          suffixIcon: IconButton(
-//              icon: Icon(
-//                Icons.remove_red_eye,
-//                color: _eyeColor,
-//              ),
-//              onPressed: () {
-//                setState(() {
-//                  _isObscure = !_isObscure;
-//                  _eyeColor = _isObscure
-//                      ? Colors.grey
-//                      : Theme.of(context).iconTheme.color;
-//                });
-//              })
-              ),
+        hintText: '请再次输入密码',
+        filled: true,
+        fillColor: Colors.black12,
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(6.0),
+            borderSide: BorderSide.none
+        ),
+      ),
     );
   }
 
   TextFormField buildEmailTextField() {
     return TextFormField(
       decoration: InputDecoration(
-        labelText: '请输入密码',
+        hintText: '请输入密码',
+        filled: true,
+        fillColor: Colors.black12,
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(6.0),
+            borderSide: BorderSide.none
+        ),
       ),
-      validator: (String value) {
-        if (value.isEmpty) {
-          return '请输入密码';
-        }
-      },
       onSaved: (String value) => _email = value,
     );
   }

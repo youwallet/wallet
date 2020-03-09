@@ -110,7 +110,7 @@ class _DebugPageState extends State<DebugPage> {
               },
             ),
             FlatButton(
-              child: Text("指纹识别"),
+              child: Text("设置密码"),
               textColor: Colors.blue,
               onPressed: () {_checkBiometrics
                 ();},
