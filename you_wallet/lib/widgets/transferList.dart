@@ -37,9 +37,10 @@ class Page extends State<transferList> {
       this.tabChange(event.res);
     });
 
-    /// 用户挂单成功
+    /// 用户挂单成功，拿到刚刚挂的订单Hash，查询订单是否成功
     eventBus.on<OrderSuccessEvent>().listen((event) {
       this.tabChange('当前兑换');
+      this.updateOrderStatus();
     });
   }
 
@@ -229,14 +230,15 @@ class Page extends State<transferList> {
 
     if (tab == '当前兑换') {
       print('here tab is => ${tab}');
-      list.retainWhere((element)=>(element['status']=='进行中' ));
-//      this._getTradeInfo(list);
+      list.retainWhere((element)=>(element['status']=='进行中' || element['status']=='打包中' ));
+      this._getTradeInfo(list);
     } else {
       list.retainWhere((element)=>(element['status']!='进行中'));
     }
     setState(() {
       this.arr = list;
     });
+    this.updateOrderStatus();
   }
 
   /// 遍历每个订单的状态
@@ -256,20 +258,30 @@ class Page extends State<transferList> {
     Map filled = {};
     for(var i = 0; i<list.length; i++) {
       //print('查询订单   =》${this.arr[i]['txnHash']}');
-      if(list[i]['status'] != '成功') {
+      if(list[i]['status'] == '进行中') {
         double amount = await Trade.getFilled(list[i]['odHash']);
         print('匹配情况   =》${amount}');
-        int sqlRes = await Provider.of<Deal>(context).updateFilled(
+        await Provider.of<Deal>(context).updateFilled(
             list[i], amount.toStringAsFixed(2));
         filled[list[i]['txnHash']] = amount.toStringAsFixed(2);
       } else {
         //print('该订单状态为${this.arr[i]['status']},已匹配完毕');
       }
     }
+//    setState(() {
+//      this.filledAmount = filled;
+//    });
+//    print(this.filledAmount);
+    this.updateList();
+  }
+
+  /// 订单匹配状态查询完毕，整体更新一次列表
+  void updateList() async {
+    List list = List.from(await Provider.of<Deal>(context).getTraderList());
+    list.retainWhere((element)=>(element['status']=='进行中' || element['status']=='打包中' ));
     setState(() {
-      this.filledAmount = filled;
+      this.arr = list;
     });
-    print(this.filledAmount);
   }
 
   /// 点击订单复制订单的hash
@@ -279,5 +291,37 @@ class Page extends State<transferList> {
     eventBus.fire(TransferDoneEvent('订单复制成功'));
   }
 
+  /// 拿到订单列表中最新的一个订单状态为打包中的订单，查询订单状态
+  void updateOrderStatus() async {
+    List list = await Provider.of<Deal>(context).getTraderList();
+    Map order = list.lastWhere((e)=>e['status'] == '打包中',orElse: ()=>(null));
+    if (order == null) {
+      print('no order');
+      return;
+    } else {
+      this.checkOrderStatus(order['txnHash'], 0);
+    }
+  }
+
+  void checkOrderStatus(String hash, int index) async {
+    Map response = await Trade.getTransactionByHash(hash);
+    print("第${index}次查询");
+    print(response);
+    if(response['blockHash'] != null) {
+      print('打包成功，以太坊返回了交易的blockHash');
+      await Provider.of<Deal>(context).updateOrderStatus(hash, '进行中');
+      this.tabChange('当前兑换');
+      eventBus.fire(TransferDoneEvent('打包成功，订单状态变更为进行中'));
+    } else {
+      if (index > 30) {
+        print('已经轮询了30次，打包失败');
+        eventBus.fire(TransferDoneEvent('订单打包超时，请重新下单'));
+      } else {
+        Future.delayed(Duration(seconds: 2), (){
+          this.checkOrderStatus(hash, index+1);
+        });
+      }
+    }
+  }
 
 }

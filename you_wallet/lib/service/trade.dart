@@ -174,9 +174,11 @@ class Trade {
         ),
         chainId: 3
     );
-    print("transaction => ${rsp}");
+//    print("transaction => ${rsp}");
     await client.dispose();
     this.txnHash = rsp;
+    // 保存订单到本地数据库，
+    // 注意这时订单还在打包中，只有hash值，不算成功
     await this.saveTrader();
     return this.txnHash;
 
@@ -351,7 +353,7 @@ class Trade {
     } else {
       orderType = '卖出';
     }
-    List list = [orderType,this.oldPrice, this.oldAmount, this.tokenA,this.tokenAName,this.tokenB,this.tokenBName,this.txnHash,this.odHash, this.bqHash, DateTime.now().millisecondsSinceEpoch,'进行中'];
+    List list = [orderType,this.oldPrice, this.oldAmount, this.tokenA,this.tokenAName,this.tokenB,this.tokenBName,this.txnHash,this.odHash, this.bqHash, DateTime.now().millisecondsSinceEpoch,'打包中'];
     int id = await sql.rawInsert(sqlInsert, list);
     print("db trade id => ${id}");
     return id;

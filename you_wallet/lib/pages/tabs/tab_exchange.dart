@@ -507,7 +507,7 @@ class Page extends State {
     Trade trade = new Trade(this.value['address'], this.value['name'], this.rightToken['address'], this.rightToken['name'], this.controllerAmount.text, this.controllerPrice.text, isBuy, pwd);
     try {
       await trade.takeOrder();
-      this.showSnackBar('挂单成功');
+      this.showSnackBar('订单打包中');
 
       // 下单成功后，刷新交易深度和交易记录
       eventBus.fire(OrderSuccessEvent());

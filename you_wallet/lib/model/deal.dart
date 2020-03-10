@@ -29,7 +29,7 @@ class Deal extends ChangeNotifier {
     return list;
   }
 
-  // 更新订单匹配的交易额到数据库
+  /// 更新订单匹配的交易额到数据库
   Future<int> updateFilled(Map item, String filled ) async {
     var sql = SqlUtil.setTable("trade");
     String status = '进行中';
@@ -40,6 +40,13 @@ class Deal extends ChangeNotifier {
 //    print(item['amount']);
 //    print(filled);
     int i = await sql.update({'filled': filled, 'status': status}, 'txnHash', item['txnHash']);
+    return i;
+  }
+
+  /// 更新订单状态
+  Future<int> updateOrderStatus(String txnHash, String status ) async {
+    var sql = SqlUtil.setTable("trade");
+    int i = await sql.update({'status': status}, 'txnHash', txnHash);
     return i;
   }
 
