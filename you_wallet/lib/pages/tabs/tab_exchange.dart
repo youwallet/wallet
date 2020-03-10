@@ -9,6 +9,7 @@ import 'package:youwallet/global.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart' as walletModel;
 import 'package:youwallet/service/trade.dart';
+import 'package:youwallet/model/deal.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
 import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:youwallet/widgets/customTab.dart';
@@ -343,6 +344,7 @@ class Page extends State {
 
   /// 下单
   void makeOrder() async {
+
     showDialog<Null>(
         context: context, //BuildContext对象
         barrierDismissible: false,
@@ -354,6 +356,15 @@ class Page extends State {
     );
     // 关闭键盘
     // FocusScope.of(context).requestFocus(FocusNode());
+
+    List list = await Provider.of<Deal>(context).getTraderList();
+    bool packing = list.any((element)=>(element['status']=="打包中"));
+
+    if (packing) {
+      this.showSnackBar('当前有订单在打包中，请先等待打包完毕');
+      Navigator.of(context).pop();
+      return ;
+    }
 
     if (this.value == null) {
       this.showSnackBar('请选择左侧token');
