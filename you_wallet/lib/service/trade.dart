@@ -487,8 +487,8 @@ class Trade {
     );
 
     Map result = jsonDecode(rsp.body);
-    result['result']['input'] = '';
-    print(result.toString());
+//    print('here');
+//    print(result.toString());
     return result['result'];
   }
 

@@ -40,7 +40,7 @@ class Page extends State<transferList> {
     /// 用户挂单成功，拿到刚刚挂的订单Hash，查询订单是否成功
     eventBus.on<OrderSuccessEvent>().listen((event) {
       this.tabChange('当前兑换');
-      this.updateOrderStatus();
+//      this.updateOrderStatus();
     });
   }
 
@@ -51,7 +51,7 @@ class Page extends State<transferList> {
 //    setState(() {
 //      this.arr = List.from(list);
 //    });
-      this.tabChange('当前兑换');
+//      this.tabChange('当前兑换');
   }
 
 
@@ -74,12 +74,15 @@ class Page extends State<transferList> {
       child: this.buildItem(item, context),
       secondaryActions: <Widget>[//右侧按钮列表
         IconSlideAction(
-          caption: '复制Hash',
+          caption: '订单详情',
           color: Colors.blue,
-          icon: Icons.content_copy,
+          icon: Icons.assignment,
           onTap: () {
             //print(item);
-            this.copyHash(item);
+            //this.copyHash(item);
+            Navigator.pushNamed(context, "order_detail", arguments: <String, String>{
+              'hash': item['txnHash'],
+            });
           },
         ),
         this.buildRightAction(context, item)
@@ -129,45 +132,45 @@ class Page extends State<transferList> {
 //           color: Colors.lightBlue,
         ),
         child: new Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          new Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               new Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  new Text(
-                      '${item['orderType']}',
-                      style: new TextStyle(
-                          color: item['orderType']== '买入' ? Colors.green : Colors.deepOrange
-                      )
+                  new Row(
+                    children: <Widget>[
+                      new Text(
+                          '${item['orderType']}',
+                          style: new TextStyle(
+                              color: item['orderType']== '买入' ? Colors.green : Colors.deepOrange
+                          )
+                      ),
+                      new Text('   ${date}'),
+                    ],
                   ),
-                  new Text('   ${date}'),
+                  new Text(
+                      item['status']??'进行中',
+                      style: new TextStyle(
+                          color: Colors.deepOrange
+                      )
+                  )
                 ],
               ),
-              new Text(
-                  item['status']??'进行中',
-                  style: new TextStyle(
-                      color: Colors.deepOrange
+              new Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  new Text(
+                      '${item['price']} (${item['baseTokenName']})',
+                  ),
+                  new Text(
+                      '${filled.toString()}/${item['amount']}(${item['tokenName']})',
+                      style: new TextStyle(
+                          color: Colors.lightBlue
+                      )
                   )
-              )
-            ],
-          ),
-          new Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              new Text(
-                  '${item['price']} (${item['baseTokenName']})',
+                ],
               ),
-              new Text(
-                  '${filled.toString()}/${item['amount']}(${item['tokenName']})',
-                  style: new TextStyle(
-                      color: Colors.lightBlue
-                  )
-              )
             ],
-          ),
-        ],
       )
     );
 
@@ -231,14 +234,14 @@ class Page extends State<transferList> {
     if (tab == '当前兑换') {
       print('here tab is => ${tab}');
       list.retainWhere((element)=>(element['status']=='进行中' || element['status']=='打包中' ));
-      this._getTradeInfo(list);
+//      this._getTradeInfo(list);
     } else {
       list.retainWhere((element)=>(element['status']!='进行中'));
     }
     setState(() {
       this.arr = list;
     });
-    this.updateOrderStatus();
+//    this.updateOrderStatus();
   }
 
   /// 遍历每个订单的状态

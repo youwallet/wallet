@@ -29,6 +29,9 @@ import 'package:youwallet/pages/keyboard/keyboard_main.dart';
 import 'package:youwallet/pages/form/password.dart';
 import 'package:youwallet/pages/form/getPassword.dart';
 
+// 订单
+import 'package:youwallet/pages/order/order_detail.dart';
+
 // 定义全局的路由对象
 final routes = {
   '/': (context) => new TabsPage(),
@@ -51,7 +54,8 @@ final routes = {
   "keyboard_main":  (context) => new main_keyboard(),
   "password":  (context) => new PasswordPage(),
   "getPassword":  (context) => new GetPasswordPage(),
-  "splash":  (context) => new Splash()
+  "splash":  (context) => new Splash(),
+  "order_detail":  (context, {arguments}) => new OrderDetail(arguments: arguments)
 //  "tabs": (context) => new ContainerPage()
 };
 
