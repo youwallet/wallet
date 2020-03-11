@@ -1,12 +1,9 @@
-import 'package:dio/dio.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:share/share.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-
-import 'package:provider/provider.dart';
-import 'package:youwallet/model/wallet.dart' ;
 import 'package:youwallet/service/trade.dart';
+import 'package:youwallet/global.dart';
 
 class OrderDetail extends StatefulWidget {
 
@@ -77,40 +74,72 @@ class Page extends State<OrderDetail> {
     return new Container(
       alignment: Alignment.topCenter,
       child: new Container(
-        padding: const EdgeInsets.only(top: 40.0),
+        padding: const EdgeInsets.all(40.0 ),
         child: new Column(
           children: <Widget>[
-            Icon(IconData(0xe617, fontFamily: 'iconfont'),size: 100.0, color: Colors.green),
+            Icon(IconData(0xe617, fontFamily: 'iconfont'),size: 80.0, color: Colors.green),
+
             new Text(
                 '交易成功',
+                textAlign: TextAlign.end,
                 style: new TextStyle(
                     fontSize: 30.0,
-                    color: Colors.black38
+                    color: Colors.black,
+                    height: 3.0,
+
                 )
             ),
             new Column(
               children: <Widget>[
-                new Row(children: <Widget>[
-                  buildName('矿工费用'),
-                  Text(item['gas'])
+                new Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      buildName('gas'),
+                      buildValue(item['gas'])
                 ]),
-                new Row(children: <Widget>[
-                  buildName('钱包地址'),
-                  Text(item['from'])
+                new Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      buildName('gasPrice'),
+                      buildValue(item['gasPrice'])
                 ]),
-                new Row(children: <Widget>[
-                  buildName('合约地址'),
-                  Text(item['to'])
+                new Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      buildName('钱包地址'),
+                      buildValue(item['from'])
                 ]),
-                new Row(children: <Widget>[
-                  buildName('交易号'),
-                  Text(item['gas'])
+                SizedBox(
+                  height: 20.0,
+                ),
+                new Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      buildName('合约地址'),
+                      buildValue(item['to'])
                 ]),
-                new Row(children: <Widget>[
-                  buildName('区块'),
-                  Text(item['nonce'])
+                SizedBox(
+                  height: 20.0,
+                ),
+                new Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      buildName('交易号'),
+                      buildValue(item['hash']),
+                ]),
+                SizedBox(
+                  height: 20.0,
+                ),
+                new Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      buildName('区块'),
+                      buildValue(item['nonce'])
                 ]),
               ],
+            ),
+            SizedBox(
+              height: 20.0,
             ),
               new Container(
                   alignment: Alignment.center,
@@ -136,14 +165,27 @@ class Page extends State<OrderDetail> {
 
   Widget buildName(String val) {
     return new Container(
+//      color: Colors.lightBlue,
       width: 100.0,
-      height: 40.0,
+      padding: const EdgeInsets.only(right: 10.0),
+      margin: const EdgeInsets.only(bottom: 20.0),
       alignment: Alignment.centerRight,
       child: Text(
           val + ':',
           style: TextStyle(
-              color: Colors.black38,
+              color: Colors.black,
               fontSize: 18.0
+          ),
+      ),
+    );
+  }
+
+  Widget buildValue(String val) {
+    return Expanded(
+      child: Text(
+          val,
+          style: TextStyle(
+            fontSize: 18.0
           ),
       ),
     );
@@ -162,9 +204,7 @@ class Page extends State<OrderDetail> {
 
   Future<Map> getDetail() async {
     Map response = await Trade.getTransactionByHash( this.arguments['hash']);
-    setState(() {
-      detail = response;
-    });
+    print(response);
     return response;
   }
 
