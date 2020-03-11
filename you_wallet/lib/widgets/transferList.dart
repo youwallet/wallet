@@ -80,9 +80,7 @@ class Page extends State<transferList> {
           onTap: () {
             //print(item);
             //this.copyHash(item);
-            Navigator.pushNamed(context, "order_detail", arguments: <String, String>{
-              'hash': item['txnHash'],
-            });
+            Navigator.pushNamed(context, "order_detail", arguments: item);
           },
         ),
         this.buildRightAction(context, item)

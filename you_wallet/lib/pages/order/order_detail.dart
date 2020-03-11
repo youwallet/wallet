@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:youwallet/service/trade.dart';
 import 'package:youwallet/global.dart';
+import 'package:common_utils/common_utils.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OrderDetail extends StatefulWidget {
 
@@ -61,7 +63,8 @@ class Page extends State<OrderDetail> {
 
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
-      title: const Text('详情'),
+      title: const Text(''),
+      elevation: 0.0,
 //      actions: this.appBarActions(),
     );
   }
@@ -75,13 +78,12 @@ class Page extends State<OrderDetail> {
       alignment: Alignment.topCenter,
       child: new Container(
         padding: const EdgeInsets.all(40.0 ),
-        child: new Column(
+        child: new ListView(
           children: <Widget>[
-            Icon(IconData(0xe617, fontFamily: 'iconfont'),size: 80.0, color: Colors.green),
-
+            buildIcon(this.arguments['status']),
             new Text(
-                '交易成功',
-                textAlign: TextAlign.end,
+                this.arguments['status'],
+                textAlign: TextAlign.center,
                 style: new TextStyle(
                     fontSize: 30.0,
                     color: Colors.black,
@@ -91,6 +93,12 @@ class Page extends State<OrderDetail> {
             ),
             new Column(
               children: <Widget>[
+                new Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      buildName('交易时间'),
+                      buildValue(DateUtil.formatDateMs( int.parse( this.arguments['createTime']), format: DataFormats.full))
+                    ]),
                 new Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -134,28 +142,42 @@ class Page extends State<OrderDetail> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       buildName('区块'),
-                      buildValue(item['nonce'])
+                      buildValue(item['blockNumber'])
                 ]),
               ],
             ),
             SizedBox(
               height: 20.0,
             ),
-              new Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.only(bottom: 20.0), // 四周填充边距32像素
-                  color: Color(0xFFFFFFFF),
-                  child: new Column(
-                    children: <Widget>[
-                      QrImage(
-                        backgroundColor:Colors.white,
-                        data: item['hash'],
-                        size: 100.0,
-                      ),
-                    ],
-                  )
-
+            new Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.only(bottom: 20.0), // 四周填充边距32像素
+//                  color: Color(0xFFFFFFFF),
+                child: new Column(
+                  children: <Widget>[
+                    QrImage(
+                      backgroundColor:Colors.white,
+                      data: item['hash'],
+                      size: 100.0,
+                    ),
+                  ],
+                )
+            ),
+            GestureDetector(
+              child: Text(
+                '到Etherscan查询更详细信息>',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Colors.lightBlue,
+                    fontSize: 14.0
+                ),
               ),
+              onTap: () async {
+                String url= Global.getDomain() + item['hash'];
+                print(url);
+                await launch(url);
+              }
+            )
           ],
         ),
       ),
@@ -182,17 +204,23 @@ class Page extends State<OrderDetail> {
 
   Widget buildValue(String val) {
     return Expanded(
-      child: Text(
+      child: GestureDetector(
+        onTap: (){
+          _copyAddress(val);
+          showSnackbar('复制成功');
+        },
+        child: Text(
           val,
           style: TextStyle(
-            fontSize: 18.0
+              fontSize: 18.0
           ),
-      ),
+        ),
+      )
     );
   }
 
-  void  _copyAddress() {
-    ClipboardData data = new ClipboardData(text:this.arguments['address']);
+  void  _copyAddress(val) {
+    ClipboardData data = new ClipboardData(text:val);
     Clipboard.setData(data);
     this.showSnackbar('复制成功');
   }
@@ -202,8 +230,18 @@ class Page extends State<OrderDetail> {
     globalKey.currentState.showSnackBar(snackBar);
   }
 
+  Widget buildIcon(String status) {
+    if (status == '进行中') {
+      return Icon(Icons.autorenew, size: 80.0, color: Colors.green);
+    } else {
+      return Icon(IconData(0xe617, fontFamily: 'iconfont'),size: 80.0, color: Colors.green);
+    }
+  }
+
   Future<Map> getDetail() async {
-    Map response = await Trade.getTransactionByHash( this.arguments['hash']);
+    print('getDetail =>');
+    print(this.arguments);
+    Map response = await Trade.getTransactionByHash( this.arguments['txnHash']);
     print(response);
     return response;
   }

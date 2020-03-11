@@ -80,6 +80,10 @@ class Global {
     return "https://" + getPrefs('network') + ".infura.io/" + myKey;
   }
 
+//  https://ropsten.etherscan.io/tx/
+  static String getDomain() {
+    return "https://" + getPrefs('network') + ".etherscan.io/tx/";
+  }
   // 获取缓存中数据
   static String getPrefs(String key) {
     return _prefs.getString(key);
