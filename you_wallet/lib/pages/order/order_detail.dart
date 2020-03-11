@@ -6,6 +6,7 @@ import 'package:youwallet/service/trade.dart';
 import 'package:youwallet/global.dart';
 import 'package:common_utils/common_utils.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:youwallet/widgets/loadingDialog.dart';
 
 class OrderDetail extends StatefulWidget {
 
@@ -54,7 +55,7 @@ class Page extends State<OrderDetail> {
             Map response = snapshot.data;
             return buildPage(response);
           } else {
-            return LoadingWidget();
+            return LoadingDialog();
           }
         },
       )
