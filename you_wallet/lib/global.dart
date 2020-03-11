@@ -90,4 +90,13 @@ class Global {
     return _prefs.setString(key, value);
   }
 
+  // 缩短钱包地址长度
+  static  maskAddress(String address) {
+    if (address.length > 0) {
+      return "${address.substring(0, 8)}····${address.substring(address.length - 6, address.length)}";
+    } else {
+      return address;
+    }
+  }
+
 }

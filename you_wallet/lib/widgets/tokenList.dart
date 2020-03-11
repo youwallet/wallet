@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:youwallet/service/token_service.dart' ;
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
 import 'package:youwallet/widgets/listEmpty.dart';
+import 'package:youwallet/global.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 // 类的名字需要大写字母开头
 class tokenList extends StatelessWidget {
@@ -11,6 +12,8 @@ class tokenList extends StatelessWidget {
   String network = "ropsten";
   Map currentWalletObject = {};
   tokenList({Key key, this.arr, this.network="ropsten", this.currentWalletObject}) : super(key: key);
+
+  final SlidableController slidableController = SlidableController();
 
   @override
   Widget build(BuildContext context) {
@@ -27,36 +30,41 @@ class tokenList extends StatelessWidget {
       );
     } else {
       return Column(
-        children: filterArr.reversed.map((item) => walletCard(item, context))
+        children: filterArr.reversed.map((item) => buildsilde(item, context))
             .toList(),
       );
     }
   }
+
+  // 给数据列表中的每一个项包裹一层滑动组件
+  Widget buildsilde(item, context) {
+    return Slidable(
+      controller: slidableController,
+      actionPane: SlidableScrollActionPane(),//滑出选项的面板 动画
+      actionExtentRatio: 0.25,
+      child: walletCard(item, context),
+      secondaryActions: <Widget>[//右侧按钮列表
+        IconSlideAction(
+          caption: '删除',
+          color: Colors.blue,
+          icon: Icons.delete,
+          onTap: () {
+            print(item);
+          },
+        )
+      ],
+    );
+  }
 }
 
 
+
+
 Widget walletCard(item, context) {
-  return new Dismissible(
-      background: Container(
-          color: Colors.red,
-          child: Center(
-            child: Text("删除",
-              style: TextStyle(
-                  color: Colors.white
-              ),
-            ),
-          )
-      ),
-      key: Key(UniqueKey().toString()),
-      onDismissed: (direction) async {
-        // 更新token model中的token数组
-        await Provider.of<Token>(context).remove(item);
-        final snackBar =  SnackBar(content: new Text("移除成功"));
-        Scaffold.of(context).showSnackBar(snackBar);
-      },
-      child: new Card(
+  return new Card(
         color: Colors.white, //背景色
         child: new Container(
+              alignment: Alignment.topCenter,
               padding: const EdgeInsets.all(28.0),
               child: new Row(
                 children: <Widget>[
@@ -90,7 +98,12 @@ Widget walletCard(item, context) {
                           ],
                         ),
                         GestureDetector(
-                          child: new Text(TokenService.maskAddress(item['address'])),
+                          child: new Text(
+                              Global.maskAddress(item['address']),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w700
+                              )
+                          ),
                           onTap: () async {
                             print(item['address']);
                           },
@@ -99,26 +112,37 @@ Widget walletCard(item, context) {
                       ],
                     ),
                   ),
-                  new Container(
-                      width: 70.0,
-                      child: new Column(
-                        children: <Widget>[
-                          new Text(
-                            item['balance'],
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                            style: new TextStyle(fontSize: 16.0,
-                                color: Color.fromARGB(100, 6, 147, 193)),
-                          ),
-//                          new Text('￥${item['rmb']??'-'}'),
-                        ],
-                      )
-
-                  )
+                  new Text(
+                    item['balance'],
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    style: new TextStyle(
+                        fontSize: 16.0,
+                        color: Color.fromARGB(100, 6, 147, 193),
+                        fontWeight: FontWeight.w700
+                    ),
+                  ),
+//                  new Container(
+//                      alignment: Alignment.topRight,
+//                      color: Colors.red,
+//                      width: 80.0,
+//                      child: new Column(
+//                        children: <Widget>[
+//                          new Text(
+//                            item['balance'],
+//                            overflow: TextOverflow.ellipsis,
+//                            maxLines: 1,
+//                            style: new TextStyle(fontSize: 16.0,
+//                                color: Color.fromARGB(100, 6, 147, 193)),
+//                          ),
+////                          new Text('￥${item['rmb']??'-'}'),
+//                        ],
+//                      )
+//
+//                  )
                 ],
               )
           ),
-  )
   );
 }
 
