@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-
+import 'package:barcode_scan/barcode_scan.dart';
+import 'package:flutter/services.dart';
 // 提供五套可选主题色
 const _themes = <MaterialColor>[
   Colors.blue,
@@ -101,6 +101,37 @@ class Global {
     } else {
       return address;
     }
+  }
+
+  static Future scan(BuildContext context) async {
+    try {
+      // 此处为扫码结果，barcode为二维码的内容
+      String barcode = await BarcodeScanner.scan();
+//      return barcode;
+      showSnackBar(context, barcode);
+    } on PlatformException catch (e) {
+      if (e.code == BarcodeScanner.CameraAccessDenied) {
+        // 未授予APP相机权限
+        showSnackBar(context, '未授予APP相机权限');
+      } else {
+        // 扫码错误
+        print('扫码错误: $e');
+        showSnackBar(context, e.toString());
+      }
+    } on FormatException{
+      // 进入扫码页面后未扫码就返回
+      print('进入扫码页面后未扫码就返回');
+      showSnackBar(context, '取消扫码');
+    } catch (e) {
+      // 扫码错误
+      showSnackBar(context, e.toString());
+    }
+  }
+
+  // 显示 SnackBar
+  static showSnackBar(BuildContext context, String val) {
+    final snackBar = new SnackBar(content: new Text(val));
+    Scaffold.of(context).showSnackBar(snackBar);
   }
 
 }

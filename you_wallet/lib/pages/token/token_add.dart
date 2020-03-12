@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:http/http.dart';
-import 'package:web3dart/json_rpc.dart';
 import 'package:youwallet/service/token_service.dart';
-import 'package:youwallet/widgets/menu.dart';
 import 'package:youwallet/widgets/loadingDialog.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:youwallet/widgets/tokenList.dart';
-
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
+import 'package:youwallet/global.dart';
 
 class AddWallet extends StatefulWidget {
   @override
@@ -137,7 +132,11 @@ class Page extends State<AddWallet> {
             contentPadding: new EdgeInsets.all(6.0),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6.0),
-            )
+              borderSide: BorderSide(color: Colors.grey),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey),
+            ),
         ),
         onSubmitted: (text) async {//内容提交(按回车)的回调
           if (!text.startsWith('0x')) {

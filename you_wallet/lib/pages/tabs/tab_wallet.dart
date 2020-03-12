@@ -11,7 +11,7 @@ import 'package:youwallet/db/sql_util.dart';
 import 'package:youwallet/db/provider.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+import 'package:youwallet/global.dart';
 
 class TabWallet extends StatefulWidget {
 
@@ -51,17 +51,6 @@ class Page extends State<TabWallet> {
 //    });
   }
 
-  Future<void> _getWallets() async {
-    var sql = SqlUtil.setTable("wallet");
-    List wallets = await sql.get();
-    if (wallets.length == 0) {
-      Navigator.pushNamed(context, "wallet_guide");
-      return;
-    }
-  }
-
-
-
   @override // 页面回退时候触发
   void deactivate() async {
 //    var bool = ModalRoute.of(context).isCurrent;
@@ -80,30 +69,30 @@ class Page extends State<TabWallet> {
   }
 
 
-  Future _scan() async {
-      try {
-        // 此处为扫码结果，barcode为二维码的内容
-        String barcode = await BarcodeScanner.scan();
-        final snackBar = new SnackBar(content: new Text(barcode));
-        Scaffold.of(context).showSnackBar(snackBar);
-      } on PlatformException catch (e) {
-        if (e.code == BarcodeScanner.CameraAccessDenied) {
-          // 未授予APP相机权限
-          final snackBar = new SnackBar(content: new Text('未授予APP相机权限'));
-          Scaffold.of(context).showSnackBar(snackBar);
-        } else {
-          // 扫码错误
-          print('扫码错误: $e');
-        }
-      } on FormatException{
-        // 进入扫码页面后未扫码就返回
-        print('进入扫码页面后未扫码就返回');
-      } catch (e) {
-        // 扫码错误
-        final snackBar = new SnackBar(content: new Text(e.toString()));
-        Scaffold.of(context).showSnackBar(snackBar);
-      }
-  }
+//  Future _scan() async {
+//      try {
+//        // 此处为扫码结果，barcode为二维码的内容
+//        String barcode = await BarcodeScanner.scan();
+//        final snackBar = new SnackBar(content: new Text(barcode));
+//        Scaffold.of(context).showSnackBar(snackBar);
+//      } on PlatformException catch (e) {
+//        if (e.code == BarcodeScanner.CameraAccessDenied) {
+//          // 未授予APP相机权限
+//          final snackBar = new SnackBar(content: new Text('未授予APP相机权限'));
+//          Scaffold.of(context).showSnackBar(snackBar);
+//        } else {
+//          // 扫码错误
+//          print('扫码错误: $e');
+//        }
+//      } on FormatException{
+//        // 进入扫码页面后未扫码就返回
+//        print('进入扫码页面后未扫码就返回');
+//      } catch (e) {
+//        // 扫码错误
+//        final snackBar = new SnackBar(content: new Text(e.toString()));
+//        Scaffold.of(context).showSnackBar(snackBar);
+//      }
+//  }
 
 
   // 构建页面
@@ -222,7 +211,7 @@ class Page extends State<TabWallet> {
         child: new IconButton(
           icon: new Icon(IconData(0xe61d, fontFamily: 'iconfont')),
           onPressed: () {
-            _scan();
+            Global.scan(context);
           },
         ),
       )
@@ -286,7 +275,7 @@ class Page extends State<TabWallet> {
                     ],
                   ),
                   new Text(
-                      Wallet.currentWallet,
+                      Global.maskAddress(Wallet.currentWallet),
                       style: new TextStyle(
                           color: Colors.white
                       )

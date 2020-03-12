@@ -346,14 +346,14 @@ class Trade {
   // 保存兑换订单到本地数据库
   Future<void> saveTrader() async {
     var sql = SqlUtil.setTable("trade");
-    String sqlInsert ='INSERT INTO trade(orderType, price, amount, token,tokenName, baseToken,baseTokenname, txnHash, odHash, bqHash, createtime,status) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)';
+    String sqlInsert ='INSERT INTO trade(orderType, price, amount,filled, token,tokenName, baseToken,baseTokenname, txnHash, odHash, bqHash, createtime,status) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)';
     String orderType = '';
     if (this.isBuy) {
       orderType = '买入';
     } else {
       orderType = '卖出';
     }
-    List list = [orderType,this.oldPrice, this.oldAmount, this.tokenA,this.tokenAName,this.tokenB,this.tokenBName,this.txnHash,this.odHash, this.bqHash, DateTime.now().millisecondsSinceEpoch,'打包中'];
+    List list = [orderType,this.oldPrice, this.oldAmount, '0.00',this.tokenA,this.tokenAName,this.tokenB,this.tokenBName,this.txnHash,this.odHash, this.bqHash, DateTime.now().millisecondsSinceEpoch,'打包中'];
     int id = await sql.rawInsert(sqlInsert, list);
     print("db trade id => ${id}");
     return id;

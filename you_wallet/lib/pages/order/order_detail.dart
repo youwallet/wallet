@@ -234,6 +234,8 @@ class Page extends State<OrderDetail> {
   Widget buildIcon(String status) {
     if (status == '进行中') {
       return Icon(Icons.autorenew, size: 80.0, color: Colors.green);
+    } else if(status == '交易撤销') {
+      return Icon(Icons.block, size: 80.0, color: Colors.red);
     } else {
       return Icon(IconData(0xe617, fontFamily: 'iconfont'),size: 80.0, color: Colors.green);
     }

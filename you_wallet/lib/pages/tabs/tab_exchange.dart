@@ -58,6 +58,9 @@ class Page extends State {
   List tokens = [];
   String tokenBalance = "";
 
+  // 下单过程中，当前订单的进度
+  String currentStatus = "挂单中";
+
   //数据初始化
   @override
   void initState() {
@@ -75,6 +78,7 @@ class Page extends State {
 
     /// 监听订单操作结果
     eventBus.on<TransferDoneEvent>().listen((event) {
+      Navigator.pop(context);
       this.showSnackBar(event.res);
     });
   }
@@ -350,7 +354,7 @@ class Page extends State {
         barrierDismissible: false,
         builder: (BuildContext context) {
           return new LoadingDialog( //调用对话框
-            text: '挂单中...',
+            text: this.currentStatus,
           );
         }
     );
@@ -518,16 +522,21 @@ class Page extends State {
     Trade trade = new Trade(this.value['address'], this.value['name'], this.rightToken['address'], this.rightToken['name'], this.controllerAmount.text, this.controllerPrice.text, isBuy, pwd);
     try {
       await trade.takeOrder();
-      this.showSnackBar('订单打包中');
 
       // 下单成功后，刷新交易深度和交易记录
       eventBus.fire(OrderSuccessEvent());
-      eventBus.fire(UpdateTeadeDeepEvent());
+
+      // 下单成功的时候，没必要通知深度列表刷新，以太坊可能还在打包中，刷新也没用
+      // eventBus.fire(UpdateTeadeDeepEvent());
+
+      this.setState((){
+        currentStatus = "打包中";
+      });
 
       // 通知钱包更新余额，这里延迟2s通知，实际测试发现立即更新余额的话额度不会变
-      Future.delayed(Duration(seconds: 2), (){
-        Provider.of<walletModel.Wallet>(context).updateWallet(Global.getPrefs('currentWallet'));
-      });
+//      Future.delayed(Duration(seconds: 2), (){
+//        Provider.of<walletModel.Wallet>(context).updateWallet(Global.getPrefs('currentWallet'));
+//      });
     } catch(e) {
       print('+++++++++++++++');
       print(e);
@@ -539,8 +548,8 @@ class Page extends State {
       }
     }
 
-    // 关闭挂单中的全局提示
-    Navigator.of(context).pop();
+//    // 关闭挂单中的全局提示
+//    Navigator.of(context).pop();
   }
 
   void showSnackBar(String text) {
@@ -566,7 +575,17 @@ class Page extends State {
   // 下拉刷新底部交易列表
   Future<void> _refresh() async {
     eventBus.fire(UpdateTeadeDeepEvent());
-    this.showSnackBar('刷新结束');
+    eventBus.fire(CustomTabChangeEvent('当前兑换'));
+    eventBus.fire(UpdateOrderListEvent());
+    showDialog<Null>(
+        context: context, //BuildContext对象
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return new LoadingDialog( //调用对话框
+            text: '刷新中...',
+          );
+        });
+
   }
 
 }

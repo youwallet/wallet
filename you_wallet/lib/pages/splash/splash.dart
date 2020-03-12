@@ -13,32 +13,40 @@ class _SplashState extends State<Splash>{
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-        body: new Stack(
+        body: new Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             new Center(
               child: new Image.asset(
                 "images/splash.jpeg",
-                width: 150.0,
-                height: 150.0,
+                width: 120.0,
+                height: 120.0,
                 fit: BoxFit.fill,
               ),
             ),
-            new Container(
-              alignment: Alignment.topRight,
-              padding: const EdgeInsets.fromLTRB(0.0, 45.0, 10.0, 0.0),
-              child: OutlineButton(
-                child: new Text(
-                  "跳过",
-                  textAlign: TextAlign.center,
-                  style: new TextStyle(color: Colors.white),
-                ),
-                // StadiumBorder椭圆的形状
-                shape: new StadiumBorder(),
-                onPressed: () {
-                  go2HomePage();
-                },
-              ),
-            ),
+            Text(
+                'you wallet',
+                style: TextStyle(
+                  fontSize: 28.0,
+                  height: 2.0,
+                )
+            )
+//            new Container(
+//              alignment: Alignment.topRight,
+//              padding: const EdgeInsets.fromLTRB(0.0, 45.0, 10.0, 0.0),
+//              child: OutlineButton(
+//                child: new Text(
+//                  "跳过",
+//                  textAlign: TextAlign.center,
+//                  style: new TextStyle(color: Colors.white),
+//                ),
+//                // StadiumBorder椭圆的形状
+//                shape: new StadiumBorder(),
+//                onPressed: () {
+//                  go2HomePage();
+//                },
+//              ),
+//            ),
           ],
         ),
     );
@@ -53,7 +61,7 @@ class _SplashState extends State<Splash>{
 
   // 倒计时
   void countDown() {
-    var _duration = new Duration(seconds: 3);
+    var _duration = new Duration(seconds: 5);
     new Future.delayed(_duration, go2HomePage);
   }
 

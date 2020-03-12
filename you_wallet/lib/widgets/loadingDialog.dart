@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 // ignore: must_be_immutable
 class LoadingDialog extends Dialog {
   String text;
-
-  LoadingDialog({Key key, this.text = "加载中..."}) : super(key: key);
+  LoadingDialog({
+    Key key,
+    this.text = "加载中..."
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

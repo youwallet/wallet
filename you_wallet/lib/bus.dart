@@ -48,3 +48,8 @@ class OrderSuccessEvent{
 class UpdateTeadeDeepEvent{
   UpdateTeadeDeepEvent();
 }
+
+/// 交易历史列表刷新事件
+class UpdateOrderListEvent{
+  UpdateOrderListEvent();
+}

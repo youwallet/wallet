@@ -40,7 +40,12 @@ class Page extends State<transferList> {
     /// 用户挂单成功，拿到刚刚挂的订单Hash，查询订单是否成功
     eventBus.on<OrderSuccessEvent>().listen((event) {
       this.tabChange('当前兑换');
-//      this.updateOrderStatus();
+      this.updateOrderStatus();
+    });
+
+    /// 监听兑换页面用户手动触发下拉刷新
+    eventBus.on<UpdateOrderListEvent>().listen((event) {
+      this.updateOrderFilled();
     });
   }
 
@@ -184,8 +189,9 @@ class Page extends State<transferList> {
               title: '确定撤销交易?',
               content: '',
               onSuccessChooseEvent: () async {
-                eventBus.fire(TransferDoneEvent('撤销交易失败，接口暂不可用'));
-                Navigator.pop(context);
+                await Provider.of<Deal>(context).updateOrderStatus(item['txnHash'], '交易撤销');
+                this.updateList();
+                eventBus.fire(TransferDoneEvent('客户端撤销交易成功，实际没有撤销'));
               },
               onCancelChooseEvent: () {
                 Navigator.pop(context);
@@ -218,10 +224,9 @@ class Page extends State<transferList> {
         });
   }
 
-  // tab切换
+  // tab切换, 切换显示的数据，这里不刷新
   // 这里list需要用List.from转化一次，否则会提示read only
   void tabChange(String tab) async {
-    print("tabChange start new ");
     List list = List.from(await Provider.of<Deal>(context).getTraderList());
 //    int now = DateTime.now().millisecondsSinceEpoch;
 //    int hour = DateTime.now().hour;
@@ -247,21 +252,26 @@ class Page extends State<transferList> {
   /// 如果订单中的数量已经匹配完毕，则代表这个订单转账成功，刷新的时候不再遍历
   /// 两个失败的订单
   ///
-  Future<void> _getTradeInfo(list) async {
-
+  Future<void> updateOrderFilled() async {
+    List list = List.from(await Provider.of<Deal>(context).getTraderList());
 //    print('查询一个失败的的订单:');
 //    Map res1 = await Trade.getTransactionByHash('0xa03869701750008d86003f2dcc27a503f3888c99acef53c72b7e0bb22136cdeb');
 
 //    print('查询一个成功的的订单:');
 //    Map res = await Trade.getTransactionByHash('0x82455ac541bac4f69294ca6329ed04a4513d86038e020a89fb011ba5424cf0c2');
-
-
+//    for(var i = list.length -1; i>=0; i--) {
+//      print(list[i]['status']);
+//    }
+    list.retainWhere((element)=>(element['status']=='进行中'|| element['status']=='打包中'));
+    for(var i = list.length -1; i>=0; i--) {
+      print(list[i]['status']);
+    }
     Map filled = {};
-    for(var i = 0; i<list.length; i++) {
+    for(var i = list.length -1; i>=0; i--) {
       //print('查询订单   =》${this.arr[i]['txnHash']}');
-      if(list[i]['status'] == '进行中') {
+      if(list[i]['status'] == '进行中' || list[i]['status'] == '打包中') {
         double amount = await Trade.getFilled(list[i]['odHash']);
-        print('匹配情况   =》${amount}');
+        print('匹配情况   =》${list[i]['status']}-${amount}');
         await Provider.of<Deal>(context).updateFilled(
             list[i], amount.toStringAsFixed(2));
         filled[list[i]['txnHash']] = amount.toStringAsFixed(2);
@@ -269,11 +279,12 @@ class Page extends State<transferList> {
         //print('该订单状态为${this.arr[i]['status']},已匹配完毕');
       }
     }
-//    setState(() {
-//      this.filledAmount = filled;
-//    });
+    setState(() {
+      this.filledAmount = filled;
+    });
 //    print(this.filledAmount);
     this.updateList();
+    eventBus.fire(TransferDoneEvent('订单刷新完毕'));
   }
 
   /// 订单匹配状态查询完毕，整体更新一次列表
@@ -311,7 +322,7 @@ class Page extends State<transferList> {
     if(response['blockHash'] != null) {
       print('打包成功，以太坊返回了交易的blockHash');
       await Provider.of<Deal>(context).updateOrderStatus(hash, '进行中');
-      this.tabChange('当前兑换');
+      this.updateList();
       eventBus.fire(TransferDoneEvent('打包成功，订单状态变更为进行中'));
     } else {
       if (index > 30) {
