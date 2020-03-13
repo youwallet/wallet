@@ -12,7 +12,8 @@ import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
 import 'package:youwallet/db/sql_util.dart';
 import 'package:youwallet/widgets/customButton.dart';
-
+import 'package:youwallet/widgets/tokenSelectSheet.dart';
+import 'package:youwallet/widgets/loadingDialog.dart';
 
 class TabTransfer extends StatefulWidget {
   @override
@@ -76,32 +77,34 @@ class Page extends State<TabTransfer> {
             ),
             new Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 new Container(
                   margin: const EdgeInsets.only(right: 40.0),
-                  padding: const EdgeInsets.all(6.0),
-                  decoration: new BoxDecoration(
-                    borderRadius: new BorderRadius.all(new Radius.circular(6.0)),
-                    border: new Border.all(width: 1.0, color: Colors.black12),
+                  width: 100.0,
+                  child: new TokenSelectSheet(
+                      onCallBackEvent: (res){
+                        print(res);
+                       setState(() {
+                         this.token = res;
+                       });
+                      }
                   ),
-                  child: GestureDetector(
-                    onTap: this.selectToken,//写入方法名称就可以了，但是是无参的
-                    child: Text(this.token['name']??'选择币种'),
-                  ),
-
                 ),
                 new  Expanded(
                     child: new Container(
-                      height: 26.0,
+                      height: 36.0,
                       child: new TextField(
                         controller: controllerPrice,
                         decoration: InputDecoration(
-                            hintText: "转账金额",
-                            fillColor: Colors.black12,
-                            contentPadding: EdgeInsets.only(left: 10.0),
-                            border: OutlineInputBorder(
+                          hintText: '请输入金额',
+                          filled: true,
+                          fillColor: Colors.black12,
+                          contentPadding: new EdgeInsets.only(left: 6.0),
+                          border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(6.0),
-                            )
+                              borderSide: BorderSide.none
+                          ),
                         ),
                         onChanged: (text) {//内容改变的回调
                           print('change $text');
@@ -132,29 +135,20 @@ class Page extends State<TabTransfer> {
                 ],
               ),
             ),
-            new ConstrainedBox(
-              constraints: BoxConstraints(
-                  maxHeight: 26,
-              ),
+            new Container(
+              height: 36.0,
               child: new TextField(
                 controller: controllerAddress,
                 decoration: InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(6.0),
-                    borderSide: BorderSide(
-                      color: Colors.black12, //边线颜色为黄色
-                      width: 1, //边线宽度为2
-                    ),
+                  hintText: '请输入收款地址',
+                  filled: true,
+                  fillColor: Colors.black12,
+                  contentPadding: new EdgeInsets.only(left: 6.0),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(6.0),
+                      borderSide: BorderSide.none
                   ),
-//                  suffixIcon: new IconButton(
-//                    icon: new Icon(IconData(0xe61d, fontFamily: 'iconfont'),size:16.0),
-//                    onPressed: () {
-//                      _scan();
-//                    },
-//                  ),
-                  hintText: "输入以太坊地址",
-                  contentPadding: new EdgeInsets.only(left: 10.0), // 内部边距，默认不是0
-                )
+                ),
               ),
             ),
 //            new TextField(
@@ -246,7 +240,8 @@ class Page extends State<TabTransfer> {
   }
 
   void checkInput() {
-    if (this.token == null) {
+    print(this.token);
+    if (this.token.isEmpty) {
       this.showSnackbar('请选择token');
       return;
     }
@@ -257,12 +252,12 @@ class Page extends State<TabTransfer> {
     }
 
     if (this.controllerAddress.text == '') {
-      this.showSnackbar('请输入转账地址');
+      this.showSnackbar('请输入收款地址');
       return;
     }
 
     if (this.controllerAddress.text.length != 42) {
-      this.showSnackbar('转账地址长度不符合42位长度要求');
+      this.showSnackbar('收款地址长度不符合42位长度要求');
       return;
     }
     showDialog(
@@ -332,31 +327,6 @@ class Page extends State<TabTransfer> {
     });
   }
 
-  Future _scan() async {
-    try {
-      // 此处为扫码结果，barcode为二维码的内容
-      String barcode = await BarcodeScanner.scan();
-      this.controllerAddress.text = barcode;
-    } on PlatformException catch (e) {
-      if (e.code == BarcodeScanner.CameraAccessDenied) {
-        // 未授予APP相机权限
-        final snackBar = new SnackBar(content: new Text('未授予APP相机权限'));
-        Scaffold.of(context).showSnackBar(snackBar);
-      } else {
-        // 扫码错误
-        print('扫码错误: $e');
-      }
-    } on FormatException{
-      // 进入扫码页面后未扫码就返回
-      print('进入扫码页面后未扫码就返回');
-    } catch (e) {
-      // 扫码错误
-      final snackBar = new SnackBar(content: new Text(e.toString()));
-      Scaffold.of(context).showSnackBar(snackBar);
-    }
-  }
-
-
   // 显示提示
   void showSnackbar(String text) {
     final snackBar = SnackBar(content: Text(text));
@@ -365,34 +335,55 @@ class Page extends State<TabTransfer> {
 
   // 开始转账
   Future<void> startTransfer() async{
-    this.showSnackbar('转账中···');
+    showDialog<Null>(
+        context: context, //BuildContext对象
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return new LoadingDialog( //调用对话框
+            text: '转账中...',
+          );
+        });
     print(controllerPrice.text);
     String from = Provider.of<Wallet>(context).currentWallet;
     String to = controllerAddress.text;
     String num = controllerPrice.text;
     Navigator.pushNamed(context, "getPassword").then((pwd) async{
-      String txnHash = await Trade.sendToken(from, to, num, this.token, pwd);
-      if (txnHash.contains('replacement transaction underpriced')) {
-        this.showSnackbar('等待上一笔交易确认中···');
-      } else {
+      try {
+        String txnHash = await Trade.sendToken(from, to, num, this.token, pwd);
         this.saveTransfer(from, to, num, txnHash, this.token);
+
+        // 拿到hash值，根据hash值查询以太坊打包是否成功
+        this.checkOrderStatus(txnHash, 0);
+      } catch (e) {
+        this.showSnackbar(e.toString());
+        Navigator.pop(context);
       }
     });
 
   }
 
-  // 保存转账记录进数据库
-//  CREATE TABLE transfer (
-//  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-//  fromAddress TEXT NOT NULL,
-//  toAddress TEXT NOT NULL,
-//  tokenName TEXT NOT NULL,
-//  tokenAddress TEXT NOT NULL,
-//  num TEXT NOT NULL,
-//  txnHash TEXT NOT NULL UNIQUE,
-//  createTime TEXT,
-//  status TEXT);
-//  """;
+  void checkOrderStatus(String hash, int index) async {
+    Map response = await Trade.getTransactionByHash(hash);
+    print("第${index}次查询");
+    print(response);
+    if(response['blockHash'] != null) {
+      print('打包成功，以太坊返回了交易的blockHash');
+      Navigator.pop(context);
+      this.showSnackbar('转账成功');
+      this.updateTransferStatus(hash);
+    } else {
+      if (index > 30) {
+        print('已经轮询了30次，打包失败');
+        Navigator.pop(context);
+        this.showSnackbar('交易超时');
+      } else {
+        Future.delayed(Duration(seconds: 2), (){
+          this.checkOrderStatus(hash, index+1);
+        });
+      }
+    }
+  }
+
   void saveTransfer(String fromAddress, String toAddress, String num, String txnHash, Map token) async{
     var sql = SqlUtil.setTable("transfer");
     String sql_insert ='INSERT INTO transfer(fromAddress, toAddress, tokenName, tokenAddress, num, txnHash, createTime) VALUES(?, ?, ?, ?, ?, ?, ?)';
@@ -400,28 +391,13 @@ class Page extends State<TabTransfer> {
     int id = await sql.rawInsert(sql_insert, list);
     print("转账记录插入成功=》${id}");
 
-    if (id > 0) {
-      Navigator.pushNamed(context, "token_history");
-    }
   }
 
-
-
-  // 选择token
-  void selectToken() async {
-    showModalBottomSheet(
-        backgroundColor: Colors.transparent,
-        context: context,
-        builder: (BuildContext context) {
-          return BottomSheetDialog(
-              content: Provider.of<Token>(context).items,
-              onSuccessChooseEvent: (res) {
-                 print(res);
-                 setState(() {
-                   this.token = res;
-                 });
-              });
-        }
-    );
+  Future<void> updateTransferStatus(String txnHash) async {
+    print('开始更新数据表 =》 ${txnHash}');
+    var sql = SqlUtil.setTable("transfer");
+    int i = await sql.update({'status':' 转账成功'}, 'txnHash', txnHash);
+    print('更新完毕=》${i}');
   }
+
 }

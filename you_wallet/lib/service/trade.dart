@@ -446,27 +446,22 @@ class Trade {
     var credentials = await client.credentialsFromPrivateKey(privateKey);
 
     final hexNum = (BigInt.parse(num)*BigInt.from(1000000000000000000)).toRadixString(16);
-    print(hexNum);
     String postData = '${func['transfer(address,uint256)']}${formatParam(toAddress)}${formatParam(hexNum)}';
-    print("postData=>${postData}");
-    try {
-      var rsp = await client.sendTransaction(
-          credentials,
-          Transaction(
-              to: EthereumAddress.fromHex(token['address']),
-              gasPrice: EtherAmount.inWei(BigInt.from(1000000000)),
-              maxGas: 7000000,
-              value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
-              data: hexToBytes(postData)
-          ),
-          chainId: 3 // 没有这个参数会报RPCError: got code -32000 with msg "invalid sender".
-      );
-      print("transaction => ${rsp}");
-      return rsp;
-    } catch (e) {
-      print("catch error =》 ${e}");
-      return e.toString();
-    }
+    print("postData=>$postData");
+
+    var rsp = await client.sendTransaction(
+        credentials,
+        Transaction(
+            to: EthereumAddress.fromHex(token['address']),
+            gasPrice: EtherAmount.inWei(BigInt.from(1000000000)),
+            maxGas: 7000000,
+            value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
+            data: hexToBytes(postData)
+        ),
+        chainId: 3 // 没有这个参数会报RPCError: got code -32000 with msg "invalid sender".
+    );
+    print("transaction => $rsp");
+    return rsp;
   }
 
   // 根据hash查询订单

@@ -179,7 +179,7 @@ class Page extends State<TokenHistory> {
     return new Container(
       padding: new EdgeInsets.all(16.0),
       child: new Column(
-        children: this.list.map((item) => _buildToken(item)).toList()
+        children: this.list.reversed.map((item) => _buildToken(item)).toList()
       ),
     );
   }
@@ -191,45 +191,46 @@ class Page extends State<TokenHistory> {
         decoration: new BoxDecoration(
             border: Border(bottom: BorderSide(color: Colors.black12,width: 1.0))
         ),
-        child: new Column(
-          children: <Widget>[
-            new Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                new Text('转账-${item['tokenName']}'),
-                new Text(
-                    '-${item['num']} token',
-                    style: new TextStyle(
-                        color: Colors.lightBlue
-                    )
-                )
-              ],
-            ),
-            new Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                new Text(
-                    '${date}',
-                    style: new TextStyle(
-                        color: Colors.black38
-                    )
-                ),
-                new Text(
-                    '${item['status']??'转账中'}',
-                    style: new TextStyle(
-                        color: Colors.deepOrange
-                    )
-                )
-              ],
-            ),
-          ],
+        child: GestureDetector(
+          child: new Column(
+            children: <Widget>[
+              new Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  new Text('转账-${item['tokenName']}'),
+                  new Text(
+                      '-${item['num']} token',
+                      style: new TextStyle(
+                          color: Colors.lightBlue
+                      )
+                  )
+                ],
+              ),
+              new Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  new Text(
+                      '${date}',
+                      style: new TextStyle(
+                          color: Colors.black38
+                      )
+                  ),
+                  new Text(
+                      '${item['status']??'转账中'}',
+                      style: new TextStyle(
+                          color: Colors.deepOrange
+                      )
+                  )
+                ],
+              ),
+            ],
+          ),
+          onTap: (){
+            print(item);
+            Navigator.pushNamed(context, "order_detail", arguments: item);
+          },
         )
     );
-  }
-
-  @override
-  _onClick() {
-    debugPrint("onTap");
   }
 
   void _getHistory() async {

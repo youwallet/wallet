@@ -1,4 +1,6 @@
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -7,6 +9,7 @@ import 'package:youwallet/global.dart';
 import 'package:common_utils/common_utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youwallet/widgets/loadingDialog.dart';
+import 'package:decimal/decimal.dart';
 
 class OrderDetail extends StatefulWidget {
 
@@ -75,6 +78,9 @@ class Page extends State<OrderDetail> {
   }
 
   Widget buildPage(Map item) {
+    item['blockNumber'] = BigInt.parse(item['blockNumber'].replaceFirst('0x', ''), radix: 16).toString();
+    item['gas'] = BigInt.parse(item['gas'].replaceFirst('0x', ''), radix: 16).toString();
+    item['gasPrice'] =Decimal.parse( (BigInt.parse(item['gasPrice'].replaceFirst('0x', ''), radix: 16)/BigInt.from(pow(10, 18))).toString()).toString();
     return new Container(
       alignment: Alignment.topCenter,
       child: new Container(
@@ -110,7 +116,7 @@ class Page extends State<OrderDetail> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       buildName('gasPrice'),
-                      buildValue(item['gasPrice'])
+                      buildValue(item['gasPrice'] + 'ETH')
                 ]),
                 new Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
