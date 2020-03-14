@@ -546,6 +546,7 @@ class Page extends State {
       } else {
         this.showSnackBar(e.toString());
       }
+      Navigator.pop(context);
     }
 
 //    // 关闭挂单中的全局提示
