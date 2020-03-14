@@ -359,7 +359,7 @@ class Page extends State {
         }
     );
     // 关闭键盘
-    // FocusScope.of(context).requestFocus(FocusNode());
+     FocusScope.of(context).requestFocus(FocusNode());
 
     List list = await Provider.of<Deal>(context).getTraderList();
     bool packing = list.any((element)=>(element['status']=="打包中"));

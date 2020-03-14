@@ -17,6 +17,8 @@ PODS:
   - MTBBarcodeScanner (5.0.11)
   - path_provider (0.0.1):
     - Flutter
+  - path_provider_macos (0.0.1):
+    - Flutter
   - share (0.5.2):
     - Flutter
   - shared_preferences (0.0.1):
@@ -43,6 +45,7 @@ DEPENDENCIES:
   - image_picker_saver (from `.symlinks/plugins/image_picker_saver/ios`)
   - local_auth (from `.symlinks/plugins/local_auth/ios`)
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
+  - path_provider_macos (from `.symlinks/plugins/path_provider_macos/ios`)
   - share (from `.symlinks/plugins/share/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - shared_preferences_macos (from `.symlinks/plugins/shared_preferences_macos/ios`)
@@ -72,6 +75,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/local_auth/ios"
   path_provider:
     :path: ".symlinks/plugins/path_provider/ios"
+  path_provider_macos:
+    :path: ".symlinks/plugins/path_provider_macos/ios"
   share:
     :path: ".symlinks/plugins/share/ios"
   shared_preferences:
@@ -99,6 +104,7 @@ SPEC CHECKSUMS:
   local_auth: 17f985934bb4ab2637431e5b3fe1b2d6698d2051
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
   path_provider: fb74bd0465e96b594bb3b5088ee4a4e7bb1f2a9d
+  path_provider_macos: f760a3c5b04357c380e2fddb6f9db6f3015897e0
   share: bae0a282aab4483288913fc4dc0b935d4b491f2e
   shared_preferences: 430726339841afefe5142b9c1f50cb6bd7793e01
   shared_preferences_macos: f3f29b71ccbb56bf40c9dd6396c9acf15e214087
@@ -110,4 +116,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 1b66dae606f75376c5f2135a8290850eeb09ae83
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.9.1

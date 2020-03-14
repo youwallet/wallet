@@ -210,7 +210,6 @@ class Page extends State<transferList> {
               title: '确定删除记录?',
               content: '',
               onSuccessChooseEvent: () async {
-                Navigator.pop(context);
                 int i = await Provider.of<Deal>(context).deleteTrader(item['id']);
                 // 用bus向兑换页面发出删除成功的通知，兑换页面显示toast
                 if (i == 1) {
