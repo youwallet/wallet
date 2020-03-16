@@ -12,6 +12,7 @@ import 'package:youwallet/db/provider.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youwallet/global.dart';
+import 'package:youwallet/widgets/loadingDialog.dart';
 
 class TabWallet extends StatefulWidget {
 
@@ -325,13 +326,20 @@ class Page extends State<TabWallet> {
   // 刷新钱包的ETH余额
   // 刷新每个token的余额
   Future<void> _refresh() async {
+    showDialog<Null>(
+        context: context, //BuildContext对象
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return new LoadingDialog( //调用对话框
+            text: '刷新中...',
+          );
+        });
     String address = Provider.of<walletModel.Wallet>(context).currentWalletObject['address'];
     await Provider.of<walletModel.Wallet>(context).updateWallet(address);
     await Provider.of<Token>(context).updateBalance(address);
-    //await Provider.of<walletModel.Wallet>(context).updateWallet(address);
     final snackBar = new SnackBar(content: new Text('刷新结束'));
     Scaffold.of(context).showSnackBar(snackBar);
-
+    Navigator.pop(context);
   }
 }
 

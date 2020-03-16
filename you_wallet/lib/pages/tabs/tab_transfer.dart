@@ -2,14 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:youwallet/service/token_service.dart';
 import 'package:youwallet/widgets/customStepper.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
-import 'package:youwallet/widgets/bottomSheetDialog.dart';
 import 'package:provider/provider.dart';
-import 'package:youwallet/model/token.dart';
 import 'package:youwallet/model/wallet.dart';
 import 'package:youwallet/service/trade.dart';
 import 'package:youwallet/bus.dart';
-import 'package:barcode_scan/barcode_scan.dart';
-import 'package:flutter/services.dart';
 import 'package:youwallet/db/sql_util.dart';
 import 'package:youwallet/widgets/customButton.dart';
 import 'package:youwallet/widgets/tokenSelectSheet.dart';
@@ -269,10 +265,14 @@ class Page extends State<TabTransfer> {
               content: '',
               onCancelChooseEvent: () {
                 Navigator.pop(context);
+                // 关闭键盘
+                FocusScope.of(context).requestFocus(FocusNode());
                 this.showSnackbar('取消转账');
               },
               onSuccessChooseEvent: () {
                 Navigator.pop(context);
+                // 关闭键盘
+                FocusScope.of(context).requestFocus(FocusNode());
                 this.startTransfer();
               });
         });

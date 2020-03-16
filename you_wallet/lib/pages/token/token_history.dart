@@ -18,6 +18,10 @@ class TokenHistory extends StatefulWidget {
 class Page extends State<TokenHistory> {
 
   List list = [];
+  int today = 0;
+  int threeDay = 0;
+  int weekday = 0;
+  int month = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +31,29 @@ class Page extends State<TokenHistory> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    this.initFilter();
     this._getHistory();
+    print(DateTime.now().day);
+  }
+
+  void initFilter() {
+      int now = DateTime.now().millisecondsSinceEpoch;
+      int hour = DateTime.now().hour;
+      int minute = DateTime.now().minute;
+      int second = DateTime.now().second;
+      int today = now - (hour*60*60 + minute*60 + second)*1000;
+      int threeDay = today - 3*24*60*60*1000;
+      int weekday = today - (DateTime.now().weekday - 1)*24*60*60*1000;
+      int month = today - (DateTime.now().day - 1)*24*60*60*1000;
+      print(today);
+      print(threeDay);
+      print(weekday);
+      this.setState(() {
+        today = today;
+        threeDay = threeDay;
+        weekday = weekday;
+        month = month;
+      });
   }
 
   Widget layout(BuildContext context) {
@@ -37,11 +63,11 @@ class Page extends State<TokenHistory> {
         appBar: buildAppBar(context),
         body: new TabBarView(
           children: [
-            _getHistoryToken(1),
-            _getHistoryToken(2),
-            _getHistoryToken(3),
-            _getHistoryToken(4),
-            _getHistoryToken(5)
+            _getHistoryToken('all'),
+            _getHistoryToken('today'),
+            _getHistoryToken('three'),
+            _getHistoryToken('week'),
+            _getHistoryToken('month')
           ],
         ),
         bottomNavigationBar: new BottomAppBar(
@@ -132,7 +158,7 @@ class Page extends State<TokenHistory> {
         title: new Text('转账记录'),
         bottom: new TabBar(
           tabs: [
-            new Tab(text: '日期'),
+            new Tab(text: '所有'),
             new Tab(text: '今天'),
             new Tab(text: '三天'),
             new Tab(text: '本周'),
@@ -143,43 +169,34 @@ class Page extends State<TokenHistory> {
     );
   }
 
-  // 构建tabbar
-  _buildBar() {
-    return Container(
-        decoration: new BoxDecoration(
-           border: Border(bottom: BorderSide(color: Colors.black12,width: 1.0))
-        ),
-        padding: new EdgeInsets.only(top: 16.0, bottom: 16.0),
-        child: new Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-            _buildBarItem('日期'),
-            new Text('今日'),
-            new Text('三天'),
-            new Text('本周'),
-            new Text('本月'),
-          ],
-        )
-    );
-  }
-
-  _buildBarItem(str) {
-    return Container(
-      child: GestureDetector(
-        onTap: (){
-          debugPrint("onTap");
-        },
-        child: Text(str),
-      ),
-    );
-  }
-
   // 查询所有记录
-  _getHistoryToken(int i) {
+  // timestamp 过滤记录用的时间戳
+  // 需要优化
+  _getHistoryToken(String para) {
+    int timestamp = 0;
+    int now = DateTime.now().millisecondsSinceEpoch;
+    int hour = DateTime.now().hour;
+    int minute = DateTime.now().minute;
+    int second = DateTime.now().second;
+    int today = now - (hour*60*60 + minute*60 + second)*1000;
+    if (para == 'three') {
+      timestamp = today - 3*24*60*60*1000;
+    } else if (para == 'week') {
+      timestamp = today - (DateTime.now().weekday - 1)*24*60*60*1000;
+    } else if (para == 'month') {
+      timestamp = today - (DateTime.now().day - 1)*24*60*60*1000;
+    } else if (para == 'today') {
+      timestamp = now - (hour*60*60 + minute*60 + second)*1000;
+    } else {
+      timestamp = 0;
+    }
+    List arr = List.from(this.list);
+    arr.retainWhere((e)=>(int.parse(e['createTime'])>timestamp));
+
     return new Container(
       padding: new EdgeInsets.all(16.0),
       child: new Column(
-        children: this.list.reversed.map((item) => _buildToken(item)).toList()
+        children: arr.reversed.map((item) => _buildToken(item)).toList()
       ),
     );
   }
@@ -239,21 +256,22 @@ class Page extends State<TokenHistory> {
     setState(() {
       this.list = arr;
     });
-    this.list.forEach((item) async {
-      print('开始查询${item}');
-      if(item['status'] == null && item['txnHash'].length == 66) {
-
-        Map blockHash = await Trade.getTransactionByHash(item['txnHash']);
-        print('进入查询, 查询到blockHash=>${blockHash}');
-        if(blockHash['blockHash'] != null) {
-          await this.updateTransferStatus(item['txnHash']);
-        } else {
-          print('blockHash为null');
-        }
-      } else {
-        print('订单不需要查询，状态不为null或者hash长度不符合格式');
-      }
-    });
+    print(arr);
+//    this.list.forEach((item) async {
+//      print('开始查询${item}');
+//      if(item['status'] == null && item['txnHash'].length == 66) {
+//
+//        Map blockHash = await Trade.getTransactionByHash(item['txnHash']);
+//        print('进入查询, 查询到blockHash=>${blockHash}');
+//        if(blockHash['blockHash'] != null) {
+//          await this.updateTransferStatus(item['txnHash']);
+//        } else {
+//          print('blockHash为null');
+//        }
+//      } else {
+//        print('订单不需要查询，状态不为null或者hash长度不符合格式');
+//      }
+//    });
 
   }
 
