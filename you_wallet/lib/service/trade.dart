@@ -167,8 +167,8 @@ class Trade {
         credentials,
         Transaction(
             to: EthereumAddress.fromHex(Global.tempMatchAddress),
-            gasPrice: EtherAmount.inWei(BigInt.from(20000000000)),
-            maxGas: 7000000,
+            gasPrice: EtherAmount.inWei(Global.gasPrice),
+            maxGas: Global.gasLimit,
             value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
             data: hexToBytes(postData)
         ),
@@ -482,8 +482,6 @@ class Trade {
     );
 
     Map result = jsonDecode(rsp.body);
-    print('getTransactionByHash =>');
-    print(result.toString());
     return result['result'];
   }
 

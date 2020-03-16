@@ -19,6 +19,7 @@ class Global {
   // 全局调用_prefs实现KV保存和读取
   static SharedPreferences _prefs;
   // static Profile profile = Profile();
+
   // 网络缓存对象
   // static NetCache netCache = NetCache();
   static String network = "";
@@ -34,6 +35,12 @@ class Global {
 
   // 收取交易费的账户，测试阶段用SHT的合约账户代替
   static final taxAddress = "0xA9535b10EE96b4A03269D0e0DEf417aF97477FD6";
+
+  // gas limit 30万
+  static final gasLimit = 300000;
+
+  // gas price 10Gwei
+  static final gasPrice = BigInt.from(10000000000);
 
   // 当前用户的钱包地址，就是单纯的地址，0x开头的字符串
   static String currentWallet = '';
