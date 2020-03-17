@@ -612,8 +612,7 @@ class Trade {
         body: json.encode(payload)
     );
     Map result = jsonDecode(rsp.body);
-    print(rsp.body);
-    return result['result'];
+    return int.parse(result['result'].replaceFirst("0x",''), radix: 16);
   }
 
   // 返回指定交易的收据，使用哈希指定交易，用力啊判断ETH的写操作是否成功

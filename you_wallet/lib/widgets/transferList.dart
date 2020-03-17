@@ -284,18 +284,17 @@ class Page extends State<transferList> {
     list.retainWhere((element)=>(element['status']=='进行中'|| element['status']=='打包中'));
     Map filled = {};
     for(var i = list.length -1; i>=0; i--) {
-      //print('查询订单   =》${this.arr[i]['txnHash']}');
       if(list[i]['status'] == '进行中' || list[i]['status'] == '打包中') {
         double amount = await Trade.getFilled(list[i]['odHash']);
         print('匹配情况   =》${list[i]['status']}-${amount}');
         await Provider.of<Deal>(context).updateFilled(
             list[i], amount.toStringAsFixed(2));
         filled[list[i]['txnHash']] = amount.toStringAsFixed(2);
-        Map res = await Trade.getTransactionReceipt(list[i]);
-        print('根据凭据查询');
-        print(res);
-        print(res['root']);
-        print(res['status']);
+        // 刷新过程中，同时检查一下订单的状态，如果为0，就表示这个订单被撤销了
+        int orderFlag = await Trade.orderFlag(list[i]);
+        if (orderFlag == 0) {
+          await Provider.of<Deal>(context).updateOrderStatus(list[i]['txnHash'], '交易撤销');
+        }
       } else {
         //print('该订单状态为${this.arr[i]['status']},已匹配完毕');
       }
@@ -303,7 +302,6 @@ class Page extends State<transferList> {
     setState(() {
       this.filledAmount = filled;
     });
-//    print(this.filledAmount);
     this.updateList();
     eventBus.fire(TransferDoneEvent('订单刷新完毕'));
   }
@@ -337,14 +335,19 @@ class Page extends State<transferList> {
   }
 
   void checkOrderStatus(String hash, int index) async {
-    Map response = await Trade.getTransactionByHash(hash);
+    Map response = await Trade.getTransactionReceipt(hash);
     print("第${index}次查询");
     print(response);
     if(response['blockHash'] != null) {
-      print('打包成功，以太坊返回了交易的blockHash');
-      await Provider.of<Deal>(context).updateOrderStatus(hash, '进行中');
+      print('以太坊返回了交易的blockHash');
+      if (response['status']== '0x1') {
+        await Provider.of<Deal>(context).updateOrderStatus(hash, '进行中');
+        eventBus.fire(TransferDoneEvent('打包成功，订单状态变更为进行中'));
+      } else {
+        await Provider.of<Deal>(context).updateOrderStatus(hash, '失败');
+        eventBus.fire(TransferDoneEvent('挂单失败'));
+      }
       this.updateList();
-      eventBus.fire(TransferDoneEvent('打包成功，订单状态变更为进行中'));
     } else {
       if (index > 30) {
         print('已经轮询了30次，打包失败');
@@ -356,5 +359,6 @@ class Page extends State<transferList> {
       }
     }
   }
+
 
 }
