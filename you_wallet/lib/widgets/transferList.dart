@@ -215,10 +215,8 @@ class Page extends State<transferList> {
     );
     String res = await Trade.cancelOrder2(item, pwd);
     print('订单撤销返回 => ${res}');
-    String orderFlag = await Trade.orderFlag(item);
-    int resOrder = int.parse(orderFlag.replaceFirst("0x",''), radix: 16);
-    print(resOrder);
-    if (resOrder == 0) {
+    int orderFlag = await Trade.orderFlag(item);
+    if (orderFlag == 0) {
       await Provider.of<Deal>(context).updateOrderStatus(item['txnHash'], '交易撤销');
       this.updateList();
       eventBus.fire(TransferDoneEvent('撤销成功成功'));
