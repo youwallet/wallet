@@ -28,13 +28,18 @@ class Global {
   static List<MaterialColor> get themes => _themes;
 
   // 代理合约，用来给token授权
-  static final proxy = "0x141A60c20026d88385a5339191C3950285e41072";
+  // static final proxy = "0x141A60c20026d88385a5339191C3950285e41072";
+  static final proxy = "0x6BeE8B8a06F2Df4c3e3BE7E6ca8E489602378186";
 
   // youWallet钱包合约
-  static final tempMatchAddress= "0x3edde3202e42a6c129A399a7e063C6E236239202";
+  // static final tempMatchAddress= "0x3edde3202e42a6c129A399a7e063C6E236239202";
+  static final tempMatchAddress = "0x6c414F9b4daBfD4403F33EcC6d8B2142ff068C46";
 
-  // 收取交易费的账户，测试阶段用SHT的合约账户代替
+  // 收取交易费的账户relayer ，测试阶段用SHT的合约账户代替
   static final taxAddress = "0xA9535b10EE96b4A03269D0e0DEf417aF97477FD6";
+
+  static final hydroAddress = "0xbc6B59f5a1e86F262Ae92A81aE1c44F401521577";
+
 
   // gas limit 30万
   static final gasLimit = 300000;
@@ -59,7 +64,9 @@ class Global {
     'getOrderInfo(bytes32,bytes32,bool)': '0xb7f92b4a',
     'takeOrder()': '0xefe29415',
     'approve()': '0x095ea7b3',
-    'allowance': '0xdd62ed3e'
+    'allowance': '0xdd62ed3e',
+    'cancelOrder2(bytes32,bytes32,bool)':'0x61d07149',
+    'orderFlag(bytes32)':'0xf8a8db0e'
   };
 
   static final myKey = "v3/37caa7b8b2c34ced8819de2b3853c8a2";

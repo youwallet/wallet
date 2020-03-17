@@ -268,7 +268,6 @@ class Trade {
   static Future<String> getPrivateKey(String pwd) async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String address =  prefs.getString("currentWallet");
-
     // 这里的操作优化到model中去
     var sql = SqlUtil.setTable("wallet");
     var map = {'address': address};
@@ -558,4 +557,83 @@ class Trade {
     return rsp.toString();
 
   }
+
+/* 取消订单 - W
+ * bq_hash: base-token/quote-token 哈希值
+ * od_hash: 订单哈希值
+ * is_sell: true 为卖单，false为买单
+ * function cancelOrder2(bytes32 bq_hash, bytes32 od_hash, bool is_sell);
+ */
+  static Future cancelOrder2(Map item,String pwd) async {
+    String strSell = item['orderType']=='卖出' ? '1' : '0';
+    String postData = Global.funcHashes['cancelOrder2(bytes32,bytes32,bool)'] + formatParam(item['bqHash']) + formatParam(item['odHash']) + formatParam(strSell);
+
+    String rpcUrl = await Global.rpcUrl();
+    String privateKey = await getPrivateKey(pwd);
+
+    final client = Web3Client(rpcUrl, Client());
+    var credentials = await client.credentialsFromPrivateKey(privateKey);
+
+    var rsp = await client.sendTransaction(
+        credentials,
+        Transaction(
+            to: EthereumAddress.fromHex(Global.tempMatchAddress),
+            gasPrice: EtherAmount.inWei(Global.gasPrice),
+            maxGas: Global.gasLimit,
+            value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
+            data: hexToBytes(postData)
+        ),
+        chainId: 3
+    );
+    return rsp.toString();
+  }
+
+  static Future orderFlag(item) async {
+    String postData = Global.funcHashes['orderFlag(bytes32)'] + formatParam(item['odHash']);
+    print(postData);
+    var client = Client();
+    var payload = {
+      "jsonrpc": "2.0",
+      "method": "eth_call",
+      "params": [
+        {
+          "from":Global.tempMatchAddress,
+          "to": Global.tempMatchAddress,
+          "data": postData
+        },
+        "latest"
+      ],
+      "id": DateTime.now().millisecondsSinceEpoch
+    };
+    var rpcUrl = await Global.rpcUrl();
+    var rsp = await client.post(
+        rpcUrl,
+        headers:{'Content-Type':'application/json'},
+        body: json.encode(payload)
+    );
+    Map result = jsonDecode(rsp.body);
+    print(rsp.body);
+    return result['result'];
+  }
+
+  // 返回指定交易的收据，使用哈希指定交易，用力啊判断ETH的写操作是否成功
+  // 根据返回对象中的'status'，0x1就是成功，0x0失败
+  static Future getTransactionReceipt(item) async {
+    var client = Client();
+    var payload = {
+      "jsonrpc": "2.0",
+      "method": "eth_getTransactionReceipt",
+      "params": [item['txnHash']],
+      "id": DateTime.now().millisecondsSinceEpoch
+    };
+    var rpcUrl = await Global.rpcUrl();
+    var rsp = await client.post(
+        rpcUrl,
+        headers:{'Content-Type':'application/json'},
+        body: json.encode(payload)
+    );
+    Map result = jsonDecode(rsp.body);
+    return result['result'];
+  }
+
 }

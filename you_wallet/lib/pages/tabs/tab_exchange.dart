@@ -466,7 +466,7 @@ class Page extends State {
       this.showSnackBar('授权成功，请重新挂单');
       return true;
     } else {
-      if (index > 10) {
+      if (index > 30) {
         print('已经轮询了10次，授权失败');
         Navigator.of(context).pop();
         this.showSnackBar('授权响应超时，请重新授权');

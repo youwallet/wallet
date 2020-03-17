@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
+import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/deal.dart';
 import 'package:youwallet/bus.dart';
@@ -189,15 +190,42 @@ class Page extends State<transferList> {
               title: '确定撤销交易?',
               content: '',
               onSuccessChooseEvent: () async {
-                await Provider.of<Deal>(context).updateOrderStatus(item['txnHash'], '交易撤销');
-                this.updateList();
-                eventBus.fire(TransferDoneEvent('客户端撤销交易成功，实际没有撤销'));
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, "getPassword").then((data) async{
+                      this.cancelProcess(item, data);
+                  });
               },
               onCancelChooseEvent: () {
                 Navigator.pop(context);
               });
 
         });
+  }
+
+  // 取消订单的进程，不会立刻拿到结果
+  void cancelProcess(Map item, String pwd) async{
+    showDialog<Null>(
+        context: context, //BuildContext对象
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return new LoadingDialog( //调用对话框
+            text: '撤销中...',
+          );
+        }
+    );
+    String res = await Trade.cancelOrder2(item, pwd);
+    print('订单撤销返回 => ${res}');
+    String orderFlag = await Trade.orderFlag(item);
+    int resOrder = int.parse(orderFlag.replaceFirst("0x",''), radix: 16);
+    print(resOrder);
+    if (resOrder == 0) {
+      await Provider.of<Deal>(context).updateOrderStatus(item['txnHash'], '交易撤销');
+      this.updateList();
+      eventBus.fire(TransferDoneEvent('撤销成功成功'));
+    } else {
+      eventBus.fire(TransferDoneEvent('撤销失败，订单状态当前为挂单中'));
+    }
+
   }
 
   // 删除历史记录
@@ -253,18 +281,7 @@ class Page extends State<transferList> {
   ///
   Future<void> updateOrderFilled() async {
     List list = List.from(await Provider.of<Deal>(context).getTraderList());
-//    print('查询一个失败的的订单:');
-//    Map res1 = await Trade.getTransactionByHash('0xa03869701750008d86003f2dcc27a503f3888c99acef53c72b7e0bb22136cdeb');
-
-//    print('查询一个成功的的订单:');
-//    Map res = await Trade.getTransactionByHash('0x82455ac541bac4f69294ca6329ed04a4513d86038e020a89fb011ba5424cf0c2');
-//    for(var i = list.length -1; i>=0; i--) {
-//      print(list[i]['status']);
-//    }
     list.retainWhere((element)=>(element['status']=='进行中'|| element['status']=='打包中'));
-    for(var i = list.length -1; i>=0; i--) {
-      print(list[i]['status']);
-    }
     Map filled = {};
     for(var i = list.length -1; i>=0; i--) {
       //print('查询订单   =》${this.arr[i]['txnHash']}');
@@ -274,6 +291,11 @@ class Page extends State<transferList> {
         await Provider.of<Deal>(context).updateFilled(
             list[i], amount.toStringAsFixed(2));
         filled[list[i]['txnHash']] = amount.toStringAsFixed(2);
+        Map res = await Trade.getTransactionReceipt(list[i]);
+        print('根据凭据查询');
+        print(res);
+        print(res['root']);
+        print(res['status']);
       } else {
         //print('该订单状态为${this.arr[i]['status']},已匹配完毕');
       }
