@@ -9,8 +9,6 @@ import 'package:youwallet/global.dart';
 class AddWallet extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
-    // SHT 0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef
     return new Page();
   }
 }
@@ -18,7 +16,8 @@ class AddWallet extends StatefulWidget {
 class Page extends State<AddWallet> {
 
   List tokenArr = new List();
-  Map token = {};
+  Map  token = {};
+  bool showHotToken = true;
 
   final globalKey = GlobalKey<ScaffoldState>();
 
@@ -36,13 +35,39 @@ class Page extends State<AddWallet> {
         builder:  (BuildContext context) {
           return new Container(
             padding: const EdgeInsets.all(16.0),
-            child: new ListView(
-              children: <Widget>[
-                buildItem(this.token)
-              ],
-            ),
+            child: buildPage(this.showHotToken)
           );
         }
+      )
+    );
+  }
+
+  // 根据用户输入，决定是否显示热门token
+  Widget buildPage(bool showHotToken) {
+    if (showHotToken) {
+      return Wrap(
+           spacing: 10.0, // 主轴(水平)方向间距
+           runSpacing: 4.0, // 纵轴（垂直）方向间距
+           children: Global.hotToken.map((item) => buildTagItem(item)).toList()
+      );
+    } else {
+      return new ListView(
+        children: <Widget>[
+          buildItem(this.token)
+        ],
+      );
+    }
+  }
+
+  // 构建wrap用的小选项
+  Widget buildTagItem(item) {
+    return new Chip(
+      avatar: new Icon(Icons.star),
+      label: GestureDetector(
+        child: new Text(item['name']),
+        onTap: (){
+          this.startSearch(item['address']);
+        },
       )
     );
   }
@@ -139,49 +164,53 @@ class Page extends State<AddWallet> {
             ),
         ),
         onSubmitted: (text) async {//内容提交(按回车)的回调
-          if (!text.startsWith('0x')) {
-            this.showSnackbar('合约地址必须0x开头');
-            return;
-          }
-
-          if (text.length != 42) {
-            this.showSnackbar('地址长度不42位');
-            return;
-          }
-          showDialog<Null>(
-              context: context, //BuildContext对象
-              barrierDismissible: false,
-              builder: (BuildContext context) {
-                return new LoadingDialog( //调用对话框
-                  text: '搜索中...',
-                );
-              });
-//          print('搜索的token是=》 ${text}');
-//          this.showSnackbar('搜索中···');
-          try {
-            Map token = await TokenService.searchToken(text);
-             Navigator.pop(context);
-            print("搜索结果是${token}");
-            if (token.containsKey('name')) {
-              setState(() {
-                this.token = token;
-              });
-              saveToken(token);
-            } else {
-              this.showSnackbar('没有搜索到token');
-            }
-          } catch (e) {
-            Navigator.pop(context);
-            if(e.toString().contains('FormatException: Could not parse BigInt')) {
-              this.showSnackbar('搜索不到该token');
-            } else {
-              this.showSnackbar(e.toString());
-            }
-          }
+            this.startSearch(text);
         },
       ),
       actions: this.appBarActions(),
     );
+  }
+
+  void startSearch(String text) async {
+    if (!text.startsWith('0x')) {
+      this.showSnackbar('合约地址必须0x开头');
+      return;
+    }
+
+    if (text.length != 42) {
+      this.showSnackbar('地址长度不42位');
+      return;
+    }
+    showDialog<Null>(
+        context: context, //BuildContext对象
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return new LoadingDialog( //调用对话框
+            text: '搜索中...',
+          );
+        });
+    try {
+      Map token = await TokenService.searchToken(text);
+      Navigator.pop(context);
+      print("搜索结果是${token}");
+      if (token.containsKey('name')) {
+
+        setState(() {
+          this.token = token;
+          this.showHotToken = false;
+        });
+        saveToken(token);
+      } else {
+        this.showSnackbar('没有搜索到token');
+      }
+    } catch (e) {
+      Navigator.pop(context);
+      if(e.toString().contains('FormatException: Could not parse BigInt')) {
+        this.showSnackbar('搜索不到该token');
+      } else {
+        this.showSnackbar(e.toString());
+      }
+    }
   }
 
   // 定义bar右侧的icon按钮
@@ -219,12 +248,9 @@ class Page extends State<AddWallet> {
     int id = await Provider.of<Token>(context).add(token);
     print(id);
     if (id == 0) {
-      this.showSnackbar('数据库写失败，插入结果为0');
+      this.showSnackbar('token已经添加，不可以重复添加');
     } else {
       this.showSnackbar('token添加成功');
-
-      // token添加成功后，对这个token进行授权
-      // this.
     }
   }
 }

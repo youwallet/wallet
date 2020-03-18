@@ -40,6 +40,14 @@ class Global {
 
   static final hydroAddress = "0xbc6B59f5a1e86F262Ae92A81aE1c44F401521577";
 
+  // 热门token
+  static final hotToken = [
+    {'name': 'BTA', 'address':'0x6C3118c39FAB22caF3f9910cd054F8ea435B5FFB'},
+    {'name': 'BTB', 'address':'0xe898663A2CbDf7a371bB4B6a5dd7aC93d4505C9a'},
+    {'name': 'BTC', 'address':'0xEAB3A69a992aeC845099717B148DC1995DD57685'},
+    {'name': 'BTD', 'address':'0x2e01154391F7dcBf215c77DBd7fF3026Ea7514ce'},
+  ];
+
 
   // gas limit 30万
   static final gasLimit = 300000;
