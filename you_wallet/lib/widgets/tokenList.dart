@@ -30,14 +30,14 @@ class tokenList extends StatelessWidget {
       );
     } else {
       return Column(
-        children: filterArr.reversed.map((item) => buildsilde(item, context))
+        children: filterArr.reversed.map((item) => buildSilde(item, context))
             .toList(),
       );
     }
   }
 
   // 给数据列表中的每一个项包裹一层滑动组件
-  Widget buildsilde(item, context) {
+  Widget buildSilde(item, context) {
     return Slidable(
       controller: slidableController,
       actionPane: SlidableScrollActionPane(),//滑出选项的面板 动画
@@ -48,8 +48,9 @@ class tokenList extends StatelessWidget {
           caption: '删除',
           color: Colors.blue,
           icon: Icons.delete,
-          onTap: () {
-            print(item);
+          onTap: () async {
+            await Provider.of<Token>(context).remove(item);
+            
           },
         )
       ],
