@@ -348,18 +348,17 @@ class Page extends State {
 
   /// 下单
   void makeOrder() async {
-
     showDialog<Null>(
-        context: context, //BuildContext对象
+        context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return new LoadingDialog( //调用对话框
+          return new LoadingDialog(
             text: this.currentStatus,
           );
         }
     );
     // 关闭键盘
-     FocusScope.of(context).requestFocus(FocusNode());
+    FocusScope.of(context).requestFocus(FocusNode());
 
     List list = await Provider.of<Deal>(context).getTraderList();
     bool packing = list.any((element)=>(element['status']=="打包中"));
@@ -376,6 +375,11 @@ class Page extends State {
       return ;
     }
 
+    if (this.rightToken == null) {
+      this.showSnackBar('请选择右侧token');
+      Navigator.of(context).pop();
+      return ;
+    }
 
     if (this.controllerAmount.text.length == 0) {
       this.showSnackBar('请输入数量');
@@ -406,12 +410,11 @@ class Page extends State {
     }
 
     String res = await TokenService.allowance(context, needApproveToken);
-    print('checkApprove res=> ${res}');
+    print('授权检测的额度 res=> ${res}');
 
-//    this.getPwd(false);
+    // 授权额度为0，发起提示
     if (res == '0') {
       Navigator.of(context).pop();
-      // 授权额度为0，发起提示
       Map currentWallet = Provider.of<walletModel.Wallet>(context).currentWalletObject;
       if (currentWallet['balance'] == '0.00') {
         this.showSnackBar('您的钱包ETH余额为0，无法授权，不可以交易');
@@ -523,20 +526,13 @@ class Page extends State {
     try {
       await trade.takeOrder();
 
-      // 下单成功后，刷新交易深度和交易记录
+      // 拿到订单Hash，通知历史列表组件更新
       eventBus.fire(OrderSuccessEvent());
-
-      // 下单成功的时候，没必要通知深度列表刷新，以太坊可能还在打包中，刷新也没用
-      // eventBus.fire(UpdateTeadeDeepEvent());
 
       this.setState((){
         currentStatus = "打包中";
       });
 
-      // 通知钱包更新余额，这里延迟2s通知，实际测试发现立即更新余额的话额度不会变
-//      Future.delayed(Duration(seconds: 2), (){
-//        Provider.of<walletModel.Wallet>(context).updateWallet(Global.getPrefs('currentWallet'));
-//      });
     } catch(e) {
       print('+++++++++++++++');
       print(e);

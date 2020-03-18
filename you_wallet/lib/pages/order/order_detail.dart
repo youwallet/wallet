@@ -242,8 +242,10 @@ class Page extends State<OrderDetail> {
       return Icon(Icons.autorenew, size: 80.0, color: Colors.green);
     } else if(status == '交易撤销') {
       return Icon(Icons.block, size: 80.0, color: Colors.red);
+    } else if(status == '失败'){
+      return Icon(Icons.error,size: 80.0, color: Colors.red);
     } else {
-      return Icon(IconData(0xe617, fontFamily: 'iconfont'),size: 80.0, color: Colors.green);
+      return Icon(Icons.work,size: 80.0, color: Colors.green);
     }
   }
 

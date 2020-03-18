@@ -590,7 +590,6 @@ class Trade {
 
   static Future orderFlag(item) async {
     String postData = Global.funcHashes['orderFlag(bytes32)'] + formatParam(item['odHash']);
-    print(postData);
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",
@@ -617,7 +616,9 @@ class Trade {
 
   // 返回指定交易的收据，使用哈希指定交易，用力啊判断ETH的写操作是否成功
   // 根据返回对象中的'status'，0x1就是成功，0x0失败
-  static Future getTransactionReceipt(item) async {
+  // getTransactionReceipt必须等待以太坊操作结束后，
+  // 在写链的过程中，这个接口一直返回null
+  static Future getTransactionReceipt(Map item) async {
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",

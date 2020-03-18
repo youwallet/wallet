@@ -288,10 +288,17 @@ class Page extends State<transferList> {
         await Provider.of<Deal>(context).updateFilled(
             list[i], amount.toStringAsFixed(2));
         filled[list[i]['txnHash']] = amount.toStringAsFixed(2);
-        // 刷新过程中，同时检查一下订单的状态，如果为0，就表示这个订单被撤销了
+
+        // 检查订单的在youwallet上的状态，如果为0，就表示这个订单被youwallet撤销了
         int orderFlag = await Trade.orderFlag(list[i]);
         if (orderFlag == 0) {
           await Provider.of<Deal>(context).updateOrderStatus(list[i]['txnHash'], '交易撤销');
+        }
+
+        //检查订单的在以太坊上的凭据，以为订单有可能在以太坊这里就上链失败了
+        Map res = await Trade.getTransactionReceipt(list[i]);
+        if(res['status'] == '0x0') {
+          await Provider.of<Deal>(context).updateOrderStatus(list[i]['txnHash'], '挂单失败');
         }
       } else {
         //print('该订单状态为${this.arr[i]['status']},已匹配完毕');
@@ -324,6 +331,8 @@ class Page extends State<transferList> {
   void updateOrderStatus() async {
     List list = await Provider.of<Deal>(context).getTraderList();
     Map order = list.lastWhere((e)=>e['status'] == '打包中',orElse: ()=>(null));
+    print('here is updateOrderStatus');
+    print(order);
     if (order == null) {
       print('no order');
       return;
@@ -332,13 +341,16 @@ class Page extends State<transferList> {
     }
   }
 
+  // 根据Hash值检查一个交易在ETH的状态
   void checkOrderStatus(String hash, int index) async {
-    Map response = await Trade.getTransactionReceipt(hash);
+    Map response = await Trade.getTransactionByHash(hash);
     print("第${index}次查询");
     print(response);
     if(response['blockHash'] != null) {
-      print('以太坊返回了交易的blockHash');
-      if (response['status']== '0x1') {
+      // 以太坊返回了交易的blockHash, 以太坊写链操作结束
+      // 现在判断写链操作的状态
+      Map res = await Trade.getTransactionReceipt({'txnHash': hash});
+      if (res['status']== '0x1') {
         await Provider.of<Deal>(context).updateOrderStatus(hash, '进行中');
         eventBus.fire(TransferDoneEvent('打包成功，订单状态变更为进行中'));
       } else {
