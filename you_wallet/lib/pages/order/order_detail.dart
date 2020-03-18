@@ -79,8 +79,10 @@ class Page extends State<OrderDetail> {
 
   Widget buildPage(Map item) {
     item['blockNumber'] = BigInt.parse(item['blockNumber'].replaceFirst('0x', ''), radix: 16).toString();
-    item['gas'] = BigInt.parse(item['gas'].replaceFirst('0x', ''), radix: 16).toString();
+    item['gas'] = BigInt.parse(item['gas'].replaceFirst('0x', ''), radix: 16);
     item['gasPrice'] =Decimal.parse( (BigInt.parse(item['gasPrice'].replaceFirst('0x', ''), radix: 16)/BigInt.from(pow(10, 18))).toString()).toString();
+    item['gasUsed'] = BigInt.parse(item['gasUsed'].replaceFirst('0x', ''), radix: 16);
+    item['percentage'] = ((item['gasUsed']/item['gas'])*100).toStringAsFixed(2) + '%';
     return new Container(
       alignment: Alignment.topCenter,
       child: new Container(
@@ -109,15 +111,21 @@ class Page extends State<OrderDetail> {
                 new Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      buildName('gas'),
-                      buildValue(item['gas'])
+                      buildName('gas limit'),
+                      buildValue(item['gas'].toString())
                 ]),
                 new Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      buildName('gasPrice'),
+                      buildName('gas price'),
                       buildValue(item['gasPrice'] + 'ETH')
                 ]),
+                new Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      buildName('gas used'),
+                      buildValue(item['gasUsed'].toString() + ' (' +item['percentage']+')')
+                    ]),
                 new Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -253,7 +261,8 @@ class Page extends State<OrderDetail> {
     print('getDetail =>');
     print(this.arguments);
     Map response = await Trade.getTransactionByHash( this.arguments['txnHash']);
-    print(response);
+    Map res = await Trade.getTransactionReceipt(this.arguments);
+    response['gasUsed'] = res['gasUsed'];
     return response;
   }
 
