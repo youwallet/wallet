@@ -53,3 +53,8 @@ class UpdateTeadeDeepEvent{
 class UpdateOrderListEvent{
   UpdateOrderListEvent();
 }
+
+/// 事件钩子，订单列表准备刷新
+class TransferUpdateStartEvent{
+  TransferUpdateStartEvent();
+}

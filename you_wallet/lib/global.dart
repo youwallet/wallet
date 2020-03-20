@@ -33,11 +33,13 @@ class Global {
 
   // youWallet钱包合约
   // static final tempMatchAddress= "0x3edde3202e42a6c129A399a7e063C6E236239202";
-  static final tempMatchAddress = "0x6c414F9b4daBfD4403F33EcC6d8B2142ff068C46";
+  // static final tempMatchAddress = "0x6c414F9b4daBfD4403F33EcC6d8B2142ff068C46";
+  static final tempMatchAddress = "0x675E05f5Dd6129bd5BE92DBF8319FC5DEB4dE94b";
 
   // 收取交易费的账户relayer ，测试阶段用SHT的合约账户代替
   static final taxAddress = "0xA9535b10EE96b4A03269D0e0DEf417aF97477FD6";
 
+  // 查询订单的匹配了多个额度在这个合约上查询
   static final hydroAddress = "0xbc6B59f5a1e86F262Ae92A81aE1c44F401521577";
 
   // 热门token
@@ -50,7 +52,7 @@ class Global {
 
 
   // gas limit 30万
-  static final gasLimit = 300000;
+  static final gasLimit = 600000;
 
   // gas price 10Gwei
   static final gasPrice = BigInt.from(10000000000);

@@ -17,9 +17,6 @@ import 'package:decimal/decimal.dart';
 
 class Trade {
 
-  // 获取订单匹配情况的合约
-  static final hybridExchangeAddress = "0xe07554a7621D663c04082Bb1044Cf1344837BAF4";
-
   //  static final taxAddress = "0xA9535b10EE96b4A03269D0e0DEf417aF97477FD6";
 
   // 这个定义多大?
@@ -375,8 +372,8 @@ class Trade {
       "method": "eth_call",
       "params": [
         {
-          "from":hybridExchangeAddress,
-          "to": hybridExchangeAddress,
+          "from":Global.hydroAddress,
+          "to": Global.hydroAddress,
           "data": postData
         },
         "latest"

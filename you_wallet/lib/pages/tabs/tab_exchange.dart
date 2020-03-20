@@ -76,10 +76,22 @@ class Page extends State {
       }
     });
 
-    /// 监听订单操作结果
+    //监听订单操作结果
     eventBus.on<TransferDoneEvent>().listen((event) {
       Navigator.pop(context);
       this.showSnackBar(event.res);
+    });
+
+    // 事件钩子，通知页面订单列表就要开始刷新了
+    eventBus.on<TransferUpdateStartEvent>().listen((event) {
+      showDialog<Null>(
+          context: context, //BuildContext对象
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return new LoadingDialog( //调用对话框
+              text: '刷新中...',
+            );
+          });
     });
   }
 

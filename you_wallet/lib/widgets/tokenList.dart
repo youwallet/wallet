@@ -50,7 +50,7 @@ class tokenList extends StatelessWidget {
           icon: Icons.delete,
           onTap: () async {
             await Provider.of<Token>(context).remove(item);
-            
+
           },
         )
       ],
