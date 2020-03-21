@@ -92,6 +92,7 @@ class Page extends State {
               text: '刷新中...',
             );
           });
+      eventBus.fire(UpdateTeadeDeepEvent());
     });
   }
 

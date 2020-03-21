@@ -213,17 +213,21 @@ class Page extends State<transferList> {
           );
         }
     );
-    String res = await Trade.cancelOrder2(item, pwd);
-    print('订单撤销返回 => ${res}');
-    int orderFlag = await Trade.orderFlag(item);
-    if (orderFlag == 0) {
-      await Provider.of<Deal>(context).updateOrderStatus(item['txnHash'], '交易撤销');
-      this.updateList();
-      eventBus.fire(TransferDoneEvent('撤销成功成功'));
-    } else {
-      eventBus.fire(TransferDoneEvent('撤销失败，订单状态当前为挂单中'));
+    try{
+      String res = await Trade.cancelOrder2(item, pwd);
+      print('订单撤销返回 => ${res}');
+      int orderFlag = await Trade.orderFlag(item);
+      if (orderFlag == 0) {
+        await Provider.of<Deal>(context).updateOrderStatus(item['txnHash'], '交易撤销');
+        this.updateList();
+        eventBus.fire(TransferDoneEvent('撤销成功成功'));
+      } else {
+        eventBus.fire(TransferDoneEvent('撤销失败，订单状态当前为挂单中'));
+      }
+    } catch(e) {
+      print(e);
+      eventBus.fire(TransferDoneEvent(e.toString()));
     }
-
   }
 
   // 删除历史记录
@@ -287,13 +291,13 @@ class Page extends State<transferList> {
         double amount = await Trade.getFilled(list[i]['odHash']);
         print('匹配情况   =》${list[i]['amount']}-${amount}');
         await Provider.of<Deal>(context).updateFilled(
-            list[i], amount.toStringAsFixed(2));
-        filled[list[i]['txnHash']] = amount.toStringAsFixed(2);
+            list[i], amount.toStringAsFixed(4));
+        filled[list[i]['txnHash']] = amount.toStringAsFixed(4);
 
         // 只有额度不匹配的时候，才判断这个订单还是否存在
         // 因为订单可能被撤销了
         // 而匹配成功的订单，已经被移除了深度队列，下面这个接口是查不到的
-        if(list[i]['amount'] != amount.toString()) {
+        if(double.parse(list[i]['amount']).toStringAsFixed(4) != amount.toStringAsFixed(4)) {
           // 检查订单的在youwallet上的状态，如果为0，就表示这个订单被youwallet撤销了
           int orderFlag = await Trade.orderFlag(list[i]);
           if (orderFlag == 0) {
@@ -312,8 +316,8 @@ class Page extends State<transferList> {
     }
     setState(() {
       this.filledAmount = filled;
-      this.arr = list;
     });
+    this.updateList();
     eventBus.fire(TransferDoneEvent('订单刷新完毕'));
   }
 

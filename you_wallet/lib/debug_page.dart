@@ -105,10 +105,7 @@ class _DebugPageState extends State<DebugPage> {
               child: Text("打开摄像头"),
               textColor: Colors.blue,
               onPressed: () {
-                //导航到新路由
-//                _onImageSaveButtonPressed();
-    Navigator.pushNamed(context, "order_detail", arguments: <String, String>{
-    'hash': '0x8863694fdad62de94c7689eacbea7e27b1919959fb0cdde6f530f806fdb08081'});
+                print(double.parse('1234.12').toStringAsFixed(4));
               },
             ),
             FlatButton(

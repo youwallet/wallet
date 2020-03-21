@@ -37,10 +37,9 @@ class Page extends State<TradesDeep> {
 
     eventBus.on<UpdateTeadeDeepEvent>().listen((event) {
       print('change in UpdateTeadeDeepEvent');
-//      widget.leftToken = event.
-//      this.updateDeep();
       this.getSellList();
     });
+
     this.getSellList();
   }
 
