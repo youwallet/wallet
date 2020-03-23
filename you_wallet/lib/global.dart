@@ -76,8 +76,10 @@ class Global {
     'approve()': '0x095ea7b3',
     'allowance': '0xdd62ed3e',
     'cancelOrder2(bytes32,bytes32,bool)':'0x61d07149',
-    'orderFlag(bytes32)':'0xf8a8db0e'
-  };
+    'orderFlag(bytes32)':'0xf8a8db0e',
+    'sellQueue(bytes32)': '0xf875a998',
+    'getOrderDepth(bytes32)': '0x900b214b'
+};
 
   static final myKey = "v3/37caa7b8b2c34ced8819de2b3853c8a2";
 

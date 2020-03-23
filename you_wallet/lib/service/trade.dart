@@ -611,7 +611,7 @@ class Trade {
     return int.parse(result['result'].replaceFirst("0x",''), radix: 16);
   }
 
-  // 返回指定交易的收据，使用哈希指定交易，用力啊判断ETH的写操作是否成功
+  // 返回指定交易的收据，使用哈希指定交易，判断ETH的写操作是否成功
   // 根据返回对象中的'status'，0x1就是成功，0x0失败
   // getTransactionReceipt必须等待以太坊操作结束后，
   // 在写链的过程中，这个接口一直返回null
@@ -630,6 +630,61 @@ class Trade {
         body: json.encode(payload)
     );
     Map result = jsonDecode(rsp.body);
+    return result['result'];
+  }
+
+  // 本接口即将被废弃
+  static Future getSellQueue(String bqHash) async {
+    String postData = Global.funcHashes['sellQueue(bytes32)'] + bqHash.padLeft(64, '0');
+    var client = Client();
+    var payload = {
+      "jsonrpc": "2.0",
+      "method": "eth_call",
+      "params": [
+        {
+          "from":Global.tempMatchAddress,
+          "to": Global.tempMatchAddress,
+          "data": postData
+        },
+      "latest"
+      ],
+      "id": DateTime.now().millisecondsSinceEpoch
+    };
+    var rpcUrl = await Global.rpcUrl();
+    var rsp = await client.post(
+        rpcUrl,
+        headers:{'Content-Type':'application/json'},
+        body: json.encode(payload)
+    );
+    Map result = jsonDecode(rsp.body);
+    return result['result'];
+  }
+
+  // 获取全部交易信息
+  static Future getOrderDepth(String bqHash) async {
+    String postData = Global.funcHashes['getOrderDepth(bytes32)'] + bqHash.padLeft(64, '0');
+    var client = Client();
+    var payload = {
+      "jsonrpc": "2.0",
+      "method": "eth_call",
+      "params": [
+        {
+          "from":Global.tempMatchAddress,
+          "to": Global.tempMatchAddress,
+          "data": postData
+        },
+        "latest"
+      ],
+      "id": DateTime.now().millisecondsSinceEpoch
+    };
+    var rpcUrl = await Global.rpcUrl();
+    var rsp = await client.post(
+        rpcUrl,
+        headers:{'Content-Type':'application/json'},
+        body: json.encode(payload)
+    );
+    Map result = jsonDecode(rsp.body);
+    print(result);
     return result['result'];
   }
 
