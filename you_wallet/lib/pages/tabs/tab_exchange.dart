@@ -155,8 +155,30 @@ class Page extends State {
     return new AppBar(
         title: const Text('兑换'),
         elevation: 0.0,
+        actions: this.appBarActions(),
         automaticallyImplyLeading: false, //设置没有返回按钮
     );
+  }
+
+  List appBarActions() {
+    return <Widget>[
+      new Container(
+        width: 50.0,
+        child: new IconButton(
+          icon: Icon(Icons.menu),
+          onPressed: () {
+            if (this.value == null || this.rightToken == null) {
+              this.showSnackBar('请选择token和base token，再查看交易深度');
+            } else {
+              Navigator.pushNamed(context, "order_deep", arguments:{
+                'leftToken': this.value,
+                'rightToken': this.rightToken
+              });
+            }
+          },
+        ),
+      )
+    ];
   }
 
   // 构建页面上半部分区域

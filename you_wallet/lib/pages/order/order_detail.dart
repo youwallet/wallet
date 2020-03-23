@@ -36,12 +36,13 @@ class Page extends State<OrderDetail> {
 
   @override // override是重写父类中的函数
   void initState()  {
-    print(this.arguments);
+    print(this.widget);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    print(this.widget);
     return layout(context);
   }
 

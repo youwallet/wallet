@@ -31,6 +31,7 @@ import 'package:youwallet/pages/form/getPassword.dart';
 
 // 订单
 import 'package:youwallet/pages/order/order_detail.dart';
+import 'package:youwallet/pages/order/order_deep.dart';
 
 // 定义全局的路由对象
 final routes = {
@@ -55,7 +56,8 @@ final routes = {
   "password":  (context) => new PasswordPage(),
   "getPassword":  (context) => new GetPasswordPage(),
   "splash":  (context) => new Splash(),
-  "order_detail":  (context, {arguments}) => new OrderDetail(arguments: arguments)
+  "order_detail":  (context, {arguments}) => new OrderDetail(arguments: arguments),
+  "order_deep":  (context, {arguments}) => new OrderDeep(arguments: arguments),
 //  "tabs": (context) => new ContainerPage()
 };
 
