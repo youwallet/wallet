@@ -361,6 +361,36 @@ class Page extends State {
 
   /// 下单
   void makeOrder() async {
+    if (this.value == null) {
+      this.showSnackBar('请选择左侧token');
+      return ;
+    }
+
+    if (this.rightToken == null) {
+      this.showSnackBar('请选择右侧token');
+      return ;
+    }
+
+    if (this.controllerAmount.text.length == 0) {
+      this.showSnackBar('请输入数量');
+      return ;
+    }
+
+    if (this.controllerPrice.text.length == 0) {
+      this.showSnackBar('请输入价格');
+      return ;
+    }
+
+    if (Decimal.parse(this.controllerAmount.text) <= Decimal.parse('0')) {
+      this.showSnackBar('数量必须大于0');
+      return ;
+    }
+
+    if (Decimal.parse(this.controllerPrice.text) <= Decimal.parse('0')) {
+      this.showSnackBar('价格必须大于0');
+      return ;
+    }
+
     showDialog<Null>(
         context: context,
         barrierDismissible: false,
@@ -378,30 +408,6 @@ class Page extends State {
 
     if (packing) {
       this.showSnackBar('当前有订单在打包中，请先等待打包完毕');
-      Navigator.of(context).pop();
-      return ;
-    }
-
-    if (this.value == null) {
-      this.showSnackBar('请选择左侧token');
-      Navigator.of(context).pop();
-      return ;
-    }
-
-    if (this.rightToken == null) {
-      this.showSnackBar('请选择右侧token');
-      Navigator.of(context).pop();
-      return ;
-    }
-
-    if (this.controllerAmount.text.length == 0) {
-      this.showSnackBar('请输入数量');
-      Navigator.of(context).pop();
-      return ;
-    }
-
-    if (this.controllerPrice.text.length == 0) {
-      this.showSnackBar('请输入价格');
       Navigator.of(context).pop();
       return ;
     }
