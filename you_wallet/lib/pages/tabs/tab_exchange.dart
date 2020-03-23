@@ -223,7 +223,7 @@ class Page extends State {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                       new Text(
-                          '交易额${tradePrice??""}',
+                          '交易额: ${tradePrice??""}',
                           style: new TextStyle(
                             color: _btnText == '买入'? Colors.green : Colors.red
                           ),
