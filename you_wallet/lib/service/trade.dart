@@ -39,23 +39,22 @@ class Trade {
   String amount = '1';
   String price = '';
   bool   isBuy = true;
-  String trader = ""; // 当前交易的用户钱包地址
+  String trader = "";     // 当前交易的用户钱包地址
   String configData = ""; // 协议版本号码、是否买单，计算配置信息
-  String privateKey = "";
-  String pwd = ""; // 钱包密码，要用这个密码来解密私钥
+  String privateKey = "";        // 私钥
 
   String rpcUrl = "https://ropsten.infura.io/v3/37caa7b8b2c34ced8819de2b3853c8a2";
 
-  String odHash = "";  // odHash,用来查询兑换订单
-  String bqHash = "";  // bqHash,用来查询兑换订单
+  String odHash = "";     // odHash,用来查询兑换订单
+  String bqHash = "";     // bqHash,用来查询兑换订单
 
-  String txnHash = ""; // 下单成功会返回txnHash
+  String txnHash = "";     // 下单成功会返回txnHash
 
-  String oldPrice = ""; // 保留原始的价格数据
-  String oldAmount = ""; // 保留原始的数量
+  String oldPrice = "";   // 保留原始的价格数据
+  String oldAmount = "";  // 保留原始的数量
 
 
-  Trade(String token, String tokenName, String baseToken, String baseTokenName, String amount, String price, bool isBuy, String pwd) {
+  Trade(String token, String tokenName, String baseToken, String baseTokenName, String amount, String price, bool isBuy, String privateKey) {
      this.tokenA = token;
      this.tokenAName = tokenName;
      this.tokenB = baseToken;
@@ -64,7 +63,7 @@ class Trade {
      this.amount = amount;
      this.oldAmount = amount;
      // 密码，先进行md5加密，再使用AES揭秘私钥
-     this.pwd = pwd;
+     this.privateKey = privateKey;
      //需要换一个名字
      this.price = price;
      this.oldPrice = price;
@@ -142,7 +141,6 @@ class Trade {
     this.configData = await getConfigData(this.isBuy);
 
     // token的小数位数默认18位
-
     this.price = (Decimal.parse(this.amount) * Decimal.parse(price)*Decimal.parse(pow(10, 18).toString())).toStringAsFixed(0) ;
     this.price = BigInt.parse(this.price).toRadixString(16);
 
@@ -229,8 +227,7 @@ class Trade {
 
   // 调用web3dart，对od_hash使用私钥进行签名，这一步必须在客户端做
   Future<Map> ethSign(String od_hash) async {
-    String privateKey = await loadPrivateKey(this.pwd);
-    final key = EthPrivateKey(hexToBytes(privateKey));
+    final key = EthPrivateKey(hexToBytes(this.privateKey));
     final signature = await key.signPersonalMessage(hexToBytes(od_hash));
     final sign = bytesToHex(signature);
     final r = sign.substring(0,64);
@@ -436,7 +433,7 @@ class Trade {
 
   static Future<String> sendToken(String fromAddress, String toAddress, String num, Map token, String pwd) async {
     String rpcUrl = await getNetWork();
-    String privateKey = await getPrivateKey(pwd);
+    String privateKey = pwd;
 
     final client = Web3Client(rpcUrl, Client());
     var credentials = await client.credentialsFromPrivateKey(privateKey);
@@ -526,16 +523,11 @@ class Trade {
   // 交易授权
   // function approve(address spender, uint256 value);
   // 返回1表示true，接口调用成功，0表示false失败了
-  static Future approve(String token, String pwd) async {
+  static Future approve(String token, String privateKey) async {
     String value = BigInt.from(10).pow(27) .toString();
     String postData = Global.funcHashes['approve()'] + formatParam(Global.proxy) + formatParam(value);
 
     String rpcUrl = await Global.rpcUrl();
-    String privateKey = await getPrivateKey(pwd);
-//    print('approve rpcUrl  => ${rpcUrl}');
-//    print('approve proxy   => ${formatParam(Global.proxy)}');
-//    print('approve value   => ${formatParam(value)}');
-//    print('approve postData=> ${postData}');
 
     final client = Web3Client(rpcUrl, Client());
     var credentials = await client.credentialsFromPrivateKey(privateKey);

@@ -425,9 +425,10 @@ class Page extends State {
     // 关闭键盘
     FocusScope.of(context).requestFocus(FocusNode());
 
+    // 判断一下有没有还在打包中的订单
+    // 如果有订单在打包中，发起交易会失败
     List list = await Provider.of<Deal>(context).getTraderList();
     bool packing = list.any((element)=>(element['status']=="打包中"));
-
     if (packing) {
       this.showSnackBar('当前有订单在打包中，请先等待打包完毕');
       Navigator.of(context).pop();

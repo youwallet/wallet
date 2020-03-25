@@ -106,7 +106,7 @@ class Global {
     return "https://" + getPrefs('network') + ".infura.io/" + myKey;
   }
 
-//  https://ropsten.etherscan.io/tx/
+  // https://ropsten.etherscan.io/tx/
   static String getDomain() {
     return "https://" + getPrefs('network') + ".etherscan.io/tx/";
   }

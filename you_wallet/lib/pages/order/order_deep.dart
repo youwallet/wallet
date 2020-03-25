@@ -65,6 +65,9 @@ class Page extends State<OrderDeep> {
   }
 
   // 获取所有的交易深度
+  // 先用两个token获取到唯一的bq hash
+  // 注意这里token的顺序，BTA-BTC和BTC-BTA的bq hash是不一样的
+  // 同一个队列，卖单和买单的bq hash是一样的
   void getOrderDeep() async {
     print(widget.arguments);
     print(widget.arguments['leftToken']);

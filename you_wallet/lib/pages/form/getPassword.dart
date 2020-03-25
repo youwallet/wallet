@@ -1,7 +1,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:youwallet/widgets/customButton.dart';
+import 'package:youwallet/service/trade.dart';
 
+//在该页面让用户输入密码
+//通过密码解密出私钥
 class GetPasswordPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -38,7 +41,7 @@ class _LoginPageState extends State<GetPasswordPage> {
   // 构建AppBar
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
-      title: const Text('youwallet'),
+      title: const Text('输入密码'),
       elevation:.0,
     );
   }
@@ -47,11 +50,22 @@ class _LoginPageState extends State<GetPasswordPage> {
   // 获取用户密码
   Widget buildLoginButton(BuildContext context) {
     return new CustomButton(
-        onSuccessChooseEvent:(res){
+        onSuccessChooseEvent:(res) async {
           _formKey.currentState.save();
           if (!_email.isEmpty) {
+            // 用户输入的密码不为空，在这里开始解密用户的私钥
+            // 解密到用户的私钥，拿到用户的私钥回到交易页面
+            try {
+              String privateKey = await Trade.getPrivateKey(_email);
+              Navigator.of(context).pop(privateKey);
+            } catch (e) {
+              print(e);
+              final snackBar = new SnackBar(content: new Text('解密失败，请确认密码是否正确'));
+              Scaffold.of(context).showSnackBar(snackBar);
+            }
+
             FocusScope.of(context).requestFocus(FocusNode());
-            Navigator.of(context).pop(_email);
+
           } else {
             final snackBar = new SnackBar(content: new Text('密码不能为空'));
             Scaffold.of(context).showSnackBar(snackBar);
