@@ -258,23 +258,7 @@ class Trade {
     }
   }
 
-  // static 方法获取用户私钥
-  static Future<String> getPrivateKey(String pwd) async{
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String address =  prefs.getString("currentWallet");
-    // 这里的操作优化到model中去
-    var sql = SqlUtil.setTable("wallet");
-    var map = {'address': address};
-    List json = await sql.query(conditions: map);
-    var res = await WalletCrypt(pwd, json[0]['privateKey']).decrypt();
-    print('================');
-    print('WalletCrypt done => ${res}');
-    if (res == null) {
-      throw FormatException('钱包密码错误');
-    } else {
-      return res;
-    }
-  }
+
 
   /*
   * 获取订单相关hash值, 返回值是长度为128位的一个字符串，前64位是bq_hash
@@ -558,10 +542,9 @@ class Trade {
     String postData = Global.funcHashes['cancelOrder2(bytes32,bytes32,bool)'] + formatParam(item['bqHash']) + formatParam(item['odHash']) + formatParam(strSell);
 
     String rpcUrl = await Global.rpcUrl();
-    String privateKey = await getPrivateKey(pwd);
 
     final client = Web3Client(rpcUrl, Client());
-    var credentials = await client.credentialsFromPrivateKey(privateKey);
+    var credentials = await client.credentialsFromPrivateKey(pwd);
 
     var rsp = await client.sendTransaction(
         credentials,

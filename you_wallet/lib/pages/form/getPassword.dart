@@ -1,7 +1,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:youwallet/widgets/customButton.dart';
-import 'package:youwallet/service/trade.dart';
+
+import 'package:youwallet/global.dart';
+import 'package:youwallet/db/sql_util.dart';
+import 'package:youwallet/util/wallet_crypt.dart';
 
 //在该页面让用户输入密码
 //通过密码解密出私钥
@@ -56,7 +59,7 @@ class _LoginPageState extends State<GetPasswordPage> {
             // 用户输入的密码不为空，在这里开始解密用户的私钥
             // 解密到用户的私钥，拿到用户的私钥回到交易页面
             try {
-              String privateKey = await Trade.getPrivateKey(_email);
+              String privateKey = await this.getPrivateKey(_email);
               Navigator.of(context).pop(privateKey);
             } catch (e) {
               print(e);
@@ -134,5 +137,24 @@ class _LoginPageState extends State<GetPasswordPage> {
         style: TextStyle(fontSize: 42.0),
       ),
     );
+  }
+
+  // static 方法获取用户私钥
+  // 这里的操作优化到model中去
+  Future<String> getPrivateKey(String pwd) async{
+    String address =  Global.getPrefs("currentWallet");
+
+    var sql = SqlUtil.setTable("wallet");
+    var map = {'address': address};
+    List json = await sql.query(conditions: map);
+    var res = await WalletCrypt(pwd, json[0]['privateKey']).decrypt();
+    print('================');
+    print('WalletCrypt done => ${res}');
+    print('================');
+    if (res == null) {
+      throw FormatException('钱包密码错误');
+    } else {
+      return res;
+    }
   }
 }

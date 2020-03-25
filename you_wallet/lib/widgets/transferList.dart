@@ -152,12 +152,18 @@ class Page extends State<transferList> {
                       new Text('   ${date}'),
                     ],
                   ),
-                  new Text(
-                      item['status']??'进行中',
-                      style: new TextStyle(
-                          color: Colors.deepOrange
+                  new Row(
+                    children: <Widget>[
+                      item['status'] == '失败' ? Icon(Icons.error,size: 16.0, color: Colors.red): Text(''),
+                      new Text(
+                          item['status']??'进行中',
+                          style: new TextStyle(
+                              color: Colors.deepOrange
+                          )
                       )
+                    ],
                   )
+
                 ],
               ),
               new Row(
