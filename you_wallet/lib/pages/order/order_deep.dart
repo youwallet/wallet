@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:http/http.dart';
-import 'package:web3dart/json_rpc.dart';
-import 'package:youwallet/widgets/menu.dart';
-import 'package:youwallet/db/sql_util.dart';
-import 'package:common_utils/common_utils.dart';
-import 'package:youwallet/bus.dart';
 import 'package:youwallet/service/trade.dart';
 import 'dart:math';
+import 'package:youwallet/widgets/loadingDialog.dart';
+import 'package:youwallet/global.dart';
+import 'package:decimal/decimal.dart';
 
 class OrderDeep extends StatefulWidget {
 
@@ -23,13 +19,6 @@ class OrderDeep extends StatefulWidget {
 
 class Page extends State<OrderDeep> {
 
-  List list = [];
-  int today = 0;
-  int threeDay = 0;
-  int weekday = 0;
-  int month = 0;
-  List deep = [];
-
   @override
   Widget build(BuildContext context) {
     return layout(context);
@@ -41,25 +30,30 @@ class Page extends State<OrderDeep> {
     this.getOrderDeep();
   }
 
-
-
   Widget layout(BuildContext context) {
-    return DefaultTabController(
-        length: 5,
-        child: new Scaffold(
-          appBar: buildAppBar(context),
-          body: new ListView(
-            children: <Widget>[
-              Column(
-                children: this.deep.map((item) => buildItem(item, context)).toList(),
-              )
-            ],
-          )
-
+    return new Scaffold(
+        appBar: buildAppBar(context),
+        body: FutureBuilder(
+          future: this.getOrderDeep(),
+          builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+            /*表示数据成功返回*/
+            if (snapshot.hasData) {
+              List response = snapshot.data;
+              return new ListView(
+                children: <Widget>[
+                  Column(
+                    children: response.map((item) => buildItem(item, context)).toList(),
+                  )
+                ],
+              );
+            } else {
+              return LoadingDialog();
+            }
+          },
         )
     );
-
   }
+
 
   // 构建app bar
   Widget buildAppBar(BuildContext context) {
@@ -73,7 +67,7 @@ class Page extends State<OrderDeep> {
   // 先用两个token获取到唯一的bq hash
   // 注意这里token的顺序，BTA-BTC和BTC-BTA的bq hash是不一样的
   // 同一个队列，卖单和买单的bq hash是一样的
-  void getOrderDeep() async {
+  Future<List> getOrderDeep() async {
     String leftToken = widget.arguments['leftToken']['address'];
     String rightToken = widget.arguments['rightToken']['address'];
     // 获取卖单的bq hash
@@ -92,16 +86,13 @@ class Page extends State<OrderDeep> {
       double price = BigInt.parse(item.substring(64, 128), radix: 16)/BigInt.from(pow(10, 18));
       double filled = BigInt.parse(item.substring(128, 192), radix: 16)/BigInt.from(pow(10, 18));
       arr.add({
-        'price': price.toString(),
-        'amount': amount.toString(),
-        'filled': filled.toString(),
+        'price': price.toStringAsFixed(Global.priceDecimal),
+        'amount': amount.toStringAsFixed(Global.numDecimal),
+        'filled': Decimal.parse(filled.toString()).toString()
       });
       i = i+1;
     }
-
-    this.setState((){
-      this.deep = arr;
-    });
+    return arr;
   }
 
   Widget buildItem(Map item, context) {
@@ -122,6 +113,7 @@ class Page extends State<OrderDeep> {
               color:  Colors.green
           ),
           new Text(item['amount']),
+          new Text(item['filled']),
         ],
       ),
     );
