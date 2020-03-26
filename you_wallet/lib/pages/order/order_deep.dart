@@ -67,6 +67,16 @@ class Page extends State<OrderDeep> {
   // 先用两个token获取到唯一的bq hash
   // 注意这里token的顺序，BTA-BTC和BTC-BTA的bq hash是不一样的
   // 同一个队列，卖单和买单的bq hash是一样的
+  /* 订单深度条目
+   * baseTokenAmount, quoteTokenAmount: 由这两个算出价格 = quoteTokenAmount / baseTokenAmount
+   * amount: base-token 数量
+   **/
+  //  struct OrderItem
+  //  {
+  //    uint256 baseTokenAmount;
+  //    uint256 quoteTokenAmount;
+  //    uint256 amount;
+  //  }
   Future<List> getOrderDeep() async {
     String leftToken = widget.arguments['leftToken']['address'];
     String rightToken = widget.arguments['rightToken']['address'];
@@ -82,11 +92,17 @@ class Page extends State<OrderDeep> {
     List arr = [];
     while( i<index) {
       String item = data.substring(i*192, i*192 + 192);
-      double amount = BigInt.parse(item.substring(0, 64), radix: 16)/BigInt.from(pow(10, 18));
-      double price = BigInt.parse(item.substring(64, 128), radix: 16)/BigInt.from(pow(10, 18));
-      double filled = BigInt.parse(item.substring(128, 192), radix: 16)/BigInt.from(pow(10, 18));
+      BigInt baseTokenAmount  = BigInt.parse(item.substring(0, 64), radix: 16);
+      BigInt quoteTokenAmount = BigInt.parse(item.substring(64, 128), radix: 16);
+      BigInt filled = BigInt.parse(item.substring(128, 192), radix: 16);
+      String price = (quoteTokenAmount/baseTokenAmount).toStringAsFixed(Global.priceDecimal);
+      double amount = (baseTokenAmount - filled) / BigInt.from(pow(10, 18));
+
+//      double amount = BigInt.parse(item.substring(0, 64), radix: 16)/BigInt.from(pow(10, 18));
+//      double price = BigInt.parse(item.substring(64, 128), radix: 16)/BigInt.from(pow(10, 18));
+//      double filled = BigInt.parse(item.substring(128, 192), radix: 16)/BigInt.from(pow(10, 18));
       arr.add({
-        'price': price.toStringAsFixed(Global.priceDecimal),
+        'price': price,
         'amount': amount.toStringAsFixed(Global.numDecimal),
         'filled': Decimal.parse(filled.toString()).toString()
       });
