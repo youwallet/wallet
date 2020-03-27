@@ -381,7 +381,9 @@ class Page extends State {
     );
   }
 
-  /// 下单
+  /// 校验数据格式
+  /// 价格数量必须是大于0的数字
+  /// 并且小数位数有限制
   void makeOrder() async {
     if (this.value == null) {
       this.showSnackBar('请选择左侧token');
@@ -393,25 +395,54 @@ class Page extends State {
       return ;
     }
 
-    if (this.controllerAmount.text.length == 0) {
-      this.showSnackBar('请输入数量');
-      return ;
-    }
-
     if (this.controllerPrice.text.length == 0) {
       this.showSnackBar('请输入价格');
       return ;
     }
 
-    if (Decimal.parse(this.controllerAmount.text) <= Decimal.parse('0')) {
-      this.showSnackBar('数量必须大于0');
+    try {
+      if (Decimal.parse(this.controllerPrice.text) <= Decimal.parse('0')) {
+        this.showSnackBar('价格必须大于0');
+        return;
+      }
+      List strs = this.controllerPrice.text.split('.');
+      if (strs.length == 2) {
+        if (strs[1].length > Global.priceDecimal) {
+          this.showSnackBar('价格小数位数最多${Global.priceDecimal}位');
+          return;
+        }
+      }
+
+    } catch (e) {
+      print(e);
+      this.showSnackBar('你输入的价格不是无法识别');
+      return;
+    }
+
+
+    if (this.controllerAmount.text.length == 0) {
+      this.showSnackBar('请输入数量');
       return ;
     }
 
-    if (Decimal.parse(this.controllerPrice.text) <= Decimal.parse('0')) {
-      this.showSnackBar('价格必须大于0');
-      return ;
+    try {
+      if (Decimal.parse(this.controllerAmount.text) <= Decimal.parse('0')) {
+        this.showSnackBar('数量必须大于0');
+        return ;
+      }
+      List strs = this.controllerAmount.text.split('.');
+      if (strs.length == 2) {
+        if (strs[1].length > Global.numDecimal) {
+          this.showSnackBar('数量小数位数最多${Global.numDecimal}位');
+          return;
+        }
+      }
+    } catch (e) {
+      print(e);
+      this.showSnackBar('你输入的数量不是无法识别');
+      return;
     }
+
 
     showDialog<Null>(
         context: context,
