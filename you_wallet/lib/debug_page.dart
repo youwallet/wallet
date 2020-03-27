@@ -24,7 +24,7 @@ import 'package:bitcoin_flutter/src/payments/p2pkh.dart';
 import 'package:convert/convert.dart';
 import 'package:decimal/decimal.dart';
 import 'dart:math';
-
+import 'package:youwallet/util/number_format.dart';
 
 class DebugPage extends StatefulWidget {
   DebugPage() : super();
@@ -105,7 +105,10 @@ class _DebugPageState extends State<DebugPage> {
               child: Text("打开摄像头"),
               textColor: Colors.blue,
               onPressed: () {
-                print(double.parse('1234.12').toStringAsFixed(4));
+//                print(double.parse('1234.12').toStringAsFixed(4));
+                 print(NumberFormat(100).format());
+                 print(NumberFormat('100.00').format());
+                 print(NumberFormat(0.010000).format());
               },
             ),
             FlatButton(

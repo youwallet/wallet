@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:youwallet/model/deal.dart';
 import 'package:youwallet/service/trade.dart';
 import 'package:flutter/services.dart';
+import 'package:youwallet/util/number_format.dart';
 
 class transferList extends StatefulWidget {
 
@@ -173,7 +174,7 @@ class Page extends State<transferList> {
                       '${item['price']} (${item['baseTokenName']})',
                   ),
                   new Text(
-                      '${filled.toString()}/${item['amount']}(${item['tokenName']})',
+                      '${NumberFormat(filled).format()}/${item['amount']}(${item['tokenName']})',
                       style: new TextStyle(
                           color: Colors.lightBlue
                       )
