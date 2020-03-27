@@ -111,8 +111,9 @@ class _DebugPageState extends State<DebugPage> {
             FlatButton(
               child: Text("设置密码"),
               textColor: Colors.blue,
-              onPressed: () {_checkBiometrics
-                ();},
+              onPressed: () {
+
+                },
             ),
             FlatButton(
               child: Text("删除交易记录数据库"),

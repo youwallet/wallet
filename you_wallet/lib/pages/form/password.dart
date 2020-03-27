@@ -44,6 +44,7 @@ class _LoginPageState extends State<PasswordPage> {
                     buildEmailTextField(),
                     SizedBox(height: 30.0),
                     buildPasswordTextField(context),
+                    buildTips('密码长度为8-20位的字母或者数字'),
                     SizedBox(height: 60.0),
 //                    buildLoginButton(context),
                     buildButton(context)
@@ -89,14 +90,22 @@ class _LoginPageState extends State<PasswordPage> {
     return new CustomButton(
         onSuccessChooseEvent:(res){
           _formKey.currentState.save();
-          if (_email == _password && !_email.isEmpty) {
+          if (_email == _password && !_email.isEmpty && _email.length >= 8 && _email.length <=20) {
             Navigator.of(context).pop(_email);
           } else {
             if (_email.isEmpty || _password.isEmpty) {
               final snackBar = new SnackBar(content: new Text('不能为空'));
               Scaffold.of(context).showSnackBar(snackBar);
             } else {
-              final snackBar = new SnackBar(content: new Text('两次输入密码不同'));
+              String val = '';
+              if (_email.length < 8) {
+                val = '长度必须大于等于8位';
+              } else if (_email.length > 20) {
+                val = '长度必须小于等于20位';
+              } else {
+                val = '两次输入密码不同';
+              }
+              final snackBar = new SnackBar(content: new Text(val));
               Scaffold.of(context).showSnackBar(snackBar);
             }
           }
@@ -156,6 +165,22 @@ class _LoginPageState extends State<PasswordPage> {
         '',
         style: TextStyle(fontSize: 42.0),
       ),
+    );
+  }
+
+  Widget buildTips(String val) {
+    return Container(
+      padding: EdgeInsets.only(top: 16.0),
+      child: Row(
+        children: <Widget>[
+          Icon(Icons.help,size: 16.0, color: Colors.black26),
+          Text(
+            val,
+            style: TextStyle(fontSize: 12.0),
+          ),
+        ],
+      )
+
     );
   }
 }
