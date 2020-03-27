@@ -430,8 +430,8 @@ class Trade {
         credentials,
         Transaction(
             to: EthereumAddress.fromHex(token['address']),
-            gasPrice: EtherAmount.inWei(BigInt.from(1000000000)),
-            maxGas: 7000000,
+            gasPrice: EtherAmount.inWei(Global.gasPrice),
+            maxGas: Global.gasLimit,
             value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
             data: hexToBytes(postData)
         ),
@@ -520,8 +520,8 @@ class Trade {
         credentials,
         Transaction(
             to: EthereumAddress.fromHex(token),
-            gasPrice: EtherAmount.inWei(BigInt.from(20000000000)),
-            maxGas: 7000000,
+            gasPrice: EtherAmount.inWei(Global.gasPrice),
+            maxGas: Global.gasLimit,
             value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
             data: hexToBytes(postData)
         ),
