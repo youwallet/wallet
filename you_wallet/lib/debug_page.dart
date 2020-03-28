@@ -106,7 +106,7 @@ class _DebugPageState extends State<DebugPage> {
               textColor: Colors.blue,
               onPressed: () {
 //                print(double.parse('1234.12').toStringAsFixed(4));
-                 print(NumberFormat(100).format());
+                 print(NumberFormat(1.5000).format());
                  print(NumberFormat('100.00').format());
                  print(NumberFormat(0.010000).format());
               },

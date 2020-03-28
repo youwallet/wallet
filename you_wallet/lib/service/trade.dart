@@ -14,6 +14,7 @@ import 'package:youwallet/util/md5_encrypt.dart';
 import 'package:youwallet/util/wallet_crypt.dart';
 import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
 import 'package:decimal/decimal.dart';
+import 'package:youwallet/util/number_format.dart';
 
 class Trade {
 
@@ -644,7 +645,8 @@ class Trade {
  *
  * 注意：返回值数组固定大小是10个，返回的OrderItem中任意一个参数为0，表示结束。
  */
-  static Future getOrderDepth(String bqsq) async {
+  static Future<List> getOrderDepth(String leftToken, String rightToken) async {
+    String bqsq = await Trade.getBQHash(leftToken, rightToken);
     String postData = Global.funcHashes['getOrderDepth(bytes32)'] + bqsq;
     var client = Client();
     var payload = {
@@ -668,8 +670,48 @@ class Trade {
     );
     Map result = jsonDecode(rsp.body);
     print(result);
-    return result['result'];
+
+    return Trade.buildOrderDeep(result['result']);
   }
+
+  // 解析deepOrder接口返回的深度字符串
+  static buildOrderDeep(String str) {
+  //  String data = result['result'].replaceFirst('0x', '');
+    String data = str.replaceFirst('0x', '');
+    int len = data.length;
+    int n = 4; // orderItem由几个字段构成
+    int index = (len/256).toInt();
+    int i = 0;
+    List arr = [];
+    while( i<index) {
+      String item = data.substring(i*n*64, i*n*64 + n*64);
+      BigInt baseTokenAmount  = BigInt.parse(item.substring(0, 64), radix: 16);
+      print(item.substring(0, 64));
+      print(baseTokenAmount);
+      BigInt quoteTokenAmount = BigInt.parse(item.substring(64, 128), radix: 16);
+      print(item.substring(64, 128));
+      print(quoteTokenAmount);
+      double amount = BigInt.parse(item.substring(128, 192), radix: 16)/BigInt.from(pow(10, 18));
+      print(item.substring(128, 192));
+      print(amount);
+      bool is_sell = BigInt.parse(item.substring(192), radix: 16) == BigInt.from(0)? false:true;
+      print(item.substring(192));
+      print(is_sell);
+      double price = (quoteTokenAmount/baseTokenAmount);
+      print(price);
+      print(NumberFormat(price).format());
+      if (amount != 0 && price != 0) {
+        arr.add({
+          'price': NumberFormat(price).format(),
+          'amount': NumberFormat(amount).format(),
+          'is_sell': is_sell
+        });
+      }
+      i = i+1;
+    }
+    return arr;
+  }
+
 
   /*
   * 获取订单相关hash值, 返回值是长度为128位的一个字符串，前64位是bq_hash

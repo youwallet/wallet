@@ -37,10 +37,10 @@ class Page extends State<TradesDeep> {
 
     eventBus.on<UpdateTeadeDeepEvent>().listen((event) {
       print('change in UpdateTeadeDeepEvent');
-      this.getSellList();
+      this.getOrderDeep();
     });
 
-    this.getSellList();
+    this.getOrderDeep();
   }
 
   @override
@@ -69,15 +69,15 @@ class Page extends State<TradesDeep> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           new Text(
-              item['left'],
-              style: TextStyle(color: item['isSell'] ? Colors.deepOrange : Colors.green)
+              item['price'],
+              style: TextStyle(color: item['is_sell'] ? Colors.deepOrange : Colors.green)
           ),
           new Icon(
               Icons.close,
               size: 20.0,
-              color: item['isSell'] ? Colors.deepOrange : Colors.green
+              color: item['is_sell'] ? Colors.deepOrange : Colors.green
           ),
-          new Text(item['right'].toString()),
+          new Text(item['amount'].toString()),
         ],
       ),
     );
@@ -85,31 +85,39 @@ class Page extends State<TradesDeep> {
 
   /// 先获取卖单队列，再获取买单队列
   /// 如果有一边的token还没有选择，则不更新
-  Future<void> getSellList() async {
-    print('getSellList start');
+  Future<void> getOrderDeep() async {
+    print('start getOrderDeep');
     print(widget.leftToken);
     print(widget.rightToken);
-    if (widget.leftToken.length == 0) {
-      print('left not sellect');
-      return;
-    }
-
-    if (widget.rightToken.length == 0) {
-      print('right not sellect');
-      return;
-    }
-
-    setState(() {
-      this.arr = [];// 清空当前的深度数组
-    });
-
-//    String tokenAddress = this.value['address'];
-//    String baseTokenAddress = this.rightToken['address'];
-    bool isSell = true;
-    String hash = await Trade.getOrderQueueInfo(widget.leftToken, widget.rightToken, isSell);
-    String bqHash = hash.replaceFirst('0x', '').substring(0,64);
-    String queueElem = await Trade.getOrderInfo(hash, isSell);
-    this.deepCallBackOrderInfo(queueElem, bqHash, isSell);
+      List list = await Trade.getOrderDepth(widget.leftToken, widget.rightToken);
+      print(list);
+      this.setState((){
+        arr = list;
+      });
+//    print('getSellList start');
+//    print(widget.leftToken);
+//    print(widget.rightToken);
+//    if (widget.leftToken.length == 0) {
+//      print('left not sellect');
+//      return;
+//    }
+//
+//    if (widget.rightToken.length == 0) {
+//      print('right not sellect');
+//      return;
+//    }
+//
+//    setState(() {
+//      this.arr = [];// 清空当前的深度数组
+//    });
+//
+////    String tokenAddress = this.value['address'];
+////    String baseTokenAddress = this.rightToken['address'];
+//    bool isSell = true;
+//    String hash = await Trade.getOrderQueueInfo(widget.leftToken, widget.rightToken, isSell);
+//    String bqHash = hash.replaceFirst('0x', '').substring(0,64);
+//    String queueElem = await Trade.getOrderInfo(hash, isSell);
+//    this.deepCallBackOrderInfo(queueElem, bqHash, isSell);
   }
 
   // 获取当前的买单队列

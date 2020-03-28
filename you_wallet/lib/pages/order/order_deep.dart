@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:youwallet/global.dart';
 import 'package:decimal/decimal.dart';
+import 'package:youwallet/util/number_format.dart';
 
 class OrderDeep extends StatefulWidget {
 
@@ -80,52 +81,19 @@ class Page extends State<OrderDeep> {
   Future<List> getOrderDeep() async {
     String leftToken = widget.arguments['leftToken']['address'];
     String rightToken = widget.arguments['rightToken']['address'];
-
-    String bqsq = await Trade.getBQHash(leftToken, rightToken);
-//    print(obj);
-    // 获取卖单的bq hash
-    // String hash = await Trade.getOrderQueueInfo(leftToken, rightToken, true);
-    // String bqHash = hash.replaceFirst('0x', '').substring(0,64);
-  /* 订单深度条目
-   * baseTokenAmount, quoteTokenAmount: 由这两个算出价格 = quoteTokenAmount / baseTokenAmount
-   * amount: base-token 数量
-   * is_sell: true for sell, false for buy
-   *
-   * struct OrderItem
-    {
-        uint256 baseTokenAmount;
-        uint256 quoteTokenAmount;
-        uint256 amount;
-        bool is_sell;
+    try {
+      List arr = await Trade.getOrderDepth(leftToken, rightToken);
+      print(arr);
+      return arr;
+    } catch (e) {
+      this.showSnackBar(e.toString());
+      return [];
     }
-   **/
-    String res = await Trade.getOrderDepth(bqsq);
-    String data = res.replaceFirst('0x', '');
-    int len = data.length;
-    int n = 4; // orderItem由几个字段构成
-    int index = (len/256).toInt();
-    int i = 0;
-    List arr = [];
-    while( i<index) {
-      String item = data.substring(i*n*64, i*n*64 + n*64);
-      BigInt baseTokenAmount  = BigInt.parse(item.substring(0, 64), radix: 16);
-      BigInt quoteTokenAmount = BigInt.parse(item.substring(64, 128), radix: 16);
-      double amount = BigInt.parse(item.substring(128, 192), radix: 16)/BigInt.from(pow(10, 18));
-      bool is_sell = BigInt.parse(item.substring(192), radix: 16) == BigInt.from(0)? false:true;
-      String price = (quoteTokenAmount/baseTokenAmount).toStringAsFixed(Global.priceDecimal);
-      print(baseTokenAmount);
-      print(quoteTokenAmount);
-      print(amount);
-      print(is_sell);
+  }
 
-      arr.add({
-        'price': price,
-        'amount': amount.toString(),
-        'is_sell': is_sell
-      });
-      i = i+1;
-    }
-    return arr;
+  void showSnackBar(String text) {
+    final snackBar = new SnackBar(content: new Text(text));
+    Scaffold.of(context).showSnackBar(snackBar);
   }
 
   Widget buildItem(Map item, context) {

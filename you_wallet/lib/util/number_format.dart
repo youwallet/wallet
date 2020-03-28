@@ -6,15 +6,17 @@ class NumberFormat {
   var amount;
   String format() {
     String str = amount.toString();
+//    print(str);
     List arr = str.split('.');
 //    print(arr);
     if (arr.length == 2) {
       String dem = this.delZero(arr[1]);
-//      print('return ${dem}');
-//      return dem;
+//      print('接收到dem => ${dem}');
       if (dem == null) {
+//        print('format return => ${arr[0]}');
         return arr[0];
       } else {
+//        print('format return => ${arr[0] +'.'+dem}');
         return arr[0] +'.'+dem;
       }
     } else {
@@ -32,6 +34,7 @@ class NumberFormat {
     if (str.substring(str.length -1) == '0') {
       this.delZero(str.substring(0, str.length -1));
     } else {
+//      print('start return => ${str}');
       return str;
     }
   }
