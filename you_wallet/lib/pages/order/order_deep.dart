@@ -5,6 +5,7 @@ import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:youwallet/global.dart';
 import 'package:decimal/decimal.dart';
 import 'package:youwallet/util/number_format.dart';
+import 'package:youwallet/widgets/listEmpty.dart';
 
 class OrderDeep extends StatefulWidget {
 
@@ -39,13 +40,19 @@ class Page extends State<OrderDeep> {
             /*表示数据成功返回*/
             if (snapshot.hasData) {
               List response = snapshot.data;
-              return new ListView(
-                children: <Widget>[
-                  Column(
-                    children: response.map((item) => buildItem(item, context)).toList(),
-                  )
-                ],
-              );
+              if(response.length == 0) {
+                return ListEmpty(
+                  text: '还没有交易'
+                );
+              } else {
+                return new ListView(
+                  children: <Widget>[
+                    Column(
+                      children: response.map((item) => buildItem(item, context)).toList(),
+                    )
+                  ],
+                );
+              }
             } else {
               return LoadingDialog();
             }

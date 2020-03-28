@@ -14,6 +14,7 @@ class ListEmpty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: MediaQuery.of(context).size.width,
       child: Column(
         children: <Widget>[
 //          Icon(IconData(0xe6a6, fontFamily: 'iconfont'),size: 50.0),

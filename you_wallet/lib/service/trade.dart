@@ -694,12 +694,14 @@ class Trade {
     print(sell);
     String buy_str = data.substring(64*4 + sell_len*4*64);
     List buy = Trade.buildOrderItem(buy_str);
+    sell = sell.reversed.toList();
     sell.addAll(buy);
     return sell;
   }
 
   // 拿到卖单和买单的字符串，按照偏移量解析出来
   static List buildOrderItem(String data) {
+    print('start buildOrderItem');
     int n = 4; // orderItem由几个字段构成
     int index = (data.length/256).toInt();
     int i = 0;
