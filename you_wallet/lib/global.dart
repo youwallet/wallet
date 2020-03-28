@@ -34,7 +34,10 @@ class Global {
   // youWallet钱包合约
   // static final tempMatchAddress= "0x3edde3202e42a6c129A399a7e063C6E236239202";
   // static final tempMatchAddress = "0x6c414F9b4daBfD4403F33EcC6d8B2142ff068C46";
-  static final tempMatchAddress = "0x675E05f5Dd6129bd5BE92DBF8319FC5DEB4dE94b";
+  // static final tempMatchAddress = "0x675E05f5Dd6129bd5BE92DBF8319FC5DEB4dE94b";
+  // static final tempMatchAddress = "0x4a5277ba2952Cb1f9a0d2E9F92c1F386ed4a41b7";
+  // static final tempMatchAddress = "0xFf067F015Fc6803cDe9D9B0FfAB77803Ba4dF43A";
+  static final tempMatchAddress = "0x950b5C568c46B1abcDC21F7348d9F29B7c64462a";
 
   // 收取交易费的账户relayer ，测试阶段用SHT的合约账户代替
   static final taxAddress = "0xA9535b10EE96b4A03269D0e0DEf417aF97477FD6";
@@ -78,7 +81,9 @@ class Global {
     'cancelOrder2(bytes32,bytes32,bool)':'0x61d07149',
     'orderFlag(bytes32)':'0xf8a8db0e',
     'sellQueue(bytes32)': '0xf875a998',
-    'getOrderDepth(bytes32)': '0x900b214b'
+    'getOrderDepth(bytes32)': '0x3e8c0c4c',
+    'getBQODHash()': '0xefe331cf',
+    'getBQHash()': '0x30d598ed'
 };
 
   static final myKey = "v3/37caa7b8b2c34ced8819de2b3853c8a2";

@@ -262,28 +262,24 @@ class Trade {
 
   /*
   * 获取订单相关hash值, 返回值是长度为128位的一个字符串，前64位是bq_hash
-  * String bq_hash = res.substring(0,64);
-  * String od_hash = res.substring(64);
+ * bq_hash: base-token/quote-token buy  哈希值
+ * sq_hash: base-token/quote-token sell 哈希值
+ * od_hash: 订单哈希值
   */
    Future<Map> getBQODHash() async {
-
-    String functionName = '0xefe331cf';
-
     // 此时还没有signature字段，所以随便填充三个32byte的字段
     String signature = this.configData + this.configData + this.configData;
-//    print('getBQODHash functionName             =》${functionName}');
-//    print('getBQODHash this.trader              =》${this.trader}');
-//    print('getBQODHash formatParam(this.amount) =》${formatParam(this.amount)}');
-//    print('getBQODHash formatParam(this.price)  =》${formatParam(this.price)}');
-//    print('getBQODHash gasTokenAmount           =》${gasTokenAmount}');
-//    print('getBQODHash this.configData          =》${this.configData}');
-//    print('getBQODHash signature                =》${signature}');
-//    print('getBQODHash formatParam(this.tokenA) =》${formatParam(this.tokenA)}');
-//    print('getBQODHash formatParam(this.tokenB) =》${formatParam(this.tokenB)}');
-//    print('getBQODHash formatParam(taxAddress)  =》${formatParam(Global.taxAddress)}');
-    String postData = functionName + this.trader + formatParam(this.amount) + formatParam(this.price) + gasTokenAmount + this.configData + signature + formatParam(this.tokenA) + formatParam(this.tokenB) + formatParam(Global.taxAddress);
-
-//    print('getBQODHash postData=》${postData}');
+    //    print('getBQODHash functionName             =》${functionName}');
+    //    print('getBQODHash this.trader              =》${this.trader}');
+    //    print('getBQODHash formatParam(this.amount) =》${formatParam(this.amount)}');
+    //    print('getBQODHash formatParam(this.price)  =》${formatParam(this.price)}');
+    //    print('getBQODHash gasTokenAmount           =》${gasTokenAmount}');
+    //    print('getBQODHash this.configData          =》${this.configData}');
+    //    print('getBQODHash signature                =》${signature}');
+    //    print('getBQODHash formatParam(this.tokenA) =》${formatParam(this.tokenA)}');
+    //    print('getBQODHash formatParam(this.tokenB) =》${formatParam(this.tokenB)}');
+    //    print('getBQODHash formatParam(taxAddress)  =》${formatParam(Global.taxAddress)}');
+    String postData = Global.funcHashes['getBQODHash()'] + this.trader + formatParam(this.amount) + formatParam(this.price) + gasTokenAmount + this.configData + signature + formatParam(this.tokenA) + formatParam(this.tokenB) + formatParam(Global.taxAddress);
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",
@@ -308,15 +304,17 @@ class Trade {
     Map result = jsonDecode(rsp.body);
 
     String  res = result['result'].replaceFirst("0x", ""); // 得到一个64字节的数据
-    String bq_hash = res.substring(0,64);
-    String od_hash = res.substring(64);
+    String sq_hash = res.substring(0,64);
+    String bq_hash = res.substring(64,128);
+    String od_hash = res.substring(128);
 //    print("bq_hash =》 ${bq_hash}");
 //    print("od_hash =》 ${od_hash}");
     this.odHash = od_hash;
     this.bqHash = bq_hash;
     return {
       'od_hash': od_hash,
-      'bq_hash': bq_hash
+      'bq_hash': bq_hash,
+      'sq_hash': sq_hash
     };
   }
 
@@ -636,8 +634,18 @@ class Trade {
   }
 
   // 获取全部交易信息
-  static Future getOrderDepth(String bqHash) async {
-    String postData = Global.funcHashes['getOrderDepth(bytes32)'] + bqHash.padLeft(64, '0');
+  /* 获取深度列表 - R
+ * sq_hash: base-token/quote-token sell 哈希值
+ * bq_hash: base-token/quote-token buy 哈希值
+ *
+ * 返回值:
+ * od_list_sell: OrderItem 数组
+ * od_list_buy: OrderItem 数组
+ *
+ * 注意：返回值数组固定大小是10个，返回的OrderItem中任意一个参数为0，表示结束。
+ */
+  static Future getOrderDepth(String bqsq) async {
+    String postData = Global.funcHashes['getOrderDepth(bytes32)'] + bqsq;
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",
@@ -661,6 +669,47 @@ class Trade {
     Map result = jsonDecode(rsp.body);
     print(result);
     return result['result'];
+  }
+
+  /*
+  * 获取订单相关hash值, 返回值是长度为128位的一个字符串，前64位是bq_hash
+ * bq_hash: base-token/quote-token buy  哈希值
+ * sq_hash: base-token/quote-token sell 哈希值
+ * od_hash: 订单哈希值
+  */
+  static Future<String> getBQHash(String leftToken, String rightToken) async {
+    String postData = Global.funcHashes['getBQHash()'] + formatParam(leftToken) + formatParam(rightToken);
+    var client = Client();
+    var payload = {
+      "jsonrpc": "2.0",
+      "method": "eth_call",
+      "params": [
+        {
+          "from":Global.tempMatchAddress,
+          "to": Global.tempMatchAddress,
+          "data": postData
+        },
+        "latest"
+      ],
+      "id": DateTime.now().millisecondsSinceEpoch
+    };
+
+    var rsp = await client.post(
+        "https://ropsten.infura.io/v3/37caa7b8b2c34ced8819de2b3853c8a2",
+        headers:{'Content-Type':'application/json'},
+        body: json.encode(payload)
+    );
+    Map result = jsonDecode(rsp.body);
+
+    String  res = result['result'].replaceFirst("0x", ""); // 得到一个64字节的数据
+    print(res);
+    return res;
+//    String sq_hash = res.substring(0,64);
+//    String bq_hash = res.substring(64,128);
+//    return {
+//      'sq_hash': sq_hash,
+//      'bq_hash': bq_hash,
+//    };
   }
 
 }

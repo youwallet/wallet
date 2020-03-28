@@ -27,7 +27,6 @@ class Page extends State<OrderDeep> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    this.getOrderDeep();
   }
 
   Widget layout(BuildContext context) {
@@ -77,34 +76,52 @@ class Page extends State<OrderDeep> {
   //    uint256 quoteTokenAmount;
   //    uint256 amount;
   //  }
+
   Future<List> getOrderDeep() async {
     String leftToken = widget.arguments['leftToken']['address'];
     String rightToken = widget.arguments['rightToken']['address'];
-    // 获取卖单的bq hash
-    String hash = await Trade.getOrderQueueInfo(leftToken, rightToken, true);
-    String bqHash = hash.replaceFirst('0x', '').substring(0,64);
 
-    String res = await Trade.getOrderDepth(bqHash);
+    String bqsq = await Trade.getBQHash(leftToken, rightToken);
+//    print(obj);
+    // 获取卖单的bq hash
+    // String hash = await Trade.getOrderQueueInfo(leftToken, rightToken, true);
+    // String bqHash = hash.replaceFirst('0x', '').substring(0,64);
+  /* 订单深度条目
+   * baseTokenAmount, quoteTokenAmount: 由这两个算出价格 = quoteTokenAmount / baseTokenAmount
+   * amount: base-token 数量
+   * is_sell: true for sell, false for buy
+   *
+   * struct OrderItem
+    {
+        uint256 baseTokenAmount;
+        uint256 quoteTokenAmount;
+        uint256 amount;
+        bool is_sell;
+    }
+   **/
+    String res = await Trade.getOrderDepth(bqsq);
     String data = res.replaceFirst('0x', '');
     int len = data.length;
-    int index = (len/192).toInt();
+    int n = 4; // orderItem由几个字段构成
+    int index = (len/256).toInt();
     int i = 0;
     List arr = [];
     while( i<index) {
-      String item = data.substring(i*192, i*192 + 192);
+      String item = data.substring(i*n*64, i*n*64 + n*64);
       BigInt baseTokenAmount  = BigInt.parse(item.substring(0, 64), radix: 16);
       BigInt quoteTokenAmount = BigInt.parse(item.substring(64, 128), radix: 16);
-      BigInt filled = BigInt.parse(item.substring(128, 192), radix: 16);
+      double amount = BigInt.parse(item.substring(128, 192), radix: 16)/BigInt.from(pow(10, 18));
+      bool is_sell = BigInt.parse(item.substring(192), radix: 16) == BigInt.from(0)? false:true;
       String price = (quoteTokenAmount/baseTokenAmount).toStringAsFixed(Global.priceDecimal);
-      double amount = (baseTokenAmount - filled) / BigInt.from(pow(10, 18));
+      print(baseTokenAmount);
+      print(quoteTokenAmount);
+      print(amount);
+      print(is_sell);
 
-//      double amount = BigInt.parse(item.substring(0, 64), radix: 16)/BigInt.from(pow(10, 18));
-//      double price = BigInt.parse(item.substring(64, 128), radix: 16)/BigInt.from(pow(10, 18));
-//      double filled = BigInt.parse(item.substring(128, 192), radix: 16)/BigInt.from(pow(10, 18));
       arr.add({
         'price': price,
-        'amount': amount.toStringAsFixed(Global.numDecimal),
-        'filled': Decimal.parse(filled.toString()).toString()
+        'amount': amount.toString(),
+        'is_sell': is_sell
       });
       i = i+1;
     }
@@ -121,15 +138,14 @@ class Page extends State<OrderDeep> {
         children: [
           new Text(
               item['price'],
-              style: TextStyle(color: Colors.green)
+              style: TextStyle(color: item['is_sell'] ? Colors.deepOrange : Colors.green)
           ),
           new Icon(
               Icons.close,
               size: 20.0,
-              color:  Colors.green
+              color: item['is_sell'] ? Colors.deepOrange : Colors.green
           ),
           new Text(item['amount']),
-          new Text(item['filled']),
         ],
       ),
     );

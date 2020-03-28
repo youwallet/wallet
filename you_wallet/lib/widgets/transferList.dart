@@ -304,13 +304,13 @@ class Page extends State<transferList> {
         // 只有额度不匹配的时候，才判断这个订单还是否存在
         // 因为订单可能被撤销了
         // 而匹配成功的订单，已经被移除了深度队列，下面这个接口是查不到的
-        if(double.parse(list[i]['amount']).toStringAsFixed(4) != amount.toStringAsFixed(4)) {
-          // 检查订单的在youwallet上的状态，如果为0，就表示这个订单被youwallet撤销了
-          int orderFlag = await Trade.orderFlag(list[i]);
-          if (orderFlag == 0) {
-            await Provider.of<Deal>(context).updateOrderStatus(list[i]['txnHash'], '交易撤销');
-          }
-        }
+//        if(double.parse(list[i]['amount']).toStringAsFixed(4) != amount.toStringAsFixed(4)) {
+//          // 检查订单的在youwallet上的状态，如果为0，就表示这个订单被youwallet撤销了
+//          int orderFlag = await Trade.orderFlag(list[i]);
+//          if (orderFlag == 0) {
+//            await Provider.of<Deal>(context).updateOrderStatus(list[i]['txnHash'], '交易撤销');
+//          }
+//        }
 
         //检查订单的在以太坊上的凭据，以为订单有可能在以太坊这里就上链失败了
 //        Map res = await Trade.getTransactionReceipt(list[i]);
