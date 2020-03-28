@@ -177,7 +177,6 @@ class Trade {
     // 注意这时订单还在打包中，只有hash值，不算成功
     await this.saveTrader();
     return this.txnHash;
-
   }
 
   // 根据 RVS计算订单的签名
@@ -646,15 +645,17 @@ class Trade {
  * 注意：返回值数组固定大小是10个，返回的OrderItem中任意一个参数为0，表示结束。
  */
   static Future<List> getOrderDepth(String leftToken, String rightToken) async {
+    print('start getOrderDepth');
     String bqsq = await Trade.getBQHash(leftToken, rightToken);
     String postData = Global.funcHashes['getOrderDepth(bytes32)'] + bqsq;
+
+    print('postData=> ${postData}');
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",
       "method": "eth_call",
       "params": [
         {
-          "from":Global.tempMatchAddress,
           "to": Global.tempMatchAddress,
           "data": postData
         },
@@ -668,6 +669,10 @@ class Trade {
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
+    print('start print rsp');
+    print(rsp);
+    print('start print rsp.body');
+    print(rsp.body);
     Map result = jsonDecode(rsp.body);
     print(result);
 
@@ -675,35 +680,51 @@ class Trade {
   }
 
   // 解析deepOrder接口返回的深度字符串
+  // 第一个64位的字符串是偏移量，表示每个数字的长度
+  // 第二个64位的字符串是总长度，可以不关心
+  // 第三个64的字符串是卖单长度
+  // 第四个64位的字符串开始就是卖单
+  // 卖单结束后，就是买单的长度，也是64位字符串，后面就是买单了
   static buildOrderDeep(String str) {
-  //  String data = result['result'].replaceFirst('0x', '');
+    print('start buildOrderDeep');
     String data = str.replaceFirst('0x', '');
-    int len = data.length;
+    int sell_len = BigInt.parse(data.substring(128, 192), radix: 16).toInt();
+    String sell_str = data.substring(192, 192 + sell_len*4*64);
+    List sell = Trade.buildOrderItem(sell_str);
+    print(sell);
+    String buy_str = data.substring(64*4 + sell_len*4*64);
+    List buy = Trade.buildOrderItem(buy_str);
+    sell.addAll(buy);
+    return sell;
+  }
+
+  // 拿到卖单和买单的字符串，按照偏移量解析出来
+  static List buildOrderItem(String data) {
     int n = 4; // orderItem由几个字段构成
-    int index = (len/256).toInt();
+    int index = (data.length/256).toInt();
     int i = 0;
     List arr = [];
     while( i<index) {
       String item = data.substring(i*n*64, i*n*64 + n*64);
       BigInt baseTokenAmount  = BigInt.parse(item.substring(0, 64), radix: 16);
       print(item.substring(0, 64));
-      print(baseTokenAmount);
+//      print(baseTokenAmount);
       BigInt quoteTokenAmount = BigInt.parse(item.substring(64, 128), radix: 16);
       print(item.substring(64, 128));
-      print(quoteTokenAmount);
+//      print(quoteTokenAmount);
       double amount = BigInt.parse(item.substring(128, 192), radix: 16)/BigInt.from(pow(10, 18));
       print(item.substring(128, 192));
-      print(amount);
+//      print(amount);
       bool is_sell = BigInt.parse(item.substring(192), radix: 16) == BigInt.from(0)? false:true;
       print(item.substring(192));
       print(is_sell);
       double price = (quoteTokenAmount/baseTokenAmount);
-      print(price);
-      print(NumberFormat(price).format());
+//      print(price);
+//      print(NumberFormat(price).format());
       if (amount != 0 && price != 0) {
         arr.add({
-          'price': NumberFormat(price).format(),
-          'amount': NumberFormat(amount).format(),
+          'price': price.toString(),
+          'amount': amount.toString(),
           'is_sell': is_sell
         });
       }

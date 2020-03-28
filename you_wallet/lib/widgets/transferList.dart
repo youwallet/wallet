@@ -36,13 +36,14 @@ class Page extends State<transferList> {
     /// tab切换
     eventBus.on<CustomTabChangeEvent>().listen((event) {
       print('change in component');
+      print(event.res);
       this.tabChange(event.res);
     });
 
     /// 用户挂单成功，拿到刚刚挂的订单Hash，查询订单是否成功
     eventBus.on<OrderSuccessEvent>().listen((event) {
-      this.tabChange('当前兑换');
-      this.updateOrderStatus();
+//      this.tabChange('当前兑换');
+//      this.updateOrderStatus();
     });
 
     /// 监听兑换页面用户手动触发下拉刷新
@@ -263,13 +264,10 @@ class Page extends State<transferList> {
   // tab切换, 切换显示的数据，这里不刷新
   // 这里list需要用List.from转化一次，否则会提示read only
   void tabChange(String tab) async {
-    List list = List.from(await Provider.of<Deal>(context).getTraderList());
-//    int now = DateTime.now().millisecondsSinceEpoch;
-//    int hour = DateTime.now().hour;
-//    int minute = DateTime.now().minute;
-//    int second = DateTime.now().second;
-//    int today = now - (hour*60*60 + minute*60 + second)*1000;
-
+    print('start tabChange');
+    List res = await Provider.of<Deal>(context).getTraderList();
+    print(res);
+    List list = List.from(res);
     if (tab == '当前兑换') {
       print('here tab is => ${tab}');
       list.retainWhere((element)=>(element['status']=='进行中' || element['status']=='打包中' ));
@@ -346,6 +344,7 @@ class Page extends State<transferList> {
 
   /// 拿到订单列表中最新的一个订单状态为打包中的订单，查询订单状态
   void updateOrderStatus() async {
+    print('start updateOrderStatus');
     List list = await Provider.of<Deal>(context).getTraderList();
     Map order = list.lastWhere((e)=>e['status'] == '打包中',orElse: ()=>(null));
     if (order == null) {

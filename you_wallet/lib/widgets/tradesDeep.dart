@@ -89,11 +89,21 @@ class Page extends State<TradesDeep> {
     print('start getOrderDeep');
     print(widget.leftToken);
     print(widget.rightToken);
+
+    try {
       List list = await Trade.getOrderDepth(widget.leftToken, widget.rightToken);
       print(list);
+      if (list.length >6) {
+        list = list.take(5);
+      }
       this.setState((){
         arr = list;
       });
+    } catch (e) {
+      print('深度列表数据出现异常');
+      print(e.toString());
+    }
+
 //    print('getSellList start');
 //    print(widget.leftToken);
 //    print(widget.rightToken);
