@@ -43,7 +43,7 @@ class Page extends State<transferList> {
     /// 用户挂单成功，拿到刚刚挂的订单Hash，查询订单是否成功
     eventBus.on<OrderSuccessEvent>().listen((event) {
 //      this.tabChange('当前兑换');
-//      this.updateOrderStatus();
+      this.updateOrderStatus();
     });
 
     /// 监听兑换页面用户手动触发下拉刷新

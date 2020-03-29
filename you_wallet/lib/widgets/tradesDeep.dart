@@ -85,6 +85,7 @@ class Page extends State<TradesDeep> {
 
   /// 先获取卖单队列，再获取买单队列
   /// 如果有一边的token还没有选择，则不更新
+  /// 兑换页面的深度交易列表，最多只能显示6个订单
   Future<void> getOrderDeep() async {
     print('start getOrderDeep');
     print(widget.leftToken);
@@ -93,8 +94,15 @@ class Page extends State<TradesDeep> {
     try {
       List list = await Trade.getOrderDepth(widget.leftToken, widget.rightToken);
       print(list);
-      if (list.length >6) {
-        list = list.take(5);
+      if (list.length <=6) {
+        // do nothing
+      } else {
+        // 如果订单超过6个，那就只保留6个
+        List sell = list.where((element)=>(element['is_sell'])).toList().take(3).toList();
+        List buy = list.where((element)=>(!element['is_sell'])).toList().take(3).toList();
+
+        sell.addAll(buy);
+        list = sell;
       }
       this.setState((){
         arr = list;
