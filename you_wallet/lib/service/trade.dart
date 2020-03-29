@@ -708,15 +708,15 @@ class Trade {
     List arr = [];
     while( i<index) {
       String item = data.substring(i*n*64, i*n*64 + n*64);
-      BigInt baseTokenAmount  = BigInt.parse(item.substring(0, 64), radix: 16);
-      print(item.substring(0, 64));
-//      print(baseTokenAmount);
-      BigInt quoteTokenAmount = BigInt.parse(item.substring(64, 128), radix: 16);
-      print(item.substring(64, 128));
-//      print(quoteTokenAmount);
+      double baseTokenAmount  = BigInt.parse(item.substring(0, 64), radix: 16)/BigInt.from(pow(10, 18));
+//      print(item.substring(0, 64));
+      print(baseTokenAmount);
+      double quoteTokenAmount = BigInt.parse(item.substring(64, 128), radix: 16)/BigInt.from(pow(10, 18));
+//      print(item.substring(64, 128));
+      print(quoteTokenAmount);
       double amount = BigInt.parse(item.substring(128, 192), radix: 16)/BigInt.from(pow(10, 18));
-      print(item.substring(128, 192));
-//      print(amount);
+//      print(item.substring(128, 192));
+      print(amount);
       bool is_sell = BigInt.parse(item.substring(192), radix: 16) == BigInt.from(0)? false:true;
       print(item.substring(192));
       print(is_sell);
