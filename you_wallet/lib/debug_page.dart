@@ -115,7 +115,17 @@ class _DebugPageState extends State<DebugPage> {
               child: Text("设置密码"),
               textColor: Colors.blue,
               onPressed: () {
+                  String a = '900000000000000000000000';
+                  String b = '300000000000000000000000';
+                  double aa = BigInt.parse(a)/BigInt.from(pow(10,18));
+                  double bb = BigInt.parse(b)/BigInt.from(pow(10,18));
+                  print(aa/bb);
 
+                  String c = '13717407282579000000000000';
+                  String d = '123456789000000000000000000';
+                  Decimal cc = Decimal.parse(  ( BigInt.parse(c) / BigInt.from(pow(10,18))).toString()  );
+                  Decimal dd =  Decimal.parse((BigInt.parse(d)/BigInt.from(pow(10,18))).toString());
+                  print(cc/dd);
                 },
             ),
             FlatButton(

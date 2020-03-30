@@ -669,13 +669,11 @@ class Trade {
         headers:{'Content-Type':'application/json'},
         body: json.encode(payload)
     );
-    print('start print rsp');
-    print(rsp);
-    print('start print rsp.body');
-    print(rsp.body);
+//    print('start print rsp');
+//    print(rsp);
+//    print('start print rsp.body');
+//    print(rsp.body);
     Map result = jsonDecode(rsp.body);
-    print(result);
-
     return Trade.buildOrderDeep(result['result']);
   }
 
@@ -689,7 +687,9 @@ class Trade {
     print('start buildOrderDeep');
     String data = str.replaceFirst('0x', '');
     int sell_len = BigInt.parse(data.substring(128, 192), radix: 16).toInt();
+    print('sell len => ${sell_len}');
     String sell_str = data.substring(192, 192 + sell_len*4*64);
+    print(sell_str);
     List sell = Trade.buildOrderItem(sell_str);
     print(sell);
     String buy_str = data.substring(64*4 + sell_len*4*64);
@@ -707,31 +707,28 @@ class Trade {
     int i = 0;
     List arr = [];
     while( i<index) {
+      print("======================");
       String item = data.substring(i*n*64, i*n*64 + n*64);
-      double baseTokenAmount  = BigInt.parse(item.substring(0, 64), radix: 16)/BigInt.from(pow(10, 18));
-//      print(item.substring(0, 64));
+      Decimal baseTokenAmount  = Decimal.parse((BigInt.parse(item.substring(0, 64), radix: 16)/BigInt.from(pow(10,18))).toString());
       print(baseTokenAmount);
-      double quoteTokenAmount = BigInt.parse(item.substring(64, 128), radix: 16)/BigInt.from(pow(10, 18));
-//      print(item.substring(64, 128));
+      Decimal quoteTokenAmount = Decimal.parse((BigInt.parse(item.substring(64, 128), radix: 16)/BigInt.from(pow(10,18))).toString());
       print(quoteTokenAmount);
-      double amount = BigInt.parse(item.substring(128, 192), radix: 16)/BigInt.from(pow(10, 18));
-//      print(item.substring(128, 192));
+      Decimal amount = Decimal.parse((BigInt.parse(item.substring(128, 192), radix: 16)/BigInt.from(pow(10,18))).toString());
       print(amount);
       bool is_sell = BigInt.parse(item.substring(192), radix: 16) == BigInt.from(0)? false:true;
-      print(item.substring(192));
       print(is_sell);
-      double price = (quoteTokenAmount/baseTokenAmount);
-//      print(price);
-//      print(NumberFormat(price).format());
-      if (amount != 0 && price != 0) {
+      if(baseTokenAmount.toString() != '0') {
+        String price = (quoteTokenAmount/baseTokenAmount).toString();
         arr.add({
-          'price': price.toString(),
+          'price': price,
           'amount': amount.toString(),
           'is_sell': is_sell
         });
+        print(arr);
       }
       i = i+1;
     }
+    print(arr);
     return arr;
   }
 

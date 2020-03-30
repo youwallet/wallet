@@ -115,11 +115,11 @@ class Page extends State<OrderDeep> {
               item['price'],
               style: TextStyle(color: item['is_sell'] ? Colors.deepOrange : Colors.green)
           ),
-          new Icon(
-              Icons.close,
-              size: 20.0,
-              color: item['is_sell'] ? Colors.deepOrange : Colors.green
-          ),
+//          new Icon(
+//              Icons.close,
+//              size: 20.0,
+//              color: item['is_sell'] ? Colors.deepOrange : Colors.green
+//          ),
           new Text(item['amount']),
         ],
       ),
