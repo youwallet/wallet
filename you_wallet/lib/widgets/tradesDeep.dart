@@ -29,7 +29,7 @@ class TradesDeep extends StatefulWidget {
 class Page extends State<TradesDeep> {
 
   List arr = [];
-
+  bool showMore = false;
   //数据初始化
   @override
   void initState() {
@@ -52,11 +52,43 @@ class Page extends State<TradesDeep> {
 
   @override
   Widget build(BuildContext context) {
-    return new Container(
-        child: new Column(
-            children: this.arr.map((item) => buildItem(item, context)).toList()
-        )
+    return new Column(
+        children: <Widget>[
+          new Column(
+              children: this.arr.map((item) => buildItem(item, context)).toList()
+          ),
+          buildMore()
+        ]
     );
+  }
+
+  Widget buildMore() {
+    if (this.showMore) {
+      return Container(
+          margin: const EdgeInsets.only(top: 10.0),
+          child: GestureDetector(
+            child: new Text(
+                '点击查看全部交易',
+                style: TextStyle(color: Colors.lightBlue)
+            ),
+            onTap: () {
+  //            eventBus.fire(TransferUpdateStartEvent());
+              Map leftToken = {
+                'address': widget.leftToken
+              };
+              Map rightToken = {
+                'address': widget.rightToken
+              };
+              Navigator.pushNamed(context, "order_deep", arguments: {
+                'leftToken': leftToken,
+                'rightToken': rightToken
+              });
+            },
+          )
+      );
+    } else {
+      return Text('');
+    }
   }
 
   // 构建深度列表每个项
@@ -72,11 +104,11 @@ class Page extends State<TradesDeep> {
               item['price'],
               style: TextStyle(color: item['is_sell'] ? Colors.deepOrange : Colors.green)
           ),
-          new Icon(
-              Icons.close,
-              size: 20.0,
-              color: item['is_sell'] ? Colors.deepOrange : Colors.green
-          ),
+//          new Icon(
+//              Icons.close,
+//              size: 20.0,
+//              color: item['is_sell'] ? Colors.deepOrange : Colors.green
+//          ),
           new Text(item['amount'].toString()),
         ],
       ),
@@ -106,6 +138,7 @@ class Page extends State<TradesDeep> {
       }
       this.setState((){
         arr = list;
+        showMore = true;
       });
     } catch (e) {
       print('深度列表数据出现异常');

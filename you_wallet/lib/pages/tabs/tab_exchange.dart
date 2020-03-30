@@ -155,7 +155,7 @@ class Page extends State {
     return new AppBar(
         title: const Text('兑换'),
         elevation: 0.0,
-        actions: this.appBarActions(),
+        // actions: this.appBarActions(),
         automaticallyImplyLeading: false, //设置没有返回按钮
     );
   }
@@ -170,10 +170,7 @@ class Page extends State {
             if (this.value == null || this.rightToken == null) {
               this.showSnackBar('请选择token和base token，再查看交易深度');
             } else {
-              Navigator.pushNamed(context, "order_deep", arguments:{
-                'leftToken': this.value,
-                'rightToken': this.rightToken
-              });
+
             }
           },
         ),
@@ -374,7 +371,8 @@ class Page extends State {
 //          priceNum(arr: this.tradesDeep)
           new TradesDeep(
               leftToken: this.value != null?this.value['address']:'',
-              rightToken: this.rightToken != null?this.rightToken['address']:''
+              rightToken: this.rightToken != null?this.rightToken['address']:'',
+
           )
         ],
       ),

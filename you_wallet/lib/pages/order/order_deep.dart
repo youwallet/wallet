@@ -86,8 +86,12 @@ class Page extends State<OrderDeep> {
   //  }
 
   Future<List> getOrderDeep() async {
+    print('start getOrderDeep');
+    print(widget.arguments);
     String leftToken = widget.arguments['leftToken']['address'];
     String rightToken = widget.arguments['rightToken']['address'];
+    print(leftToken);
+    print(rightToken);
     try {
       List arr = await Trade.getOrderDepth(leftToken, rightToken);
       print(arr);

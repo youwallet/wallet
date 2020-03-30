@@ -58,3 +58,8 @@ class UpdateOrderListEvent{
 class TransferUpdateStartEvent{
   TransferUpdateStartEvent();
 }
+
+/// 事件钩子，订单列表准备刷新
+//class Event{
+//  TransferUpdateStartEvent();
+//}
