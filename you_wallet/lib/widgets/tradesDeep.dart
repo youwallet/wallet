@@ -138,7 +138,7 @@ class Page extends State<TradesDeep> {
       }
       this.setState((){
         arr = list;
-        showMore = true;
+        showMore = list.length > 6 ? true:false;
       });
     } catch (e) {
       print('深度列表数据出现异常');

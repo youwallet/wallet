@@ -47,6 +47,7 @@ class SqlTable{
     txnHash TEXT NOT NULL UNIQUE,
     odHash TEXT,
     bqHash TEXT,
+    sqHash TEXT,
     createTime TEXT,
     status TEXT);
     """;

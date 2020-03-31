@@ -14,7 +14,6 @@ class Deal extends ChangeNotifier {
 //  User get user => _profile.user;
 
   // 构造函数，获取本地保存的token'
-  /// 所有钱包
   List<Map> _items = [];
 
 
@@ -55,6 +54,15 @@ class Deal extends ChangeNotifier {
     var sql = SqlUtil.setTable("trade");
     int i = await sql.delete('id', id);
     return i;
+  }
+
+  /// 保存兑换的订单到数据库
+  Future<void> saveTrader(List list) async {
+    var sql = SqlUtil.setTable("trade");
+    String sqlInsert ='INSERT INTO trade(orderType, price, amount,filled, token,tokenName, baseToken,baseTokenname, txnHash, odHash, bqHash, sqHash,createtime,status) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+    int id = await sql.rawInsert(sqlInsert, list);
+    print("db trade id => ${id}");
+    return id;
   }
 
 }

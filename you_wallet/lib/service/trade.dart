@@ -15,6 +15,8 @@ import 'package:youwallet/util/wallet_crypt.dart';
 import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
 import 'package:decimal/decimal.dart';
 import 'package:youwallet/util/number_format.dart';
+import 'package:provider/provider.dart';
+import 'package:youwallet/model/deal.dart';
 
 class Trade {
 
@@ -47,7 +49,8 @@ class Trade {
   String rpcUrl = "https://ropsten.infura.io/v3/37caa7b8b2c34ced8819de2b3853c8a2";
 
   String odHash = "";     // odHash,用来查询兑换订单
-  String bqHash = "";     // bqHash,用来查询兑换订单
+  String bqHash = "";     // b代表buy, 买单的hash
+  String sqHash = "";     // s代表sell，卖单的hash
 
   String txnHash = "";     // 下单成功会返回txnHash
 
@@ -311,6 +314,7 @@ class Trade {
 //    print("od_hash =》 ${od_hash}");
     this.odHash = od_hash;
     this.bqHash = bq_hash;
+    this.sqHash = sq_hash;
     return {
       'od_hash': od_hash,
       'bq_hash': bq_hash,
@@ -321,18 +325,17 @@ class Trade {
   // 保存兑换订单到本地数据库
   Future<void> saveTrader() async {
     var sql = SqlUtil.setTable("trade");
-    String sqlInsert ='INSERT INTO trade(orderType, price, amount,filled, token,tokenName, baseToken,baseTokenname, txnHash, odHash, bqHash, createtime,status) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)';
     String orderType = '';
     if (this.isBuy) {
       orderType = '买入';
     } else {
       orderType = '卖出';
     }
-    List list = [orderType,this.oldPrice, this.oldAmount, '0.00',this.tokenA,this.tokenAName,this.tokenB,this.tokenBName,this.txnHash,this.odHash, this.bqHash, DateTime.now().millisecondsSinceEpoch,'打包中'];
+    List list = [orderType,this.oldPrice, this.oldAmount, '0.00',this.tokenA,this.tokenAName,this.tokenB,this.tokenBName,this.txnHash,this.odHash, this.bqHash, this.sqHash,DateTime.now().millisecondsSinceEpoch,'打包中'];
+    String sqlInsert ='INSERT INTO trade(orderType, price, amount,filled, token,tokenName, baseToken,baseTokenname, txnHash, odHash, bqHash, sqHash,createtime,status) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
     int id = await sql.rawInsert(sqlInsert, list);
     print("db trade id => ${id}");
-    return id;
-  }
+   }
 
   /// 从数据库获取当前兑换列表，
   static Future<List> getTraderList() async {
@@ -530,14 +533,18 @@ class Trade {
   }
 
 /* 取消订单 - W
- * bq_hash: base-token/quote-token 哈希值
+ * 参数1: 买单的话就是bq hash，卖单的话就是sq hash
  * od_hash: 订单哈希值
- * is_sell: true 为卖单，false为买单
- * function cancelOrder2(bytes32 bq_hash, bytes32 od_hash, bool is_sell);
+ * function cancelOrder2(bytes32 bq_hash, bytes32 od_hash);
  */
   static Future cancelOrder2(Map item,String pwd) async {
-    String strSell = item['orderType']=='卖出' ? '1' : '0';
-    String postData = Global.funcHashes['cancelOrder2(bytes32,bytes32,bool)'] + formatParam(item['bqHash']) + formatParam(item['odHash']) + formatParam(strSell);
+    String hash = "";
+    if(item['orderType']=='卖出') {
+      hash = item['sqHash'];
+    } else {
+      hash = item['bqHash'];
+    }
+    String postData = Global.funcHashes['cancelOrder2(bytes32,bytes32)'] + formatParam(hash) + formatParam(item['odHash']);
 
     String rpcUrl = await Global.rpcUrl();
 

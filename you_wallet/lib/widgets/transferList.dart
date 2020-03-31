@@ -188,7 +188,7 @@ class Page extends State<transferList> {
 
   }
 
-  // 取消交易
+  /// 取消交易
   void cancelTrade(BuildContext context, Map item){
     showDialog(
         context: context,
@@ -210,7 +210,8 @@ class Page extends State<transferList> {
         });
   }
 
-  // 取消订单的进程，不会立刻拿到结果
+  /// 取消订单的进程，不会立刻拿到结果
+  /// 注意这里的pwd已经是解密后的私钥了
   void cancelProcess(Map item, String pwd) async{
     showDialog<Null>(
         context: context, //BuildContext对象
@@ -222,16 +223,18 @@ class Page extends State<transferList> {
         }
     );
     try{
+      // 订单撤销后立即返回的是交易的hash，
+      // 至于到底有没有撤销成功，还需要等待以太坊写链
       String res = await Trade.cancelOrder2(item, pwd);
       print('订单撤销返回 => ${res}');
-      int orderFlag = await Trade.orderFlag(item);
-      if (orderFlag == 0) {
+//      int orderFlag = await Trade.orderFlag(item);
+//      if (orderFlag == 0) {
         await Provider.of<Deal>(context).updateOrderStatus(item['txnHash'], '交易撤销');
         this.updateList();
-        eventBus.fire(TransferDoneEvent('撤销成功成功'));
-      } else {
-        eventBus.fire(TransferDoneEvent('撤销失败，订单状态当前为挂单中'));
-      }
+        eventBus.fire(TransferDoneEvent('撤销成功'));
+//      } else {
+//        eventBus.fire(TransferDoneEvent('撤销失败，订单状态当前为挂单中'));
+//      }
     } catch(e) {
       print(e);
       eventBus.fire(TransferDoneEvent(e.toString()));
@@ -364,6 +367,7 @@ class Page extends State<transferList> {
   void checkOrderStatus(String hash, int index) async {
     Map response = await Trade.getTransactionByHash(hash);
     print("第${index}次查询");
+    print(response);
     if(response['blockHash'] != null) {
       // 以太坊返回了交易的blockHash, 以太坊写链操作结束
       // 现在判断写链操作的状态
