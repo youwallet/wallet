@@ -110,7 +110,7 @@ class Page extends State<OrderDeep> {
   Widget buildItem(Map item, context) {
     return new Container(
       color: Colors.black12, //16进制颜色
-      padding: const EdgeInsets.all(4.0),
+      padding: const EdgeInsets.all(10.0),
       margin: const EdgeInsets.only(top: 10.0),
       child: new Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

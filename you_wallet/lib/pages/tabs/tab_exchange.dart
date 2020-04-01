@@ -69,11 +69,11 @@ class Page extends State {
     // 监听页面切换，刷新交易的状态
     eventBus.on<TabChangeEvent>().listen((event) {
       // print("event listen =》${event.index}");
-      if (event.index == 1) {
-         //this._getTradeInfo();
-      } else {
-        print('do nothing');
-      }
+//      if (event.index == 1) {
+//         print('监听TabChangeEvent =》${event.index}');
+//      } else {
+//        print('do nothing');
+//      }
     });
 
     //监听订单操作结果
@@ -94,11 +94,15 @@ class Page extends State {
           });
       eventBus.fire(UpdateTeadeDeepEvent());
     });
+
+    print('tab exchange init');
+    eventBus.fire(CustomTabChangeEvent('当前兑换'));
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    print('tab exchange didChangeDependencies');
   }
 
   @override
