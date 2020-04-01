@@ -321,26 +321,34 @@ class Page extends State {
   Widget getButton(String btnText, String currentBtn) {
     if (btnText != currentBtn) {
       return RaisedButton(
-        onPressed: () {
-          changeOrderModel(btnText);
-        },
-        shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(0))
-        ), // 设置圆角，默认有圆角
-        elevation: 0, // 按钮阴影高度
-        color: Colors.white,
-        child: Text(btnText + this.suffixText)
+          padding: const EdgeInsets.all(0.0),
+          onPressed: () {
+            changeOrderModel(btnText);
+          },
+          shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(0))
+          ), // 设置圆角，默认有圆角
+          elevation: 0, // 按钮阴影高度
+          color: Colors.white,
+          child: Text(
+              btnText + this.suffixText,
+              softWrap: false,
+              overflow: TextOverflow.fade
+          )
       );
     } else {
       return OutlineButton(
+        padding: const EdgeInsets.all(0.0),
         onPressed: () {
           changeOrderModel(btnText);
         },
         child: Text(
             btnText + this.suffixText,
             style: TextStyle(
-              color: currentBtn == '买入'? Colors.green : Colors.red
-            )
+                color: currentBtn == '买入'? Colors.green : Colors.red,
+              
+            ),
+            softWrap: false
         ),
         borderSide:  BorderSide(
             color: currentBtn == '买入'? Colors.green : Colors.red,
