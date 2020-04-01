@@ -327,6 +327,7 @@ class Page extends State<LoadWallet> {
     });
   }
 
+  /// 保存用户的钱包到本地数据库
   void saveDone(Map item, String pwd) async {
     showDialog<Null>(
         context: context, //BuildContext对象
@@ -339,7 +340,10 @@ class Page extends State<LoadWallet> {
 
     int id = await Provider.of<myWallet.Wallet>(context).add(item,pwd);
     if (id > 0) {
-      Navigator.pushNamed(context, "wallet_success");
+      // 先关闭modal提示层，替换当前路由，跳转钱包新建成功页面
+//      Navigator.of(context).pop();
+//      Navigator.of(context).pushReplacementNamed("wallet_success");
+      Navigator.pushNamedAndRemoveUntil(context, "wallet_success", (route) => route == null);
     } else {
       this.showSnackbar('钱包保存失败');
     }

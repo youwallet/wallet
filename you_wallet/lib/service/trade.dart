@@ -224,7 +224,6 @@ class Trade {
     );
 
     Map result = jsonDecode(rsp.body);
-    print("getConfigSignature body =>${result}");
     return result['result'].replaceFirst("0x", "");
   }
 

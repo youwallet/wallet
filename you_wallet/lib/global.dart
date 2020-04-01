@@ -47,10 +47,10 @@ class Global {
 
   // 热门token
   static final hotToken = [
-    {'name': 'BTA', 'address':'0x6C3118c39FAB22caF3f9910cd054F8ea435B5FFB'},
-    {'name': 'BTB', 'address':'0xe898663A2CbDf7a371bB4B6a5dd7aC93d4505C9a'},
-    {'name': 'BTC', 'address':'0xEAB3A69a992aeC845099717B148DC1995DD57685'},
-    {'name': 'BTD', 'address':'0x2e01154391F7dcBf215c77DBd7fF3026Ea7514ce'},
+    {'name': 'BTAT', 'address':'0x8e4d8D520f52B044e1E8B054D763B723B7C3E716'},
+    {'name': 'BTBT', 'address':'0x45e110F81bBf89041A63Bc2403058743bc552bAF'},
+    {'name': 'BTCT', 'address':'0x7B29ed69368B0Ed0d3b21A857BaEeF788B13c626'},
+    {'name': 'BTDT', 'address':'0x60423Ebc63245631Ea71bdF58CF23A3949329cDb'},
   ];
 
 
