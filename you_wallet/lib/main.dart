@@ -16,6 +16,12 @@ import 'package:youwallet/model/wallet.dart';
 import 'package:youwallet/model/network.dart';
 import 'package:youwallet/model/deal.dart';
 
+// 官方的国际化插件
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:youwallet/util/locale_util.dart';
+import 'package:youwallet/util/translations.dart';
+
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupLocator();
@@ -46,15 +52,29 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false, //关闭调试
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        primaryColor: Colors.white
-      ),
-      initialRoute: 'splash',
-      //routes: routes, // 因为定义了onGenerateRoute，所以就不需要routes这个参数了
-      onGenerateRoute: onGenerateRoute // 为了传递参数
-      //home: new SplashWidget(tabIndex: 0)
+        // 本地化代理
+        localizationsDelegates: [
+          const TranslationsDelegate(),
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        // const Locale(languageCode,countryCode)
+        // Locale类是用来标识用户的语言环境的，它包括语言和国家两个标志,languageCode和countryCode：
+//        supportedLocales: [
+//          const Locale('en', 'US'), // 美国英语
+//          const Locale('zh', 'CN'), // 中文简体
+//          //其它Locales
+//        ],
+        supportedLocales: localeUtil.supportedLocales(),
+        debugShowCheckedModeBanner: false, //关闭调试
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          primaryColor: Colors.white
+        ),
+        initialRoute: 'splash',
+        //routes: routes, // 因为定义了onGenerateRoute，所以就不需要routes这个参数了
+        onGenerateRoute: onGenerateRoute // 为了传递参数
+        //home: new SplashWidget(tabIndex: 0)
     );
   }
 }

@@ -102,14 +102,18 @@ class Page extends State<TradesDeep> {
         children: [
           new Text(
               item['price'],
-              style: TextStyle(color: item['is_sell'] ? Colors.deepOrange : Colors.green)
+              style: TextStyle(color: item['is_sell'] ? Colors.deepOrange : Colors.green),
+              overflow: TextOverflow.fade
           ),
 //          new Icon(
 //              Icons.close,
 //              size: 20.0,
 //              color: item['is_sell'] ? Colors.deepOrange : Colors.green
 //          ),
-          new Text(item['amount'].toString()),
+          new Text(
+              item['amount'].toString(),
+              overflow: TextOverflow.fade
+          ),
         ],
       ),
     );

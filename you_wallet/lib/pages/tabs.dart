@@ -6,6 +6,7 @@ import 'package:youwallet/pages/tabs/tab_receive.dart'; // 钱包引导页
 import 'package:youwallet/pages/tabs/tab_transfer.dart'; // 钱包引导页
 import 'package:youwallet/db/sql_util.dart';
 import 'package:youwallet/bus.dart';
+import 'package:youwallet/util/translations.dart';
 
 class _Item {
   String name, activeIcon, normalIcon;

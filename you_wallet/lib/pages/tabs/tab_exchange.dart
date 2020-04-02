@@ -15,6 +15,7 @@ import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:youwallet/widgets/customTab.dart';
 import 'package:youwallet/widgets/tradesDeep.dart';
 import 'package:decimal/decimal.dart';
+import 'package:youwallet/util/translations.dart';
 
 class TabExchange extends StatefulWidget {
 
@@ -69,11 +70,12 @@ class Page extends State {
     // 监听页面切换，刷新交易的状态
     eventBus.on<TabChangeEvent>().listen((event) {
       // print("event listen =》${event.index}");
-//      if (event.index == 1) {
-//         print('监听TabChangeEvent =》${event.index}');
-//      } else {
-//        print('do nothing');
-//      }
+      if (event.index == 1) {
+         print('监听TabChangeEvent =》${event.index}');
+         eventBus.fire(CustomTabChangeEvent('当前兑换'));
+      } else {
+        print('do nothing');
+      }
     });
 
     //监听订单操作结果
@@ -96,12 +98,13 @@ class Page extends State {
     });
 
     print('tab exchange init');
-    eventBus.fire(CustomTabChangeEvent('当前兑换'));
+    //eventBus.fire(CustomTabChangeEvent('当前兑换'));
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    // eventBus.fire(CustomTabChangeEvent('当前兑换'));
     print('tab exchange didChangeDependencies');
   }
 
@@ -157,7 +160,9 @@ class Page extends State {
   // 构建顶部标题栏
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
-        title: const Text('兑换'),
+        title: Text(
+            Translations.of(context).text("title_tab_exchange")
+        ),
         elevation: 0.0,
         // actions: this.appBarActions(),
         automaticallyImplyLeading: false, //设置没有返回按钮
@@ -346,7 +351,7 @@ class Page extends State {
             btnText + this.suffixText,
             style: TextStyle(
                 color: currentBtn == '买入'? Colors.green : Colors.red,
-              
+
             ),
             softWrap: false
         ),
