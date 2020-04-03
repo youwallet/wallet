@@ -191,19 +191,29 @@ class Page extends State<AddWallet> {
             text: '搜索中...',
           );
         });
-
-    Map token = await TokenService.searchToken(text);
-    Navigator.pop(context);
-    print("搜索结果是${token}");
-    if (token == null) {
-      this.showSnackbar('没有搜索到token');
-    } else {
+    Future.wait([TokenService.getTokenName(text),TokenService.getTokenBalance(text),TokenService.getDecimals(text)]).then((list) {
+      print(list);
+      Map token = {};
+      token['address'] = text;
+      token['wallet'] = Global.getPrefs("currentWallet");
+      token['name'] = list[0];
+      token['balance'] = list[1];
+      token['decimals'] = list[2];
+      token['rmb'] = '';
+      token['network'] =  Global.getPrefs("network");
       setState(() {
         this.token = token;
         this.showHotToken = false;
       });
       saveToken(token);
-    }
+    }).catchError((e){
+      print('catch e');
+      print(e);
+      this.showSnackbar('没有搜索到token');
+    }).whenComplete(() {
+      print("全部完成");
+      Navigator.pop(context);
+    });
   }
 
   // 定义bar右侧的icon按钮

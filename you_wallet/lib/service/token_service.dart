@@ -91,16 +91,13 @@ class TokenService {
   }
 
   /// 搜索指定token
-  static Future<Map> searchToken(String address) async {
+  static Future<String> getTokenName(String address) async {
     Map params = {
       "to": address,
       "data": "0x95d89b41"
     };
     var response = await Http().post(params: params);
     String res = response['result'];
-    if (res == '0x') {
-      return null;
-    }
     String name = res.replaceFirst('0x', '');
     String nameString = '';
     for(var i = 0; i < name.length; i = i + 2) {
@@ -110,16 +107,17 @@ class TokenService {
         nameString = nameString + str;
       }
     }
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    Map token = new Map();
-    token['address'] = address;
-    token['wallet'] = prefs.getString("currentWallet");
-    token['name'] = nameString;
-    token['balance'] = await getTokenBalance(address);
-    token['decimals'] = await getDecimals(address);
-    token['rmb'] = '';
-    token['network'] =  prefs.getString("network");
-    return token;
+    return nameString;
+//    SharedPreferences prefs = await SharedPreferences.getInstance();
+//    Map token = new Map();
+//    token['address'] = address;
+//    token['wallet'] = prefs.getString("currentWallet");
+//    token['name'] = nameString;
+//    token['balance'] = await getTokenBalance(address);
+//    token['decimals'] = await getDecimals(address);
+//    token['rmb'] = '';
+//    token['network'] =  prefs.getString("network");
+//    return token;
   }
 
   // https://yq.aliyun.com/articles/600706/
