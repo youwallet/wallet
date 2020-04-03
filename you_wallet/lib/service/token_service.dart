@@ -11,6 +11,7 @@ import 'package:web3dart/crypto.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart' as walletModel;
 import 'package:youwallet/global.dart';
+import 'package:youwallet/util/http_server.dart';
 
 //abstract class TokenService {
 //  String generateMnemonic();
@@ -91,53 +92,34 @@ class TokenService {
 
   /// 搜索指定token
   static Future<Map> searchToken(String address) async {
-    Map token = new Map();
-    var client = Client();
-    var payload = {
-      "jsonrpc": "2.0",
-      "method": "eth_call",
-      "params": [{
-        "to": address,
-        "data": "0x95d89b41"
-      },"latest"],
-      "id": DateTime.now().millisecondsSinceEpoch
+    Map params = {
+      "to": address,
+      "data": "0x95d89b41"
     };
-    String url = await getNetWork();
-    var rsp = await client.post(
-        url,
-        headers:{'Content-Type':'application/json','User-Agent':'youwallet'},
-        body: json.encode(payload)
-    );
-
-    Map result = jsonDecode(rsp.body);
-    print(result);
-    if (result.containsKey('error') ) {
-      return token['error'] = result['error'];
-    } else {
-      String res = result['result'];
-      String name = res.replaceFirst('0x', '');
-      String nameString = '';
-      for(var i = 0; i < name.length; i = i + 2) {
-        String subStr = name.substring(i, i+2);
-        if (subStr != "00" && subStr != "20" && subStr != "03") {
-          String str = String.fromCharCode(int.parse(name.substring(i, i+2), radix: 16));
-          nameString = nameString + str;
-        }
-      }
-
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-
-      token['address'] = address;
-      token['wallet'] = prefs.getString("currentWallet");
-      token['name'] = nameString;
-      token['balance'] = await getTokenBalance(address);
-      token['decimals'] = await getDecimals(address);
-      token['rmb'] = '';
-      token['network'] =  prefs.getString("network");
-
-      return token;
+    var response = await Http().post(params: params);
+    String res = response['result'];
+    if (res == '0x') {
+      return null;
     }
-
+    String name = res.replaceFirst('0x', '');
+    String nameString = '';
+    for(var i = 0; i < name.length; i = i + 2) {
+      String subStr = name.substring(i, i+2);
+      if (subStr != "00" && subStr != "20" && subStr != "03") {
+        String str = String.fromCharCode(int.parse(name.substring(i, i+2), radix: 16));
+        nameString = nameString + str;
+      }
+    }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    Map token = new Map();
+    token['address'] = address;
+    token['wallet'] = prefs.getString("currentWallet");
+    token['name'] = nameString;
+    token['balance'] = await getTokenBalance(address);
+    token['decimals'] = await getDecimals(address);
+    token['rmb'] = '';
+    token['network'] =  prefs.getString("network");
+    return token;
   }
 
   // https://yq.aliyun.com/articles/600706/
@@ -145,65 +127,27 @@ class TokenService {
   static Future<String> getTokenBalance(String address) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String myAddress = await prefs.getString("currentWallet");
-    print('my Address => ${myAddress}');
-    var client = Client();
-    var payload = {
-      "jsonrpc": "2.0",
-      "method": "eth_call",
-      "params":  [{
-         "to": address,
-         "data": "0x70a08231000000000000000000000000" + myAddress.replaceFirst('0x', '')
-      },"latest"],
-
-      "id": DateTime.now().millisecondsSinceEpoch
+    Map params = {
+      "to": address,
+      "data": "0x70a08231000000000000000000000000" + myAddress.replaceFirst('0x', '')
     };
-
-    String rpcUrl = await getNetWork();
-
-    var rsp = await client.post(
-        rpcUrl,
-        headers:{'Content-Type':'application/json'},
-        body: json.encode(payload)
-    );
-
-    Map body = jsonDecode(rsp.body);
-    // print('token balance getPublicAddress=> ${body}');
-    double balance = BigInt.parse(body['result'])/BigInt.from(1000000000000000000);
-    // print('token balance => ${balance}');
-    // int decimals = await getDecimals(address);
-    // print("token decimals => ${decimals}");
+    var response = await Http().post(params: params);
+    double balance = BigInt.parse(response['result'])/BigInt.from(1000000000000000000);
     if (balance == 0.0) {
       return '0';
     } else {
-      //int len = balance.length;
       return balance.toStringAsFixed(3);
     }
   }
 
   /// 获取代币的小数位数
   static Future<int> getDecimals(String address) async {
-
-    var client = Client();
-    var payload = {
-    "jsonrpc": "2.0",
-    "method": "eth_call",
-    "params": [{
+    Map params = {
       "to": address,
-      "data": "0x313ce567"
-    },"latest"],
-    "id": DateTime.now().millisecondsSinceEpoch
+      "data": Global.funcHashes['getDecimals()']
     };
-
-    String rpcUrl = await getNetWork();
-
-    var rsp = await client.post(
-      rpcUrl,
-      headers:{'Content-Type':'application/json'},
-      body: json.encode(payload)
-    );
-
-    Map body = jsonDecode(rsp.body);
-    return int.parse(body['result'].replaceFirst("0x",''), radix: 16);
+    var response = await Http().post(params: params);
+    return int.parse(response['result'].replaceFirst("0x",''), radix: 16);
   }
 
 
@@ -256,36 +200,5 @@ class TokenService {
     return str + para;
   }
 
-
-
-//  /// 通过web3dart获取代币余额
-//  static Future<void> getTokenBalanceByWeb3(String address) async {
-//    String rpcUrl = await getNetWork();
-//    final client = Web3Client(rpcUrl, Client(), enableBackgroundIsolate: true);
-//
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-//    String myAddress = prefs.getString("currentWallet");
-//
-//    final EthereumAddress contractAddr =
-//    EthereumAddress.fromHex(address);
-//
-////    var appDocDir = await rootBundle.loadString('assets/TempMatch.json');
-////
-////    print(appDocDir);
-//
-//
-//    final abiCode = await rootBundle.loadString('assets/TempMatch.json');
-//
-//    final contract =
-//    DeployedContract(ContractAbi.fromJson(abiCode, 'TempMatch'), contractAddr);
-//
-//    final balanceFunction = contract.function('getBalance');
-//
-//
-//    final balance = await client.call(
-//        contract: contract, function: balanceFunction, params: [myAddress]);
-//    print('We have ${balance.first} MetaCoins');
-//
-//  }
 
 }

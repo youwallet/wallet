@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
 import 'package:youwallet/global.dart';
 
+
 class AddWallet extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -172,6 +173,7 @@ class Page extends State<AddWallet> {
   }
 
   void startSearch(String text) async {
+
     if (!text.startsWith('0x')) {
       this.showSnackbar('合约地址必须0x开头');
       return;
@@ -189,27 +191,18 @@ class Page extends State<AddWallet> {
             text: '搜索中...',
           );
         });
-    try {
-      Map token = await TokenService.searchToken(text);
-      Navigator.pop(context);
-      print("搜索结果是${token}");
-      if (token.containsKey('name')) {
 
-        setState(() {
-          this.token = token;
-          this.showHotToken = false;
-        });
-        saveToken(token);
-      } else {
-        this.showSnackbar('没有搜索到token');
-      }
-    } catch (e) {
-      Navigator.pop(context);
-      if(e.toString().contains('FormatException: Could not parse BigInt')) {
-        this.showSnackbar('搜索不到该token');
-      } else {
-        this.showSnackbar(e.toString());
-      }
+    Map token = await TokenService.searchToken(text);
+    Navigator.pop(context);
+    print("搜索结果是${token}");
+    if (token == null) {
+      this.showSnackbar('没有搜索到token');
+    } else {
+      setState(() {
+        this.token = token;
+        this.showHotToken = false;
+      });
+      saveToken(token);
     }
   }
 

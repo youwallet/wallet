@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:youwallet/global.dart';
 
@@ -9,21 +11,20 @@ class Http{
   BaseOptions _options;
 
   static Http getInstance(){
-    print("getInstance");
     if(instance == null){
       instance  = new Http();
     }
+    return instance;
   }
 
   // http类的构造函数
+  // 初始化 Options
   Http(){
-
-    // 初始化 Options
      _options =new BaseOptions(
         baseUrl: Global.getBaseUrl(),
 //        connectTimeout: _config.connectTimeout,
 //        receiveTimeout: _config.receiveTimeout,
-       headers: {'Content-Type':'application/json','User-Agent':'youwallet'},
+        headers: {'Content-Type':'application/json','User-Agent':'youwallet'},
     );
 
     _dio = new Dio(_options);
@@ -46,10 +47,7 @@ class Http{
           return  e;//continue
         }
     ));
-
   }
-
-
 
   // get 请求封装
   get(url,{ options, cancelToken}) async {
@@ -71,25 +69,34 @@ class Http{
   }
 
   // post请求封装
-  post(url,{ options, cancelToken, data=null}) async {
-    print('post请求::: url：$url ,body: $data');
+  // url还必须有一个默认值
+  // 这个跟以太坊进行交互，所有请求的url都是固定的
+  // 但是也不能保证后期不会有其他的url进来
+  post({url = "", options, cancelToken, params = null}) async {
+//    print('post请求::body: $params');
     Response response;
-
+//    params.add('latest');
+    Map data = {
+      'jsonrpc': '2.0',
+      'method': 'eth_call',
+      'id': DateTime.now().millisecondsSinceEpoch,
+      'params': [params,'latest']
+    };
+//    print('发送数据准备完毕');
+//    print(data);
     try{
-      data['jsonrpc'] = "2.0";
-      data["method"] = "eth_call";
-      data['id'] = DateTime.now().millisecondsSinceEpoch;
       response = await _dio.post(
           url,
-          data:data,
+          data: data,
           cancelToken:cancelToken
       );
+      print('请求结束');
       print(response);
     }on DioError catch(e){
       if(CancelToken.isCancel(e)){
         print('get请求取消! ' + e.message);
       }else{
-        print('get请求发生错误：$e');
+        print('post请求发生错误：$e');
       }
     }
     return response.data;
