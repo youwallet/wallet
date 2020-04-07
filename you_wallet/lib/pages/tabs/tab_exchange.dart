@@ -430,7 +430,7 @@ class Page extends State {
 
     } catch (e) {
       print(e);
-      this.showSnackBar('你输入的价格不是无法识别');
+      this.showSnackBar('你输入的价格无法识别');
       return;
     }
 
@@ -454,7 +454,7 @@ class Page extends State {
       }
     } catch (e) {
       print(e);
-      this.showSnackBar('你输入的数量不是无法识别');
+      this.showSnackBar('你输入的数量无法识别');
       return;
     }
 
@@ -499,6 +499,8 @@ class Page extends State {
 
     String res = await TokenService.allowance(context, needApproveToken);
     print('授权检测的额度 res=> ${res}');
+//    Navigator.of(context).pop();
+//    return;
 
     // 授权额度为0，发起提示
     if (res == '0') {

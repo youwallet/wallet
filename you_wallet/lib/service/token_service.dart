@@ -1,4 +1,6 @@
 
+import 'dart:math';
+
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:web3dart/credentials.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -122,7 +124,7 @@ class TokenService {
       "data": Global.funcHashes['getTokenBalance()'] + myAddress.replaceFirst('0x', '').padLeft(64, '0')
     };
     var response = await Http().post(params: params);
-    double balance = BigInt.parse(response['result'])/BigInt.from(1000000000000000000);
+    double balance = BigInt.parse(response['result'])/BigInt.from(pow(10, token['decimals']));
     if (balance == 0.0) {
       return '0';
     } else {
@@ -144,40 +146,21 @@ class TokenService {
   /* 获取授权代理额度 - R
    * owner: 授权人账户地址，就是用户钱包地址
    * spender: 代理人账户地址,就是proxy的合约地址
-   *
+   * 拼接postData，每次都很长，如果更优雅的拼接postData呢
    * 返回值
    * uint256 value: 代理额度
    * */
   static Future<String> allowance(context,String token) async{
     String myAddress = Provider.of<walletModel.Wallet>(context).currentWalletObject['address'];
-    String postData = Global.funcHashes['allowance'] + formatParam(myAddress) + formatParam(Global.proxy);
-//    print("token     => ${token}");
-//    print("owner     => ${myAddress}");
-//    print("proxy     => ${Global.proxy}");
-//    print("postData  => ${postData}");
-    var client = Client();
-    var payload = {
-      "jsonrpc": "2.0",
-      "method": "eth_call",
-      "params":  [{
-        "to": token,
-        "data": postData
-      },"latest"],
-
-      "id": DateTime.now().millisecondsSinceEpoch
+    String postData = Global.funcHashes['allowance'] + myAddress.replaceFirst('0x', '').padLeft(64, '0') + Global.proxy.replaceFirst('0x', '').padLeft(64, '0');
+    Map params = {
+      "to": token,
+      "data": postData
     };
-
-    String rpcUrl = await getNetWork();
-
-    var rsp = await client.post(
-        rpcUrl,
-        headers:{'Content-Type':'application/json'},
-        body: json.encode(payload)
-    );
-    Map body = jsonDecode(rsp.body);
-//    print(body);
-    return BigInt.parse(body['result']).toString();
+    var response = await Http().post(params: params);
+    return BigInt.parse(response['result']).toString();
   }
+
   static formatParam(String para) {
     para = para.replaceFirst('0x', '');
     String str = '';

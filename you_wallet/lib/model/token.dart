@@ -112,7 +112,7 @@ class Token extends ChangeNotifier {
   /// address：用户当前钱包地址
   Future updateBalance(String address) async{
     for(var i = 0; i<this.items.length; i++) {
-//      print(this.items[i]);
+      print(this.items[i]);
       String balance = await TokenService.getTokenBalance(this.items[i]);
       print('获取token余额 =》' + balance);
       this.updateTokenBalance(this.items[i], balance);
