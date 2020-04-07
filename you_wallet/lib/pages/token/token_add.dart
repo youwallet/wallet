@@ -191,7 +191,7 @@ class Page extends State<AddWallet> {
             text: '搜索中...',
           );
         });
-    Future.wait([TokenService.getTokenName(text),TokenService.getTokenBalance(text),TokenService.getDecimals(text)]).then((list) {
+    Future.wait([TokenService.getTokenName(text),TokenService.getTokenBalance({'address': text}),TokenService.getDecimals(text)]).then((list) {
       print(list);
       Map token = {};
       token['address'] = text;

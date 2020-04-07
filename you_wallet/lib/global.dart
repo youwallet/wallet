@@ -84,7 +84,8 @@ class Global {
     'getOrderDepth(bytes32)': '0x3e8c0c4c',
     'getBQODHash()': '0xefe331cf',
     'getBQHash()': '0x30d598ed',
-    'getDecimals()': '0x313ce567'
+    'getDecimals()': '0x313ce567',
+    'getTokenBalance()': '0x70a08231'
 };
 
   static final myKey = "v3/37caa7b8b2c34ced8819de2b3853c8a2";

@@ -74,9 +74,9 @@ class TokenService {
   }
 
 
-  /// 获取token的余额，这里获取的是ETH的余额
+  /// 获取指定钱包的余额，这里获取的是ETH的余额
   static Future<String> getBalance(String address) async {
-      String rpcUrl = await getNetWork();
+      String rpcUrl = Global.getBaseUrl();
       final client = Web3Client(rpcUrl, Client());
       EtherAmount balance = await client.getBalance(EthereumAddress.fromHex(address));
       double b = balance.getValueInUnit(EtherUnit.ether);
@@ -108,26 +108,18 @@ class TokenService {
       }
     }
     return nameString;
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-//    Map token = new Map();
-//    token['address'] = address;
-//    token['wallet'] = prefs.getString("currentWallet");
-//    token['name'] = nameString;
-//    token['balance'] = await getTokenBalance(address);
-//    token['decimals'] = await getDecimals(address);
-//    token['rmb'] = '';
-//    token['network'] =  prefs.getString("network");
-//    return token;
   }
 
-  // https://yq.aliyun.com/articles/600706/
-  // 这里获取的是指定token的余额
-  static Future<String> getTokenBalance(String address) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String myAddress = await prefs.getString("currentWallet");
+  /// https://yq.aliyun.com/articles/600706/
+  /// 这里获取的是指定token的余额
+  /// 这里还要考虑小数点的问题，正常情况下token都是18位小数，特殊情况下有12位小数存在
+  /// 计算balance，需根据当前token的小数点来除
+  /// 当前还是固定的18位
+  static Future<String> getTokenBalance(Map token) async {
+    String myAddress = Global.getPrefs("currentWallet");
     Map params = {
-      "to": address,
-      "data": "0x70a08231000000000000000000000000" + myAddress.replaceFirst('0x', '')
+      "to": token['address'],
+      "data": Global.funcHashes['getTokenBalance()'] + myAddress.replaceFirst('0x', '').padLeft(64, '0')
     };
     var response = await Http().post(params: params);
     double balance = BigInt.parse(response['result'])/BigInt.from(1000000000000000000);

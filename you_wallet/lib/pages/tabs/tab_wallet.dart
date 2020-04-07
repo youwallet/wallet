@@ -335,7 +335,9 @@ class Page extends State<TabWallet> {
           );
         });
     String address = Provider.of<walletModel.Wallet>(context).currentWalletObject['address'];
+    // 更新钱包的ETH余额
     await Provider.of<walletModel.Wallet>(context).updateWallet(address);
+    // 更新钱包里面多个token的余额
     await Provider.of<Token>(context).updateBalance(address);
     final snackBar = new SnackBar(content: new Text('刷新结束'));
     Scaffold.of(context).showSnackBar(snackBar);

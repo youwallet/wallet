@@ -76,22 +76,23 @@ class Http{
 //    print('post请求::body: $params');
     Response response;
 //    params.add('latest');
+    print('请求开始======');
     Map data = {
       'jsonrpc': '2.0',
       'method': 'eth_call',
       'id': DateTime.now().millisecondsSinceEpoch,
       'params': [params,'latest']
     };
-//    print('发送数据准备完毕');
-//    print(data);
+    print('发送数据准备完毕');
+    print(data);
     try{
       response = await _dio.post(
           url,
           data: data,
           cancelToken:cancelToken
       );
-      print('请求结束');
       print(response);
+      print('请求结束======');
     }on DioError catch(e){
       if(CancelToken.isCancel(e)){
         print('get请求取消! ' + e.message);
