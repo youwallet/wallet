@@ -93,7 +93,6 @@ class Trade {
       configData = '1';
     }
     Map params = {
-      "to": Global.tempMatchAddress,
       "data": Global.funcHashes['getConfigData()'] + configData.padLeft(64, '0')
     };
     var response = await Http().post(params: params);
@@ -188,7 +187,6 @@ class Trade {
     String postData = Global.funcHashes['getConfigSignature()'] + _v + sign['r'] + sign['s'] + formatParam('0');
 
     Map params = {
-      "to": Global.tempMatchAddress, // 合约地址
       "data": postData
     };
     var response = await Http().post(params: params);
@@ -241,7 +239,6 @@ class Trade {
     String signature = this.configData + this.configData + this.configData;
     String postData = Global.funcHashes['getBQODHash()'] + this.trader + formatParam(this.amount) + formatParam(this.price) + gasTokenAmount + this.configData + signature + formatParam(this.tokenA) + formatParam(this.tokenB) + formatParam(Global.taxAddress);
     Map params = {
-      "to": Global.tempMatchAddress,
       "data": postData
     };
     var response = await Http().post(params: params);
@@ -282,10 +279,9 @@ class Trade {
   static Future getFilled(String odHash) async {
     String postData = func['filled(bytes32)'] + odHash;
     Map params = {
-      "to": Global.hydroAddress,
       "data": postData
     };
-    var response = await Http().post(params: params);
+    var response = await Http().post(params: params,to: Global.hydroAddress);
     return BigInt.parse(response['result'].replaceFirst("0x",''), radix: 16)/BigInt.from(pow(10 ,18));
   }
 
@@ -383,17 +379,6 @@ class Trade {
   // 获取订单中的信息
   // String bqHash + String odHash
   // 这里直接把bqHash和odHash拼接好传进来
-  /**
-   * 000000000000000000000000ab890808775d51e9bf9fa76f40ee5fff124dece5
-   * 0000000000000000000000000000000000000000000000000000000000000300
-   * 0000000000000000000000000000000000000000000000000000000000000900
-   * 0000000000000000000000000000000000000000000000000000000000000000
-   * 02000000600571c8000000000000000000000000000000000000000000000000
-   * 1c0000000000000000000000000000000000000000000000000000000000000074d75996ead9f1eebd2e43e14fd80fe66da236f6051aba3b3f151d093cb588153d05e9a1244a41bdf3104ca0d28d5ad375731a58f200d43c0e70e5dc1959321a
-   * 000000000000000000000000000000000000000000000000000000000000024e
-   * 0000000000000000000000000000000000000000000000000000000000000000
-   *
-   */
   static Future getOrderInfo(String hash, bool isSell) async {
     String strSell = isSell ? '1' : '0';
     String postData = Global.funcHashes['getOrderInfo(bytes32,bytes32,bool)'] + hash.replaceFirst('0x', '') + formatParam(strSell);
@@ -569,36 +554,11 @@ class Trade {
  * 注意：返回值数组固定大小是10个，返回的OrderItem中任意一个参数为0，表示结束。
  */
   static Future<List> getOrderDepth(String leftToken, String rightToken) async {
-    print('start getOrderDepth');
     String bqsq = await Trade.getBQHash(leftToken, rightToken);
     String postData = Global.funcHashes['getOrderDepth(bytes32)'] + bqsq;
-
-    print('postData=> ${postData}');
-    var client = Client();
-    var payload = {
-      "jsonrpc": "2.0",
-      "method": "eth_call",
-      "params": [
-        {
-          "to": Global.tempMatchAddress,
-          "data": postData
-        },
-        "latest"
-      ],
-      "id": DateTime.now().millisecondsSinceEpoch
-    };
-    var rpcUrl = await Global.rpcUrl();
-    var rsp = await client.post(
-        rpcUrl,
-        headers:{'Content-Type':'application/json'},
-        body: json.encode(payload)
-    );
-//    print('start print rsp');
-//    print(rsp);
-//    print('start print rsp.body');
-//    print(rsp.body);
-    Map result = jsonDecode(rsp.body);
-    return Trade.buildOrderDeep(result['result']);
+    Map params = {"data": postData};
+    var response = await Http().post(params: params);
+    return Trade.buildOrderDeep(response['result']);
   }
 
   // 解析deepOrder接口返回的深度字符串

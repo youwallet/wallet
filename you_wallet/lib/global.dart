@@ -29,7 +29,7 @@ class Global {
 
   // 代理合约，用来给token授权
   // static final proxy = "0x141A60c20026d88385a5339191C3950285e41072";
-  static final proxy = "0x6BeE8B8a06F2Df4c3e3BE7E6ca8E489602378186";
+  static const proxy = "0x6BeE8B8a06F2Df4c3e3BE7E6ca8E489602378186";
 
   // youWallet钱包合约
   // static final tempMatchAddress= "0x3edde3202e42a6c129A399a7e063C6E236239202";
@@ -37,16 +37,16 @@ class Global {
   // static final tempMatchAddress = "0x675E05f5Dd6129bd5BE92DBF8319FC5DEB4dE94b";
   // static final tempMatchAddress = "0x4a5277ba2952Cb1f9a0d2E9F92c1F386ed4a41b7";
   // static final tempMatchAddress = "0xFf067F015Fc6803cDe9D9B0FfAB77803Ba4dF43A";
-  static final tempMatchAddress = "0x950b5C568c46B1abcDC21F7348d9F29B7c64462a";
+  static const tempMatchAddress = "0x950b5C568c46B1abcDC21F7348d9F29B7c64462a";
 
   // 收取交易费的账户relayer ，测试阶段用SHT的合约账户代替
-  static final taxAddress = "0xA9535b10EE96b4A03269D0e0DEf417aF97477FD6";
+  static const taxAddress = "0xA9535b10EE96b4A03269D0e0DEf417aF97477FD6";
 
   // 查询订单的匹配了多个额度在这个合约上查询
-  static final hydroAddress = "0xbc6B59f5a1e86F262Ae92A81aE1c44F401521577";
+  static const hydroAddress = "0xbc6B59f5a1e86F262Ae92A81aE1c44F401521577";
 
   // 热门token
-  static final hotToken = [
+  static const hotToken = [
     {'name': 'BTAT', 'address':'0x8e4d8D520f52B044e1E8B054D763B723B7C3E716'},
     {'name': 'BTBT', 'address':'0x45e110F81bBf89041A63Bc2403058743bc552bAF'},
     {'name': 'BTCT', 'address':'0x7B29ed69368B0Ed0d3b21A857BaEeF788B13c626'},
@@ -55,7 +55,7 @@ class Global {
 
 
   // gas limit 30万
-  static final gasLimit = 600000;
+  static const gasLimit = 600000;
 
   // gas price 10Gwei
   static final gasPrice = BigInt.from(10000000000);
@@ -70,7 +70,7 @@ class Global {
   static int priceDecimal = 6;
 
   // 所有function hash
-  static final funcHashes= {
+  static const funcHashes= {
     'filled(bytes32)': '0x288cdc91',
     'getOrderQueueInfo(address,address,bool)': '0x22f42f6b',
     'transfer(address,uint256)': '0xa9059cbb',
@@ -90,7 +90,7 @@ class Global {
     'getConfigSignature()': '0x0b973ca2'
 };
 
-  static final myKey = "v3/37caa7b8b2c34ced8819de2b3853c8a2";
+  static const myKey = "v3/37caa7b8b2c34ced8819de2b3853c8a2";
 
   // 是否为release版
   static bool get isRelease => bool.fromEnvironment("dart.vm.product");

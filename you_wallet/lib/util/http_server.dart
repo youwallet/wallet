@@ -72,16 +72,24 @@ class Http{
   // url还必须有一个默认值
   // 这个跟以太坊进行交互，所有请求的url都是固定的
   // 但是也不能保证后期不会有其他的url进来
-  post({url = "", options, cancelToken, params = null}) async {
-//    print('post请求::body: $params');
+  /*
+  * 参数说明
+  * params  接口调用时拼接的数据
+  * to      合约地址，默认是tempMatchAddress合约,大部分情况下都可以不传
+  *
+   */
+  post({url = "", options, cancelToken, params = null, to = Global.tempMatchAddress}) async {
     Response response;
-//    params.add('latest');
     print('请求开始======');
+    params['to'] = to;
     Map data = {
       'jsonrpc': '2.0',
       'method': 'eth_call',
       'id': DateTime.now().millisecondsSinceEpoch,
-      'params': [params,'latest']
+      'params': [
+        params,
+        'latest'
+      ]
     };
     print('发送数据准备完毕');
     print(data);
