@@ -30,9 +30,6 @@ class TokenService {
 //  AddressService(this._configService);
   String customeAgent = "";
 
-  /// 交易所合约地址
-//  static final contractAddress= "0x7E999360d3327fDA8B0E339c8FC083d8AFe6A364";
-
   // 获取助记词
   static String generateMnemonic() {
     String randomMnemonic = bip39.generateMnemonic();
@@ -41,9 +38,7 @@ class TokenService {
 
 
 //  static String getPrivateKey(String randomMnemonic) {
-//
 //    String hexSeed = bip39.mnemonicToSeedHex(randomMnemonic);
-//
 //    KeyData master = ED25519_HD_KEY.getMasterKeyFromSeed(hexSeed);
 //    return HEX.encode(master.key);
 //  }
@@ -83,13 +78,6 @@ class TokenService {
       EtherAmount balance = await client.getBalance(EthereumAddress.fromHex(address));
       double b = balance.getValueInUnit(EtherUnit.ether);
       return  b.toStringAsFixed(4);
-  }
-
-  static Future<String> getNetWork() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String network =  prefs.getString('network');
-    String myKey = 'v3/37caa7b8b2c34ced8819de2b3853c8a2';
-    return 'https://' + network + '.infura.io/' + myKey;
   }
 
   /// 搜索指定token
@@ -160,18 +148,4 @@ class TokenService {
     var response = await Http().post(params: params);
     return BigInt.parse(response['result']).toString();
   }
-
-  static formatParam(String para) {
-    para = para.replaceFirst('0x', '');
-    String str = '';
-    int i = 0;
-    while(i < 64 - para.length)
-    {
-      str = str + '0';
-      i++;
-    }
-    return str + para;
-  }
-
-
 }

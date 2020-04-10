@@ -17,6 +17,7 @@ import 'package:decimal/decimal.dart';
 import 'package:youwallet/util/number_format.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/deal.dart';
+import 'package:youwallet/util/http_server.dart';
 
 class Trade {
 
@@ -91,27 +92,12 @@ class Trade {
     } else {
       configData = '1';
     }
-    var client = Client();
-    var payload = {
-      "jsonrpc": "2.0",
-      "method": "eth_call",
-      "params": [
-        {
-          "from": Global.tempMatchAddress, // 这里的form随便写一个
-          "to": Global.tempMatchAddress,
-          "data": "0xfeee047e000000000000000000000000000000000000000000000000000000000000000${configData}"
-        },
-        "latest"
-      ],
-      "id": DateTime.now().millisecondsSinceEpoch
+    Map params = {
+      "to": Global.tempMatchAddress,
+      "data": Global.funcHashes['getConfigData()'] + configData.padLeft(64, '0')
     };
-    var rsp = await client.post(
-        "https://ropsten.infura.io/v3/37caa7b8b2c34ced8819de2b3853c8a2",
-        headers:{'Content-Type':'application/json'},
-        body: json.encode(payload)
-    );
-    Map result = jsonDecode(rsp.body);
-    return result['result'].replaceFirst('0x', '');
+    var response = await Http().post(params: params);
+    return response['result'].replaceFirst('0x', '');
   }
 
   static formatParam(String para) {
@@ -173,7 +159,7 @@ class Trade {
         ),
         chainId: 3
     );
-//    print("transaction => ${rsp}");
+    // print("transaction => ${rsp}");
     await client.dispose();
     this.txnHash = rsp;
     // 保存订单到本地数据库，
@@ -194,37 +180,19 @@ class Trade {
    *
    *  function getConfigSignature(bytes1 v,  bytes32 r, bytes32 s, uint8 signMethod);
    * */
-
   Future<String> getConfigSignature() async{
     Map BQODHash = await getBQODHash();
     Map sign = await ethSign(BQODHash['od_hash']);
 
-    String _v = sign['v'] + "00000000000000000000000000000000000000000000000000000000000000";
-    String postData = "0x0b973ca2" + _v + sign['r'] + sign['s'] + formatParam('0');
+    String _v = sign['v'].padRight(64, '0');
+    String postData = Global.funcHashes['getConfigSignature()'] + _v + sign['r'] + sign['s'] + formatParam('0');
 
-    var client = Client();
-    var payload = {
-      "jsonrpc": "2.0",
-      "method": "eth_call",
-      "params": [
-        {
-          "from": Global.tempMatchAddress,
-          "to": Global.tempMatchAddress, // 合约地址
-          "data": postData
-        },
-        "latest"
-      ],
-      "id": DateTime.now().millisecondsSinceEpoch
+    Map params = {
+      "to": Global.tempMatchAddress, // 合约地址
+      "data": postData
     };
-
-    var rsp = await client.post(
-        "https://ropsten.infura.io/v3/37caa7b8b2c34ced8819de2b3853c8a2",
-        headers:{'Content-Type':'application/json'},
-        body: json.encode(payload)
-    );
-
-    Map result = jsonDecode(rsp.body);
-    return result['result'].replaceFirst("0x", "");
+    var response = await Http().post(params: params);
+    return response['result'].replaceFirst('0x', '');
   }
 
   // 调用web3dart，对od_hash使用私钥进行签名，这一步必须在客户端做
@@ -267,57 +235,24 @@ class Trade {
  * bq_hash: base-token/quote-token buy  哈希值
  * sq_hash: base-token/quote-token sell 哈希值
  * od_hash: 订单哈希值
+ * 此时还没有signature字段，所以填充三个32byte的字段
   */
    Future<Map> getBQODHash() async {
-    // 此时还没有signature字段，所以随便填充三个32byte的字段
     String signature = this.configData + this.configData + this.configData;
-    //    print('getBQODHash functionName             =》${functionName}');
-    //    print('getBQODHash this.trader              =》${this.trader}');
-    //    print('getBQODHash formatParam(this.amount) =》${formatParam(this.amount)}');
-    //    print('getBQODHash formatParam(this.price)  =》${formatParam(this.price)}');
-    //    print('getBQODHash gasTokenAmount           =》${gasTokenAmount}');
-    //    print('getBQODHash this.configData          =》${this.configData}');
-    //    print('getBQODHash signature                =》${signature}');
-    //    print('getBQODHash formatParam(this.tokenA) =》${formatParam(this.tokenA)}');
-    //    print('getBQODHash formatParam(this.tokenB) =》${formatParam(this.tokenB)}');
-    //    print('getBQODHash formatParam(taxAddress)  =》${formatParam(Global.taxAddress)}');
     String postData = Global.funcHashes['getBQODHash()'] + this.trader + formatParam(this.amount) + formatParam(this.price) + gasTokenAmount + this.configData + signature + formatParam(this.tokenA) + formatParam(this.tokenB) + formatParam(Global.taxAddress);
-    var client = Client();
-    var payload = {
-      "jsonrpc": "2.0",
-      "method": "eth_call",
-      "params": [
-        {
-          "from":Global.tempMatchAddress,
-          "to": Global.tempMatchAddress,
-          "data": postData
-        },
-        "latest"
-      ],
-      "id": DateTime.now().millisecondsSinceEpoch
+    Map params = {
+      "to": Global.tempMatchAddress,
+      "data": postData
     };
-
-    var rsp = await client.post(
-        "https://ropsten.infura.io/v3/37caa7b8b2c34ced8819de2b3853c8a2",
-        headers:{'Content-Type':'application/json'},
-        body: json.encode(payload)
-    );
-//    print("getBQODHash =》 ${rsp.body}");
-    Map result = jsonDecode(rsp.body);
-
-    String  res = result['result'].replaceFirst("0x", ""); // 得到一个64字节的数据
-    String sq_hash = res.substring(0,64);
-    String bq_hash = res.substring(64,128);
-    String od_hash = res.substring(128);
-//    print("bq_hash =》 ${bq_hash}");
-//    print("od_hash =》 ${od_hash}");
-    this.odHash = od_hash;
-    this.bqHash = bq_hash;
-    this.sqHash = sq_hash;
+    var response = await Http().post(params: params);
+    String res = response['result'].replaceFirst("0x", ""); // 得到一个64字节的数据
+    this.odHash = res.substring(128);
+    this.bqHash = res.substring(64,128);
+    this.sqHash = res.substring(0,64);
     return {
-      'od_hash': od_hash,
-      'bq_hash': bq_hash,
-      'sq_hash': sq_hash
+      'od_hash': this.odHash,
+      'bq_hash': this.bqHash,
+      'sq_hash': this.sqHash
     };
   }
 
@@ -337,38 +272,21 @@ class Trade {
    }
 
   /// 从数据库获取当前兑换列表，
-  static Future<List> getTraderList() async {
-    var sql = SqlUtil.setTable("trade");
-    List list = await sql.get();
-    return list;
-  }
+//  static Future<List> getTraderList() async {
+//    var sql = SqlUtil.setTable("trade");
+//    List list = await sql.get();
+//    return list;
+//  }
 
   /// 获取订单匹配情况
   static Future getFilled(String odHash) async {
-
     String postData = func['filled(bytes32)'] + odHash;
-    var client = Client();
-    var payload = {
-      "jsonrpc": "2.0",
-      "method": "eth_call",
-      "params": [
-        {
-          "from":Global.hydroAddress,
-          "to": Global.hydroAddress,
-          "data": postData
-        },
-        "latest"
-      ],
-      "id": DateTime.now().millisecondsSinceEpoch
+    Map params = {
+      "to": Global.hydroAddress,
+      "data": postData
     };
-
-    var rsp = await client.post(
-        "https://ropsten.infura.io/v3/37caa7b8b2c34ced8819de2b3853c8a2",
-        headers:{'Content-Type':'application/json'},
-        body: json.encode(payload)
-    );
-    Map result = jsonDecode(rsp.body);
-    return BigInt.parse(result['result'].replaceFirst("0x",''), radix: 16)/BigInt.from(pow(10 ,18));
+    var response = await Http().post(params: params);
+    return BigInt.parse(response['result'].replaceFirst("0x",''), radix: 16)/BigInt.from(pow(10 ,18));
   }
 
   // 0x22f42f6b

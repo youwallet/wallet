@@ -85,7 +85,9 @@ class Global {
     'getBQODHash()': '0xefe331cf',
     'getBQHash()': '0x30d598ed',
     'getDecimals()': '0x313ce567',
-    'getTokenBalance()': '0x70a08231'
+    'getTokenBalance()': '0x70a08231',
+    'getConfigData()': '0xfeee047e',
+    'getConfigSignature()': '0x0b973ca2'
 };
 
   static final myKey = "v3/37caa7b8b2c34ced8819de2b3853c8a2";

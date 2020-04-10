@@ -69,33 +69,6 @@ class Page extends State<TabWallet> {
     return layout(context);
   }
 
-
-//  Future _scan() async {
-//      try {
-//        // 此处为扫码结果，barcode为二维码的内容
-//        String barcode = await BarcodeScanner.scan();
-//        final snackBar = new SnackBar(content: new Text(barcode));
-//        Scaffold.of(context).showSnackBar(snackBar);
-//      } on PlatformException catch (e) {
-//        if (e.code == BarcodeScanner.CameraAccessDenied) {
-//          // 未授予APP相机权限
-//          final snackBar = new SnackBar(content: new Text('未授予APP相机权限'));
-//          Scaffold.of(context).showSnackBar(snackBar);
-//        } else {
-//          // 扫码错误
-//          print('扫码错误: $e');
-//        }
-//      } on FormatException{
-//        // 进入扫码页面后未扫码就返回
-//        print('进入扫码页面后未扫码就返回');
-//      } catch (e) {
-//        // 扫码错误
-//        final snackBar = new SnackBar(content: new Text(e.toString()));
-//        Scaffold.of(context).showSnackBar(snackBar);
-//      }
-//  }
-
-
   // 构建页面
   Widget layout(BuildContext context) {
     return new Scaffold(
@@ -221,7 +194,6 @@ class Page extends State<TabWallet> {
 
   // 构建顶部卡片
   Widget topCard(BuildContext context) {
-    print('top card build');
     return new Container(
         padding: const EdgeInsets.all(16.0), // 四周填充边距32像素
         margin: const EdgeInsets.all(16.0),
@@ -293,13 +265,10 @@ class Page extends State<TabWallet> {
                       ),
                     ],
                   ),
-
                 ]
             );
           },
         ),
-
-
     );
   }
 

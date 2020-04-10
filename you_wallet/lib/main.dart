@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:youwallet/db/sql_util.dart';
 import 'dart:io';
+import 'dart:async';
 import 'package:youwallet/pages/routers.dart';
 import 'package:youwallet/global.dart';
 import 'package:youwallet/service/service_locator.dart';
@@ -34,17 +35,24 @@ void main() async {
   // 全局变量就只是变量，它一般不更改，即使更改，也不需要通知其他组件
   await Global.init();
   Provider.debugCheckInvalidValueType = null;
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider<Token>(create: (_) => Token()),
-        ChangeNotifierProvider<Wallet>(create: (_) => Wallet()),
-        ChangeNotifierProvider<Network>(create: (_) => Network()),
-        ChangeNotifierProvider<Deal>(create: (_) => Deal())
-      ],
-      child: MyApp(),
-    ),
-  );
+
+  // flutter奔溃和日志收集
+  runZoned((){
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<Token>(create: (_) => Token()),
+          ChangeNotifierProvider<Wallet>(create: (_) => Wallet()),
+          ChangeNotifierProvider<Network>(create: (_) => Network()),
+          ChangeNotifierProvider<Deal>(create: (_) => Deal())
+        ],
+        child: MyApp(),
+      ),
+    );
+  }, onError: (Object obj, StackTrace stack) {
+     print(stack);
+  });
+
 }
 
 // APP最外层的widget，每个app都是这样
