@@ -76,21 +76,27 @@ class Http{
   * 参数说明
   * params  接口调用时拼接的数据
   * to      合约地址，默认是tempMatchAddress合约,大部分情况下都可以不传
-  *
+  * method  以太坊的调用函数，默认是eth_call，读操作，不需要gas
    */
-  post({url = "", options, cancelToken, params = null, to = Global.tempMatchAddress}) async {
+  post({url = "", options, cancelToken, params = null, to = Global.tempMatchAddress, method = 'eth_call'}) async {
     Response response;
-    print('请求开始======');
-    params['to'] = to;
     Map data = {
       'jsonrpc': '2.0',
-      'method': 'eth_call',
+      'method': method,
       'id': DateTime.now().millisecondsSinceEpoch,
-      'params': [
+      'params': []
+    };
+    print('请求开始======');
+    // 调用eth_call，params里面需要加上合约地址，就是参数to
+    if (method == 'eth_call') {
+      params['to'] = to;
+      data['params'] = [
         params,
         'latest'
-      ]
-    };
+      ];
+    } else {
+      data['params'] = params;
+    }
     print('发送数据准备完毕');
     print(data);
     try{

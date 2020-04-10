@@ -359,21 +359,8 @@ class Trade {
   // 下面这个订单是没有授权交易的失败订单
   // 0x7e6c3534a5acdaf52aef4f13b2dd6cdd2f9496098cd59728c5c065fb0d5f4b7a
   static Future<Map> getTransactionByHash(String hash) async{
-    var client = Client();
-    var payload = {
-      "jsonrpc": "2.0",
-      "method": "eth_getTransactionByHash",
-      "params": [hash],
-      "id": DateTime.now().millisecondsSinceEpoch
-    };
-    var rsp = await client.post(
-        "https://ropsten.infura.io/v3/37caa7b8b2c34ced8819de2b3853c8a2",
-        headers:{'Content-Type':'application/json'},
-        body: json.encode(payload)
-    );
-
-    Map result = jsonDecode(rsp.body);
-    return result['result'];
+    var response = await Http().post(params: [hash], method: 'eth_getTransactionByHash');
+    return response['result'];
   }
 
   // 获取订单中的信息
@@ -498,21 +485,8 @@ class Trade {
   // getTransactionReceipt必须等待以太坊操作结束后，
   // 在写链的过程中，这个接口一直返回null
   static Future getTransactionReceipt(Map item) async {
-    var client = Client();
-    var payload = {
-      "jsonrpc": "2.0",
-      "method": "eth_getTransactionReceipt",
-      "params": [item['txnHash']],
-      "id": DateTime.now().millisecondsSinceEpoch
-    };
-    var rpcUrl = await Global.rpcUrl();
-    var rsp = await client.post(
-        rpcUrl,
-        headers:{'Content-Type':'application/json'},
-        body: json.encode(payload)
-    );
-    Map result = jsonDecode(rsp.body);
-    return result['result'];
+    var response = await Http().post(params: [item['txnHash']], method: 'eth_getTransactionReceipt');
+    return response['result'];
   }
 
   // 本接口即将被废弃

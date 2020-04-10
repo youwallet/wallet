@@ -82,11 +82,8 @@ class TokenService {
 
   /// 搜索指定token
   static Future<String> getTokenName(String address) async {
-    Map params = {
-      "to": address,
-      "data": "0x95d89b41"
-    };
-    var response = await Http().post(params: params);
+    Map params = {"data": "0x95d89b41"};
+    var response = await Http().post(params: params, to: address);
     String res = response['result'];
     String name = res.replaceFirst('0x', '');
     String nameString = '';
@@ -108,10 +105,9 @@ class TokenService {
   static Future<String> getTokenBalance(Map token) async {
     String myAddress = Global.getPrefs("currentWallet");
     Map params = {
-      "to": token['address'],
       "data": Global.funcHashes['getTokenBalance()'] + myAddress.replaceFirst('0x', '').padLeft(64, '0')
     };
-    var response = await Http().post(params: params);
+    var response = await Http().post(params: params, to: token['address']);
     double balance = BigInt.parse(response['result'])/BigInt.from(pow(10, token['decimals']));
     if (balance == 0.0) {
       return '0';
@@ -123,10 +119,9 @@ class TokenService {
   /// 获取代币的小数位数
   static Future<int> getDecimals(String address) async {
     Map params = {
-      "to": address,
       "data": Global.funcHashes['getDecimals()']
     };
-    var response = await Http().post(params: params);
+    var response = await Http().post(params: params, to: address);
     return int.parse(response['result'].replaceFirst("0x",''), radix: 16);
   }
 
@@ -141,11 +136,7 @@ class TokenService {
   static Future<String> allowance(context,String token) async{
     String myAddress = Provider.of<walletModel.Wallet>(context).currentWalletObject['address'];
     String postData = Global.funcHashes['allowance'] + myAddress.replaceFirst('0x', '').padLeft(64, '0') + Global.proxy.replaceFirst('0x', '').padLeft(64, '0');
-    Map params = {
-      "to": token,
-      "data": postData
-    };
-    var response = await Http().post(params: params);
+    var response = await Http().post(params: {"data": postData}, to: token);
     return BigInt.parse(response['result']).toString();
   }
 }
