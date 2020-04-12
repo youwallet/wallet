@@ -1,0 +1,868 @@
+
+[
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "buyQueue",
+      "outputs": [
+        {
+          "name": "start",
+          "type": "bytes32"
+        },
+        {
+          "name": "end",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "name": "configurations",
+      "outputs": [
+        {
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "DOMAIN_SEPARATOR",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "adr",
+          "type": "address"
+        }
+      ],
+      "name": "addAddress",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "adr",
+          "type": "address"
+        }
+      ],
+      "name": "removeAddress",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "HALF_YEAR_SECONDS",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "EIP712_ORDER_TYPE",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "DAY_SECONDS",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "REBATE_RATE_BASE",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "isOwner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getAllAddresses",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address[]"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "whitelist",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "YEAR_SECONDS",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "SUPPORTED_ORDER_VERSION",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "EIP712_DOMAIN_TYPEHASH",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "_dex",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "allAddresses",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "sellQueue",
+      "outputs": [
+        {
+          "name": "start",
+          "type": "bytes32"
+        },
+        {
+          "name": "end",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "name": "orderFlag",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "name": "dex",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "fallback"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "bq_hash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "od_hash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "MakeOrder",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "bq_hash",
+          "type": "bytes32"
+        },
+        {
+          "indexed": false,
+          "name": "od_hash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "CancelOrder",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "adr",
+          "type": "address"
+        }
+      ],
+      "name": "AddressAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "adr",
+          "type": "address"
+        }
+      ],
+      "name": "AddressRemoved",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "trader",
+              "type": "address"
+            },
+            {
+              "name": "baseTokenAmount",
+              "type": "uint256"
+            },
+            {
+              "name": "quoteTokenAmount",
+              "type": "uint256"
+            },
+            {
+              "name": "gasTokenAmount",
+              "type": "uint256"
+            },
+            {
+              "name": "data",
+              "type": "bytes32"
+            },
+            {
+              "components": [
+                {
+                  "name": "config",
+                  "type": "bytes32"
+                },
+                {
+                  "name": "r",
+                  "type": "bytes32"
+                },
+                {
+                  "name": "s",
+                  "type": "bytes32"
+                }
+              ],
+              "name": "signature",
+              "type": "tuple"
+            }
+          ],
+          "name": "takerOrderParam",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "name": "baseToken",
+              "type": "address"
+            },
+            {
+              "name": "quoteToken",
+              "type": "address"
+            },
+            {
+              "name": "relayer",
+              "type": "address"
+            }
+          ],
+          "name": "orderAddressSet",
+          "type": "tuple"
+        }
+      ],
+      "name": "takeOrder",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "trader",
+              "type": "address"
+            },
+            {
+              "name": "baseTokenAmount",
+              "type": "uint256"
+            },
+            {
+              "name": "quoteTokenAmount",
+              "type": "uint256"
+            },
+            {
+              "name": "gasTokenAmount",
+              "type": "uint256"
+            },
+            {
+              "name": "data",
+              "type": "bytes32"
+            },
+            {
+              "components": [
+                {
+                  "name": "config",
+                  "type": "bytes32"
+                },
+                {
+                  "name": "r",
+                  "type": "bytes32"
+                },
+                {
+                  "name": "s",
+                  "type": "bytes32"
+                }
+              ],
+              "name": "signature",
+              "type": "tuple"
+            }
+          ],
+          "name": "orderParam",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "name": "baseToken",
+              "type": "address"
+            },
+            {
+              "name": "quoteToken",
+              "type": "address"
+            },
+            {
+              "name": "relayer",
+              "type": "address"
+            }
+          ],
+          "name": "orderAddressSet",
+          "type": "tuple"
+        }
+      ],
+      "name": "getBQODHash",
+      "outputs": [
+        {
+          "name": "bq_hash",
+          "type": "bytes32"
+        },
+        {
+          "name": "od_hash",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "baseToken",
+          "type": "address"
+        },
+        {
+          "name": "quoteToken",
+          "type": "address"
+        },
+        {
+          "name": "is_sell",
+          "type": "bool"
+        }
+      ],
+      "name": "getOrderQueueInfo",
+      "outputs": [
+        {
+          "name": "bq_hash",
+          "type": "bytes32"
+        },
+        {
+          "name": "od_hash",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "bq_hash",
+          "type": "bytes32"
+        },
+        {
+          "name": "od_hash",
+          "type": "bytes32"
+        },
+        {
+          "name": "is_sell",
+          "type": "bool"
+        }
+      ],
+      "name": "getOrderInfo",
+      "outputs": [
+        {
+          "components": [
+            {
+              "components": [
+                {
+                  "name": "trader",
+                  "type": "address"
+                },
+                {
+                  "name": "baseTokenAmount",
+                  "type": "uint256"
+                },
+                {
+                  "name": "quoteTokenAmount",
+                  "type": "uint256"
+                },
+                {
+                  "name": "gasTokenAmount",
+                  "type": "uint256"
+                },
+                {
+                  "name": "data",
+                  "type": "bytes32"
+                },
+                {
+                  "components": [
+                    {
+                      "name": "config",
+                      "type": "bytes32"
+                    },
+                    {
+                      "name": "r",
+                      "type": "bytes32"
+                    },
+                    {
+                      "name": "s",
+                      "type": "bytes32"
+                    }
+                  ],
+                  "name": "signature",
+                  "type": "tuple"
+                }
+              ],
+              "name": "order",
+              "type": "tuple"
+            },
+            {
+              "name": "filled",
+              "type": "uint256"
+            },
+            {
+              "name": "next",
+              "type": "bytes32"
+            }
+          ],
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "components": [
+            {
+              "name": "trader",
+              "type": "address"
+            },
+            {
+              "name": "baseTokenAmount",
+              "type": "uint256"
+            },
+            {
+              "name": "quoteTokenAmount",
+              "type": "uint256"
+            },
+            {
+              "name": "gasTokenAmount",
+              "type": "uint256"
+            },
+            {
+              "name": "data",
+              "type": "bytes32"
+            },
+            {
+              "components": [
+                {
+                  "name": "config",
+                  "type": "bytes32"
+                },
+                {
+                  "name": "r",
+                  "type": "bytes32"
+                },
+                {
+                  "name": "s",
+                  "type": "bytes32"
+                }
+              ],
+              "name": "signature",
+              "type": "tuple"
+            }
+          ],
+          "name": "orderParam",
+          "type": "tuple"
+        },
+        {
+          "components": [
+            {
+              "name": "baseToken",
+              "type": "address"
+            },
+            {
+              "name": "quoteToken",
+              "type": "address"
+            },
+            {
+              "name": "relayer",
+              "type": "address"
+            }
+          ],
+          "name": "orderAddressSet",
+          "type": "tuple"
+        }
+      ],
+      "name": "cancelOrder",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "is_sell",
+          "type": "bool"
+        }
+      ],
+      "name": "getConfigData",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "v",
+          "type": "bytes1"
+        },
+        {
+          "name": "r",
+          "type": "bytes32"
+        },
+        {
+          "name": "s",
+          "type": "bytes32"
+        },
+        {
+          "name": "signMethod",
+          "type": "uint8"
+        }
+      ],
+      "name": "getConfigSignature",
+      "outputs": [
+        {
+          "components": [
+            {
+              "name": "config",
+              "type": "bytes32"
+            },
+            {
+              "name": "r",
+              "type": "bytes32"
+            },
+            {
+              "name": "s",
+              "type": "bytes32"
+            }
+          ],
+          "name": "sig",
+          "type": "tuple"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "key",
+          "type": "string"
+        },
+        {
+          "name": "value",
+          "type": "string"
+        }
+      ],
+      "name": "setConfiguration",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "key",
+          "type": "string"
+        }
+      ],
+      "name": "delConfiguration",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+]

@@ -1,0 +1,65 @@
+{
+  "id": "1579562",
+  "name": "youwallet",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "2531537",
+      "name": "转账",
+      "font_class": "zhuanzhang",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
+      "icon_id": "3105859",
+      "name": "成功",
+      "font_class": "chenggong",
+      "unicode": "e617",
+      "unicode_decimal": 58903
+    },
+    {
+      "icon_id": "4365480",
+      "name": "扫码",
+      "font_class": "saoma",
+      "unicode": "e61d",
+      "unicode_decimal": 58909
+    },
+    {
+      "icon_id": "4892945",
+      "name": "银杏",
+      "font_class": "weibiaoti--",
+      "unicode": "e678",
+      "unicode_decimal": 59000
+    },
+    {
+      "icon_id": "5992794",
+      "name": "icon_以太坊",
+      "font_class": "icon_yitaifang",
+      "unicode": "e648",
+      "unicode_decimal": 58952
+    },
+    {
+      "icon_id": "6272919",
+      "name": "兑换",
+      "font_class": "duihuan",
+      "unicode": "e6eb",
+      "unicode_decimal": 59115
+    },
+    {
+      "icon_id": "10149600",
+      "name": "收款",
+      "font_class": "shoukuan",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    },
+    {
+      "icon_id": "10172816",
+      "name": "二维码",
+      "font_class": "qrcode",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    }
+  ]
+}
