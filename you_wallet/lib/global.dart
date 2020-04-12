@@ -55,7 +55,7 @@ class Global {
 
 
   // gas limit 30万
-  static const gasLimit = 600000;
+  static const gasLimit = 5000000;
 
   // gas price 10Gwei
   static final gasPrice = BigInt.from(10000000000);

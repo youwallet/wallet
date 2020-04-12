@@ -10,6 +10,7 @@ class Http{
   static Dio _dio;
   BaseOptions _options;
 
+  // 获取实例，如果实例存在就不用新建
   static Http getInstance(){
     if(instance == null){
       instance  = new Http();
@@ -22,13 +23,14 @@ class Http{
   Http(){
      _options =new BaseOptions(
         baseUrl: Global.getBaseUrl(),
-//        connectTimeout: _config.connectTimeout,
-//        receiveTimeout: _config.receiveTimeout,
+        // connectTimeout: _config.connectTimeout,
+        // receiveTimeout: _config.receiveTimeout,
         headers: {'Content-Type':'application/json','User-Agent':'youwallet'},
     );
 
     _dio = new Dio(_options);
 
+    // 请求拦截器
     _dio.interceptors.add(InterceptorsWrapper(
         onRequest:(RequestOptions options) async {
           // Do something before request is sent
@@ -74,6 +76,7 @@ class Http{
   // 但是也不能保证后期不会有其他的url进来
   /*
   * 参数说明
+  * url     _options中已经配置了baseUrl，它就是一个完整的URL，和以太坊的所有交互都是同一个url
   * params  接口调用时拼接的数据
   * to      合约地址，默认是tempMatchAddress合约,大部分情况下都可以不传
   * method  以太坊的调用函数，默认是eth_call，读操作，不需要gas
@@ -98,7 +101,7 @@ class Http{
       data['params'] = params;
     }
     print('发送数据准备完毕');
-    print(data);
+//    print(data);
     try{
       response = await _dio.post(
           url,
