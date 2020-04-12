@@ -120,24 +120,6 @@ class Page extends State<TabWallet> {
                   },
                 ),
                 ListTile(
-                  title: Text('检查更新'),
-                  leading: Icon(Icons.update),
-                  onTap: () {
-                    Navigator.of(context).pop();
-//                    showDialog<Null>(
-//                        context: context, //BuildContext对象
-//                        barrierDismissible: false,
-//                        builder: (BuildContext context) {
-//                          return new LoadingDialog( //调用对话框
-//                            text: '检查中...',
-//                          );
-//                        });
-//                    Navigator.of(context).pop();
-                    final snackBar = new SnackBar(content: new Text('没有检测到新版本'));
-                    Scaffold.of(context).showSnackBar(snackBar);
-                  },
-                ),
-                ListTile(
                   title: Text('进入调试'),
                   leading: Icon(Icons.adb),
                   onTap: () {
@@ -160,6 +142,30 @@ class Page extends State<TabWallet> {
                   onTap: () async {
                     const url='https://github.com/youwallet/wallet/issues';
                     await launch(url);
+                  },
+                ),
+                ListTile(
+                  title: new Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text('版本号'),
+                      Text('v1.0.0')
+                    ],
+                  ),
+                  leading: Icon(Icons.exit_to_app),
+                  onTap: () {
+//                    Navigator.of(context).pop();
+  //                    showDialog<Null>(
+  //                        context: context, //BuildContext对象
+  //                        barrierDismissible: false,
+  //                        builder: (BuildContext context) {
+  //                          return new LoadingDialog( //调用对话框
+  //                            text: '检查中...',
+  //                          );
+  //                        });
+  //                    Navigator.of(context).pop();
+                    final snackBar = new SnackBar(content: new Text('没有检测到新版本'));
+                    Scaffold.of(context).showSnackBar(snackBar);
                   },
                 ),
             ],
