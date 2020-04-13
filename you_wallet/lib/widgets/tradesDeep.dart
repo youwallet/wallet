@@ -129,10 +129,6 @@ class Page extends State<TradesDeep> {
 
     try {
       List list = await Trade.getOrderDepth(widget.leftToken, widget.rightToken);
-      print(list);
-      this.setState((){
-        showMore = list.length > 6 ? true:false;
-      });
 
       // 如果订单超过6个，兑换页面只给显示6个
       // 永远只显示三个卖，三个买
@@ -140,6 +136,18 @@ class Page extends State<TradesDeep> {
       List sell = list.where((element)=>(element['is_sell'])).toList();
       List buy = list.where((element)=>(!element['is_sell'])).toList();
 
+      // 任意一个买单或者卖单超过3个，就显示更新按钮
+      if(sell.length>3 || buy.length>3) {
+        this.setState((){
+          showMore = true;
+        });
+      } else {
+        this.setState((){
+          showMore = false;
+        });
+      }
+
+      // 卖单超过三个，要倒着取三个出来
       if(sell.length>3) {
         sell = sell.skip(sell.length - 3).toList();
       }
@@ -176,7 +184,7 @@ class Page extends State<TradesDeep> {
            i = i+1;
          }
        }
-       
+
       sell.addAll(buy);
       this.setState((){
         arr = sell;
