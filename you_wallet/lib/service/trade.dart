@@ -569,8 +569,12 @@ class Trade {
       String item = data.substring(i*n*64, i*n*64 + n*64);
       Decimal baseTokenAmount  = Decimal.parse((BigInt.parse(item.substring(0, 64), radix: 16)/BigInt.from(pow(10,18))).toString());
       print(baseTokenAmount);
+      // Decimal quoteTokenAmount = Decimal.parse((BigInt.parse(item.substring(64, 128), radix: 16)/BigInt.from(pow(10,18))).toString());
       Decimal quoteTokenAmount = Decimal.parse((BigInt.parse(item.substring(64, 128), radix: 16)/BigInt.from(pow(10,18))).toString());
+      print(BigInt.parse(item.substring(64, 128), radix: 16));
+      print(BigInt.parse(item.substring(64, 128), radix: 16)/BigInt.from(pow(10,18)));
       print(quoteTokenAmount);
+
       Decimal amount = Decimal.parse((BigInt.parse(item.substring(128, 192), radix: 16)/BigInt.from(pow(10,18))).toString());
       print(amount);
       bool is_sell = BigInt.parse(item.substring(192), radix: 16) == BigInt.from(0)? false:true;
