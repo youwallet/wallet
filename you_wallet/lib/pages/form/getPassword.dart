@@ -15,7 +15,15 @@ class GetPasswordPage extends StatefulWidget {
 
 class _LoginPageState extends State<GetPasswordPage> {
   final _formKey = GlobalKey<FormState>();
-  String _email, _password;
+//  String _email, _password;
+//  String
+//  String gasPrice =
+  bool showExtraSet = false;
+  Map data = {
+    'gasPrice': Global.gasPrice.toString(),
+    'gasLimit': Global.gasLimit.toString(),
+    'pwd': ''
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +35,12 @@ class _LoginPageState extends State<GetPasswordPage> {
               child: ListView(
                 padding: EdgeInsets.symmetric(horizontal: 22.0),
                 children: <Widget>[
-                  SizedBox(height: kToolbarHeight,),
                   buildTitle(),
                   buildTitleLine(),
                   SizedBox(height: 70.0),
                   buildEmailTextField(),
+                  buildExtraTip(),
+                  buildExtraSet(this.showExtraSet),
                   SizedBox(height: 60.0),
                   buildLoginButton(context),
                 ],
@@ -49,17 +58,18 @@ class _LoginPageState extends State<GetPasswordPage> {
     );
   }
 
-
   // 获取用户密码
   Widget buildLoginButton(BuildContext context) {
     return new CustomButton(
         onSuccessChooseEvent:(res) async {
           _formKey.currentState.save();
-          if (!_email.isEmpty) {
+          if (!this.data['pwd'].isEmpty) {
             // 用户输入的密码不为空，在这里开始解密用户的私钥
             // 解密到用户的私钥，拿到用户的私钥回到交易页面
+            print(this.data);
+            return;
             try {
-              String privateKey = await this.getPrivateKey(_email);
+              String privateKey = await this.getPrivateKey(this.data['pwd']);
               Navigator.of(context).pop(privateKey);
             } catch (e) {
               print(e);
@@ -77,29 +87,6 @@ class _LoginPageState extends State<GetPasswordPage> {
     );
   }
 
-
-  TextFormField buildPasswordTextField(BuildContext context) {
-    return TextFormField(
-      onSaved: (String value) => _password = value,
-      decoration: InputDecoration(
-        labelText: '请再次输入密码',
-//          suffixIcon: IconButton(
-//              icon: Icon(
-//                Icons.remove_red_eye,
-//                color: _eyeColor,
-//              ),
-//              onPressed: () {
-//                setState(() {
-//                  _isObscure = !_isObscure;
-//                  _eyeColor = _isObscure
-//                      ? Colors.grey
-//                      : Theme.of(context).iconTheme.color;
-//                });
-//              })
-      ),
-    );
-  }
-
   TextFormField buildEmailTextField() {
     return TextFormField(
       decoration: InputDecoration(
@@ -111,8 +98,69 @@ class _LoginPageState extends State<GetPasswordPage> {
             borderSide: BorderSide.none
         ),
       ),
-      onSaved: (String value) => _email = value,
+      onSaved: (String value) => this.data['pwd'] = value,
     );
+  }
+
+  // 高级设置
+  Widget buildExtraTip() {
+    return GestureDetector(
+      onTap: (){
+        setState(() {
+          this.showExtraSet = !this.showExtraSet;
+        });
+      },
+      child: Padding(
+        padding: EdgeInsets.only(left: 0.0, top: 4.0),
+        child: Text(
+            '高级设置',
+            style: TextStyle(color: Colors.lightBlue)
+        ),
+      )
+    );
+  }
+
+  Widget buildExtraSet(bool showSet) {
+    if(this.showExtraSet) {
+      return new Column(
+        children: <Widget>[
+          Padding(
+              padding: EdgeInsets.only(bottom: 20.0, top: 4.0),
+              child: TextFormField(
+                  controller: TextEditingController(text: this.data['gasLimit']),
+                  decoration: InputDecoration(
+                    hintText: '请输入gasLimit',
+                    helperText: "自定义gasLimit", //输入框底部辅助性说明文字
+                    filled: true,
+                    fillColor: Colors.black12,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(6.0),
+                        borderSide: BorderSide.none
+                    ),
+                  ),
+                  onSaved: (String value) => this.data['gasLimit'] = value)
+          ),
+          TextFormField(
+            controller: TextEditingController(text: this.data['gasPrice']),
+            decoration: InputDecoration(
+              hintText: '请输入gasPrice',
+              helperText: "自定义gasPrice",
+              filled: true,
+              fillColor: Colors.black12,
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6.0),
+                  borderSide: BorderSide.none
+              ),
+            ),
+            onSaved: (String value) => this.data['gasPrice'] = value,
+          ),
+        ],
+      );
+    } else {
+      return SizedBox(
+        height: 0,
+      );
+    }
   }
 
   Padding buildTitleLine() {

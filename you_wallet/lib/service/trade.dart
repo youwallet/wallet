@@ -542,14 +542,10 @@ class Trade {
   // 第四个64位的字符串开始就是卖单
   // 卖单结束后，就是买单的长度，也是64位字符串，后面就是买单了
   static buildOrderDeep(String str) {
-    print('start buildOrderDeep');
     String data = str.replaceFirst('0x', '');
     int sell_len = BigInt.parse(data.substring(128, 192), radix: 16).toInt();
-    print('sell len => ${sell_len}');
     String sell_str = data.substring(192, 192 + sell_len*4*64);
-    print(sell_str);
     List sell = Trade.buildOrderItem(sell_str);
-    print(sell);
     String buy_str = data.substring(64*4 + sell_len*4*64);
     List buy = Trade.buildOrderItem(buy_str);
     sell = sell.reversed.toList();
@@ -576,9 +572,7 @@ class Trade {
 //      print(quoteTokenAmount);
 
       Decimal amount = Decimal.parse((Decimal.parse(BigInt.parse(item.substring(128, 192), radix: 16).toString())/Decimal.parse(BigInt.from(pow(10,18)).toString())).toString());
-      print(amount);
       bool is_sell = BigInt.parse(item.substring(192), radix: 16) == BigInt.from(0)? false:true;
-      print(is_sell);
       if(baseTokenAmount.toString() != '0') {
         String price = (quoteTokenAmount/baseTokenAmount).toString();
         arr.add({
@@ -586,11 +580,9 @@ class Trade {
           'amount': amount.toString(),
           'is_sell': is_sell
         });
-        print(arr);
       }
       i = i+1;
     }
-    print(arr);
     return arr;
   }
 

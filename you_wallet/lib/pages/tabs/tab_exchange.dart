@@ -52,6 +52,7 @@ class Page extends State {
 
   // 左侧被选中的token
   var value;
+
   // 右边的token对象
   var rightToken;
 
@@ -61,6 +62,9 @@ class Page extends State {
 
   // 下单过程中，当前订单的进度
   String currentStatus = "挂单中";
+
+  // 当前页面显示的token余额
+  String balance = "";
 
   //数据初始化
   @override
@@ -79,7 +83,7 @@ class Page extends State {
     });
 
     //监听订单操作结果
-    eventBus.on<TransferDoneEvent>().listen((event) {
+    eventBus.on<TransferDoneEvent>().listen((event) async{
       Navigator.pop(context);
       this.showSnackBar(event.res);
     });
@@ -94,6 +98,10 @@ class Page extends State {
               text: '刷新中...',
             );
           });
+
+      // 更新兑换页面上当前正在交易的这个token的余额
+      this.updateTokenBalance();
+
       eventBus.fire(UpdateTeadeDeepEvent());
     });
 
@@ -204,6 +212,7 @@ class Page extends State {
                        setState(() {
                          this.value = res;
                          this.suffixText = res['name'];
+                         this.balance = res['balance'];
                        });
                        Future.delayed(Duration(seconds: 1), (){
                          eventBus.fire(UpdateTeadeDeepEvent());
@@ -244,7 +253,7 @@ class Page extends State {
                     this.computeTrade();
                   },
                 ),
-                new Text('当前账户余额：${this.value!=null?this.value["balance"]:"~"}'),
+                new Text('当前账户余额：$balance'),
                 new Container(
                   padding: new EdgeInsets.only(top: 30.0),
                   child: new Column(
@@ -619,6 +628,11 @@ class Page extends State {
       // 拿到订单Hash，通知历史列表组件更新
       eventBus.fire(OrderSuccessEvent());
 
+      // 下单成功后，主动更新当前交易的这个的余额
+      // this.value就是需要更新的token，只需要更新value中的balance
+      // 但是拿到订单hash，交易其实还是pading状态，余额已经减少了吗
+
+
       this.setState((){
         currentStatus = "打包中";
       });
@@ -672,7 +686,16 @@ class Page extends State {
             text: '刷新中...',
           );
         });
+  }
 
+  // 更新token的余额，在交易结束后
+  Future updateTokenBalance() async{
+    print('start updateTokenBalance');
+    String balance = await TokenService.getTokenBalance(this.value);
+    print('balance is $balance');
+    setState(() {
+      this.balance = balance;
+    });
   }
 
 }

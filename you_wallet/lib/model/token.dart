@@ -117,8 +117,10 @@ class Token extends ChangeNotifier {
       print('获取token余额 =》' + balance);
       this.updateTokenBalance(this.items[i], balance);
     }
-
     this._fetchToken();
   }
+
+  /// 根据token地址更新指定token的余额
+  
 
 }
