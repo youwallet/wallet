@@ -5,6 +5,7 @@ import 'package:youwallet/widgets/customButton.dart';
 import 'package:youwallet/global.dart';
 import 'package:youwallet/db/sql_util.dart';
 import 'package:youwallet/util/wallet_crypt.dart';
+import 'package:web3dart/web3dart.dart';
 
 //在该页面让用户输入密码
 //通过密码解密出私钥
@@ -81,7 +82,7 @@ class _LoginPageState extends State<GetPasswordPage> {
 
           try {
             this.data['privateKey'] = await this.getPrivateKey(this.data['pwd']);
-            this.data['gasPrice'] = BigInt.parse(this.data['gasPrice']);
+            this.data['gasPrice'] = EtherAmount.inWei(BigInt.parse(this.data['gasPrice']));
             this.data['gasLimit'] = int.parse(this.data['gasLimit']);
             Navigator.of(context).pop(this.data);
           } catch (e) {

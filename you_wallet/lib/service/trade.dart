@@ -152,7 +152,7 @@ class Trade {
         credentials,
         Transaction(
             to: EthereumAddress.fromHex(Global.tempMatchAddress),
-            gasPrice: EtherAmount.inWei(this.obj['gasPrice']),
+            gasPrice: this.obj['gasPrice'],
             maxGas: this.obj['gasLimit'],
             value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
             data: hexToBytes(postData)
@@ -411,8 +411,8 @@ class Trade {
         credentials,
         Transaction(
             to: EthereumAddress.fromHex(token),
-            gasPrice: EtherAmount.inWei(Global.gasPrice),
-            maxGas: Global.gasLimit,
+            gasPrice: obj['gasPrice'],
+            maxGas: obj['gasLimit'],
             value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
             data: hexToBytes(postData)
         ),
@@ -427,7 +427,7 @@ class Trade {
  * od_hash: 订单哈希值
  * function cancelOrder2(bytes32 bq_hash, bytes32 od_hash);
  */
-  static Future cancelOrder2(Map item,String pwd) async {
+  static Future cancelOrder2(Map item,Map obj) async {
     String hash = "";
     if(item['orderType']=='卖出') {
       hash = item['sqHash'];
@@ -439,14 +439,14 @@ class Trade {
     String rpcUrl = await Global.rpcUrl();
 
     final client = Web3Client(rpcUrl, Client());
-    var credentials = await client.credentialsFromPrivateKey(pwd);
+    var credentials = await client.credentialsFromPrivateKey(obj['privateKey']);
 
     var rsp = await client.sendTransaction(
         credentials,
         Transaction(
             to: EthereumAddress.fromHex(Global.tempMatchAddress),
-            gasPrice: EtherAmount.inWei(Global.gasPrice),
-            maxGas: Global.gasLimit,
+            gasPrice: obj['gasPrice'],
+            maxGas: obj['gasLimit'],
             value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
             data: hexToBytes(postData)
         ),

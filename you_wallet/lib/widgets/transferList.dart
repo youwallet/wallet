@@ -211,8 +211,8 @@ class Page extends State<transferList> {
   }
 
   /// 取消订单的进程，不会立刻拿到结果
-  /// 注意这里的pwd已经是解密后的私钥了
-  void cancelProcess(Map item, String pwd) async{
+  /// 注意这里的obj,里面有四个字段
+  void cancelProcess(Map item, Map obj) async{
     showDialog<Null>(
         context: context, //BuildContext对象
         barrierDismissible: false,
@@ -225,7 +225,7 @@ class Page extends State<transferList> {
     try{
       // 订单撤销后立即返回的是交易的hash，
       // 至于到底有没有撤销成功，还需要等待以太坊写链
-      String res = await Trade.cancelOrder2(item, pwd);
+      String res = await Trade.cancelOrder2(item, obj);
       print('订单撤销返回 => ${res}');
 //      int orderFlag = await Trade.orderFlag(item);
 //      if (orderFlag == 0) {
