@@ -54,11 +54,12 @@ class Global {
   ];
 
 
-  // gas limit 30万
-  static const gasLimit = 5000000;
-
   // gas price 10Gwei
   static final gasPrice = BigInt.from(10000000000);
+//  static const gasPrice = 10000000000;
+
+  // gas limit 30万
+  static const gasLimit = 5000000;
 
   // 当前用户的钱包地址，就是单纯的地址，0x开头的字符串
   static String currentWallet = '';

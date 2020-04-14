@@ -15,12 +15,10 @@ class GetPasswordPage extends StatefulWidget {
 
 class _LoginPageState extends State<GetPasswordPage> {
   final _formKey = GlobalKey<FormState>();
-//  String _email, _password;
-//  String
-//  String gasPrice =
+
   bool showExtraSet = false;
   Map data = {
-    'gasPrice': Global.gasPrice.toString(),
+    'gasPrice': '10000000000', // 这个字段放到全局变量中去
     'gasLimit': Global.gasLimit.toString(),
     'pwd': ''
   };
@@ -63,26 +61,38 @@ class _LoginPageState extends State<GetPasswordPage> {
     return new CustomButton(
         onSuccessChooseEvent:(res) async {
           _formKey.currentState.save();
-          if (!this.data['pwd'].isEmpty) {
-            // 用户输入的密码不为空，在这里开始解密用户的私钥
-            // 解密到用户的私钥，拿到用户的私钥回到交易页面
-            print(this.data);
+
+           if (this.data['pwd'].isEmpty) {
+             final snackBar = new SnackBar(content: new Text('密码不能为空'));
+             Scaffold.of(context).showSnackBar(snackBar);
+             return;
+           }
+          if (this.data['gasLimit'].isEmpty) {
+            final snackBar = new SnackBar(content: new Text('gasLimit不能为空'));
+            Scaffold.of(context).showSnackBar(snackBar);
             return;
-            try {
-              String privateKey = await this.getPrivateKey(this.data['pwd']);
-              Navigator.of(context).pop(privateKey);
-            } catch (e) {
-              print(e);
-              final snackBar = new SnackBar(content: new Text('解密失败，请确认密码是否正确'));
-              Scaffold.of(context).showSnackBar(snackBar);
-            }
+          }
 
-            FocusScope.of(context).requestFocus(FocusNode());
+          if (this.data['gasPrice'].isEmpty) {
+            final snackBar = new SnackBar(content: new Text('gasPrice不能为空'));
+            Scaffold.of(context).showSnackBar(snackBar);
+            return;
+          }
 
-          } else {
-            final snackBar = new SnackBar(content: new Text('密码不能为空'));
+          try {
+            this.data['privateKey'] = await this.getPrivateKey(this.data['pwd']);
+            this.data['gasPrice'] = BigInt.parse(this.data['gasPrice']);
+            this.data['gasLimit'] = int.parse(this.data['gasLimit']);
+            Navigator.of(context).pop(this.data);
+          } catch (e) {
+            print(e);
+            // 真机上测试，发现密码输入错误，页面也会返回
+            // 预期情况下，这里不应该返回
+            final snackBar = new SnackBar(content: new Text('解密失败，请确认密码是否正确'));
             Scaffold.of(context).showSnackBar(snackBar);
           }
+
+          FocusScope.of(context).requestFocus(FocusNode());
         }
     );
   }

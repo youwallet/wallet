@@ -531,11 +531,16 @@ class Page extends State {
   /// 发起授权之前，要先确认用户的钱包ETH有余额，否则无法授权
   void getPwd(bool approve) {
     Navigator.pushNamed(context, "getPassword").then((data) async{
+      print('密码输入页面拿到的对象');
+      print(data);
       if(data == null) {
         this.showSnackBar('交易终止');
         Navigator.of(context).pop();
         return;
       }
+
+//      Navigator.of(context).pop();
+//      return;
 
       // 已经授权过
       if (approve) {
@@ -611,7 +616,8 @@ class Page extends State {
   }
 
   // 获取钱包密码，然后用密码解析私钥
-  void startTrade(String pwd) async {
+  // obj里面包括了密码，私钥，gasLimit，gasPrice
+  void startTrade(Map obj) async {
     bool isBuy = true;
     if (this._btnText == '买入') {
       isBuy = true;
@@ -621,7 +627,7 @@ class Page extends State {
     if (this.controllerAmount.text is String) {
       print("this.controllerAmount.text is string");
     }
-    Trade trade = new Trade(this.value['address'], this.value['name'], this.rightToken['address'], this.rightToken['name'], this.controllerAmount.text, this.controllerPrice.text, isBuy, pwd);
+    Trade trade = new Trade(this.value['address'], this.value['name'], this.rightToken['address'], this.rightToken['name'], this.controllerAmount.text, this.controllerPrice.text, isBuy, obj);
     try {
       await trade.takeOrder();
 

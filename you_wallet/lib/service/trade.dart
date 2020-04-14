@@ -58,8 +58,10 @@ class Trade {
   String oldPrice = "";   // 保留原始的价格数据
   String oldAmount = "";  // 保留原始的数量
 
+  Map obj = {};           // obj在密码输入页面返回，里面包含了密码，私钥，gasLimit，gasPrice
 
-  Trade(String token, String tokenName, String baseToken, String baseTokenName, String amount, String price, bool isBuy, String privateKey) {
+
+  Trade(String token, String tokenName, String baseToken, String baseTokenName, String amount, String price, bool isBuy, Map obj) {
      this.tokenA = token;
      this.tokenAName = tokenName;
      this.tokenB = baseToken;
@@ -68,13 +70,12 @@ class Trade {
      this.amount = amount;
      this.oldAmount = amount;
      // 密码，先进行md5加密，再使用AES揭秘私钥
-     this.privateKey = privateKey;
+     this.privateKey = obj['privateKey'];
+     this.obj = obj;
      //需要换一个名字
      this.price = price;
      this.oldPrice = price;
      this.isBuy = isBuy;
-
-
   }
 
   /* 获取订单参数中的data
@@ -151,8 +152,8 @@ class Trade {
         credentials,
         Transaction(
             to: EthereumAddress.fromHex(Global.tempMatchAddress),
-            gasPrice: EtherAmount.inWei(Global.gasPrice),
-            maxGas: Global.gasLimit,
+            gasPrice: EtherAmount.inWei(this.obj['gasPrice']),
+            maxGas: this.obj['gasLimit'],
             value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
             data: hexToBytes(postData)
         ),
@@ -397,14 +398,14 @@ class Trade {
   // 交易授权
   // function approve(address spender, uint256 value);
   // 返回1表示true，接口调用成功，0表示false失败了
-  static Future approve(String token, String privateKey) async {
+  static Future approve(String token, Map obj) async {
     String value = BigInt.from(10).pow(27) .toString();
     String postData = Global.funcHashes['approve()'] + formatParam(Global.proxy) + formatParam(value);
 
     String rpcUrl = await Global.rpcUrl();
 
     final client = Web3Client(rpcUrl, Client());
-    var credentials = await client.credentialsFromPrivateKey(privateKey);
+    var credentials = await client.credentialsFromPrivateKey(obj['privateKey']);
 
     var rsp = await client.sendTransaction(
         credentials,
