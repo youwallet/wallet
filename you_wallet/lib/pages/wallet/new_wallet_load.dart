@@ -323,7 +323,8 @@ class Page extends State<LoadWallet> {
   // 跳转密码设置页面
   void doSave(Map item) {
     Navigator.of(context).pushNamed('password').then((data){
-      this.saveDone(item, data);
+      this.saveDone
+        (item, data);
     });
   }
 
@@ -340,9 +341,6 @@ class Page extends State<LoadWallet> {
 
     int id = await Provider.of<myWallet.Wallet>(context).add(item,pwd);
     if (id > 0) {
-      // 先关闭modal提示层，替换当前路由，跳转钱包新建成功页面
-//      Navigator.of(context).pop();
-//      Navigator.of(context).pushReplacementNamed("wallet_success");
       Navigator.pushNamedAndRemoveUntil(context, "wallet_success", (route) => route == null);
     } else {
       this.showSnackbar('钱包保存失败');
