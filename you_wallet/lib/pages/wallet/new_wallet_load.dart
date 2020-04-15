@@ -341,7 +341,10 @@ class Page extends State<LoadWallet> {
 
     int id = await Provider.of<myWallet.Wallet>(context).add(item,pwd);
     if (id > 0) {
-      Navigator.pushNamedAndRemoveUntil(context, "wallet_success", (route) => route == null);
+       Navigator.pushNamedAndRemoveUntil(context, "wallet_success", (route) => route == null);
+      // 删除路由栈中除了顶级理由之外的路由
+      // 然后添加目标页面进入路由，并且跳转
+
     } else {
       this.showSnackbar('钱包保存失败');
     }

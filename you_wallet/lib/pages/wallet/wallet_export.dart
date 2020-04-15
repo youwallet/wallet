@@ -182,18 +182,25 @@ class Page extends State<WalletExport> {
                 // this.showSnackbar('取消');
               },
               onSuccessChooseEvent: () async {
-                await Provider.of<Wallet>(context).remove(this.wallet);
-                Navigator.pop(context); //关闭对话框
+                 await Provider.of<Wallet>(context).remove(this.wallet);
+                // Navigator.pop(context); //关闭对话框
 
                 // 每次删除钱包后，判断当前还有多少个钱包
                 // 如果钱包没有钱包，则自动跳转新建钱包引导页
                 if (Provider.of<Wallet>(context).items.length == 0) {
                   // Navigator.pushReplacementNamed(context, 'wallet_guide');
-                  // 销毁当前路由栈，跳转指定页面
+                  // 销毁当前路由栈，回退到钱包列表页面
                   Navigator.of(context).pushNamedAndRemoveUntil('wallet_guide', (Route<dynamic> route) => false);
+                } else {
+                  Navigator.of(context).pop('back');
                 }
               });
-        });
+    }).then((val) {
+      // 如果你点击确定删除了钱包，这里继续回退
+      if (val == 'back') {
+        Navigator.pop(context);
+      }
+    });
   }
 
   // 更新钱包名字

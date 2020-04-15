@@ -37,6 +37,8 @@ class _WalletGuideState extends State<WalletSuccess> {
                   content: '查看钱包',
                   onSuccessChooseEvent:(res){
                     Navigator.popAndPushNamed(context, '/');
+                    //Navigator.of(context).pushNamedAndRemoveUntil('/', ModalRoute.withName('wallet_success'));
+//                    Navigator.popUntil(context, ModalRoute.withName('/'));
                   }
               )
             ],
