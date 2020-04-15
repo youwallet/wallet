@@ -81,13 +81,13 @@ class _LoginPageState extends State<GetPasswordPage> {
           }
 
           try {
+
             this.data['privateKey'] = await this.getPrivateKey(this.data['pwd']);
             this.data['gasPrice'] = EtherAmount.inWei(BigInt.parse(this.data['gasPrice']));
             this.data['gasLimit'] = int.parse(this.data['gasLimit']);
             Navigator.of(context).pop(this.data);
           } catch (e) {
-            print(e);
-            // 真机上测试，发现密码输入错误，页面也会返回
+            // 真机上测试，发现密码输入错误，页面也会返回，真机和IDE的编译模式不一样，错误的判断不一致
             // 预期情况下，这里不应该返回
             final snackBar = new SnackBar(content: new Text('解密失败，请确认密码是否正确'));
             Scaffold.of(context).showSnackBar(snackBar);
@@ -210,7 +210,7 @@ class _LoginPageState extends State<GetPasswordPage> {
     print('================');
     print('WalletCrypt done => ${res}');
     print('================');
-    if (res == null) {
+    if (res == null || res == "Failed to get string encoded: 'Decrypt failure.'.") {
       throw FormatException('钱包密码错误');
     } else {
       return res;
