@@ -330,9 +330,9 @@ class Trade {
   // + 要传递的方法参数，每个参数都为64位
   // (对transfer来说，第一个是接收人的地址去掉0x，第二个是代币数量的16进制表示，去掉前面0x，然后补齐为64位)
 
-  static Future<String> sendToken(String fromAddress, String toAddress, String num, Map token, String pwd) async {
+  static Future<String> sendToken(String fromAddress, String toAddress, String num, Map token, Map obj) async {
     String rpcUrl = await getNetWork();
-    String privateKey = pwd;
+    String privateKey = obj['privateKey'];
 
     final client = Web3Client(rpcUrl, Client());
     var credentials = await client.credentialsFromPrivateKey(privateKey);
@@ -345,8 +345,8 @@ class Trade {
         credentials,
         Transaction(
             to: EthereumAddress.fromHex(token['address']),
-            gasPrice: EtherAmount.inWei(Global.gasPrice),
-            maxGas: Global.gasLimit,
+            gasPrice: obj['gasPrice'],
+            maxGas: obj['gasLimit'],
             value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
             data: hexToBytes(postData)
         ),
