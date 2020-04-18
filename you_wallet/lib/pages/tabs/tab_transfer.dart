@@ -4,6 +4,7 @@ import 'package:youwallet/widgets/customStepper.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart';
+import 'package:youwallet/model/token.dart';
 import 'package:youwallet/service/trade.dart';
 import 'package:youwallet/bus.dart';
 import 'package:youwallet/db/sql_util.dart';
@@ -81,9 +82,10 @@ class Page extends State<TabTransfer> {
                   child: new TokenSelectSheet(
                       onCallBackEvent: (res){
                         print(res);
-                       setState(() {
-                         this.token = res;
-                       });
+                        setState(() {
+                          token = res;
+                          balance = res['balance'];
+                        });
                       }
                   ),
                 ),
@@ -325,14 +327,18 @@ class Page extends State<TabTransfer> {
 
   // 更新当前选中的token的余额
   Future<void> _getBalance() async {
-    print('获取当前token的余额');
-    print(Provider.of<Wallet>(context).currentWallet);
-    String balance = await TokenService.getTokenBalance(this.token);
-    print('balance is $balance');
-    print(balance);
-    setState(() {
-      this.balance =  balance;
-    });
+    print('start ${this.token}');
+    if (this.token.isEmpty) {
+      print('当前token为空，不更新余额');
+    } else {
+      print('start');
+      String balance = await TokenService.getTokenBalance(this.token);
+      print('balance => ${balance}');
+      await Provider.of<Token>(context).updateTokenBalance(this.token, balance);
+      setState(() {
+        this.balance =  balance;
+      });
+    }
   }
 
   // 显示提示

@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:youwallet/widgets/tokenList.dart';
-import 'package:flutter/services.dart';
 import 'package:youwallet/bus.dart';
 
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
 import 'package:youwallet/model/network.dart';
 import 'package:youwallet/model/wallet.dart' as walletModel;
-import 'package:youwallet/db/sql_util.dart';
-import 'package:youwallet/db/provider.dart';
-import 'package:barcode_scan/barcode_scan.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:youwallet/global.dart';
 import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:youwallet/widgets/userMenu.dart';
@@ -39,17 +34,16 @@ class Page extends State<TabWallet> {
   @override // override是重写父类中的函数
   void initState()  {
     super.initState();
-    // _getWallets();
-    // 监听钱包切换事件
-//    eventBus.on<WalletChangeEvent>().listen((event) {
-//      print(event.address);
-//      this.wallets.forEach((f){
-//        if (f['address'] == event.address) {
-//          setState(() {
-//            this.current_wallet = f['id'] - 1;
-//          });
-//        }
-//      });
+
+    // 监听页面切换，
+//    eventBus.on<TabChangeEvent>().listen((event) {
+//      print("event listen =》${event.index}");
+//      if (event.index == 0) {
+//        print('刷新订单状态');
+//        this._getBalance();
+//      } else {
+//        print('do nothing');
+//      }
 //    });
   }
 
