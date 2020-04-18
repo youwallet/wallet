@@ -8,8 +8,10 @@ import 'package:youwallet/bus.dart';
 import 'package:youwallet/global.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart' as walletModel;
+
 import 'package:youwallet/service/trade.dart';
 import 'package:youwallet/model/deal.dart';
+import 'package:youwallet/model/token.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
 import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:youwallet/widgets/customTab.dart';
@@ -235,6 +237,7 @@ class Page extends State {
                 ),
                 new Text('限价模式'),
                 new Input(
+                  suffixText: this.rightToken == null?'':this.rightToken['name'],
                   hintText: '输入买入价格',
                   controllerEdit: controllerPrice,
                   onSuccessChooseEvent: (res) {
@@ -248,6 +251,7 @@ class Page extends State {
                 new Input(
                   hintText: '输入买入数量',
                   controllerEdit: controllerAmount,
+                  suffixText: this.value == null?'':this.value['name'],
                   onSuccessChooseEvent: (res) {
                     this.computeTrade();
                   },
@@ -699,9 +703,8 @@ class Page extends State {
   // 更新token的余额，在交易结束后
   // 计算当前账户余额，这里计算的是右边token的余额
   Future updateTokenBalance() async{
-    print('start updateTokenBalance');
     String balance = await TokenService.getTokenBalance(this.rightToken);
-    print('balance is $balance');
+    await Provider.of<Token>(context).updateTokenBalance(this.rightToken, balance);
     setState(() {
       this.balance = balance + this.rightToken['name'];
     });

@@ -64,7 +64,8 @@ class Page extends State<TabWallet> {
     return layout(context);
   }
 
-  // 构建页面
+  /// 通过Consumer的方式引用共享的token列表
+  /// 当token列表中有余额变动后，首页自动更新
   Widget layout(BuildContext context) {
     return new Scaffold(
       appBar: buildAppBar(context),
