@@ -677,7 +677,7 @@ class Page extends State {
 
      var tradePrice = Decimal.parse(this.controllerAmount.text) * Decimal.parse(this.controllerPrice.text);
      setState(() {
-       this.tradePrice = tradePrice + this.rightToken['name'];
+       this.tradePrice = tradePrice.toString() + this.rightToken['name'];
      });
    }
 
