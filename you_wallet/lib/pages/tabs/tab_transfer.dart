@@ -320,8 +320,11 @@ class Page extends State<TabTransfer> {
   }
 
   Future<void> _getBalance() async {
+    print('start _getBalance');
     print(Provider.of<Wallet>(context).currentWallet);
+    print('=======');
     String balance = await TokenService.getBalance(Provider.of<Wallet>(context).currentWallet);
+    print(balance);
     setState(() {
       this.balance =  double.parse(balance);
     });

@@ -45,7 +45,7 @@ class Page extends State {
   String suffixText = "";
 
   // 输入价格和数量后计算的交易额度
-  Decimal tradePrice;
+  var tradePrice;
 
   // 需要授权的token
   String needApproveToken = '';
@@ -84,7 +84,7 @@ class Page extends State {
 
     //监听订单操作结果
     eventBus.on<TransferDoneEvent>().listen((event) async{
-      Navigator.pop(context);
+      Navigator.of(context).pop();
       this.showSnackBar(event.res);
     });
 
@@ -212,7 +212,6 @@ class Page extends State {
                        setState(() {
                          this.value = res;
                          this.suffixText = res['name'];
-                         this.balance = res['balance'];
                        });
                        Future.delayed(Duration(seconds: 1), (){
                          eventBus.fire(UpdateTeadeDeepEvent());
@@ -253,7 +252,7 @@ class Page extends State {
                     this.computeTrade();
                   },
                 ),
-                new Text('当前账户余额：$balance'),
+                new Text("当前账户余额：$balance"),
                 new Container(
                   padding: new EdgeInsets.only(top: 30.0),
                   child: new Column(
@@ -313,6 +312,7 @@ class Page extends State {
                       print('页面右侧token选择 = > ${res}');
                       setState(() {
                         rightToken = res;
+                        balance = res['balance'] + res['name'];
                       });
                       Future.delayed(Duration(seconds: 1), (){
                         eventBus.fire(UpdateTeadeDeepEvent());
@@ -674,8 +674,10 @@ class Page extends State {
        return ;
      }
 
+
+     var tradePrice = Decimal.parse(this.controllerAmount.text) * Decimal.parse(this.controllerPrice.text);
      setState(() {
-       this.tradePrice = Decimal.parse(this.controllerAmount.text) * Decimal.parse(this.controllerPrice.text);
+       this.tradePrice = tradePrice + this.rightToken['name'];
      });
    }
 
@@ -695,12 +697,13 @@ class Page extends State {
   }
 
   // 更新token的余额，在交易结束后
+  // 计算当前账户余额，这里计算的是右边token的余额
   Future updateTokenBalance() async{
     print('start updateTokenBalance');
-    String balance = await TokenService.getTokenBalance(this.value);
+    String balance = await TokenService.getTokenBalance(this.rightToken);
     print('balance is $balance');
     setState(() {
-      this.balance = balance;
+      this.balance = balance + this.rightToken['name'];
     });
   }
 
