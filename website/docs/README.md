@@ -12,7 +12,7 @@ features:
   details: 没有中心化服务器，数据全部来源以太坊，百分百安全。
 - title: 自由兑换
   details: 任意token都可以在交易所参与兑换，没有数量限制，没有金额限制。
-footer: MIT Licensed | Copyright © 2018-present sibbay
+footer: null
 ---
 token本质是价值与权益的载体，区块链赋予它去中心化自由流通的可能，而去中心化的token需要通过中心化的交易实现兑换本就是一种矛盾和退步。区块链变成了炒作的金融工具，而真正有需要的用户反被忽略。
 
