@@ -5,6 +5,7 @@ import 'package:youwallet/widgets/customButton.dart';
 import 'package:youwallet/global.dart';
 import 'package:youwallet/db/sql_util.dart';
 import 'package:youwallet/util/wallet_crypt.dart';
+import 'package:web3dart/web3dart.dart';
 
 //在该页面让用户输入密码
 //通过密码解密出私钥
@@ -15,7 +16,13 @@ class GetPasswordPage extends StatefulWidget {
 
 class _LoginPageState extends State<GetPasswordPage> {
   final _formKey = GlobalKey<FormState>();
-  String _email, _password;
+
+  bool showExtraSet = false;
+  Map data = {
+    'gasPrice': '10000000000', // 这个字段放到全局变量中去
+    'gasLimit': Global.gasLimit.toString(),
+    'pwd': ''
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +34,12 @@ class _LoginPageState extends State<GetPasswordPage> {
               child: ListView(
                 padding: EdgeInsets.symmetric(horizontal: 22.0),
                 children: <Widget>[
-                  SizedBox(height: kToolbarHeight,),
                   buildTitle(),
                   buildTitleLine(),
                   SizedBox(height: 70.0),
                   buildEmailTextField(),
+                  buildExtraTip(),
+                  buildExtraSet(this.showExtraSet),
                   SizedBox(height: 60.0),
                   buildLoginButton(context),
                 ],
@@ -49,54 +57,44 @@ class _LoginPageState extends State<GetPasswordPage> {
     );
   }
 
-
   // 获取用户密码
   Widget buildLoginButton(BuildContext context) {
     return new CustomButton(
         onSuccessChooseEvent:(res) async {
           _formKey.currentState.save();
-          if (!_email.isEmpty) {
-            // 用户输入的密码不为空，在这里开始解密用户的私钥
-            // 解密到用户的私钥，拿到用户的私钥回到交易页面
-            try {
-              String privateKey = await this.getPrivateKey(_email);
-              Navigator.of(context).pop(privateKey);
-            } catch (e) {
-              print(e);
-              final snackBar = new SnackBar(content: new Text('解密失败，请确认密码是否正确'));
-              Scaffold.of(context).showSnackBar(snackBar);
-            }
 
-            FocusScope.of(context).requestFocus(FocusNode());
+           if (this.data['pwd'].isEmpty) {
+             final snackBar = new SnackBar(content: new Text('密码不能为空'));
+             Scaffold.of(context).showSnackBar(snackBar);
+             return;
+           }
+          if (this.data['gasLimit'].isEmpty) {
+            final snackBar = new SnackBar(content: new Text('gasLimit不能为空'));
+            Scaffold.of(context).showSnackBar(snackBar);
+            return;
+          }
 
-          } else {
-            final snackBar = new SnackBar(content: new Text('密码不能为空'));
+          if (this.data['gasPrice'].isEmpty) {
+            final snackBar = new SnackBar(content: new Text('gasPrice不能为空'));
+            Scaffold.of(context).showSnackBar(snackBar);
+            return;
+          }
+
+          try {
+
+            this.data['privateKey'] = await this.getPrivateKey(this.data['pwd']);
+            this.data['gasPrice'] = EtherAmount.inWei(BigInt.parse(this.data['gasPrice']));
+            this.data['gasLimit'] = int.parse(this.data['gasLimit']);
+            Navigator.of(context).pop(this.data);
+          } catch (e) {
+            // 真机上测试，发现密码输入错误，页面也会返回，真机和IDE的编译模式不一样，错误的判断不一致
+            // 预期情况下，这里不应该返回
+            final snackBar = new SnackBar(content: new Text('解密失败，请确认密码是否正确'));
             Scaffold.of(context).showSnackBar(snackBar);
           }
+
+          FocusScope.of(context).requestFocus(FocusNode());
         }
-    );
-  }
-
-
-  TextFormField buildPasswordTextField(BuildContext context) {
-    return TextFormField(
-      onSaved: (String value) => _password = value,
-      decoration: InputDecoration(
-        labelText: '请再次输入密码',
-//          suffixIcon: IconButton(
-//              icon: Icon(
-//                Icons.remove_red_eye,
-//                color: _eyeColor,
-//              ),
-//              onPressed: () {
-//                setState(() {
-//                  _isObscure = !_isObscure;
-//                  _eyeColor = _isObscure
-//                      ? Colors.grey
-//                      : Theme.of(context).iconTheme.color;
-//                });
-//              })
-      ),
     );
   }
 
@@ -111,8 +109,69 @@ class _LoginPageState extends State<GetPasswordPage> {
             borderSide: BorderSide.none
         ),
       ),
-      onSaved: (String value) => _email = value,
+      onSaved: (String value) => this.data['pwd'] = value,
     );
+  }
+
+  // 高级设置
+  Widget buildExtraTip() {
+    return GestureDetector(
+      onTap: (){
+        setState(() {
+          this.showExtraSet = !this.showExtraSet;
+        });
+      },
+      child: Padding(
+        padding: EdgeInsets.only(left: 0.0, top: 4.0),
+        child: Text(
+            '高级设置',
+            style: TextStyle(color: Colors.lightBlue)
+        ),
+      )
+    );
+  }
+
+  Widget buildExtraSet(bool showSet) {
+    if(this.showExtraSet) {
+      return new Column(
+        children: <Widget>[
+          Padding(
+              padding: EdgeInsets.only(bottom: 20.0, top: 4.0),
+              child: TextFormField(
+                  controller: TextEditingController(text: this.data['gasLimit']),
+                  decoration: InputDecoration(
+                    hintText: '请输入gasLimit',
+                    helperText: "自定义gasLimit", //输入框底部辅助性说明文字
+                    filled: true,
+                    fillColor: Colors.black12,
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(6.0),
+                        borderSide: BorderSide.none
+                    ),
+                  ),
+                  onSaved: (String value) => this.data['gasLimit'] = value)
+          ),
+          TextFormField(
+            controller: TextEditingController(text: this.data['gasPrice']),
+            decoration: InputDecoration(
+              hintText: '请输入gasPrice',
+              helperText: "自定义gasPrice",
+              filled: true,
+              fillColor: Colors.black12,
+              border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6.0),
+                  borderSide: BorderSide.none
+              ),
+            ),
+            onSaved: (String value) => this.data['gasPrice'] = value,
+          ),
+        ],
+      );
+    } else {
+      return SizedBox(
+        height: 0,
+      );
+    }
   }
 
   Padding buildTitleLine() {
@@ -151,7 +210,7 @@ class _LoginPageState extends State<GetPasswordPage> {
     print('================');
     print('WalletCrypt done => ${res}');
     print('================');
-    if (res == null) {
+    if (res == null || res == "Failed to get string encoded: 'Decrypt failure.'.") {
       throw FormatException('钱包密码错误');
     } else {
       return res;

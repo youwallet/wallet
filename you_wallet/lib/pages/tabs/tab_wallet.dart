@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:youwallet/widgets/tokenList.dart';
-import 'package:flutter/services.dart';
 import 'package:youwallet/bus.dart';
 
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
 import 'package:youwallet/model/network.dart';
 import 'package:youwallet/model/wallet.dart' as walletModel;
-import 'package:youwallet/db/sql_util.dart';
-import 'package:youwallet/db/provider.dart';
-import 'package:barcode_scan/barcode_scan.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:youwallet/global.dart';
 import 'package:youwallet/widgets/loadingDialog.dart';
+import 'package:youwallet/widgets/userMenu.dart';
 
 class TabWallet extends StatefulWidget {
 
@@ -38,17 +34,16 @@ class Page extends State<TabWallet> {
   @override // override是重写父类中的函数
   void initState()  {
     super.initState();
-    // _getWallets();
-    // 监听钱包切换事件
-//    eventBus.on<WalletChangeEvent>().listen((event) {
-//      print(event.address);
-//      this.wallets.forEach((f){
-//        if (f['address'] == event.address) {
-//          setState(() {
-//            this.current_wallet = f['id'] - 1;
-//          });
-//        }
-//      });
+
+    // 监听页面切换，
+//    eventBus.on<TabChangeEvent>().listen((event) {
+//      print("event listen =》${event.index}");
+//      if (event.index == 0) {
+//        print('刷新订单状态');
+//        this._getBalance();
+//      } else {
+//        print('do nothing');
+//      }
 //    });
   }
 
@@ -69,7 +64,8 @@ class Page extends State<TabWallet> {
     return layout(context);
   }
 
-  // 构建页面
+  /// 通过Consumer的方式引用共享的token列表
+  /// 当token列表中有余额变动后，首页自动更新
   Widget layout(BuildContext context) {
     return new Scaffold(
       appBar: buildAppBar(context),
@@ -90,81 +86,7 @@ class Page extends State<TabWallet> {
           ],
         ),
       ),
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-                UserAccountsDrawerHeader(
-                  accountName: Text(
-                    'sibbay',
-                    style: TextStyle( fontWeight: FontWeight.bold, ),
-                  ),
-                  accountEmail: Text('sibbay@example.com'),
-                  //currentAccountPicture: CircleAvatar( backgroundImage: NetworkImage('https://upyun-assets.ethfans.org/assets/ethereum-logo-fe43a240b78711a6d427e9638f03163f3dc88ca8c112510644ce7b5f6be07dbe.png')),
-                  currentAccountPicture : Icon(IconData(0xe648, fontFamily: 'iconfont'),size: 60.0),
-                  decoration: BoxDecoration(
-                      color: Colors.black12,
-//                      image: DecorationImage(
-//                        image: NetworkImage( 'url'),
-//                        fit: BoxFit.cover,
-//                        colorFilter: ColorFilter.mode( Colors.yellow.withOpacity(0.3), BlendMode.lighten, ),
-//                      )
-                  ),
-                ),
-
-                ListTile(
-                  title: Text('切换网络'),
-                  leading: Icon(Icons.network_check),
-                  onTap: () {
-                    Navigator.pushNamed(context, "set_network");
-                  },
-                ),
-                ListTile(
-                  title: Text('检查更新'),
-                  leading: Icon(Icons.update),
-                  onTap: () {
-                    Navigator.of(context).pop();
-//                    showDialog<Null>(
-//                        context: context, //BuildContext对象
-//                        barrierDismissible: false,
-//                        builder: (BuildContext context) {
-//                          return new LoadingDialog( //调用对话框
-//                            text: '检查中...',
-//                          );
-//                        });
-//                    Navigator.of(context).pop();
-                    final snackBar = new SnackBar(content: new Text('没有检测到新版本'));
-                    Scaffold.of(context).showSnackBar(snackBar);
-                  },
-                ),
-                ListTile(
-                  title: Text('进入调试'),
-                  leading: Icon(Icons.adb),
-                  onTap: () {
-                    Navigator.pushNamed(context, "debug_page");
-                  },
-                ),
-                ListTile(
-                  title: Text('清空缓存'),
-                  leading: Icon(Icons.cached),
-                  onTap: () async {
-                    final provider = new ProviderSql();
-                    await provider.clearCache();
-                    final snackBar = new SnackBar(content: new Text('数据清除成功，关闭程序重新进入'));
-                    Scaffold.of(context).showSnackBar(snackBar);
-                  },
-                ),
-                ListTile(
-                  title: Text('意见反馈'),
-                  leading: Icon(Icons.feedback),
-                  onTap: () async {
-                    const url='https://github.com/youwallet/wallet/issues';
-                    await launch(url);
-                  },
-                ),
-            ],
-          ),
-        )
+        drawer: new UserMenu()
     );
   }
 
@@ -242,7 +164,7 @@ class Page extends State<TabWallet> {
                             color: Colors.white
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(context, "manage_wallet",arguments:{});
+                          Navigator.pushNamed(context, "manage_wallet");
                         },
                       ),
                     ],

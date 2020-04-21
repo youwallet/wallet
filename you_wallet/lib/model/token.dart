@@ -80,11 +80,13 @@ class Token extends ChangeNotifier {
   }
 
   /// 更新指定的token余额
-  void updateTokenBalance(Map item,String balance) async {
+  /// 余额变动话，主动重新_fetchToken
+  /// 首页的token列表余额自动更新
+  Future<void> updateTokenBalance(Map item,String balance) async {
     var sql = SqlUtil.setTable("tokens");
     int i = await sql.update({'balance': balance}, 'id', item['id']);
     print('updateTokenBalance => ${i}');
-    // notifyListeners();
+    this._fetchToken();
   }
 
   /// 在授权表中增加一份记录
@@ -117,8 +119,10 @@ class Token extends ChangeNotifier {
       print('获取token余额 =》' + balance);
       this.updateTokenBalance(this.items[i], balance);
     }
-
     this._fetchToken();
   }
+
+  /// 根据token地址更新指定token的余额
+  
 
 }

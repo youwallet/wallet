@@ -4,6 +4,7 @@ import 'package:youwallet/widgets/customStepper.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart';
+import 'package:youwallet/model/token.dart';
 import 'package:youwallet/service/trade.dart';
 import 'package:youwallet/bus.dart';
 import 'package:youwallet/db/sql_util.dart';
@@ -20,7 +21,7 @@ class TabTransfer extends StatefulWidget {
 
 class Page extends State<TabTransfer> {
 
-  double balance = 0.0;
+  String balance = '';
   final globalKey = GlobalKey<ScaffoldState>();
   var value;
   // 定义TextEditingController()接收编辑框的输入值
@@ -64,7 +65,7 @@ class Page extends State<TabTransfer> {
             new Container(
               padding: const EdgeInsets.all(20.0),
               child: new Text(
-                  '余额：${token['balance']??"~"}${token['name']??"~"}',
+                  '余额：${this.balance??"--"}${token['name']??"~"}',
                   style: new TextStyle(
                       fontSize: 26.0,
                       color: Colors.lightBlue
@@ -81,9 +82,10 @@ class Page extends State<TabTransfer> {
                   child: new TokenSelectSheet(
                       onCallBackEvent: (res){
                         print(res);
-                       setState(() {
-                         this.token = res;
-                       });
+                        setState(() {
+                          token = res;
+                          balance = res['balance'];
+                        });
                       }
                   ),
                 ),
@@ -264,18 +266,22 @@ class Page extends State<TabTransfer> {
               title: '确认付款?',
               content: '',
               onCancelChooseEvent: () {
-                Navigator.pop(context);
+                Navigator.of(context).pop();
                 // 关闭键盘
                 FocusScope.of(context).requestFocus(FocusNode());
                 this.showSnackbar('取消转账');
               },
               onSuccessChooseEvent: () {
-                Navigator.pop(context);
+                Navigator.of(context).pop('confirm');
                 // 关闭键盘
                 FocusScope.of(context).requestFocus(FocusNode());
-                this.startTransfer();
               });
-        });
+        }).then((val){
+          print(val);
+          if (val == 'confirm') {
+            this.startTransfer();
+          }
+    });
   }
 
 
@@ -319,12 +325,20 @@ class Page extends State<TabTransfer> {
     );
   }
 
+  // 更新当前选中的token的余额
   Future<void> _getBalance() async {
-    print(Provider.of<Wallet>(context).currentWallet);
-    String balance = await TokenService.getBalance(Provider.of<Wallet>(context).currentWallet);
-    setState(() {
-      this.balance =  double.parse(balance);
-    });
+    print('start ${this.token}');
+    if (this.token.isEmpty) {
+      print('当前token为空，不更新余额');
+    } else {
+      print('start');
+      String balance = await TokenService.getTokenBalance(this.token);
+      print('balance => ${balance}');
+      await Provider.of<Token>(context).updateTokenBalance(this.token, balance);
+      setState(() {
+        this.balance =  balance;
+      });
+    }
   }
 
   // 显示提示
@@ -347,9 +361,10 @@ class Page extends State<TabTransfer> {
     String from = Provider.of<Wallet>(context).currentWallet;
     String to = controllerAddress.text;
     String num = controllerPrice.text;
-    Navigator.pushNamed(context, "getPassword").then((pwd) async{
+    // obj里面包括私钥，gaslimit，gasprice
+    Navigator.pushNamed(context, "getPassword").then((obj) async{
       try {
-        String txnHash = await Trade.sendToken(from, to, num, this.token, pwd);
+        String txnHash = await Trade.sendToken(from, to, num, this.token, obj);
         this.saveTransfer(from, to, num, txnHash, this.token);
 
         // 拿到hash值，根据hash值查询以太坊打包是否成功
@@ -371,6 +386,7 @@ class Page extends State<TabTransfer> {
       Navigator.pop(context);
       this.showSnackbar('转账成功');
       this.updateTransferStatus(hash);
+      this._getBalance();
     } else {
       if (index > 30) {
         print('已经轮询了30次，打包失败');

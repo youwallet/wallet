@@ -129,38 +129,65 @@ class Page extends State<TradesDeep> {
 
     try {
       List list = await Trade.getOrderDepth(widget.leftToken, widget.rightToken);
-      print(list);
-      this.setState((){
-        showMore = list.length > 6 ? true:false;
-      });
-      if (list.length <=6) {
-        // do nothing
-      } else {
-        // 如果订单超过6个，兑换页面只给显示6个
-        // 如果卖单买单都超过三个，则每个显示三个
-        // 如果买单只有一个，但是卖单有七个，则显示一个买单，5个卖单
-        List sell = list.where((element)=>(element['is_sell'])).toList();
-        List buy = list.where((element)=>(!element['is_sell'])).toList();
-        if (sell.length>=3 && buy.length>=3) {
-          sell = sell.skip(sell.length - 3).toList();
-          buy = buy.take(3).toList();
-        } else {
-           if (sell.length < 3) {
-             buy = buy.take(6-sell.length).toList();
-           }
-           if (buy.length < 3) {
-             // sell这里需要特别注意
-             // sell数组中价格是从高到低排列的，
-             // 但是兑换页面只需要显示价格最低的三个
-             sell = sell.skip(buy.length).toList();
-           }
-        }
 
-        sell.addAll(buy);
-        list = sell;
+      // 如果订单超过6个，兑换页面只给显示6个
+      // 永远只显示三个卖，三个买
+      // 如果数量不足三个，则留空位
+      List sell = list.where((element)=>(element['is_sell'])).toList();
+      List buy = list.where((element)=>(!element['is_sell'])).toList();
+
+      // 任意一个买单或者卖单超过3个，就显示更新按钮
+      if(sell.length>3 || buy.length>3) {
+        this.setState((){
+          showMore = true;
+        });
+      } else {
+        this.setState((){
+          showMore = false;
+        });
       }
+
+      // 卖单超过三个，要倒着取三个出来
+      if(sell.length>3) {
+        sell = sell.skip(sell.length - 3).toList();
+      }
+      buy = buy.take(3).toList();
+      print('this is sell');
+      print(sell);
+      print('this is buy');
+      print(buy);
+       if (sell.length < 3) {
+         int i = 0;
+         int len = 3-sell.length;
+         while(i< len){
+           sell.add({
+             'price': '',
+             'amount': '',
+             'is_sell': true
+           });
+           i = i+1;
+         }
+       }
+       if (buy.length < 3) {
+         // sell这里需要特别注意
+         // sell数组中价格是从高到低排列的，
+         // 但是兑换页面只需要显示价格最低的三个
+         // sell = sell.skip(buy.length).toList();
+         int i = 0;
+         int len = 3-buy.length;
+         while(i< len){
+           buy.add({
+             'price': '',
+             'amount': '',
+             'is_sell': false
+           });
+           i = i+1;
+         }
+       }
+
+      sell.addAll(buy);
       this.setState((){
-        arr = list;
+        arr = sell;
       });
     } catch (e) {
       print('深度列表数据出现异常');

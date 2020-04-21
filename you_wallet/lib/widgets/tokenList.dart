@@ -78,69 +78,63 @@ Widget walletCard(item, context) {
                     child: Icon(IconData(0xe648, fontFamily: 'iconfont'),size: 50.0, color: Colors.black26)
                   ),
                   new Expanded(
+
                     child: new Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
+                        new Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            new Column(
+                              children: [
+                                new Row(
+                                  children: <Widget>[
+                                    new Text(
+                                      item['name']?? '--',
+                                      style: new TextStyle(fontSize: 32.0, color: Colors.black),
+                                    ),
+                                    new IconButton(
+                                      icon: Icon(IconData(0xe600, fontFamily: 'iconfont')),
+                                      onPressed: () {
+                                        print(item);
+                                        Navigator.pushNamed(context, "token_info",arguments:{
+                                          'address': item['address'],
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            new Text(
+                              item['balance'],
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                              style: new TextStyle(
+                                  fontSize: 16.0,
+                                  color: Color.fromARGB(100, 6, 147, 193),
+                                  fontWeight: FontWeight.w700
+                              ),
+                            )
+                          ],
+                        ),
                         new Row(
                           children: <Widget>[
-                            new Text(
-                              item['name']?? '--',
-                              style: new TextStyle(fontSize: 32.0, color: Colors.black),
-                            ),
-                            new IconButton(
-                              icon: Icon(IconData(0xe600, fontFamily: 'iconfont')),
-                              onPressed: () {
-                                print(item);
-                                Navigator.pushNamed(context, "token_info",arguments:{
-                                   'address': item['address'],
-                                 });
+                            GestureDetector(
+                              child: new Text(
+                                  Global.maskAddress(item['address']),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w700
+                                  )
+                              ),
+                              onTap: () async {
+                                print(item['address']);
                               },
                             ),
                           ],
-                        ),
-                        GestureDetector(
-                          child: new Text(
-                              Global.maskAddress(item['address']),
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w700
-                              )
-                          ),
-                          onTap: () async {
-                            print(item['address']);
-                          },
                         )
-
                       ],
-                    ),
+                    )
                   ),
-                  new Text(
-                    item['balance'],
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                    style: new TextStyle(
-                        fontSize: 16.0,
-                        color: Color.fromARGB(100, 6, 147, 193),
-                        fontWeight: FontWeight.w700
-                    ),
-                  ),
-//                  new Container(
-//                      alignment: Alignment.topRight,
-//                      color: Colors.red,
-//                      width: 80.0,
-//                      child: new Column(
-//                        children: <Widget>[
-//                          new Text(
-//                            item['balance'],
-//                            overflow: TextOverflow.ellipsis,
-//                            maxLines: 1,
-//                            style: new TextStyle(fontSize: 16.0,
-//                                color: Color.fromARGB(100, 6, 147, 193)),
-//                          ),
-////                          new Text('￥${item['rmb']??'-'}'),
-//                        ],
-//                      )
-//
-//                  )
                 ],
               )
           ),
