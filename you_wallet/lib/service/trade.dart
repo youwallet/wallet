@@ -58,8 +58,10 @@ class Trade {
   String oldPrice = "";   // 保留原始的价格数据
   String oldAmount = "";  // 保留原始的数量
 
+  Map obj = {};           // obj在密码输入页面返回，里面包含了密码，私钥，gasLimit，gasPrice
 
-  Trade(String token, String tokenName, String baseToken, String baseTokenName, String amount, String price, bool isBuy, String privateKey) {
+
+  Trade(String token, String tokenName, String baseToken, String baseTokenName, String amount, String price, bool isBuy, Map obj) {
      this.tokenA = token;
      this.tokenAName = tokenName;
      this.tokenB = baseToken;
@@ -68,13 +70,12 @@ class Trade {
      this.amount = amount;
      this.oldAmount = amount;
      // 密码，先进行md5加密，再使用AES揭秘私钥
-     this.privateKey = privateKey;
+     this.privateKey = obj['privateKey'];
+     this.obj = obj;
      //需要换一个名字
      this.price = price;
      this.oldPrice = price;
      this.isBuy = isBuy;
-
-
   }
 
   /* 获取订单参数中的data
@@ -151,8 +152,8 @@ class Trade {
         credentials,
         Transaction(
             to: EthereumAddress.fromHex(Global.tempMatchAddress),
-            gasPrice: EtherAmount.inWei(Global.gasPrice),
-            maxGas: Global.gasLimit,
+            gasPrice: this.obj['gasPrice'],
+            maxGas: this.obj['gasLimit'],
             value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
             data: hexToBytes(postData)
         ),
@@ -329,9 +330,9 @@ class Trade {
   // + 要传递的方法参数，每个参数都为64位
   // (对transfer来说，第一个是接收人的地址去掉0x，第二个是代币数量的16进制表示，去掉前面0x，然后补齐为64位)
 
-  static Future<String> sendToken(String fromAddress, String toAddress, String num, Map token, String pwd) async {
+  static Future<String> sendToken(String fromAddress, String toAddress, String num, Map token, Map obj) async {
     String rpcUrl = await getNetWork();
-    String privateKey = pwd;
+    String privateKey = obj['privateKey'];
 
     final client = Web3Client(rpcUrl, Client());
     var credentials = await client.credentialsFromPrivateKey(privateKey);
@@ -344,8 +345,8 @@ class Trade {
         credentials,
         Transaction(
             to: EthereumAddress.fromHex(token['address']),
-            gasPrice: EtherAmount.inWei(Global.gasPrice),
-            maxGas: Global.gasLimit,
+            gasPrice: obj['gasPrice'],
+            maxGas: obj['gasLimit'],
             value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
             data: hexToBytes(postData)
         ),
@@ -397,21 +398,21 @@ class Trade {
   // 交易授权
   // function approve(address spender, uint256 value);
   // 返回1表示true，接口调用成功，0表示false失败了
-  static Future approve(String token, String privateKey) async {
+  static Future approve(String token, Map obj) async {
     String value = BigInt.from(10).pow(27) .toString();
     String postData = Global.funcHashes['approve()'] + formatParam(Global.proxy) + formatParam(value);
 
     String rpcUrl = await Global.rpcUrl();
 
     final client = Web3Client(rpcUrl, Client());
-    var credentials = await client.credentialsFromPrivateKey(privateKey);
+    var credentials = await client.credentialsFromPrivateKey(obj['privateKey']);
 
     var rsp = await client.sendTransaction(
         credentials,
         Transaction(
             to: EthereumAddress.fromHex(token),
-            gasPrice: EtherAmount.inWei(Global.gasPrice),
-            maxGas: Global.gasLimit,
+            gasPrice: obj['gasPrice'],
+            maxGas: obj['gasLimit'],
             value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
             data: hexToBytes(postData)
         ),
@@ -426,7 +427,7 @@ class Trade {
  * od_hash: 订单哈希值
  * function cancelOrder2(bytes32 bq_hash, bytes32 od_hash);
  */
-  static Future cancelOrder2(Map item,String pwd) async {
+  static Future cancelOrder2(Map item,Map obj) async {
     String hash = "";
     if(item['orderType']=='卖出') {
       hash = item['sqHash'];
@@ -438,14 +439,14 @@ class Trade {
     String rpcUrl = await Global.rpcUrl();
 
     final client = Web3Client(rpcUrl, Client());
-    var credentials = await client.credentialsFromPrivateKey(pwd);
+    var credentials = await client.credentialsFromPrivateKey(obj['privateKey']);
 
     var rsp = await client.sendTransaction(
         credentials,
         Transaction(
             to: EthereumAddress.fromHex(Global.tempMatchAddress),
-            gasPrice: EtherAmount.inWei(Global.gasPrice),
-            maxGas: Global.gasLimit,
+            gasPrice: obj['gasPrice'],
+            maxGas: obj['gasLimit'],
             value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
             data: hexToBytes(postData)
         ),
@@ -542,14 +543,10 @@ class Trade {
   // 第四个64位的字符串开始就是卖单
   // 卖单结束后，就是买单的长度，也是64位字符串，后面就是买单了
   static buildOrderDeep(String str) {
-    print('start buildOrderDeep');
     String data = str.replaceFirst('0x', '');
     int sell_len = BigInt.parse(data.substring(128, 192), radix: 16).toInt();
-    print('sell len => ${sell_len}');
     String sell_str = data.substring(192, 192 + sell_len*4*64);
-    print(sell_str);
     List sell = Trade.buildOrderItem(sell_str);
-    print(sell);
     String buy_str = data.substring(64*4 + sell_len*4*64);
     List buy = Trade.buildOrderItem(buy_str);
     sell = sell.reversed.toList();
@@ -567,14 +564,16 @@ class Trade {
     while( i<index) {
       print("======================");
       String item = data.substring(i*n*64, i*n*64 + n*64);
-      Decimal baseTokenAmount  = Decimal.parse((BigInt.parse(item.substring(0, 64), radix: 16)/BigInt.from(pow(10,18))).toString());
+      Decimal baseTokenAmount  = Decimal.parse((Decimal.parse(BigInt.parse(item.substring(0, 64), radix: 16).toString())/Decimal.parse(BigInt.from(pow(10,18)).toString())).toString());
       print(baseTokenAmount);
-      Decimal quoteTokenAmount = Decimal.parse((BigInt.parse(item.substring(64, 128), radix: 16)/BigInt.from(pow(10,18))).toString());
-      print(quoteTokenAmount);
-      Decimal amount = Decimal.parse((BigInt.parse(item.substring(128, 192), radix: 16)/BigInt.from(pow(10,18))).toString());
-      print(amount);
+      // Decimal quoteTokenAmount = Decimal.parse((BigInt.parse(item.substring(64, 128), radix: 16)/BigInt.from(pow(10,18))).toString());
+      Decimal quoteTokenAmount = Decimal.parse((Decimal.parse(BigInt.parse(item.substring(64, 128), radix: 16).toString())/Decimal.parse(BigInt.from(pow(10,18)).toString())).toString());
+//      print(BigInt.parse(item.substring(64, 128), radix: 16));
+//      print(BigInt.parse(item.substring(64, 128), radix: 16)/BigInt.from(pow(10,18)));
+//      print(quoteTokenAmount);
+
+      Decimal amount = Decimal.parse((Decimal.parse(BigInt.parse(item.substring(128, 192), radix: 16).toString())/Decimal.parse(BigInt.from(pow(10,18)).toString())).toString());
       bool is_sell = BigInt.parse(item.substring(192), radix: 16) == BigInt.from(0)? false:true;
-      print(is_sell);
       if(baseTokenAmount.toString() != '0') {
         String price = (quoteTokenAmount/baseTokenAmount).toString();
         arr.add({
@@ -582,11 +581,9 @@ class Trade {
           'amount': amount.toString(),
           'is_sell': is_sell
         });
-        print(arr);
       }
       i = i+1;
     }
-    print(arr);
     return arr;
   }
 

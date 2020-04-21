@@ -8,8 +8,10 @@ import 'package:youwallet/bus.dart';
 import 'package:youwallet/global.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart' as walletModel;
+
 import 'package:youwallet/service/trade.dart';
 import 'package:youwallet/model/deal.dart';
+import 'package:youwallet/model/token.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
 import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:youwallet/widgets/customTab.dart';
@@ -45,13 +47,14 @@ class Page extends State {
   String suffixText = "";
 
   // 输入价格和数量后计算的交易额度
-  Decimal tradePrice;
+  var tradePrice;
 
   // 需要授权的token
   String needApproveToken = '';
 
   // 左侧被选中的token
   var value;
+
   // 右边的token对象
   var rightToken;
 
@@ -61,6 +64,9 @@ class Page extends State {
 
   // 下单过程中，当前订单的进度
   String currentStatus = "挂单中";
+
+  // 当前页面显示的token余额
+  String balance = "";
 
   //数据初始化
   @override
@@ -79,8 +85,8 @@ class Page extends State {
     });
 
     //监听订单操作结果
-    eventBus.on<TransferDoneEvent>().listen((event) {
-      Navigator.pop(context);
+    eventBus.on<TransferDoneEvent>().listen((event) async{
+      Navigator.of(context).pop();
       this.showSnackBar(event.res);
     });
 
@@ -94,6 +100,10 @@ class Page extends State {
               text: '刷新中...',
             );
           });
+
+      // 更新兑换页面上当前正在交易的这个token的余额
+      this.updateTokenBalance();
+
       eventBus.fire(UpdateTeadeDeepEvent());
     });
 
@@ -227,6 +237,7 @@ class Page extends State {
                 ),
                 new Text('限价模式'),
                 new Input(
+                  suffixText: this.rightToken == null?'':this.rightToken['name'],
                   hintText: '输入买入价格',
                   controllerEdit: controllerPrice,
                   onSuccessChooseEvent: (res) {
@@ -240,11 +251,12 @@ class Page extends State {
                 new Input(
                   hintText: '输入买入数量',
                   controllerEdit: controllerAmount,
+                  suffixText: this.value == null?'':this.value['name'],
                   onSuccessChooseEvent: (res) {
                     this.computeTrade();
                   },
                 ),
-                new Text('当前账户余额：${this.value!=null?this.value["balance"]:"~"}'),
+                new Text("当前账户余额：$balance"),
                 new Container(
                   padding: new EdgeInsets.only(top: 30.0),
                   child: new Column(
@@ -304,6 +316,7 @@ class Page extends State {
                       print('页面右侧token选择 = > ${res}');
                       setState(() {
                         rightToken = res;
+                        balance = res['balance'] + res['name'];
                       });
                       Future.delayed(Duration(seconds: 1), (){
                         eventBus.fire(UpdateTeadeDeepEvent());
@@ -522,11 +535,16 @@ class Page extends State {
   /// 发起授权之前，要先确认用户的钱包ETH有余额，否则无法授权
   void getPwd(bool approve) {
     Navigator.pushNamed(context, "getPassword").then((data) async{
+      print('密码输入页面拿到的对象');
+      print(data);
       if(data == null) {
         this.showSnackBar('交易终止');
         Navigator.of(context).pop();
         return;
       }
+
+//      Navigator.of(context).pop();
+//      return;
 
       // 已经授权过
       if (approve) {
@@ -602,7 +620,8 @@ class Page extends State {
   }
 
   // 获取钱包密码，然后用密码解析私钥
-  void startTrade(String pwd) async {
+  // obj里面包括了密码，私钥，gasLimit，gasPrice
+  void startTrade(Map obj) async {
     bool isBuy = true;
     if (this._btnText == '买入') {
       isBuy = true;
@@ -612,12 +631,17 @@ class Page extends State {
     if (this.controllerAmount.text is String) {
       print("this.controllerAmount.text is string");
     }
-    Trade trade = new Trade(this.value['address'], this.value['name'], this.rightToken['address'], this.rightToken['name'], this.controllerAmount.text, this.controllerPrice.text, isBuy, pwd);
+    Trade trade = new Trade(this.value['address'], this.value['name'], this.rightToken['address'], this.rightToken['name'], this.controllerAmount.text, this.controllerPrice.text, isBuy, obj);
     try {
       await trade.takeOrder();
 
       // 拿到订单Hash，通知历史列表组件更新
       eventBus.fire(OrderSuccessEvent());
+
+      // 下单成功后，主动更新当前交易的这个的余额
+      // this.value就是需要更新的token，只需要更新value中的balance
+      // 但是拿到订单hash，交易其实还是pading状态，余额已经减少了吗
+
 
       this.setState((){
         currentStatus = "打包中";
@@ -654,8 +678,10 @@ class Page extends State {
        return ;
      }
 
+
+     var tradePrice = Decimal.parse(this.controllerAmount.text) * Decimal.parse(this.controllerPrice.text);
      setState(() {
-       this.tradePrice = Decimal.parse(this.controllerAmount.text) * Decimal.parse(this.controllerPrice.text);
+       this.tradePrice = tradePrice.toString() + this.rightToken['name'];
      });
    }
 
@@ -672,7 +698,16 @@ class Page extends State {
             text: '刷新中...',
           );
         });
+  }
 
+  // 更新token的余额，在交易结束后
+  // 计算当前账户余额，这里计算的是右边token的余额
+  Future updateTokenBalance() async{
+    String balance = await TokenService.getTokenBalance(this.rightToken);
+    await Provider.of<Token>(context).updateTokenBalance(this.rightToken, balance);
+    setState(() {
+      this.balance = balance + this.rightToken['name'];
+    });
   }
 
 }

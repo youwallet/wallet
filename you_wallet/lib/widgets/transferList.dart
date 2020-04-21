@@ -211,8 +211,8 @@ class Page extends State<transferList> {
   }
 
   /// 取消订单的进程，不会立刻拿到结果
-  /// 注意这里的pwd已经是解密后的私钥了
-  void cancelProcess(Map item, String pwd) async{
+  /// 注意这里的obj,里面有四个字段
+  void cancelProcess(Map item, Map obj) async{
     showDialog<Null>(
         context: context, //BuildContext对象
         barrierDismissible: false,
@@ -225,7 +225,7 @@ class Page extends State<transferList> {
     try{
       // 订单撤销后立即返回的是交易的hash，
       // 至于到底有没有撤销成功，还需要等待以太坊写链
-      String res = await Trade.cancelOrder2(item, pwd);
+      String res = await Trade.cancelOrder2(item, obj);
       print('订单撤销返回 => ${res}');
 //      int orderFlag = await Trade.orderFlag(item);
 //      if (orderFlag == 0) {
@@ -360,7 +360,7 @@ class Page extends State<transferList> {
 
   // 根据Hash值检查一个交易在ETH的状态
   // 这一步发生在用户刚刚下单后，以太坊立刻返回了Hash，但是我们并不知道这个订单是否成功写到链上
-  // 所以需要轮询，2s中一次，最长轮询30次
+  // 所以需要轮询，2s中一次，最长轮询50次，30次还是有点少
   // 当以太坊返回blockHash后，我们就知道这个订单已经被以太坊写到链上
   // 但是写链成功并不代表挂单成功，还要通过getTransactionReceipt来判断是成功了还是失败
   // 判断完成后，立刻刷新历史交易列表
@@ -373,6 +373,8 @@ class Page extends State<transferList> {
       // 现在判断写链操作的状态
       Map res = await Trade.getTransactionReceipt({'txnHash': hash});
       if (res['status']== '0x1') {
+        print('轮询结束，下单成功，更改状态为进行中');
+        print('广播 TransferDoneEvent事件');
         await Provider.of<Deal>(context).updateOrderStatus(hash, '进行中');
         eventBus.fire(TransferDoneEvent('打包成功，订单状态变更为进行中'));
       } else {

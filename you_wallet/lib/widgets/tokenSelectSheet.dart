@@ -56,7 +56,7 @@ class Page extends State<TokenSelectSheet> {
     String wallet = Provider.of<walletModel.Wallet>(context).currentWalletObject['address'];
     List tokens = Provider.of<Token>(context).items.where((e)=>(e['wallet'] == wallet)).toList();
     if (tokens.length == 0) {
-      print('没有币种');
+      print('当前钱包没有token');
       return;
     }
     showModalBottomSheet(

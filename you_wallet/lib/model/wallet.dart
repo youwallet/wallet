@@ -98,10 +98,11 @@ class Wallet extends ChangeNotifier {
     // 1. 获取钱包的balance
     String balance = await TokenService.getBalance(address);
 
-    // 2. 获取钱包缓存名字
+    // 2. 获取钱包缓存名字, 这里名字不一定存在，如果用户通过私钥的方式导入
+    // 是没有输入名字这个步骤的
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String name = prefs.getString("new_wallet_name");
-    prefs.setString("new_wallet_name", ""); // name被使用后，要清空
+    String name = Global.getPrefs("new_wallet_name")??'';
+    Global.setPrefs("new_wallet_name", ""); // name被使用后清空, 防止第二次导入时使用了第一次的名字
 
     // 3. 加密
     item['privateKey'] = await WalletCrypt(pwd,item['privateKey']).encrypt();
@@ -130,7 +131,7 @@ class Wallet extends ChangeNotifier {
     // 新添加的钱包，要设置为当前钱包,当前钱包地址必须写入缓存中
     this.currentWallet = item['address'];
     this.currentWalletObject = item;
-    await prefs.setString("currentWallet", address);
+    await Global.setPrefs("currentWallet", address);
 
     // 全局广播，通知当前钱包变更
     notifyListeners();

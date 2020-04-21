@@ -108,7 +108,6 @@ class Http{
           data: data,
           cancelToken:cancelToken
       );
-      print(response);
       print('请求结束======');
     }on DioError catch(e){
       if(CancelToken.isCancel(e)){

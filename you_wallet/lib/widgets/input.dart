@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Input extends StatelessWidget {
-  // 输输入框中的提示字符
+  // 输入框中的提示字符
   String hintText = "";
   String suffixText = "";
   Function onSuccessChooseEvent;

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>API | youwallet</title>
+    <meta name="generator" content="VuePress 1.4.1">
+    
+    <meta name="description" content="Just playing around">
+    <link rel="preload" href="/assets/css/0.styles.3803e5f9.css" as="style"><link rel="preload" href="/assets/js/app.7b95c532.js" as="script"><link rel="preload" href="/assets/js/2.82ee3530.js" as="script"><link rel="preload" href="/assets/js/6.9db27ecd.js" as="script"><link rel="prefetch" href="/assets/js/10.14cc6107.js"><link rel="prefetch" href="/assets/js/3.4dfc8e47.js"><link rel="prefetch" href="/assets/js/4.8e8cd2f5.js"><link rel="prefetch" href="/assets/js/5.a709dc7d.js"><link rel="prefetch" href="/assets/js/7.33a17f31.js"><link rel="prefetch" href="/assets/js/8.0f06bc06.js"><link rel="prefetch" href="/assets/js/9.6d6097b5.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.3803e5f9.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container"><header class="navbar"><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><!----> <span class="site-name">youwallet</span></a> <div class="links"><div class="search-box"><input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link">
+  首页
+</a></div><div class="nav-item"><a href="/token/" class="nav-link">
+  合约介绍
+</a></div><div class="nav-item"><a href="/api/" class="nav-link router-link-exact-active router-link-active">
+  接口
+</a></div><div class="nav-item"><a href="/team/" class="nav-link">
+  开发团队
+</a></div><div class="nav-item"><a href="https://github.com/youwallet/wallet/" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Github
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <!----></nav></div></header> <div class="sidebar-mask"></div> <aside class="sidebar"><nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link">
+  首页
+</a></div><div class="nav-item"><a href="/token/" class="nav-link">
+  合约介绍
+</a></div><div class="nav-item"><a href="/api/" class="nav-link router-link-exact-active router-link-active">
+  接口
+</a></div><div class="nav-item"><a href="/team/" class="nav-link">
+  开发团队
+</a></div><div class="nav-item"><a href="https://github.com/youwallet/wallet/" target="_blank" rel="noopener noreferrer" class="nav-link external">
+  Github
+  <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></div> <!----></nav>  <ul class="sidebar-links"><li><a href="/api/" class="active sidebar-link">API</a><ul class="sidebar-sub-headers"><li class="sidebar-sub-header"><a href="/api/#结构体" class="sidebar-link">结构体</a></li><li class="sidebar-sub-header"><a href="/api/#takeorder" class="sidebar-link">takeOrder</a></li><li class="sidebar-sub-header"><a href="/api/#getbqodhash" class="sidebar-link">getBQODHash</a></li></ul></li></ul> </aside> <main class="page"> <div class="theme-default-content content__default"><h1 id="api"><a href="#api" class="header-anchor">#</a> API</h1> <p>说明:</p> <ol><li>接口中标名 W 的，表示该操作会有写链操作,需要对交易进行签名，消耗一定的gas</li> <li>接口中标名 R 的，表示该操作不会有写链操作，不需要对交易进行签名，也不会消耗gas</li></ol> <h2 id="结构体"><a href="#结构体" class="header-anchor">#</a> 结构体</h2> <h3 id="ordersignature"><a href="#ordersignature" class="header-anchor">#</a> OrderSignature</h3> <div class="language- line-numbers-mode"><pre class="language-text"><code>/* 交易签名数据
+ * config: 包含签名v和签名方法（各占以1个字节, 其它字节缺省）
+ * r: 签名r
+ * s: 签名s
+ * */
+struct OrderSignature {
+    bytes32 config;
+    bytes32 r;
+    bytes32 s;
+}
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br></div></div><h3 id="orderparam"><a href="#orderparam" class="header-anchor">#</a> OrderParam</h3> <div class="language- line-numbers-mode"><pre class="language-text"><code>/* 订单参数
+ * trader: taker 地址
+ * baseTokenAmount: 交易token的数量
+ * quoteTokenAmount: 报价token的数量
+ * gasTokenAmount: 交易费用token的数量，一般默认0
+ * data: 交易参数的设置, 包含hydro版本号、交易买卖标志等, 生成方式参见接口getConfigData
+ * signature: 交易签名数据, 包含签名的vrs, 以及签名方法, 生成方式参见接口 getConfigSignature
+ */
+struct OrderParam {
+    address trader;
+    uint256 baseTokenAmount;
+    uint256 quoteTokenAmount;
+    uint256 gasTokenAmount;
+    bytes32 data;
+    OrderSignature signature;
+}
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br></div></div><h2 id="takeorder"><a href="#takeorder" class="header-anchor">#</a> takeOrder</h2> <div class="language- line-numbers-mode"><pre class="language-text"><code>/* 发起订单 - W
+ * takerOrderParam: 订单参数
+ * orderAddressSet: 订单地址集合
+ * */
+function takeOrder(OrderParam taker, OrderAddressSet orderAddressSet);
+
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br></div></div><h2 id="getbqodhash"><a href="#getbqodhash" class="header-anchor">#</a> getBQODHash</h2> <div class="language- line-numbers-mode"><pre class="language-text"><code>/* 获取订单相关hash值 - R
+ * orderParam: 订单参数
+ * orderAddressSet: 订单地址集合
+ *
+ * 返回值
+ * bq_hash: base-token/quote-token buy  哈希值
+ * sq_hash: base-token/quote-token sell 哈希值
+ * od_hash: 订单哈希值
+ *
+ * M 20200328
+ * */
+function getBQODHash(OrderParam orderParam, OrderAddressSet orderAddressSet);
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br></div></div></div> <footer class="page-edit"><!----> <!----></footer> <!----> </main></div><div class="global-ui"></div></div>
+    <script src="/assets/js/app.7b95c532.js" defer></script><script src="/assets/js/2.82ee3530.js" defer></script><script src="/assets/js/6.9db27ecd.js" defer></script>
+  </body>
+</html>
