@@ -1,5 +1,6 @@
 module.exports = {
   title: 'youwallet',
+  base: '/wallet/',   // 设置站点根路径
   description: 'Just playing around',
   displayAllHeaders: true, // 默认值：false
   markdown: {
