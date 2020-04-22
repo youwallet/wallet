@@ -14,6 +14,7 @@ import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart' as walletModel;
 import 'package:youwallet/global.dart';
 import 'package:youwallet/util/http_server.dart';
+import "package:hex/hex.dart";
 
 //abstract class TokenService {
 //  String generateMnemonic();
@@ -89,10 +90,11 @@ class TokenService {
     String res = response['result'];
     String name = res.replaceFirst('0x', '');
     String nameString = '';
-    for(var i = 0; i < name.length; i = i + 2) {
-      String subStr = name.substring(i, i+2);
-      if (subStr != "00" && subStr != "20" && subStr != "03") {
-        String str = String.fromCharCode(int.parse(name.substring(i, i+2), radix: 16));
+    List hexList = HEX.decode(name);
+    for(var i = 0; i < hexList.length; i++) {
+      if (hexList[i] != 32 && hexList[i] != 4 && hexList[i] != 0) {
+        print(hexList[i]);
+        String str = String.fromCharCode(hexList[i]);
         nameString = nameString + str;
       }
     }

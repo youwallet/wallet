@@ -197,17 +197,20 @@ class Page extends State<TabWallet> {
   // 构建列表的表头菜单
   Widget listTopBar(BuildContext context) {
     return new Container(
-      padding: const EdgeInsets.only(left: 16.0, right:16.0, top: 0),
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 0,bottom: 4.0),
       child: new Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          new Text('Token'),
-          new IconButton(
-              icon: new Icon(Icons.add_circle_outline ),
-              onPressed: () {
-                  Navigator.pushNamed(context, "add_wallet");
-              },
+          new Text(
+            'Token',
+            style: new TextStyle(fontWeight: FontWeight.w900, fontSize: 16.0),
           ),
+          GestureDetector(
+            child: new Icon(Icons.add_circle_outline),
+            onTap: () {
+              Navigator.pushNamed(context, "add_wallet");
+            },
+          )
         ],
       ),
     );

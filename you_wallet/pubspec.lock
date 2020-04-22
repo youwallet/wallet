@@ -239,7 +239,7 @@ packages:
     source: hosted
     version: "1.1.6"
   hex:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: hex
       url: "https://pub.dartlang.org"

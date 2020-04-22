@@ -50,6 +50,7 @@ dependencies:
   flutter_slidable: ^0.5.4
   dio: ^3.0.9
   decimal: ^0.3.0
+  hex: ^0.1.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
