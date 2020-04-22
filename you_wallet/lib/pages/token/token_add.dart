@@ -152,16 +152,18 @@ class Page extends State<AddWallet> {
   Widget buildAppBar(BuildContext context) {
     return  new AppBar(
       title: new TextField(
+        style: TextStyle(fontSize: 18.0),
         decoration: InputDecoration(
             hintText: "输入合约地址",
             fillColor: Colors.black12,
-            contentPadding: new EdgeInsets.all(6.0),
+            contentPadding: new EdgeInsets.all(10.0),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(6.0),
+              borderRadius: BorderRadius.circular(30.0),
               borderSide: BorderSide(color: Colors.grey),
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(color: Colors.grey),
+              borderRadius: BorderRadius.circular(30.0),
             ),
         ),
         onSubmitted: (text) async {//内容提交(按回车)的回调

@@ -80,6 +80,7 @@ Widget walletCard(item, context) {
                   new Expanded(
 
                     child: new Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         new Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -117,20 +118,18 @@ Widget walletCard(item, context) {
                             )
                           ],
                         ),
-                        new Row(
-                          children: <Widget>[
-                            GestureDetector(
+                        new Container(
+                          child: GestureDetector(
                               child: new Text(
                                   Global.maskAddress(item['address']),
                                   style: TextStyle(
                                       fontWeight: FontWeight.w700
                                   )
                               ),
-                              onTap: () async {
+                              onTap: () {
                                 print(item['address']);
                               },
                             ),
-                          ],
                         )
                       ],
                     )
