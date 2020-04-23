@@ -21,13 +21,12 @@ class Token extends ChangeNotifier {
   }
 
   /// 获取token，只获取当前网络下的token
+  /// 从数据库中读出来的数据不能直接修改，否则报错read-only
+  /// 所以在查询的时候，直接就把最终的数据查出来，这样就不用过滤了
   void _fetchToken() async {
-    this._items = [];
     var sql = SqlUtil.setTable("tokens");
-    List arr = await sql.get();
     String network = Global.getPrefs('network');
-    arr.retainWhere((element)=>(element['network'] == network));
-    this._items = arr;
+    this._items = await sql.query(conditions: {'network': network});
     notifyListeners();
   }
 
