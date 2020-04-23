@@ -47,16 +47,17 @@ class Page extends State<TabWallet> {
 //    });
   }
 
-  @override // 页面回退时候触发
+  // 页面回退时候触发
+  // 切换网络后，当前钱包应该还是存在的，但是钱包的余额需要刷新
+  // 钱包是否存在跟网络没有关系，任何一个钱包，可以在任意网络上使用
+  @override
   void deactivate() async {
-//    var bool = ModalRoute.of(context).isCurrent;
-//    if (bool) {
-//      await _getWallets();
-//      String balance = await TokenService.getBalance(Provider.of<walletModel.Wallet>(context).currentWallet);
-//      setState(() {
-//        _balance = balance + 'Eth';
-//      });
-//    }
+    print('start deactivate');
+    var bool = ModalRoute.of(context).isCurrent;
+    if (bool) {
+      String address = Provider.of<walletModel.Wallet>(context).currentWalletObject['address'];
+      await Provider.of<walletModel.Wallet>(context).updateWallet(address);
+    }
   }
 
   @override
@@ -150,10 +151,6 @@ class Page extends State<TabWallet> {
                             icon: Icon(IconData(0xe600, fontFamily: 'iconfont'),color: Colors.white,),
                             onPressed: () {
                               eventBus.fire(TabChangeEvent(2));
-//                              print(item);
-//                              Navigator.pushNamed(context, "token_info",arguments:{
-//                                'address': item['address'],
-//                              });
                             },
                           ),
                         ],
