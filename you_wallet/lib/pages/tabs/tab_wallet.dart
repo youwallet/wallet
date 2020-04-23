@@ -148,7 +148,7 @@ class Page extends State<TabWallet> {
                               )
                           ),
                           new IconButton(
-                            icon: Icon(IconData(0xe600, fontFamily: 'iconfont'),color: Colors.white,),
+                            icon: Icon(IconData(0xe600, fontFamily: 'iconfont'),color: Colors.white),
                             onPressed: () {
                               eventBus.fire(TabChangeEvent(2));
                             },

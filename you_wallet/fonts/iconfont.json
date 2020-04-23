@@ -6,11 +6,46 @@
   "description": "",
   "glyphs": [
     {
-      "icon_id": "2531537",
-      "name": "转账",
-      "font_class": "zhuanzhang",
-      "unicode": "e616",
-      "unicode_decimal": 58902
+      "icon_id": "11993930",
+      "name": "BNB",
+      "font_class": "BNB",
+      "unicode": "e7ec",
+      "unicode_decimal": 59372
+    },
+    {
+      "icon_id": "11994009",
+      "name": "USDT",
+      "font_class": "USDT",
+      "unicode": "e7f8",
+      "unicode_decimal": 59384
+    },
+    {
+      "icon_id": "6204754",
+      "name": "成功",
+      "font_class": "chenggong1",
+      "unicode": "e64e",
+      "unicode_decimal": 58958
+    },
+    {
+      "icon_id": "8017484",
+      "name": "empty",
+      "font_class": "empty",
+      "unicode": "e6a6",
+      "unicode_decimal": 59046
+    },
+    {
+      "icon_id": "12911879",
+      "name": "空",
+      "font_class": "kong",
+      "unicode": "e615",
+      "unicode_decimal": 58901
+    },
+    {
+      "icon_id": "13113215",
+      "name": "空",
+      "font_class": "kong-copy",
+      "unicode": "e6ec",
+      "unicode_decimal": 59116
     },
     {
       "icon_id": "3105859",
@@ -20,25 +55,11 @@
       "unicode_decimal": 58903
     },
     {
-      "icon_id": "4365480",
-      "name": "扫码",
-      "font_class": "saoma",
-      "unicode": "e61d",
-      "unicode_decimal": 58909
-    },
-    {
-      "icon_id": "4892945",
-      "name": "银杏",
-      "font_class": "weibiaoti--",
-      "unicode": "e678",
-      "unicode_decimal": 59000
-    },
-    {
-      "icon_id": "5992794",
-      "name": "icon_以太坊",
-      "font_class": "icon_yitaifang",
-      "unicode": "e648",
-      "unicode_decimal": 58952
+      "icon_id": "2531537",
+      "name": "转账",
+      "font_class": "zhuanzhang",
+      "unicode": "e616",
+      "unicode_decimal": 58902
     },
     {
       "icon_id": "6272919",
@@ -53,6 +74,27 @@
       "font_class": "shoukuan",
       "unicode": "e624",
       "unicode_decimal": 58916
+    },
+    {
+      "icon_id": "5992794",
+      "name": "icon_以太坊",
+      "font_class": "icon_yitaifang",
+      "unicode": "e648",
+      "unicode_decimal": 58952
+    },
+    {
+      "icon_id": "4365480",
+      "name": "扫码",
+      "font_class": "saoma",
+      "unicode": "e61d",
+      "unicode_decimal": 58909
+    },
+    {
+      "icon_id": "4892945",
+      "name": "银杏",
+      "font_class": "weibiaoti--",
+      "unicode": "e678",
+      "unicode_decimal": 59000
     },
     {
       "icon_id": "10172816",

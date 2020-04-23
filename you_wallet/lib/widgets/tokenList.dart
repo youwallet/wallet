@@ -20,7 +20,7 @@ class tokenList extends StatelessWidget {
     List filterArr = [];
     this.arr.forEach((element){
       // 必须当前你选择的网络和当前你的钱包地址
-      if (element['network'] == this.network && element['wallet'] == this.currentWalletObject['address']) {
+      if (element['wallet'] == this.currentWalletObject['address']) {
         filterArr.add(element);
       }
     });
@@ -58,7 +58,15 @@ class tokenList extends StatelessWidget {
   }
 }
 
-
+Widget buildTokenIcon(String address) {
+  Map token = Global.hotToken.firstWhere((element)=>(element['address'] == address),orElse: ()=>({}));
+  print(token);
+  if (token.isEmpty) {
+    return Icon(IconData(0xe648, fontFamily: 'iconfont'),size: 50.0, color: Colors.black26);
+  } else {
+    return Icon(IconData(token['icon'], fontFamily: 'iconfont'),size: 50.0, color: token['color']);
+  }
+}
 
 
 Widget walletCard(item, context) {
@@ -71,11 +79,7 @@ Widget walletCard(item, context) {
                 children: <Widget>[
                   new Container(
                     margin: const EdgeInsets.only(right: 16.0),
-//                    decoration: new BoxDecoration(
-//                      border: new Border.all(width: 2.0, color: Colors.black26),
-//                      borderRadius: new BorderRadius.all(new Radius.circular(20.0)),
-//                    ),
-                    child: Icon(IconData(0xe648, fontFamily: 'iconfont'),size: 50.0, color: Colors.black26)
+                    child: buildTokenIcon(item['address'])
                   ),
                   new Expanded(
 
