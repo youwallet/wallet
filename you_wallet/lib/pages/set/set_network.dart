@@ -1,11 +1,9 @@
-import 'package:http/http.dart';
+
 import 'package:flutter/material.dart'; // 官方组件库
 import 'package:flutter/cupertino.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/network.dart';
-
+import 'package:youwallet/model/token.dart';
 
 
 class NetworkPage extends StatefulWidget {
@@ -53,7 +51,8 @@ class _NetworkPageState extends State<NetworkPage> {
   }
 
   void setNetWork(name) async{
-    Provider.of<Network>(context).changeNetwork(name);
+    await Provider.of<Network>(context).changeNetwork(name);
+    await Provider.of<Token>(context).refreshTokenList();
   }
 
 }

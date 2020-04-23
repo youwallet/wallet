@@ -34,7 +34,7 @@ class Network extends ChangeNotifier {
   }
 
 
-  void changeNetwork(String network) async {
+  Future<void> changeNetwork(String network) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("network", network);
     this._network = network;
