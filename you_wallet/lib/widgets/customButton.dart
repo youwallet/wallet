@@ -27,7 +27,9 @@ class CustomButton extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        RaisedButton(
+        FlatButton(
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
           shape: StadiumBorder(),
           child: Text(
               this.content,
@@ -35,7 +37,7 @@ class CustomButton extends StatelessWidget {
                   fontSize: 18.0
               )),
           padding: EdgeInsets.fromLTRB(60,8,60,8),
-          elevation: 0, // 按钮阴影高度
+          //elevation: 0, // 按钮阴影高度
           color: this.buttonMap[this.type],
           textColor: Colors.white,
           onPressed: () {

@@ -67,7 +67,7 @@ class UserMenu extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text('版本号'),
-                Text('v1.0.0')
+                Text('v1.0.1')
               ],
             ),
             leading: Icon(Icons.exit_to_app),
