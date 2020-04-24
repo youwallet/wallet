@@ -92,7 +92,7 @@ class TokenService {
     String nameString = '';
     List hexList = HEX.decode(name);
     for(var i = 0; i < hexList.length; i++) {
-      if (hexList[i] != 32 && hexList[i] != 4 && hexList[i] != 0) {
+      if (hexList[i] != 32 && hexList[i] != 4 && hexList[i] != 3 && hexList[i] != 0) {
         print(hexList[i]);
         String str = String.fromCharCode(hexList[i]);
         nameString = nameString + str;

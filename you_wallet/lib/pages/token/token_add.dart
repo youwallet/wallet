@@ -63,7 +63,7 @@ class Page extends State<AddWallet> {
   // 构建wrap用的小选项
   Widget buildTagItem(item) {
     return new Chip(
-      avatar: new Icon(Icons.star),
+      avatar: Icon(IconData(item['icon'], fontFamily: 'iconfont'),size: 20.0, color: item['color']),
       label: GestureDetector(
         child: new Text(item['name']),
         onTap: (){
