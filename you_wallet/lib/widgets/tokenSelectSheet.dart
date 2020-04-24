@@ -57,6 +57,9 @@ class Page extends State<TokenSelectSheet> {
     List tokens = Provider.of<Token>(context).items.where((e)=>(e['wallet'] == wallet)).toList();
     if (tokens.length == 0) {
       print('当前钱包没有token');
+      final snackBar =
+      new SnackBar(content: new Text('还没有添加token'));
+      Scaffold.of(context).showSnackBar(snackBar);
       return;
     }
     showModalBottomSheet(
