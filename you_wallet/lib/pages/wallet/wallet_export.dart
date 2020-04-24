@@ -116,13 +116,14 @@ class Page extends State<WalletExport> {
                 trailing: new Icon(Icons.keyboard_arrow_right),
                 onTap: () {
                   Navigator.of(context).pushNamed('getPassword').then((data) async {
-                    final mnemonic = await WalletCrypt(data, this.wallet['mnemonic']).decrypt();
+                    Map obj = data;
+                    final mnemonic = await WalletCrypt(obj['pwd'], this.wallet['mnemonic']).decrypt();
                     print(mnemonic);
                     if (mnemonic.split(" ").length == 12) {
                       Clipboard.setData(new ClipboardData(text: mnemonic));
                       this.showSnackbar('助记词已复制');
                     } else {
-                      this.showSnackbar('助记词导出错误，请核对密码');
+                      this.showSnackbar('该钱包没有助记词');
                     }
                   });
                 },
@@ -131,14 +132,15 @@ class Page extends State<WalletExport> {
                 title: Text('导出私钥'),
                 trailing: new Icon(Icons.keyboard_arrow_right),
                 onTap: () {
-                  Navigator.of(context).pushNamed('getPassword').then((pwd) async{
-                     final key = await WalletCrypt(pwd,this.wallet['privateKey']).decrypt();
-                     if (key.length != 64){
-                       this.showSnackbar('导出失败，请核对密码');
+                  Navigator.of(context).pushNamed('getPassword').then((obj){
+                    Map wallet = obj;
+                     final privateKey = wallet['privateKey'];
+                     if (obj == null) {
+                       this.showSnackbar('导出取消');
                      } else {
-                       ClipboardData data = new ClipboardData(text:key);
+                       ClipboardData data = new ClipboardData(text: privateKey);
                        Clipboard.setData(data);
-                       this.showSnackbar('已复制');
+                       this.showSnackbar('私钥导出成功，已复制到剪贴板');
                      }
                   });
 
