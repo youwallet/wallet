@@ -17,20 +17,18 @@ class TokenInfo extends StatefulWidget {
   State<StatefulWidget> createState() {
     // TODO: implement createState
 
-    return new Page(arguments: this.arguments);
+    return new Page();
   }
 }
 
 // 收款tab页
 class Page extends State<TokenInfo> {
 
-  Map arguments;
-  Page({this.arguments});
   final globalKey = GlobalKey<ScaffoldState>();
 
   @override // override是重写父类中的函数
   void initState()  {
-    print(this.arguments);
+    print(widget.arguments);
     super.initState();
   }
 
@@ -58,10 +56,11 @@ class Page extends State<TokenInfo> {
                   child: new Column(
                     children: <Widget>[
                       new Text(
-                          TokenService.maskAddress(this.arguments['address']),
+                          TokenService.maskAddress(widget.arguments['address']),
                           style: new TextStyle(
                               fontSize: 18.0,
-                              color: Colors.white
+                              color: Colors.white,
+                            fontWeight: FontWeight.w800
                           )
                       ),
                       new Container(
@@ -95,7 +94,7 @@ class Page extends State<TokenInfo> {
                               new Padding(
                                 padding: new EdgeInsets.all(10.0),
                                 child: new Text(
-                                  '合约地址',
+                                  widget.arguments['name']??'',
                                   style: TextStyle(
                                       fontSize: 16.0,
                                       height: 2
@@ -104,7 +103,7 @@ class Page extends State<TokenInfo> {
                               ),
                               QrImage(
 //                                backgroundColor:Colors.white,
-                                data: Provider.of<Wallet>(context).currentWallet,
+                                data: widget.arguments['address'],
                                 size: 100.0,
                               ),
                             ],
@@ -121,8 +120,8 @@ class Page extends State<TokenInfo> {
 
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
-      title: const Text('合约信息'),
-//      actions: this.appBarActions(),
+      title: Text('合约信息'),
+      actions: this.appBarActions(),
     );
   }
   // 定义bar右侧的icon按钮
@@ -133,7 +132,7 @@ class Page extends State<TokenInfo> {
         child: new IconButton(
           icon: new Icon(Icons.share ),
           onPressed: () {
-            Share.share( '');
+            Share.share(widget.arguments['address']??'');
           },
         ),
       )
@@ -141,7 +140,7 @@ class Page extends State<TokenInfo> {
   }
 
   void  _copyAddress() {
-    ClipboardData data = new ClipboardData(text:this.arguments['address']);
+    ClipboardData data = new ClipboardData(text:widget.arguments['address']);
     Clipboard.setData(data);
     this.showSnackbar('复制成功');
   }

@@ -101,9 +101,7 @@ Widget walletCard(item, context) {
                                       icon: Icon(IconData(0xe600, fontFamily: 'iconfont')),
                                       onPressed: () {
                                         print(item);
-                                        Navigator.pushNamed(context, "token_info",arguments:{
-                                          'address': item['address'],
-                                        });
+                                        Navigator.pushNamed(context, "token_info",arguments: item);
                                       },
                                     ),
                                   ],
