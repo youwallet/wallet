@@ -54,6 +54,7 @@ class Global {
     {'name': 'USDT', 'address':'0xdac17f958d2ee523a2206206994597c13d831ec7','color': Colors.green, 'icon': 0xe7f8},
     {'name': 'BNB', 'address':'0xB8c77482e45F1F44dE1745F52C74426C631bDD52','color': Colors.yellow, 'icon': 0xe7ec},
     {'name': 'SHT', 'address':'0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef','color': Colors.black26, 'icon': 0xe648},
+    {'name': 'EOS', 'address':'0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0','color': Colors.black, 'icon': 0xe7ef},
   ];
 
 

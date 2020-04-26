@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "11993945",
+      "name": "EOS",
+      "font_class": "EOS",
+      "unicode": "e7ef",
+      "unicode_decimal": 59375
+    },
+    {
       "icon_id": "11993930",
       "name": "BNB",
       "font_class": "BNB",
