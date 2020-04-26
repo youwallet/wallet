@@ -215,9 +215,7 @@ class Page extends State<TabWallet> {
           GestureDetector(
             child: new Icon(Icons.add_circle_outline),
             onTap: () {
-              Navigator.pushNamed(context, "add_token",arguments: {
-                'address': '0xdac17f958d2ee523a2206206994597c13d831ec7'
-              });
+              Navigator.pushNamed(context, "add_token",arguments: {});
             },
           )
         ],
