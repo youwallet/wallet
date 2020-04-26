@@ -193,7 +193,16 @@ class Page extends State<AddWallet> {
             text: '搜索中...',
           );
         });
-    int decimals = await  TokenService.getDecimals(text);
+    int decimals;
+    try {
+      decimals = await  TokenService.getDecimals(text);
+    } catch (e) {
+      print(e);
+      this.showSnackbar('当前网络没有搜索到该token');
+      Navigator.pop(context);
+      return;
+    }
+
     Future.wait([TokenService.getTokenName(text),TokenService.getTokenBalance({'address': text, 'decimals': decimals})]).then((list) {
       print(list);
       Map token = {};

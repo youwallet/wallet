@@ -126,6 +126,7 @@ class TokenService {
       "data": Global.funcHashes['getDecimals()']
     };
     var response = await Http().post(params: params, to: address);
+    print(response);
     return int.parse(response['result'].replaceFirst("0x",''), radix: 16);
   }
 

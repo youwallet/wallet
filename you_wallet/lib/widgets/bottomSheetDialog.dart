@@ -36,7 +36,11 @@ class BottomSheetDialog extends StatelessWidget {
         border: Border(bottom: BorderSide(color: Colors.grey,width: 0.5))
       ),
       child: ListTile(
-          title: Text(item['name'],textAlign: TextAlign.center),
+          title: Text(
+              item['name'],
+              textAlign: TextAlign.center,
+              style: new TextStyle(fontWeight: FontWeight.w700),
+          ),
           onTap: () {
             this.onSuccessChooseEvent(item);
             Navigator.of(context).pop();
