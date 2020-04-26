@@ -103,12 +103,11 @@ class Page extends State<TokenInfo> {
                               ),
                               QrImage(
 //                                backgroundColor:Colors.white,
-                                data: widget.arguments['address'],
+                                data: widget.arguments['address'] + ':token',
                                 size: 100.0,
                               ),
                             ],
                           )
-
                       ),
                     ],
                   ),

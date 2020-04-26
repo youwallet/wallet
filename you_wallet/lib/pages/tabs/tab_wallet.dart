@@ -107,8 +107,18 @@ class Page extends State<TabWallet> {
         width: 50.0,
         child: new IconButton(
           icon: new Icon(IconData(0xe61d, fontFamily: 'iconfont')),
-          onPressed: () {
-            Global.scan(context);
+          onPressed: () async {
+            String code = await Global.scan(context);
+            List arr = code.split(':');
+            if (arr[1] == 'token') {
+              Navigator.pushNamed(context, "add_token",arguments: {
+                'address': arr[0]
+              });
+            } else if (arr[1] == 'transfer') {
+
+            } else {
+              print('no thing');
+            }
           },
         ),
       )
@@ -205,7 +215,9 @@ class Page extends State<TabWallet> {
           GestureDetector(
             child: new Icon(Icons.add_circle_outline),
             onTap: () {
-              Navigator.pushNamed(context, "add_wallet");
+              Navigator.pushNamed(context, "add_token",arguments: {
+                'address': '0xdac17f958d2ee523a2206206994597c13d831ec7'
+              });
             },
           )
         ],

@@ -146,8 +146,7 @@ class Global {
     try {
       // 此处为扫码结果，barcode为二维码的内容
       String barcode = await BarcodeScanner.scan();
-//      return barcode;
-      showSnackBar(context, barcode);
+      return barcode;
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
         // 未授予APP相机权限

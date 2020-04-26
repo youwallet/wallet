@@ -7,20 +7,49 @@ import 'package:youwallet/model/token.dart';
 import 'package:youwallet/global.dart';
 
 
-class AddWallet extends StatefulWidget {
+class AddToken extends StatefulWidget {
+
+  final arguments;
+
+  AddToken({Key key ,this.arguments}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     return new Page();
   }
 }
 
-class Page extends State<AddWallet> {
+class Page extends State<AddToken> {
 
   List tokenArr = new List();
   Map  token = {};
   bool showHotToken = true;
 
   final globalKey = GlobalKey<ScaffoldState>();
+
+
+  //数据初始化
+  @override
+  void initState() {
+    super.initState();
+    print('start initState');
+    print(widget.arguments);
+    // initState在整个生命周期中只执行一次，
+    // 所以把初始化异步获取数据的代码放在这里
+    // 为什么不放在didChangeDependencies里面呢？因为它会导致这个逻辑被自行两次
+    // 这里一定要用Future.delayed把异步逻辑包起来，
+    // 因为页面还没有build，没有context，执行执行会发生异常
+    if (!widget.arguments.isEmpty) {
+      Future.delayed(Duration.zero, (){
+        this.startSearch(widget.arguments['address']);
+      });
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
 
 
   @override
