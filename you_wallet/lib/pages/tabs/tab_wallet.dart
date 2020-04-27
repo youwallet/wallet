@@ -115,9 +115,10 @@ class Page extends State<TabWallet> {
                 'address': arr[0]
               });
             } else if (arr[1] == 'transfer') {
-
+              Global.setToAddress(arr[0]);
+              eventBus.fire(TabChangeEvent(3));
             } else {
-              print('no thing');
+              print(code);
             }
           },
         ),

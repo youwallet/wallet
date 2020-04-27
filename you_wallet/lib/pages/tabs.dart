@@ -50,7 +50,7 @@ class _ContainerPageState extends State<TabsPage> {
   List wallets = [];
 
   // 构造函数
-//  _ContainerPageState({Key key, @required this.myIndex,}) : super(key: key);
+  // _ContainerPageState({Key key, @required this.myIndex,}) : super(key: key);
 
   @override
   void initState() {

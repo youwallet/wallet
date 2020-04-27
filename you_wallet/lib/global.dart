@@ -27,16 +27,18 @@ class Global {
   // 可选的主题列表
   static List<MaterialColor> get themes => _themes;
 
+  // 是否为release版
+  static bool get isRelease => bool.fromEnvironment("dart.vm.product");
+
+  // 扫码后保存一个全局的地址，跳转转账页面时，显示这个地址
+  static String _toAddress = '';
+  static String get toAddress => _toAddress;
+
   // 代理合约，用来给token授权
   // static final proxy = "0x141A60c20026d88385a5339191C3950285e41072";
   static const proxy = "0x6BeE8B8a06F2Df4c3e3BE7E6ca8E489602378186";
 
   // youWallet钱包合约
-  // static final tempMatchAddress= "0x3edde3202e42a6c129A399a7e063C6E236239202";
-  // static final tempMatchAddress = "0x6c414F9b4daBfD4403F33EcC6d8B2142ff068C46";
-  // static final tempMatchAddress = "0x675E05f5Dd6129bd5BE92DBF8319FC5DEB4dE94b";
-  // static final tempMatchAddress = "0x4a5277ba2952Cb1f9a0d2E9F92c1F386ed4a41b7";
-  // static final tempMatchAddress = "0xFf067F015Fc6803cDe9D9B0FfAB77803Ba4dF43A";
   static const tempMatchAddress = "0x950b5C568c46B1abcDC21F7348d9F29B7c64462a";
 
   // 收取交易费的账户relayer ，测试阶段用SHT的合约账户代替
@@ -60,7 +62,7 @@ class Global {
 
   // gas price 10Gwei
   static final gasPrice = BigInt.from(10000000000);
-//  static const gasPrice = 10000000000;
+  // static const gasPrice = 10000000000;
 
   // gas limit 30万
   static const gasLimit = 5000000;
@@ -96,9 +98,6 @@ class Global {
 };
 
   static const myKey = "v3/37caa7b8b2c34ced8819de2b3853c8a2";
-
-  // 是否为release版
-  static bool get isRelease => bool.fromEnvironment("dart.vm.product");
 
   static Future init() async {
     _prefs = await SharedPreferences.getInstance();
@@ -171,6 +170,11 @@ class Global {
   static showSnackBar(BuildContext context, String val) {
     final snackBar = new SnackBar(content: new Text(val));
     Scaffold.of(context).showSnackBar(snackBar);
+  }
+
+  static setToAddress(val) {
+    print(val);
+    _toAddress = val;
   }
 
 }

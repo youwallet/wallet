@@ -11,6 +11,7 @@ import 'package:youwallet/db/sql_util.dart';
 import 'package:youwallet/widgets/customButton.dart';
 import 'package:youwallet/widgets/tokenSelectSheet.dart';
 import 'package:youwallet/widgets/loadingDialog.dart';
+import 'package:youwallet/global.dart';
 
 class TabTransfer extends StatefulWidget {
   @override
@@ -24,22 +25,30 @@ class Page extends State<TabTransfer> {
   String balance = '';
   final globalKey = GlobalKey<ScaffoldState>();
   var value;
+  static String defaultToAddress = '';
   // 定义TextEditingController()接收编辑框的输入值
   final controllerPrice = TextEditingController();
-  final controllerAddress = TextEditingController();
+  TextEditingController controllerAddress;
   Map token = {}; // 选择的token
 
   //数据初始化
   @override
   void initState() {
+    print('start tab 3 init');
+    print(Global.toAddress);
     super.initState();
 
     // 监听页面切换，刷新交易的状态
     eventBus.on<TabChangeEvent>().listen((event) {
       print("event listen =》${event.index}");
       if (event.index == 3) {
-        print('刷新订单状态');
+        print('刷新当前的token余额');
+        print(Global.toAddress);
         this._getBalance();
+        this.setState((){
+          // defaultToAddress = Global.toAddress;
+          controllerAddress = TextEditingController(text: Global.toAddress);
+        });
       } else {
         print('do nothing');
       }
@@ -133,6 +142,7 @@ class Page extends State<TabTransfer> {
                 ],
               ),
             ),
+            // TextEditingController(text: this.data['gasLimit']),
             new Container(
               height: 36.0,
               child: new TextField(
@@ -244,6 +254,8 @@ class Page extends State<TabTransfer> {
       return;
     }
 
+    // 对转账金额做数字校验
+    // 如果用户的钱包余额为0，还要发起转账吗？
     if (this.controllerPrice.text == '') {
       this.showSnackbar('请输入转账金额');
       return;
