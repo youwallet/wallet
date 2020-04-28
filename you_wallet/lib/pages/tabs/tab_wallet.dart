@@ -118,7 +118,9 @@ class Page extends State<TabWallet> {
               Global.setToAddress(arr[0]);
               eventBus.fire(TabChangeEvent(3));
             } else {
-              print(code);
+              // print(code);
+              // 如果模式无法匹配，就跳转扫码结果页面，显示扫码内容
+              Navigator.pushNamed(context, "add_token",arguments: code);
             }
           },
         ),
