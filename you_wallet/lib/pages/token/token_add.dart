@@ -179,24 +179,28 @@ class Page extends State<AddToken> {
   // 构建顶部tabBar
   Widget buildAppBar(BuildContext context) {
     return  new AppBar(
-      title: new TextField(
-        style: TextStyle(fontSize: 18.0),
-        decoration: InputDecoration(
+      title: new Container(
+        padding: const EdgeInsets.only(left: 8.0),
+        decoration: new BoxDecoration(
+          borderRadius: new BorderRadius.all(new Radius.circular(30.0)),
+          border: new Border.all(width: 1.0, color: Colors.black26),
+        ),
+        height: 35.0,
+        child: new TextField(
+          style: TextStyle(fontSize: 18.0),
+          decoration: InputDecoration(
             hintText: "输入合约地址",
             fillColor: Colors.black12,
-            contentPadding: new EdgeInsets.all(10.0),
+            contentPadding: EdgeInsets.all(2),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(30.0),
-              borderSide: BorderSide(color: Colors.grey),
+                borderSide: BorderSide.none
             ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey),
-              borderRadius: BorderRadius.circular(30.0),
-            ),
-        ),
-        onSubmitted: (text) async {//内容提交(按回车)的回调
+          ),
+          onSubmitted: (text) async {
+            //内容提交(按回车)的回调
             this.startSearch(text);
-        },
+          },
+        ),
       ),
       actions: this.appBarActions(),
     );
