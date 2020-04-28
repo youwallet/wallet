@@ -110,7 +110,6 @@ class Page extends State<TabWallet> {
           onPressed: () async {
             String code = await Global.scan(context);
             if (code == null) {
-              Navigator.pushNamed(context, "scan",arguments: '0xshdhochjsksk');
               return;
             }
             List arr = code.split(':');
