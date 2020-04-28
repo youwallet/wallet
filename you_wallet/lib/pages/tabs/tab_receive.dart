@@ -103,7 +103,7 @@ class Page extends State<TabReceive> {
                             ),
                           ),
                           QrImage(
-                            data: Provider.of<Wallet>(context).currentWallet,
+                            data: Provider.of<Wallet>(context).currentWallet + ':transfer',
                             size: 100.0,
                           ),
                         ],
