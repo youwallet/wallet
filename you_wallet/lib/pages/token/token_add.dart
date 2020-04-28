@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:youwallet/service/token_service.dart';
 import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:youwallet/widgets/tokenList.dart';
+import 'package:youwallet/widgets/tokenLogo.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
 import 'package:youwallet/global.dart';
@@ -112,9 +113,7 @@ class Page extends State<AddToken> {
               children: <Widget>[
                 new Container(
                     margin: const EdgeInsets.only(right: 16.0),
-                    child: Icon(
-                        IconData(0xe648, fontFamily: 'iconfont'), size: 50.0,
-                        color: Colors.black26)
+                    child: TokenLogo(address: item['address'])
                 ),
                 new Expanded(
                   child: new Column(

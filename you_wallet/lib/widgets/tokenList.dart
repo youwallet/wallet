@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
 import 'package:youwallet/widgets/listEmpty.dart';
+import 'package:youwallet/widgets/tokenLogo.dart';
 import 'package:youwallet/global.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
@@ -58,15 +59,15 @@ class tokenList extends StatelessWidget {
   }
 }
 
-Widget buildTokenIcon(String address) {
-  Map token = Global.hotToken.firstWhere((element)=>(element['address'] == address),orElse: ()=>({}));
-  print(token);
-  if (token.isEmpty) {
-    return Icon(IconData(0xe648, fontFamily: 'iconfont'),size: 50.0, color: Colors.black26);
-  } else {
-    return Icon(IconData(token['icon'], fontFamily: 'iconfont'),size: 50.0, color: token['color']);
-  }
-}
+//Widget buildTokenIcon(String address) {
+//  Map token = Global.hotToken.firstWhere((element)=>(element['address'] == address),orElse: ()=>({}));
+//  print(token);
+//  if (token.isEmpty) {
+//    return Icon(IconData(0xe648, fontFamily: 'iconfont'),size: 50.0, color: Colors.black26);
+//  } else {
+//    return Icon(IconData(token['icon'], fontFamily: 'iconfont'),size: 50.0, color: token['color']);
+//  }
+//}
 
 
 Widget walletCard(item, context) {
@@ -79,7 +80,7 @@ Widget walletCard(item, context) {
                 children: <Widget>[
                   new Container(
                     margin: const EdgeInsets.only(right: 16.0),
-                    child: buildTokenIcon(item['address'])
+                    child: TokenLogo(address: item['address'])
                   ),
                   new Expanded(
 
