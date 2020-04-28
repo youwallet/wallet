@@ -1,9 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:youwallet/widgets/customButton.dart';
-
-import 'package:provider/provider.dart';
-import 'package:youwallet/model/wallet.dart';
+import 'package:flutter/services.dart';
 
 class Scan extends StatefulWidget {
 
@@ -27,39 +25,48 @@ class Page extends State<Scan> {
     return Scaffold(
         key: globalKey,
         appBar: AppBar(
-          elevation: Provider.of<Wallet>(context).items.length > 0 ? 3:0,
-          title: Text(""),
+          elevation: 3,
+          title: Text("扫码结果"),
         ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              new Text(
-                  '创建您的第一个数字钱包',
-                  style: new TextStyle(
-                      fontSize: 28.0,
-                      color: Colors.lightBlue
-                  )
-              ),
               new Container(
-                  margin: const EdgeInsets.only(top: 50.0, bottom: 60.0),
-                  child: new Image.asset(
-                      'images/new_wallet.png'
-                  ),
+                color: Colors.black12,
+                padding: const EdgeInsets.all(12.0),
+                margin: const EdgeInsets.only(bottom: 20.0),
+                width: MediaQuery.of(context).size.width * 0.8,
+                height: 100.0,
+                child: new Text(
+                    widget.arguments??'',
+                    style: new TextStyle(
+                        fontSize: 24.0,
+                        color: Colors.lightBlue
+                    )
+                ),
               ),
               new CustomButton(
-                content: '创建钱包',
-                onSuccessChooseEvent:(res){
-                  Navigator.pushNamed(context, "set_wallet_name");
-                }
-              ),
-              new CustomButton(
-                  content: '导入钱包',
+                  content: '复制',
                   onSuccessChooseEvent:(res){
-                    Navigator.pushNamed(context, "load_wallet");
+                    ClipboardData data = new ClipboardData(text: widget.arguments??'');
+                    Clipboard.setData(data);
+                    this.showSnackbar('复制成功');
                   }
               )
+//              new CustomButton(
+//                content: '添加token',
+//                onSuccessChooseEvent:(res){
+//                  Navigator.pushNamed(context, "set_wallet_name");
+//                }
+//              ),
+//              new CustomButton(
+//                  content: '转账',
+//                  onSuccessChooseEvent:(res){
+//                    Navigator.pushNamed(context, "load_wallet");
+//                  }
+//              )
             ],
           ),
         )

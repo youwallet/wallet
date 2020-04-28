@@ -109,6 +109,10 @@ class Page extends State<TabWallet> {
           icon: new Icon(IconData(0xe61d, fontFamily: 'iconfont')),
           onPressed: () async {
             String code = await Global.scan(context);
+            if (code == null) {
+              Navigator.pushNamed(context, "scan",arguments: '0xshdhochjsksk');
+              return;
+            }
             List arr = code.split(':');
             if (arr[1] == 'token') {
               Navigator.pushNamed(context, "add_token",arguments: {
@@ -120,7 +124,7 @@ class Page extends State<TabWallet> {
             } else {
               // print(code);
               // 如果模式无法匹配，就跳转扫码结果页面，显示扫码内容
-              Navigator.pushNamed(context, "add_token",arguments: code);
+              Navigator.pushNamed(context, "scan",arguments: code);
             }
           },
         ),
