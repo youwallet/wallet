@@ -32,7 +32,7 @@ class InputDialog extends Dialog {
                 children: <Widget>[
                   new Container(
                       padding: const EdgeInsets.fromLTRB(
-                          10.0, 40.0, 10.0, 10.0),
+                          0.0, 40.0, 0.0, 0.0),
                       decoration: ShapeDecoration(
                           color: Color(0xFFFFFFFF),
                           shape: RoundedRectangleBorder(
@@ -52,40 +52,66 @@ class InputDialog extends Dialog {
                                     )))),
                         // 内容区域
                         new Container(
+                          decoration: new BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(
+                                      color: Colors.black26,
+                                      width: 1.0
+                                  ) // 只设置顶部边框
+                              )
+                          ),
                           padding: new EdgeInsets.all(10.0),
                           child: new TextField(
                             controller: this.controller,
 //                            controller: this._input,
                             decoration: InputDecoration(
                               hintText: this.hintText,
-                            )
+
+                              border: OutlineInputBorder(
+                                // borderSide: BorderSide(color: Colors.grey),
+                                  borderSide: BorderSide.none
+                              ),
+//                              focusedBorder: OutlineInputBorder(
+//                                borderSide: BorderSide(color: Colors.grey),
+//                              ),
+                            ),
                           ),
                         ),
                         // 选择按钮区域
                         new Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             mainAxisSize: MainAxisSize.max,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
-                              _buttonChooseItemWid(1),
-                              _buttonChooseItemWid(2)
+                              _buttonChooseItemWid(context,1),
+                              Text('|',style: TextStyle(
+                                  color: Colors.black26,
+                                  fontSize: 30.0)),
+                              _buttonChooseItemWid(context,2)
                             ])
-                      ]))
-                ])));
+                      ])
+                  )
+                ]
+            )
+        )
+    );
   }
 
-  Widget _buttonChooseItemWid(var gender) {
+  Widget _buttonChooseItemWid(BuildContext context, var gender) {
     return GestureDetector(
         onTap: gender == 1 ? this.onCancelChooseEvent : this.onSuccessChooseEvent,
         child: Container(
           alignment: Alignment.center,
-          width: 100,
-          height: 40,
-          color: gender == 1 ? Colors.black12: Colors.lightBlue,
+          // width: MediaQuery.of(context).size.width*0.5,
+          height: 60,
+//          color: gender == 1 ? Colors.black12: Colors.lightBlue,
           child: Text(gender == 1 ? '取消' : '确定',
               style: TextStyle(
-                  color: gender == 1 ? Colors.white : Colors.white,
-                  fontSize: 15.0)),
+                  color: gender == 1 ? Colors.black54 : Colors.lightBlue,
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w700
+              )
+          ),
         )
     );
   }

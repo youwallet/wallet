@@ -34,7 +34,8 @@ class CustomButton extends StatelessWidget {
           child: Text(
               this.content,
               style: new TextStyle(
-                  fontSize: 18.0
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.w700
               )),
           padding: EdgeInsets.fromLTRB(60,8,60,8),
           //elevation: 0, // 按钮阴影高度

@@ -117,8 +117,11 @@ class Page extends State<WalletExport> {
                 onTap: () {
                   Navigator.of(context).pushNamed('getPassword').then((data) async {
                     Map obj = data;
+                    if (obj == null) {
+                      this.showSnackbar('取消导出');
+                      return;
+                    }
                     final mnemonic = await WalletCrypt(obj['pwd'], this.wallet['mnemonic']).decrypt();
-                    print(mnemonic);
                     if (mnemonic.split(" ").length == 12) {
                       Clipboard.setData(new ClipboardData(text: mnemonic));
                       this.showSnackbar('助记词已复制');
@@ -134,10 +137,10 @@ class Page extends State<WalletExport> {
                 onTap: () {
                   Navigator.of(context).pushNamed('getPassword').then((obj){
                     Map wallet = obj;
-                     final privateKey = wallet['privateKey'];
                      if (obj == null) {
                        this.showSnackbar('导出取消');
                      } else {
+                       final privateKey = wallet['privateKey'];
                        ClipboardData data = new ClipboardData(text: privateKey);
                        Clipboard.setData(data);
                        this.showSnackbar('私钥导出成功，已复制到剪贴板');

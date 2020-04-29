@@ -12,6 +12,8 @@ import 'package:youwallet/widgets/customButton.dart';
 import 'package:youwallet/widgets/tokenSelectSheet.dart';
 import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:youwallet/global.dart';
+import 'package:decimal/decimal.dart';
+import 'package:youwallet/widgets/inputDialog.dart';
 
 class TabTransfer extends StatefulWidget {
   @override
@@ -26,10 +28,18 @@ class Page extends State<TabTransfer> {
   final globalKey = GlobalKey<ScaffoldState>();
   var value;
   static String defaultToAddress = '';
+
   // 定义TextEditingController()接收编辑框的输入值
   final controllerPrice = TextEditingController();
+
+  // 定义TextEditingController()接收收款地址的输入值
   TextEditingController controllerAddress;
-  Map token = {}; // 选择的token
+
+  // 选择的token
+  Map token = {};
+
+  // 定义TextEditingController()，接收联系人备注
+  TextEditingController _addressRemarkInput;
 
   //数据初始化
   @override
@@ -46,7 +56,6 @@ class Page extends State<TabTransfer> {
         print(Global.toAddress);
         this._getBalance();
         this.setState((){
-          // defaultToAddress = Global.toAddress;
           controllerAddress = TextEditingController(text: Global.toAddress);
         });
       } else {
@@ -240,7 +249,24 @@ class Page extends State<TabTransfer> {
                 onSuccessChooseEvent:(res) async{
                    this.checkInput();
                 }
+            ),
+            new Container(
+              padding: const EdgeInsets.only(top: 40.0),
+              width:double.infinity,
+              child: new Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text('历史联系人'),
+                  Wrap(
+                      spacing: 10.0, // 主轴(水平)方向间距
+                      runSpacing: 4.0, // 纵轴（垂直）方向间距
+                      children: Global.hotToken.map((item) => buildTagItem(item)).toList()
+                  )
+                ],
+              )
             )
+
+
           ],
         ),
       ),
@@ -255,9 +281,22 @@ class Page extends State<TabTransfer> {
     }
 
     // 对转账金额做数字校验
-    // 如果用户的钱包余额为0，还要发起转账吗？
-    if (this.controllerPrice.text == '') {
-      this.showSnackbar('请输入转账金额');
+    try {
+      if (Decimal.parse(this.controllerPrice.text) <= Decimal.parse('0')) {
+        this.showSnackbar('金额必须大于0');
+        return;
+      }
+      List strs = this.controllerPrice.text.split('.');
+      if (strs.length == 2) {
+        if (strs[1].length > Global.priceDecimal) {
+          this.showSnackbar('价格小数最多${Global.priceDecimal}位，你输入了${strs[1].length}位');
+          return;
+        }
+      }
+
+    } catch (e) {
+      print(e);
+      this.showSnackbar('你输入的金额无法识别');
       return;
     }
 
@@ -410,6 +449,55 @@ class Page extends State<TabTransfer> {
         });
       }
     }
+  }
+
+  // 构建wrap用的小选项
+  Widget buildTagItem(item) {
+    return new Chip(
+        avatar: Icon(Icons.people,size: 20.0, color: Colors.black26),
+        label: GestureDetector(
+          child: new Text(item['name']),
+          onTap: (){
+            print(item);
+            this.setState((){
+              controllerAddress = TextEditingController(text: item['address']);
+            });
+          },
+        ),
+        deleteIcon: Icon(Icons.edit,size: 20.0, color: Colors.black26),
+        onDeleted: () {
+          print(item);
+          this.editAddressRemark(item);
+        },
+    );
+  }
+
+  // 调起输入框，输入联系人备注
+  void editAddressRemark(Map item){
+    setState(() {
+      _addressRemarkInput = TextEditingController(text: item['address']);
+    });
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return InputDialog(
+              title: '编辑联系人备注',
+              hintText: '请输入',
+              controller: this._addressRemarkInput,
+              onCancelChooseEvent: () {
+                Navigator.pop(context);
+              },
+              onSuccessChooseEvent: () {
+                this.editRemarkCallback();
+              });
+        });
+  }
+
+  // 编辑联系人的回调函数
+  editRemarkCallback() {
+    print(this._addressRemarkInput.text);
+    Navigator.pop(context);
   }
 
   void saveTransfer(String fromAddress, String toAddress, String num, String txnHash, Map token) async{
