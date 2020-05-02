@@ -5,6 +5,7 @@ import 'package:youwallet/widgets/modalDialog.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart';
 import 'package:youwallet/model/token.dart';
+import 'package:youwallet/model/book.dart';
 import 'package:youwallet/service/trade.dart';
 import 'package:youwallet/bus.dart';
 import 'package:youwallet/db/sql_util.dart';
@@ -55,6 +56,7 @@ class Page extends State<TabTransfer> {
         print('刷新当前的token余额');
         print(Global.toAddress);
         this._getBalance();
+        // this._getBookList();
         this.setState((){
           controllerAddress = TextEditingController(text: Global.toAddress);
         });
@@ -257,11 +259,16 @@ class Page extends State<TabTransfer> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text('历史联系人'),
-                  Wrap(
-                      spacing: 10.0, // 主轴(水平)方向间距
-                      runSpacing: 4.0, // 纵轴（垂直）方向间距
-                      children: Global.hotToken.map((item) => buildTagItem(item)).toList()
-                  )
+                  Consumer<Book>(
+                    builder: (context, Book, child) {
+                      return Wrap(
+                          spacing: 10.0, // 主轴(水平)方向间距
+                          runSpacing: 4.0, // 纵轴（垂直）方向间距
+                          // children: Global.hotToken.map((item) => buildTagItem(item)).toList()
+                          children: Book.items.map((item) => buildTagItem(item)).toList()
+                      );
+                    },
+                  ),
                 ],
               )
             )
@@ -392,6 +399,17 @@ class Page extends State<TabTransfer> {
     }
   }
 
+  // 更新联系人
+//  Future<void> _getBookList() async {
+//      print('_getBookList');
+//      List res = await Provider.of<Book>(context).getBookList();
+//      print(res);
+////      setState(() {
+////        this.balance =  balance;
+////      });
+//
+//  }
+
   // 显示提示
   void showSnackbar(String text) {
     final snackBar = SnackBar(content: Text(text));
@@ -416,11 +434,14 @@ class Page extends State<TabTransfer> {
     Navigator.pushNamed(context, "getPassword").then((obj) async{
       try {
         String txnHash = await Trade.sendToken(from, to, num, this.token, obj);
+        // 保存转账记录
         this.saveTransfer(from, to, num, txnHash, this.token);
-
+        // 保存转账人到常用联系人表
+        await Provider.of<Book>(context).saveBookAddress([to, '']);
         // 拿到hash值，根据hash值查询以太坊打包是否成功
         this.checkOrderStatus(txnHash, 0);
       } catch (e) {
+        print(e);
         this.showSnackbar(e.toString());
         Navigator.pop(context);
       }
@@ -454,9 +475,9 @@ class Page extends State<TabTransfer> {
   // 构建wrap用的小选项
   Widget buildTagItem(item) {
     return new Chip(
-        avatar: Icon(Icons.people,size: 20.0, color: Colors.black26),
+        // avatar: Icon(Icons.people,size: 20.0, color: Colors.black26),
         label: GestureDetector(
-          child: new Text(item['name']),
+          child: new Text(item['remark']!=''?item['remark']:item['address']),
           onTap: (){
             print(item);
             this.setState((){
@@ -466,7 +487,6 @@ class Page extends State<TabTransfer> {
         ),
         deleteIcon: Icon(Icons.edit,size: 20.0, color: Colors.black26),
         onDeleted: () {
-          print(item);
           this.editAddressRemark(item);
         },
     );
@@ -475,7 +495,7 @@ class Page extends State<TabTransfer> {
   // 调起输入框，输入联系人备注
   void editAddressRemark(Map item){
     setState(() {
-      _addressRemarkInput = TextEditingController(text: item['address']);
+      _addressRemarkInput = TextEditingController(text: item['remark']??item['address']);
     });
     showDialog(
         context: context,
@@ -489,14 +509,18 @@ class Page extends State<TabTransfer> {
                 Navigator.pop(context);
               },
               onSuccessChooseEvent: () {
-                this.editRemarkCallback();
+                this.editRemarkCallback(item);
               });
         });
   }
 
   // 编辑联系人的回调函数
-  editRemarkCallback() {
-    print(this._addressRemarkInput.text);
+  editRemarkCallback(Map item) async {
+    print(item);
+    await Provider.of<Book>(context).updateBookReamrk({
+      'remark': this._addressRemarkInput.text,
+      'address': item['address']
+    });
     Navigator.pop(context);
   }
 

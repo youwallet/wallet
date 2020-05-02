@@ -65,4 +65,12 @@ class SqlTable{
     createTime TEXT,
     status TEXT);
     """;
+
+  // 常用转账人
+  static final String  sql_createTable_book = """
+    CREATE TABLE book (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, 
+    address TEXT NOT NULL UNIQUE,
+    remark TEXT);
+  """;
 }

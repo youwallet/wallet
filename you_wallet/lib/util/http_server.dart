@@ -100,8 +100,6 @@ class Http{
     } else {
       data['params'] = params;
     }
-    print('发送数据准备完毕');
-//    print(data);
     try{
       response = await _dio.post(
           url,
@@ -109,6 +107,7 @@ class Http{
           cancelToken:cancelToken
       );
       print('请求结束======');
+      print(response.data);
     }on DioError catch(e){
       if(CancelToken.isCancel(e)){
         print('get请求取消! ' + e.message);

@@ -16,6 +16,7 @@ import 'package:youwallet/model/token.dart';
 import 'package:youwallet/model/wallet.dart';
 import 'package:youwallet/model/network.dart';
 import 'package:youwallet/model/deal.dart';
+import 'package:youwallet/model/book.dart';
 
 // 官方的国际化插件
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -44,7 +45,8 @@ void main() async {
           ChangeNotifierProvider<Token>(create: (_) => Token()),
           ChangeNotifierProvider<Wallet>(create: (_) => Wallet()),
           ChangeNotifierProvider<Network>(create: (_) => Network()),
-          ChangeNotifierProvider<Deal>(create: (_) => Deal())
+          ChangeNotifierProvider<Deal>(create: (_) => Deal()),
+          ChangeNotifierProvider<Book>(create: (_) => Book())
         ],
         child: MyApp(),
       ),

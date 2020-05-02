@@ -339,7 +339,14 @@ class Page extends State<LoadWallet> {
           );
         });
 
-    int id = await Provider.of<myWallet.Wallet>(context).add(item,pwd);
+    int id;
+    try {
+      id = await Provider.of<myWallet.Wallet>(context).add(item,pwd);
+    } catch (e) {
+      print(e);
+      Navigator.pop(context);
+    }
+
     if (id > 0) {
        Navigator.pushNamedAndRemoveUntil(context, "wallet_success", (route) => route == null);
       // 删除路由栈中除了顶级理由之外的路由
