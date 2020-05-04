@@ -16,7 +16,6 @@ https://github.com/youwallet/wallet/wiki
 * 挂买/卖单
 * 去中化撮合交易
 
-
 ### 钱包功能
 `包含了ETH钱包的基础功能`
 * 创建管理新ETH钱包
@@ -39,8 +38,6 @@ https://github.com/youwallet/wallet/wiki
 
 <img src="https://github.com/youwallet/wallet/blob/master/screenshots/%E5%B8%81%E5%B8%81%E5%85%91%E6%8D%A2.gif" width = "294" height = "486" div align=middle />
 
-### 以太坊网络切换
-`可以在以太坊的“主网”与“测试网”之间切换`
 
 ## Install
 This project uses node and npm. Go check them out if you don't have them locally installed.
