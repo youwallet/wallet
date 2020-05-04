@@ -16,8 +16,6 @@ https://github.com/youwallet/wallet/wiki
 * 挂买/卖单
 * 去中化撮合交易
 
-***
-
 
 ### 钱包功能
 `包含了ETH钱包的基础功能`
