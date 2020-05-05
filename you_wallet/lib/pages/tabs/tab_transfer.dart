@@ -258,7 +258,7 @@ class Page extends State<TabTransfer> {
               child: new Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text('历史联系人'),
+                  Text(Provider.of<Book>(context).items.length>0?'历史联系人':''),
                   Consumer<Book>(
                     builder: (context, Book, child) {
                       return Wrap(
