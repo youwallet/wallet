@@ -366,23 +366,6 @@ class Page extends State<TabTransfer> {
     ];
   }
 
-  // 构建进度条
-  _buildCustomStepper2(){
-    return CustomStepper2(
-      currentStep: 1,
-      type: CustomStepperType2.horizontal,
-      steps: ['慢速', '常规', '快速']
-          .map(
-            (s) => CustomStep2(title: Text(s), content: Container(), isActive: true),
-      )
-          .toList(),
-      controlsBuilder: (BuildContext context,
-          {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
-        return Container();
-      },
-    );
-  }
-
   // 更新当前选中的token的余额
   Future<void> _getBalance() async {
     print('start ${this.token}');

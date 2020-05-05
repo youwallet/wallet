@@ -63,6 +63,7 @@ class Book extends ChangeNotifier {
     String sqlInsert ='INSERT INTO book(address, remark) VALUES(?,?)';
     int id = await sql.rawInsert(sqlInsert, list);
     print("saveBookAddress id => ${id}");
+    this.getBookList();
     return id;
   }
 
