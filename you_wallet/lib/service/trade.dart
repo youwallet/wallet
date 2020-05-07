@@ -330,7 +330,7 @@ class Trade {
 
   static Future<String> sendToken(String fromAddress, String toAddress, String num, Map token, Map obj) async {
      print('start sendToken');
-     final hexNum = (BigInt.parse(num)*BigInt.from(1000000000000000000)).toRadixString(16);
+     final hexNum = (BigInt.parse(num)*BigInt.from(pow(10,token['decimals']))).toRadixString(16);
      String postData = '${func['transfer(address,uint256)']}${toAddress.replaceFirst("0x", "").padLeft(64, '0')}${hexNum.padLeft(64,'0')}';
      return await Http().transaction(token['address'], obj, postData);
   }
