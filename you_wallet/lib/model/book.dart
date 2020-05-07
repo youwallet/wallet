@@ -33,15 +33,15 @@ class Book extends ChangeNotifier {
   }
 
   /// 更新订单匹配的交易额到数据库
-  Future<int> updateFilled(Map item, String filled ) async {
-    var sql = SqlUtil.setTable("trade");
-    String status = '进行中';
-    if(double.parse(item['amount']) == double.parse(filled)) {
-      status = '成功';
-    }
-    int i = await sql.update({'filled': filled, 'status': status}, 'txnHash', item['txnHash']);
-    return i;
-  }
+//  Future<int> updateFilled(Map item, String filled ) async {
+//    var sql = SqlUtil.setTable("trade");
+//    String status = '进行中';
+//    if(double.parse(item['amount']) == double.parse(filled)) {
+//      status = '成功';
+//    }
+//    int i = await sql.update({'filled': filled, 'status': status}, 'txnHash', item['txnHash']);
+//    return i;
+//  }
 
   /// 更新联系人备注
   Future updateBookReamrk(Map item) async {
@@ -51,18 +51,22 @@ class Book extends ChangeNotifier {
   }
 
   /// 根据id删除指定的交易记录
-  Future<int> deleteTrader(int id) async {
-    var sql = SqlUtil.setTable("trade");
-    int i = await sql.delete('id', id);
-    return i;
-  }
+//  Future<int> deleteTrader(int id) async {
+//    var sql = SqlUtil.setTable("trade");
+//    int i = await sql.delete('id', id);
+//    return i;
+//  }
 
   /// 保存联系人地址和备注到数据库
   Future<int> saveBookAddress(List list) async {
+    bool result = items.any((element)=>(element['address']==list[0]));
+    if (result) {
+      print('当前地址已保存，直接下一步');
+      return 0;
+    }
     var sql = SqlUtil.setTable("book");
     String sqlInsert ='INSERT INTO book(address, remark) VALUES(?,?)';
     int id = await sql.rawInsert(sqlInsert, list);
-    print("saveBookAddress id => ${id}");
     this.getBookList();
     return id;
   }

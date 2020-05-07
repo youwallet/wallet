@@ -292,7 +292,6 @@ class Trade {
     String strSell = isSell ? '1' : '0';
     String params = formatParam(baseToken) + formatParam(quoteToken) + formatParam(strSell);
     String postData = func['getOrderQueueInfo(address,address,bool)'] + params;
-//    print(postData);
     var client = Client();
     var payload = {
       "jsonrpc": "2.0",
@@ -326,34 +325,14 @@ class Trade {
 
   // 自定义转账
   // data的组成，
-  // 0x + 要调用的合约方法的function signature
-  // + 要传递的方法参数，每个参数都为64位
+  // 0x + 要调用的合约方法的function signature + 要传递的方法参数，每个参数都为64位
   // (对transfer来说，第一个是接收人的地址去掉0x，第二个是代币数量的16进制表示，去掉前面0x，然后补齐为64位)
 
   static Future<String> sendToken(String fromAddress, String toAddress, String num, Map token, Map obj) async {
-    String rpcUrl = await getNetWork();
-    String privateKey = obj['privateKey'];
-
-    final client = Web3Client(rpcUrl, Client());
-    var credentials = await client.credentialsFromPrivateKey(privateKey);
-
-    final hexNum = (BigInt.parse(num)*BigInt.from(1000000000000000000)).toRadixString(16);
-    String postData = '${func['transfer(address,uint256)']}${formatParam(toAddress)}${formatParam(hexNum)}';
-    print("postData=>$postData");
-
-    var rsp = await client.sendTransaction(
-        credentials,
-        Transaction(
-            to: EthereumAddress.fromHex(token['address']),
-            gasPrice: obj['gasPrice'],
-            maxGas: obj['gasLimit'],
-            value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
-            data: hexToBytes(postData)
-        ),
-        chainId: 3 // 没有这个参数会报RPCError: got code -32000 with msg "invalid sender".
-    );
-    print("transaction => $rsp");
-    return rsp;
+     print('start sendToken');
+     final hexNum = (BigInt.parse(num)*BigInt.from(1000000000000000000)).toRadixString(16);
+     String postData = '${func['transfer(address,uint256)']}${toAddress.replaceFirst("0x", "").padLeft(64, '0')}${hexNum.padLeft(64,'0')}';
+     return await Http().transaction(token['address'], obj, postData);
   }
 
   // 根据hash查询订单
@@ -455,6 +434,7 @@ class Trade {
     return rsp.toString();
   }
 
+  /// 该接口即将废弃
   static Future orderFlag(item) async {
     String postData = Global.funcHashes['orderFlag(bytes32)'] + formatParam(item['odHash']);
     var client = Client();

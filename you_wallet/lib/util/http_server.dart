@@ -3,6 +3,9 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:youwallet/global.dart';
+import 'package:web3dart/web3dart.dart';
+import 'package:http/http.dart' as httpLib;
+import 'package:web3dart/crypto.dart';
 
 class Http{
   static Http instance;
@@ -116,5 +119,33 @@ class Http{
       }
     }
     return response.data;
+  }
+
+  /*
+  * 发起交易（转账，取消交易，兑换）所有需要写链的操作都可以调用这个接口
+  * 参数说明
+  * address  token地址
+  * obj
+  * postData
+  */
+  transaction(String address, Map obj, String postData) async {
+    print('start http server transaction');
+    String rpcUrl = Global.getBaseUrl();
+    final client = Web3Client(rpcUrl, httpLib.Client());
+    final credentials = await client.credentialsFromPrivateKey(obj['privateKey']);
+
+    var rsp = await client.sendTransaction(
+        credentials,
+        Transaction(
+            to: EthereumAddress.fromHex(address),
+            gasPrice: obj['gasPrice'],
+            maxGas: obj['gasLimit'],
+            value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
+            data: hexToBytes(postData)
+        ),
+        chainId: 3 // 没有这个参数会报RPCError: got code -32000 with msg "invalid sender".
+    );
+    print("transaction => $rsp");
+    return rsp;
   }
 }
