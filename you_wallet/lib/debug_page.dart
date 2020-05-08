@@ -102,13 +102,44 @@ class _DebugPageState extends State<DebugPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             FlatButton(
-              child: Text("打开摄像头"),
+              child: Text("Future调试"),
               textColor: Colors.blue,
-              onPressed: () {
-//                print(double.parse('1234.12').toStringAsFixed(4));
-                 print(NumberFormat(1.5000).format());
-                 print(NumberFormat('100.00').format());
-                 print(NumberFormat(0.010000).format());
+              onPressed: () async {
+////                print(double.parse('1234.12').toStringAsFixed(4));
+//                 print(NumberFormat(1.5000).format());
+//                 print(NumberFormat('100.00').format());
+//                 print(NumberFormat(0.010000).format());
+//                var f1 = Future(() {
+//                  return 'f1';
+//                });
+//                var f2 = Future(() {
+//                  return 'f2';
+//                });
+//                await Future.wait({f1,f2}).then(print).catchError(print);
+//                print("111");
+//                var future1 = new Future.delayed(new Duration(seconds: 1), () => 1);
+//                var future2 = new Future.delayed(new Duration(seconds: 2), () => 2);
+//                var future3 = new Future.delayed(new Duration(seconds: 3), () => 3);
+//                Future.wait({future1,future2,future3}).then(print).catchError(print);
+//                var future1 = new Future.delayed(new Duration(seconds: 1), () => 1);
+//                var future2 =new Future.delayed(new Duration(seconds: 2), () => throw "throw error2");
+//                var future3 = new Future.delayed(new Duration(seconds: 3), () => throw "throw error3");
+//                Future.wait({future1,future2,future3}).then(print).catchError(print);
+                var random = new Random();
+                var totalDelay = 0;
+                Future.doWhile(() {
+                  if (totalDelay > 10) {
+                    print('total delay: $totalDelay seconds');
+                    return false;
+                  }
+                  var delay = random.nextInt(5) + 1;
+                  totalDelay += delay;
+                  return new Future.delayed(new Duration(seconds: delay), () {
+                    print('waited $delay seconds');
+                    return true;
+                  });
+                }).then(print)
+                .catchError(print);
               },
             ),
             FlatButton(

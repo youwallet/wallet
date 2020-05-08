@@ -365,34 +365,71 @@ class Page extends State<transferList> {
   // 但是写链成功并不代表挂单成功，还要通过getTransactionReceipt来判断是成功了还是失败
   // 判断完成后，立刻刷新历史交易列表
   void checkOrderStatus(String hash, int index) async {
-    Map response = await Trade.getTransactionByHash(hash);
-    print("第${index}次查询");
-    print(response);
-    if(response['blockHash'] != null) {
-      // 以太坊返回了交易的blockHash, 以太坊写链操作结束
-      // 现在判断写链操作的状态
-      Map res = await Trade.getTransactionReceipt({'txnHash': hash});
-      if (res['status']== '0x1') {
-        print('轮询结束，下单成功，更改状态为进行中');
-        print('广播 TransferDoneEvent事件');
-        await Provider.of<Deal>(context).updateOrderStatus(hash, '进行中');
-        eventBus.fire(TransferDoneEvent('打包成功，订单状态变更为进行中'));
-      } else {
-        await Provider.of<Deal>(context).updateOrderStatus(hash, '失败');
-        eventBus.fire(TransferDoneEvent('挂单失败'));
-      }
-      eventBus.fire(TransferUpdateStartEvent());
-      this.updateOrderFilled();
-    } else {
-      if (index > 30) {
-        print('已经轮询了30次，打包失败');
+    int countRequest = 0;
+    Map response;
+    Future.doWhile(() {
+      print('start dowhile again');
+      if (countRequest > 30 ) {
+        print('订单打包超时，请重新下单');
         eventBus.fire(TransferDoneEvent('订单打包超时，请重新下单'));
-      } else {
-        Future.delayed(Duration(seconds: 2), (){
-          this.checkOrderStatus(hash, index+1);
-        });
+        return false;
       }
-    }
+
+      if (response != null && response['blockHash'] != null) {
+        return false;
+      }
+      countRequest += 1;
+      return new Future.delayed(new Duration(seconds: 2), () async {
+        print('第$countRequest次查询');
+        response = await Trade.getTransactionByHash(hash);
+        return true;
+      });
+    }).then((res) async {
+      if(response['blockHash'] != null) {
+        // 以太坊返回了交易的blockHash, 以太坊写链操作结束
+        // 现在判断写链操作的状态
+        Map res = await Trade.getTransactionReceipt({'txnHash': hash});
+        if (res['status']== '0x1') {
+          print('轮询结束，下单成功，更改状态为进行中,广播 TransferDoneEvent事件');
+          await Provider.of<Deal>(context).updateOrderStatus(hash, '进行中');
+          eventBus.fire(TransferDoneEvent('打包成功，订单状态变更为进行中'));
+        } else {
+          await Provider.of<Deal>(context).updateOrderStatus(hash, '失败');
+          eventBus.fire(TransferDoneEvent('挂单失败'));
+        }
+        eventBus.fire(TransferUpdateStartEvent());
+        this.updateOrderFilled();
+      }
+    }).catchError(print);
+
+//    Map response = await Trade.getTransactionByHash(hash);
+//    print("第${index}次查询");
+//    print(response);
+//    if(response['blockHash'] != null) {
+//      // 以太坊返回了交易的blockHash, 以太坊写链操作结束
+//      // 现在判断写链操作的状态
+//      Map res = await Trade.getTransactionReceipt({'txnHash': hash});
+//      if (res['status']== '0x1') {
+//        print('轮询结束，下单成功，更改状态为进行中');
+//        print('广播 TransferDoneEvent事件');
+//        await Provider.of<Deal>(context).updateOrderStatus(hash, '进行中');
+//        eventBus.fire(TransferDoneEvent('打包成功，订单状态变更为进行中'));
+//      } else {
+//        await Provider.of<Deal>(context).updateOrderStatus(hash, '失败');
+//        eventBus.fire(TransferDoneEvent('挂单失败'));
+//      }
+//      eventBus.fire(TransferUpdateStartEvent());
+//      this.updateOrderFilled();
+//    } else {
+//      if (index > 30) {
+//        print('已经轮询了30次，打包失败');
+//        eventBus.fire(TransferDoneEvent('订单打包超时，请重新下单'));
+//      } else {
+//        Future.delayed(Duration(seconds: 2), (){
+//          this.checkOrderStatus(hash, index+1);
+//        });
+//      }
+//    }
   }
 
 
