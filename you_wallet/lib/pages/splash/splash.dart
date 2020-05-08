@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:youwallet/model/wallet.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_bugly/flutter_bugly.dart';
 
 class Splash extends StatefulWidget {
   @override
@@ -9,6 +10,23 @@ class Splash extends StatefulWidget {
 }
 
 class _SplashState extends State<Splash>{
+  // String _platformVersion = 'Unknown';
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    countDown();
+    FlutterBugly.init(
+      androidAppId: "0dad6da2da",
+      iOSAppId: "a5e595c93b",
+    ).then((_result) {
+      setState(() {
+        // _platformVersion = _result.message;
+        print(_result.appId);
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,12 +70,7 @@ class _SplashState extends State<Splash>{
     );
   }
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    countDown();
-  }
+
 
   // 倒计时
   void countDown() {

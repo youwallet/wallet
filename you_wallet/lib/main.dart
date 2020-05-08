@@ -23,8 +23,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:youwallet/util/locale_util.dart';
 import 'package:youwallet/util/translations.dart';
 
+// 奔溃收集和日志上报
+import 'package:flutter_bugly/flutter_bugly.dart';
 
-void main() async {
+
+void main() => FlutterBugly.postCatchedException(() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupLocator();
 
@@ -37,28 +40,23 @@ void main() async {
   await Global.init();
   Provider.debugCheckInvalidValueType = null;
 
-  // flutter奔溃和日志收集
-  runZoned((){
-    runApp(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider<Token>(create: (_) => Token()),
-          ChangeNotifierProvider<Wallet>(create: (_) => Wallet()),
-          ChangeNotifierProvider<Network>(create: (_) => Network()),
-          ChangeNotifierProvider<Deal>(create: (_) => Deal()),
-          ChangeNotifierProvider<Book>(create: (_) => Book())
-        ],
-        child: MyApp(),
-      ),
-    );
-  }, onError: (Object obj, StackTrace stack) {
-     print(stack);
-  });
-
-}
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<Token>(create: (_) => Token()),
+        ChangeNotifierProvider<Wallet>(create: (_) => Wallet()),
+        ChangeNotifierProvider<Network>(create: (_) => Network()),
+        ChangeNotifierProvider<Deal>(create: (_) => Deal()),
+        ChangeNotifierProvider<Book>(create: (_) => Book())
+      ],
+      child: MyApp(),
+    ),
+  );
+});
 
 // APP最外层的widget，每个app都是这样
 class MyApp extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
