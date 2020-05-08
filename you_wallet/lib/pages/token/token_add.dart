@@ -225,36 +225,38 @@ class Page extends State<AddToken> {
             text: '搜索中...',
           );
         });
-    int decimals;
-    try {
-      decimals = await  TokenService.getDecimals(text);
-    } catch (e) {
-      print(e);
-      this.showSnackbar('当前网络没有搜索到该token');
-      Navigator.pop(context);
-      return;
-    }
-
-    Future.wait([TokenService.getTokenName(text),TokenService.getTokenBalance({'address': text, 'decimals': decimals})]).then((list) {
-      print(list);
-      Map token = {};
-      token['address'] = text;
-      token['wallet'] = Global.getPrefs("currentWallet");
-      token['name'] = list[0];
-      token['balance'] = list[1];
-      token['decimals'] = decimals;
-      token['rmb'] = '';
-      token['network'] =  Global.getPrefs("network");
-      setState(() {
-        this.token = token;
-        this.showHotToken = false;
+    // 获取token小数点、名字、余额这三个异步操作可以做成一个链式调用
+    Future(() async {
+      int decimals = await  TokenService.getDecimals(text);
+      return Future.value(decimals);
+    }).then((res){
+      print('then');
+      print(res);
+      Future.wait([TokenService.getTokenName(text),TokenService.getTokenBalance({'address': text, 'decimals': res})]).then((list) {
+        print(list);
+        Map token = {};
+        token['address'] = text;
+        token['wallet'] = Global.getPrefs("currentWallet");
+        token['name'] = list[0];
+        token['balance'] = list[1];
+        token['decimals'] = res;
+        token['rmb'] = '';
+        token['network'] =  Global.getPrefs("network");
+        setState(() {
+          this.token = token;
+          this.showHotToken = false;
+        });
+        saveToken(token);
+      }).catchError((e){
+        this.showSnackbar('没有搜索到token');
+      }).whenComplete(() {
+        print("名字和余额查询完毕");
       });
-      saveToken(token);
-    }).catchError((e){
-      print('catch e');
-      print(e);
-      this.showSnackbar('没有搜索到token');
-    }).whenComplete(() {
+    }).catchError((onError){
+      print('catchError');
+      print(onError);
+      this.showSnackbar('当前网络没有搜索到该token');
+    }).whenComplete((){
       print("全部完成");
       Navigator.pop(context);
     });
