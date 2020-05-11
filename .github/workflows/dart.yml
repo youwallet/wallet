@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      
+
       # 建立 java 环境
       - name: Setup Java JDK
         uses: actions/setup-java@v1.3.0
@@ -23,7 +23,7 @@ jobs:
         uses: subosito/flutter-action@v1.1.1
         with:
           channel: "stable"
-          flutter-version: "1.12.x"
+          flutter-version: "v1.12.13+hotfix.8"
 
       # 下载项目依赖          
       - name: Install dependencies
