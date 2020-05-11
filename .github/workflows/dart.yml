@@ -23,7 +23,6 @@ jobs:
         uses: subosito/flutter-action@v1.1.1
         with:
           channel: "stable"
-          flutter-version: "v1.12.13+hotfix.8"
 
       # 下载项目依赖          
       - name: Install dependencies
