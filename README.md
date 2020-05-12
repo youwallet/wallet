@@ -1,4 +1,4 @@
-[![pipeline status](https://github.com/youwallet/wallet/workflows/Flutter%20CI/badge.svg)]
+![pipeline status](https://github.com/youwallet/wallet/workflows/Flutter%20CI/badge.svg)
 
 
 
