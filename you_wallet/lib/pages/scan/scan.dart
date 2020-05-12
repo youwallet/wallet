@@ -26,7 +26,7 @@ class Page extends State<Scan> {
         key: globalKey,
         appBar: AppBar(
           elevation: 3,
-          title: Text("扫码结果"),
+          title: Text("操作结果"),
         ),
         body: Center(
           child: Column(
@@ -38,7 +38,7 @@ class Page extends State<Scan> {
                 padding: const EdgeInsets.all(12.0),
                 margin: const EdgeInsets.only(bottom: 20.0),
                 width: MediaQuery.of(context).size.width * 0.8,
-                height: 100.0,
+                height: 150.0,
                 child: new Text(
                     widget.arguments??'',
                     style: new TextStyle(
