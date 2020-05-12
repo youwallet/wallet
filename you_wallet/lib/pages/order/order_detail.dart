@@ -85,6 +85,7 @@ class Page extends State<OrderDetail> {
     item['gasUsed'] = BigInt.parse(item['gasUsed'].replaceFirst('0x', ''), radix: 16);
     item['percentage'] = ((item['gasUsed']/item['gas'])*100).toStringAsFixed(2) + '%';
     return new Container(
+      color: Colors.white,
       alignment: Alignment.topCenter,
       child: new Container(
         padding: const EdgeInsets.all(40.0 ),
