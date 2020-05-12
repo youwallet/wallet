@@ -141,13 +141,13 @@ class Page extends State<LoadWallet> {
                       hintText: placeholder,
                       fillColor: Colors.black12,
                       contentPadding: new EdgeInsets.all(6.0), // 内部边距，默认不是0
-                      border:InputBorder.none, // 没有任何边线
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(6.0),
-                        borderSide: BorderSide(
-                          width: 0, //边线宽度为2
-                        ),
-                      )
+                        borderSide: BorderSide(color: Colors.grey,width: 1),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey,width: 1),
+                      ),
                   ),
 
                   onSubmitted: (text) {
@@ -207,13 +207,13 @@ class Page extends State<LoadWallet> {
                         hintText: placeholder,
                         fillColor: Colors.black12,
                         contentPadding: new EdgeInsets.all(6.0), // 内部边距，默认不是0
-                        border:InputBorder.none, // 没有任何边线
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(6.0),
-                          borderSide: BorderSide(
-                            width: 0, //边线宽度为2
-                          ),
-                        )
+                          borderSide: BorderSide(color: Colors.grey,width: 1),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey,width: 1),
+                        ),
                     ),
 
                     onSubmitted: (text) {
