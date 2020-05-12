@@ -1,7 +1,12 @@
 <p align="center"><a href="#" target="_blank" rel="noopener noreferrer"><img width="100" src="https://cn.etherscan.com/images/svg/brands/ethereum-1.svg?v=1.3" alt="wallet logo"></a></p>
 
-![pipeline status](https://github.com/youwallet/wallet/workflows/Flutter%20CI/badge.svg)
 
+<p align="center">
+  <a href="https://circleci.com/gh/vuejs/vue/tree/dev"><img src="https://img.shields.io/circleci/project/github/vuejs/vue/dev.svg?sanitize=true" alt="Build Status"></a>
+  <a href="https://codecov.io/github/vuejs/vue?branch=dev"><img src="https://img.shields.io/codecov/c/github/vuejs/vue/dev.svg?sanitize=true" alt="Coverage Status"></a>
+  <a href="https://chat.vuejs.org/"><img src="https://img.shields.io/badge/chat-on%20discord-7289da.svg?sanitize=true" alt="Chat"></a>
+ ![pipeline status](https://github.com/youwallet/wallet/workflows/Flutter%20CI/badge.svg)
+</p>
 
 
 ## youwallet众和社区
