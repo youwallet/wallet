@@ -3,8 +3,7 @@
 
 <p align="center">
   <a href="https://circleci.com/gh/vuejs/vue/tree/dev"><img src="https://img.shields.io/circleci/project/github/vuejs/vue/dev.svg?sanitize=true" alt="Build Status"></a>
-  <a href="https://codecov.io/github/vuejs/vue?branch=dev"><img src="https://img.shields.io/codecov/c/github/vuejs/vue/dev.svg?sanitize=true" alt="Coverage Status"></a>
-  <a href="https://chat.vuejs.org/"><img src="https://img.shields.io/badge/chat-on%20discord-7289da.svg?sanitize=true" alt="Chat"></a>
+  <a href="https://discord.com/channels/703130665604087819"><img src="https://img.shields.io/discord/703130665604087819" alt="Chat"></a>
  ![pipeline status](https://github.com/youwallet/wallet/workflows/Flutter%20CI/badge.svg)
 </p>
 
