@@ -1,4 +1,6 @@
-[![pipeline status](https://code.frytea.com/songtianlun/PlanAssistant/badges/master/pipeline.svg)](https://code.frytea.com/songtianlun/PlanAssistant/commits/master)
+[![pipeline status](https://github.com/youwallet/wallet/workflows/Flutter%20CI/badge.svg)]
+
+
 
 ## youwallet众和社区
 首先感谢兄弟项目[小白健康](https://github.com/sibbay-ai/public)的成功实践与无私帮助。
