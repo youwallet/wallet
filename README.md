@@ -1,3 +1,5 @@
+[![pipeline status](https://code.frytea.com/songtianlun/PlanAssistant/badges/master/pipeline.svg)](https://code.frytea.com/songtianlun/PlanAssistant/commits/master)
+
 ## youwallet众和社区
 首先感谢兄弟项目[小白健康](https://github.com/sibbay-ai/public)的成功实践与无私帮助。
 youwallet旨在为所有有价Token和其使用者提供一款完全去中化的虚拟货币钱包工具，任何人都可自由兑换有价值的Token，没有中心化上币与交易流程。项目完全采用和众社区的贡献模式由所有贡献者推动。
