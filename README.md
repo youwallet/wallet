@@ -4,7 +4,6 @@
 <p align="center">
   <a href="#"><img src="https://img.shields.io/github/workflow/status/youwallet/wallet/Flutter CI" alt="Build Status"></a>
   <a href="https://discord.com/channels/703130665604087819"><img src="https://img.shields.io/discord/703130665604087819" alt="Chat"></a>
- ![pipeline status](https://github.com/youwallet/wallet/workflows/Flutter%20CI/badge.svg)
 </p>
 
 
