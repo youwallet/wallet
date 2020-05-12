@@ -2,8 +2,12 @@ PODS:
   - barcode_scan (0.0.1):
     - Flutter
     - MTBBarcodeScanner
+  - Bugly (2.5.2)
   - Flutter (1.0.0)
   - flutter_aes_ecb_pkcs5 (0.0.1):
+    - Flutter
+  - flutter_bugly (0.0.1):
+    - Bugly
     - Flutter
   - flutter_plugin_android_lifecycle (0.0.1):
     - Flutter
@@ -43,6 +47,7 @@ DEPENDENCIES:
   - barcode_scan (from `.symlinks/plugins/barcode_scan/ios`)
   - Flutter (from `Flutter`)
   - flutter_aes_ecb_pkcs5 (from `.symlinks/plugins/flutter_aes_ecb_pkcs5/ios`)
+  - flutter_bugly (from `.symlinks/plugins/flutter_bugly/ios`)
   - flutter_plugin_android_lifecycle (from `.symlinks/plugins/flutter_plugin_android_lifecycle/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - image_picker_saver (from `.symlinks/plugins/image_picker_saver/ios`)
@@ -60,6 +65,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - Bugly
     - FMDB
     - MTBBarcodeScanner
 
@@ -70,6 +76,8 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_aes_ecb_pkcs5:
     :path: ".symlinks/plugins/flutter_aes_ecb_pkcs5/ios"
+  flutter_bugly:
+    :path: ".symlinks/plugins/flutter_bugly/ios"
   flutter_plugin_android_lifecycle:
     :path: ".symlinks/plugins/flutter_plugin_android_lifecycle/ios"
   fluttertoast:
@@ -101,8 +109,10 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   barcode_scan: 33f586d02270046fc6559135038b34b5754eaa4f
+  Bugly: dbac48b55ad469a97cc4321045cd50df8f63d44f
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_aes_ecb_pkcs5: fb682a7bb13f29cfbb33f88f7e1ed2211eacf5db
+  flutter_bugly: c9800f4d5bc5bdc27ffdde3417a26ba44266e0c3
   flutter_plugin_android_lifecycle: 47de533a02850f070f5696a623995e93eddcdb9b
   fluttertoast: b644586ef3b16f67fae9a1f8754cef6b2d6b634b
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a

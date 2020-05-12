@@ -323,8 +323,12 @@ class Page extends State<LoadWallet> {
   // 跳转密码设置页面
   void doSave(Map item) {
     Navigator.of(context).pushNamed('password').then((data){
-      this.saveDone
-        (item, data);
+      print(data);
+      if (data == null) {
+        print('input nothing');
+      } else {
+        this.saveDone(item, data);
+      }
     });
   }
 
