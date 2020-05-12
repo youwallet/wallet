@@ -96,6 +96,7 @@ flutter:
     - images/icon.png
     - images/qrcode.jpeg
     - images/homebk.png
+    - images/homebk-full.png
     - images/splash.jpeg
     - images/empty.png
   # An image asset can refer to one or more resolution-specific "variants", see

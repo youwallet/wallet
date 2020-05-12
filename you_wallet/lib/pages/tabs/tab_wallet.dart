@@ -96,6 +96,8 @@ class Page extends State<TabWallet> {
     return new AppBar(
         title: const Text('youwallet'),
         actions: this.appBarActions(),
+        // backgroundColor: Color(0xff0696c6),
+        // elevation: 0.0,
     );
   }
 
@@ -138,12 +140,12 @@ class Page extends State<TabWallet> {
         margin: const EdgeInsets.all(16.0),
         alignment: Alignment.center,
         decoration: new BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(
-                  "images/homebk.png",
-              ),
-              fit: BoxFit.fill
+          image: DecorationImage(
+            image: AssetImage(
+                "images/homebk.png",
             ),
+            fit: BoxFit.fill
+          ),
         ),
         child: Consumer<walletModel.Wallet>(
           builder: (context, Wallet, child) {

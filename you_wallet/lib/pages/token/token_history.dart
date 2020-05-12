@@ -195,7 +195,7 @@ class Page extends State<TokenHistory> {
 
     return new Container(
       padding: new EdgeInsets.all(16.0),
-      child: new Column(
+      child: new ListView(
         children: arr.reversed.map((item) => _buildToken(item)).toList()
       ),
     );
