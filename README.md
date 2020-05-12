@@ -50,7 +50,7 @@ $ npm install --global standard-readme-spec
 
 ## License
 
-
+[MIT](https://mit-license.org/)
 
 
 
