@@ -44,8 +44,6 @@ This project uses node and npm. Go check them out if you don't have them locally
 ```
 $ npm install --global standard-readme-spec
 ```
-## Usage
-
 
 
 ## License
