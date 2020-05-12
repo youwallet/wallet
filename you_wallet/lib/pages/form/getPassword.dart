@@ -10,6 +10,10 @@ import 'package:web3dart/web3dart.dart';
 //在该页面让用户输入密码
 //通过密码解密出私钥
 class GetPasswordPage extends StatefulWidget {
+
+  final arguments;
+  GetPasswordPage({Key key ,this.arguments}) : super();
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -26,6 +30,7 @@ class _LoginPageState extends State<GetPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.arguments);
     return Scaffold(
         appBar: buildAppBar(context),
         body: new Builder(builder: (BuildContext context) {
@@ -114,21 +119,26 @@ class _LoginPageState extends State<GetPasswordPage> {
   }
 
   // 高级设置
+  // 如果用户是在导出私钥或者助记忆词，则不=显示高级设计
   Widget buildExtraTip() {
-    return GestureDetector(
-      onTap: (){
-        setState(() {
-          this.showExtraSet = !this.showExtraSet;
-        });
-      },
-      child: Padding(
-        padding: EdgeInsets.only(left: 0.0, top: 4.0),
-        child: Text(
-            '高级设置',
-            style: TextStyle(color: Colors.lightBlue)
-        ),
-      )
-    );
+    if (widget.arguments == null) {
+      return GestureDetector(
+          onTap: () {
+            setState(() {
+              this.showExtraSet = !this.showExtraSet;
+            });
+          },
+          child: Padding(
+            padding: EdgeInsets.only(left: 0.0, top: 4.0),
+            child: Text(
+                '高级设置',
+                style: TextStyle(color: Colors.lightBlue)
+            ),
+          )
+      );
+    } else {
+      return Text('');
+    }
   }
 
   Widget buildExtraSet(bool showSet) {

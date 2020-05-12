@@ -115,7 +115,9 @@ class Page extends State<WalletExport> {
                 title: Text('导出助记词'),
                 trailing: new Icon(Icons.keyboard_arrow_right),
                 onTap: () {
-                  Navigator.of(context).pushNamed('getPassword').then((data) async {
+                  Navigator.of(context).pushNamed('getPassword', arguments: {
+                    'from': 'export'
+                  }).then((data) async {
                     Map obj = data;
                     if (obj == null) {
                       this.showSnackbar('取消导出');
@@ -135,7 +137,9 @@ class Page extends State<WalletExport> {
                 title: Text('导出私钥'),
                 trailing: new Icon(Icons.keyboard_arrow_right),
                 onTap: () {
-                  Navigator.of(context).pushNamed('getPassword').then((obj){
+                  Navigator.of(context).pushNamed('getPassword', arguments: {
+                    'from': 'export'
+                  }).then((obj){
                     Map wallet = obj;
                      if (obj == null) {
                        this.showSnackbar('导出取消');
