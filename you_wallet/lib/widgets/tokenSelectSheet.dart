@@ -63,6 +63,7 @@ class Page extends State<TokenSelectSheet> {
       return;
     }
     showModalBottomSheet(
+        backgroundColor: Colors.transparent,
         context: context,
         builder: (BuildContext context) {
           return BottomSheetDialog(

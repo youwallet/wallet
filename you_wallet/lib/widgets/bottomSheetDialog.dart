@@ -22,7 +22,7 @@ class BottomSheetDialog extends StatelessWidget {
               ),
               color: Colors.white
             ),
-            padding: const EdgeInsets.only(top:18.0), // 四周填充边距32像素,
+            padding: const EdgeInsets.only(top: 18.0), // 四周填充边距32像素,
             height: 57.0*this.content.length + 18,
             child: Column(
               children: this.content.map((item) => this.buildItem(item, context)).toList()
@@ -32,6 +32,7 @@ class BottomSheetDialog extends StatelessWidget {
 
   Widget buildItem(item, context) {
     return Container(
+
       decoration: new BoxDecoration(
         border: Border(bottom: BorderSide(color: Colors.grey,width: 0.5))
       ),
