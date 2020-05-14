@@ -26,6 +26,19 @@ import 'package:decimal/decimal.dart';
 import 'dart:math';
 import 'package:youwallet/util/number_format.dart';
 
+class TokenModel {
+  /// 银行
+  final String bankName;
+
+  /// 卡号
+  final String cardNumber;
+
+  const TokenModel({
+    this.bankName,
+    this.cardNumber,
+  });
+}
+
 class DebugPage extends StatefulWidget {
   DebugPage() : super();
   @override
@@ -90,6 +103,11 @@ class _DebugPageState extends State<DebugPage> {
     Scaffold.of(context).showSnackBar(snackBar);
   }
 
+  Future<String> getData() async{
+    await Future.delayed(Duration(seconds: 5));
+    return "返回一个Future对象";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,13 +116,57 @@ class _DebugPageState extends State<DebugPage> {
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: ListView(
           children: <Widget>[
+            FlatButton(
+                child: Text("class test"),
+                textColor: Colors.blue,
+                onPressed: ()  {
+                   Map a = {
+                     'cardNumber': 'xx',
+                     'bankName': 'zb'
+                   };
+                   final data = new TokenModel(
+
+                   );
+                   print(data.bankName);
+
+
+
+                }),
+            FlatButton(
+              child: Text("Stream调试"),
+              textColor: Colors.blue,
+              onPressed: () async {
+//                Duration interval = Duration(seconds: 1);
+//                Stream<int> stream = Stream.periodic(interval, (data) => data);
+//                await for(int i in stream ){
+//                  print(i);
+//                };
+
+                StreamController<String> streamController = StreamController();
+                Stream stream =streamController.stream.asBroadcastStream();
+                stream.listen((data)=> print(data));
+                stream.listen((data)=> print(data));
+                streamController.sink.add("aaa");
+                streamController.add("bbb");
+                streamController.add("ccc");
+                streamController.close();
+
+              }),
             FlatButton(
               child: Text("Future调试"),
               textColor: Colors.blue,
               onPressed: () async {
+                Future.value(1).then((value) {
+                  return Future.value(value + 2);
+                }).then((value) {
+                  return Future.value(value + 3);
+                }).then(print);
+//                var future=Future.value(1);
+//                future.then((res) => {
+//                  print(res)
+//                });
 ////                print(double.parse('1234.12').toStringAsFixed(4));
 //                 print(NumberFormat(1.5000).format());
 //                 print(NumberFormat('100.00').format());
@@ -125,38 +187,28 @@ class _DebugPageState extends State<DebugPage> {
 //                var future2 =new Future.delayed(new Duration(seconds: 2), () => throw "throw error2");
 //                var future3 = new Future.delayed(new Duration(seconds: 3), () => throw "throw error3");
 //                Future.wait({future1,future2,future3}).then(print).catchError(print);
-                var random = new Random();
-                var totalDelay = 0;
-                Future.doWhile(() {
-                  if (totalDelay > 10) {
-                    print('total delay: $totalDelay seconds');
-                    return false;
-                  }
-                  var delay = random.nextInt(5) + 1;
-                  totalDelay += delay;
-                  return new Future.delayed(new Duration(seconds: delay), () {
-                    print('waited $delay seconds');
-                    return true;
-                  });
-                }).then(print)
-                .catchError(print);
+//                var random = new Random();
+//                var totalDelay = 0;
+//                Future.doWhile(() {
+//                  if (totalDelay > 10) {
+//                    print('total delay: $totalDelay seconds');
+//                    return false;
+//                  }
+//                  var delay = random.nextInt(5) + 1;
+//                  totalDelay += delay;
+//                  return new Future.delayed(new Duration(seconds: delay), () {
+//                    print('waited $delay seconds');
+//                    return true;
+//                  });
+//                }).then(print)
+//                .catchError(print);
               },
             ),
             FlatButton(
               child: Text("设置密码"),
               textColor: Colors.blue,
               onPressed: () {
-                  String a = '900000000000000000000000';
-                  String b = '300000000000000000000000';
-                  double aa = BigInt.parse(a)/BigInt.from(pow(10,18));
-                  double bb = BigInt.parse(b)/BigInt.from(pow(10,18));
-                  print(aa/bb);
 
-                  String c = '13717407282579000000000000';
-                  String d = '123456789000000000000000000';
-                  Decimal cc = Decimal.parse(  ( BigInt.parse(c) / BigInt.from(pow(10,18))).toString()  );
-                  Decimal dd =  Decimal.parse((BigInt.parse(d)/BigInt.from(pow(10,18))).toString());
-                  print(cc/dd);
                 },
             ),
             FlatButton(

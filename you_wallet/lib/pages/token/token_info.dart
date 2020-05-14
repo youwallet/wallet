@@ -3,9 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:share/share.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
-import 'package:provider/provider.dart';
-import 'package:youwallet/model/wallet.dart' ;
 import 'package:youwallet/service/token_service.dart' ;
+import 'package:youwallet/model/viewModel.dart';
 
 class TokenInfo extends StatefulWidget {
 
