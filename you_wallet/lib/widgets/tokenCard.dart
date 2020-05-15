@@ -13,7 +13,7 @@ class TokenCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 140,
-      margin: EdgeInsets.fromLTRB(0, 16, 0, 0),
+      margin: EdgeInsets.fromLTRB(0, 16.0, 0, 0),
       padding: EdgeInsets.only(left: 20, top: 20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -32,11 +32,11 @@ class TokenCard extends StatelessWidget {
       ),
       child: Stack(
         children: <Widget>[
-          Positioned(
-            right: -100,
-            bottom: -100,
-            child: TokenLogo(address: this.data.cardNumber),
-          ),
+//          Positioned(
+//            right: -100,
+//            bottom: -100,
+//            child: TokenLogo(address: this.data.cardNumber),
+//          ),
           Positioned(
             left: 0,
             top: 0,
@@ -48,25 +48,39 @@ class TokenCard extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    CircleAvatar(
-                      radius: 25,
-                      backgroundColor: Colors.transparent,
-                      child: TokenLogo(address: this.data.cardNumber),
-                    ),
+                    TokenLogo(address: this.data.cardNumber),
                     Padding(padding: EdgeInsets.only(left: 15)),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text(
-                          this.data.bankName,
-                          style: TextStyle(
-                            fontSize: 19,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+                        new Row(
+                          children: <Widget>[
+                            Text(
+                              this.data.bankName,
+                              style: TextStyle(
+                                fontSize: 19,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Padding(padding: EdgeInsets.only(left: 15)),
+                            GestureDetector(
+                              child: Icon(
+                                  IconData(0xe600, fontFamily: 'iconfont'),
+                                  color: Colors.white,
+                              ),
+                              onTap: () {
+                                Map token = {
+                                  'name': this.data.bankName,
+                                  'address': this.data.cardNumber,
+                                };
+                                Navigator.pushNamed(context, "token_info", arguments: token);
+                              },
+                            ),
+                          ],
                         ),
                         Text(
-                          this.data.cardType,
+                          this.data.balance,
                           style: TextStyle(
                             fontSize: 14,
                             color: Color.fromARGB(200, 255, 255, 255),
@@ -75,16 +89,7 @@ class TokenCard extends StatelessWidget {
                       ],
                     ),
                     Padding(padding: EdgeInsets.only(left: 10)),
-                    GestureDetector(
-                        child: Icon(IconData(0xe600, fontFamily: 'iconfont')),
-                        onTap: () {
-                          Map token = {
-                            'name': this.data.bankName,
-                            'address': this.data.cardNumber,
-                          };
-                          Navigator.pushNamed(context, "token_info", arguments: token);
-                        },
-                    ),
+
                   ],
                 ),
                 Padding(

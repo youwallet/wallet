@@ -11,9 +11,10 @@ class AddressFormat extends StatelessWidget {
     return Text(
       Global.maskAddress(this.address) ,
       style: TextStyle(
-        fontSize: 16,
-        letterSpacing: 1,
+        fontSize: 18,
+        letterSpacing: 0,
         color: Colors.white,
+        fontWeight: FontWeight.w800
       ),
     );
   }

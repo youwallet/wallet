@@ -33,6 +33,7 @@ class tokenList extends StatelessWidget {
       );
     } else {
       return Column(
+
         children: filterArr.reversed.map((item) => buildSilde(item, context))
             .toList(),
       );
@@ -47,7 +48,7 @@ class tokenList extends StatelessWidget {
       cardType: '以太坊',
       cardNumber: item['address'],
       cardColors: [Color(0xFFF17B68), Color(0xFFE95F66)],
-      validDate: '10/27',
+      balance: item['balance'],
     );
     return Slidable(
       controller: slidableController,
@@ -59,7 +60,7 @@ class tokenList extends StatelessWidget {
       secondaryActions: <Widget>[//右侧按钮列表
         IconSlideAction(
           caption: '删除',
-          color: Colors.blue,
+          // color: Color(0xfff56c6c),
           icon: Icons.delete,
           onTap: () async {
             await Provider.of<Token>(context).remove(item);

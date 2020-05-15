@@ -15,9 +15,17 @@ class TokenLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     Map token = Global.hotToken.firstWhere((element)=>(element['address'] == this.address),orElse: ()=>({}));
     if (token.isEmpty) {
-      return Icon(IconData(0xe648, fontFamily: 'iconfont'),size: 50.0, color: Colors.black26);
+      return CircleAvatar(
+          backgroundColor: Colors.white,
+          radius: 25.0,
+          child: Icon(IconData(0xe648, fontFamily: 'iconfont'),size: 50.0, color: Colors.black26)
+      );
     } else {
-      return Icon(IconData(token['icon'], fontFamily: 'iconfont'),size: 50.0, color: token['color']);
+      return CircleAvatar(
+          backgroundColor: Colors.white,
+          radius: 25.0,
+          child: Icon(IconData(token['icon'], fontFamily: 'iconfont'),size: 50.0, color: token['color'])
+      );
     }
   }
 }

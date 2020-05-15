@@ -19,7 +19,7 @@ class TokenCardViewModel {
   final List<Color> cardColors;
 
   /// 有效期
-  final String validDate;
+  final String balance;
 
   const TokenCardViewModel({
     this.bankName,
@@ -27,6 +27,6 @@ class TokenCardViewModel {
     this.cardType,
     this.cardNumber,
     this.cardColors,
-    this.validDate,
+    this.balance,
   });
 }
