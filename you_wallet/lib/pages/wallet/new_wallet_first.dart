@@ -54,7 +54,13 @@ class _NewWalletNameState extends State<NewWalletName> {
               new TextField(
                 controller: _name,
                 decoration: InputDecoration(
+                  fillColor: Colors.black12,
+                  filled: true,
                   hintText: "输入钱包名称",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0), // 设置圆角
+                      borderSide: BorderSide.none // 设置不要边框
+                  ),
                 ),
               ),
               new SizedBox(

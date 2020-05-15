@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:youwallet/widgets/addressFormat.dart';
 import 'package:youwallet/widgets/tokenList.dart';
 import 'package:youwallet/bus.dart';
 
@@ -96,8 +97,8 @@ class Page extends State<TabWallet> {
     return new AppBar(
         title: const Text('youwallet'),
         actions: this.appBarActions(),
-        // backgroundColor: Color(0xff0696c6),
-        // elevation: 0.0,
+         backgroundColor: Colors.lightBlue,
+         elevation: 0.0,
     );
   }
 
@@ -137,15 +138,16 @@ class Page extends State<TabWallet> {
   Widget topCard(BuildContext context) {
     return new Container(
         padding: const EdgeInsets.all(16.0), // 四周填充边距32像素
-        margin: const EdgeInsets.all(16.0),
+        //margin: const EdgeInsets.all(16.0),
         alignment: Alignment.center,
         decoration: new BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(
-                "images/homebk.png",
-            ),
-            fit: BoxFit.fill
-          ),
+          color: Colors.lightBlue,
+//          image: DecorationImage(
+//            image: AssetImage(
+//                "images/homebk.png",
+//            ),
+//            fit: BoxFit.fill
+//          ),
         ),
         child: Consumer<walletModel.Wallet>(
           builder: (context, Wallet, child) {
@@ -184,12 +186,7 @@ class Page extends State<TabWallet> {
                       ),
                     ],
                   ),
-                  new Text(
-                      Global.maskAddress(Wallet.currentWallet),
-                      style: new TextStyle(
-                          color: Colors.white
-                      )
-                  ),
+                  new AddressFormat(Wallet.currentWallet),
                   new Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
@@ -212,22 +209,32 @@ class Page extends State<TabWallet> {
   // 构建列表的表头菜单
   Widget listTopBar(BuildContext context) {
     return new Container(
-      padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 0,bottom: 4.0),
-      child: new Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          new Text(
-            'Token',
-            style: new TextStyle(fontWeight: FontWeight.w900, fontSize: 16.0),
+      color: Colors.lightBlue,
+      child: Container(
+        padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0,bottom: 4.0),
+        decoration: new BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30)
           ),
-          GestureDetector(
-            child: new Icon(Icons.add_circle_outline),
-            onTap: () {
-              Navigator.pushNamed(context, "add_token",arguments: {});
-            },
-          )
-        ],
-      ),
+        ),
+        child: new Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            new Text(
+              'Token',
+              style: new TextStyle(fontWeight: FontWeight.w900, fontSize: 16.0),
+            ),
+            GestureDetector(
+              child: new Icon(Icons.add_circle_outline),
+              onTap: () {
+                Navigator.pushNamed(context, "add_token",arguments: {});
+              },
+            )
+          ],
+        ),
+      )
     );
   }
 

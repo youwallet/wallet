@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:youwallet/model/viewModel.dart';
 import 'package:youwallet/widgets/tokenLogo.dart';
 import 'package:youwallet/global.dart';
+import 'package:youwallet/widgets/addressFormat.dart';
 
 class TokenCard extends StatelessWidget {
 
@@ -88,14 +89,7 @@ class TokenCard extends StatelessWidget {
                 ),
                 Padding(
                   padding: EdgeInsets.only(left: 65, top: 20),
-                  child: Text(
-                    Global.maskAddress(this.data.cardNumber) ,
-                    style: TextStyle(
-                      fontSize: 16,
-                      letterSpacing: 1,
-                      color: Colors.white,
-                    ),
-                  ),
+                  child: new AddressFormat(this.data.cardNumber)
                 ),
               ],
             ),
