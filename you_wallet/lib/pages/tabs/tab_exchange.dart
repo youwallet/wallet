@@ -176,6 +176,7 @@ class Page extends State {
         elevation: 0.0,
         // actions: this.appBarActions(),
         automaticallyImplyLeading: false, //设置没有返回按钮
+        backgroundColor: _btnText == '买入' ? Colors.green[50] : Colors.red[50]
     );
   }
 

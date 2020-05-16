@@ -155,15 +155,13 @@ class Page extends State<WalletExport> {
 
                 },
               ),
-              Container(
-                  padding: const EdgeInsets.all(80.0),
-                  child: new CustomButton(
-                    content: '删除钱包',
-                    type:"danger",
-                    onSuccessChooseEvent:(res){
-                      this.delWallet();
-                    }
-                  )
+              Padding(padding: EdgeInsets.only(top: 80.0)),
+              CustomButton(
+                  content: '删除钱包',
+                  type:"danger",
+                  onSuccessChooseEvent:(res){
+                    this.delWallet();
+                  }
               )
             ],
         )

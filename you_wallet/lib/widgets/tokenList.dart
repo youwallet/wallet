@@ -7,6 +7,7 @@ import 'package:youwallet/widgets/tokenLogo.dart';
 import 'package:youwallet/widgets/tokenCard.dart';
 import 'package:youwallet/global.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:youwallet/widgets/customButton.dart';
 
 // 类的名字需要大写字母开头
 class tokenList extends StatelessWidget {
@@ -28,9 +29,20 @@ class tokenList extends StatelessWidget {
       }
     });
     if (filterArr!= null && filterArr.length == 0) {
-      return new ListEmpty(
-        text: '还没有token，请先添加'
+      return Column(
+        children: <Widget>[
+          ListEmpty(
+            text: '还没有token，请先添加'
+          ),
+          new CustomButton(
+              content: '添加token',
+              onSuccessChooseEvent:(res) async{
+                 Navigator.pushNamed(context, "add_token",arguments: {});
+              }
+          )
+        ],
       );
+
     } else {
       return Column(
 

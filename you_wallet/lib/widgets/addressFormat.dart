@@ -11,7 +11,7 @@ class AddressFormat extends StatelessWidget {
     return Text(
       Global.maskAddress(this.address) ,
       style: TextStyle(
-        fontSize: 18,
+        fontSize: 22,
         letterSpacing: 0,
         color: Colors.white,
         fontWeight: FontWeight.w800

@@ -129,7 +129,8 @@ class Page extends State<TabReceive> {
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
       title: const Text('收款'),
-      automaticallyImplyLeading: false //设置没有返回按
+      automaticallyImplyLeading: false, //设置没有返回按
+//      elevation: 0.0,
 //      actions: this.appBarActions(),
     );
   }

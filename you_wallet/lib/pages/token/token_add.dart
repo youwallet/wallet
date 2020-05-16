@@ -3,6 +3,7 @@ import 'package:youwallet/service/token_service.dart';
 import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:youwallet/widgets/tokenList.dart';
 import 'package:youwallet/widgets/tokenLogo.dart';
+import 'package:youwallet/widgets/hotToken.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
 import 'package:youwallet/global.dart';
@@ -76,31 +77,19 @@ class Page extends State<AddToken> {
   // 根据用户输入，决定是否显示热门token
   Widget buildPage(bool showHotToken) {
     if (showHotToken) {
-      return Wrap(
-           spacing: 10.0, // 主轴(水平)方向间距
-           runSpacing: 4.0, // 纵轴（垂直）方向间距
-           children: Global.hotToken.map((item) => buildTagItem(item)).toList()
+      return HotToken(
+          onHotTokenCallBack: (res) {
+            this.startSearch(res['address']);
+          }
       );
     } else {
-      return new ListView(
+      return ListView(
         children: <Widget>[
           buildItem(this.token)
         ],
       );
-    }
-  }
 
-  // 构建wrap用的小选项
-  Widget buildTagItem(item) {
-    return new Chip(
-      avatar: Icon(IconData(item['icon'], fontFamily: 'iconfont'),size: 20.0, color: item['color']),
-      label: GestureDetector(
-        child: new Text(item['name']),
-        onTap: (){
-          this.startSearch(item['address']);
-        },
-      )
-    );
+    }
   }
 
   Widget buildItem(Map item){
@@ -161,7 +150,6 @@ class Page extends State<AddToken> {
                           style: new TextStyle(fontSize: 16.0,
                               color: Color.fromARGB(100, 6, 147, 193)),
                         ),
-                        new Text('￥${item['rmb'] ?? '-'}'),
                       ],
                     )
 
@@ -230,8 +218,6 @@ class Page extends State<AddToken> {
       int decimals = await  TokenService.getDecimals(text);
       return Future.value(decimals);
     }).then((res){
-      print('then');
-      print(res);
       Future.wait([TokenService.getTokenName(text),TokenService.getTokenBalance({'address': text, 'decimals': res})]).then((list) {
         print(list);
         Map token = {};
