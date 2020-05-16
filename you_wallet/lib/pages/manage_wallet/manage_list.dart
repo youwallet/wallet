@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:youwallet/model/wallet.dart';
 import 'package:provider/provider.dart';
-
+import 'package:youwallet/global.dart';
 
 class ManageWallet extends StatefulWidget {
   final arguments;
@@ -107,7 +107,7 @@ class Page extends State<ManageWallet> {
                           name,
                           style: new TextStyle(fontSize: 32.0, color: Colors.black),
                         ),
-                        new Text(item['address']),
+                        new Text(Global.maskAddress(item['address'])),
                       ],
                     ),
                   ),

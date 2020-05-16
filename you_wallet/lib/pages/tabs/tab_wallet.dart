@@ -25,7 +25,7 @@ class Page extends State<TabWallet> {
   int current_wallet = 0;
   String current_wallet_address = "";
   String _balance = '0Eth';
-
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
 //  @override
 //  void didUpdateWidget(ContainerPage oldWidget) {
@@ -88,15 +88,28 @@ class Page extends State<TabWallet> {
           ],
         ),
       ),
-        drawer: new UserMenu()
+      drawer: new UserMenu()
     );
   }
 
   // 构建AppBar
+  // 如何自定义icon来打开draw
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
-        title: const Text('youwallet'),
-        actions: this.appBarActions(),
+//          leading: Builder(builder: (content) {
+//            return new IconButton(
+//                icon: new Icon(Icons.menu, color: Colors.white),
+//                onPressed: () {
+//                  // Scaffold.of(context).openDrawer();
+//                  _scaffoldKey.currentState.openDrawer();
+//                }
+//            );
+//          }) ,
+         title: Text(
+            'youwallet',
+            style: new TextStyle(color: Colors.white),
+         ),
+         actions: this.appBarActions(),
          backgroundColor: Colors.lightBlue,
          elevation: 0.0,
     );
@@ -109,7 +122,7 @@ class Page extends State<TabWallet> {
       new Container(
         width: 50.0,
         child: new IconButton(
-          icon: new Icon(IconData(0xe61d, fontFamily: 'iconfont')),
+          icon: new Icon(IconData(0xe61d, fontFamily: 'iconfont'), color: Colors.white),
           onPressed: () async {
             String code = await Global.scan(context);
             if (code == null) {

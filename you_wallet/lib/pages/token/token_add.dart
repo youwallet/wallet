@@ -7,7 +7,7 @@ import 'package:youwallet/widgets/hotToken.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/token.dart';
 import 'package:youwallet/global.dart';
-
+import 'package:youwallet/bus.dart';
 
 class AddToken extends StatefulWidget {
 
@@ -255,8 +255,24 @@ class Page extends State<AddToken> {
         width: 50.0,
         child: new IconButton(
           icon: new Icon(IconData(0xe61d, fontFamily: 'iconfont')),
-          onPressed: () {
-            this.showSnackbar('还不能扫二维码');
+          onPressed: () async {
+            String code = await Global.scan(context);
+            if (code == null) {
+              return;
+            }
+            List arr = code.split(':');
+            if (arr[1] == 'token') {
+              Navigator.pushNamed(context, "add_token",arguments: {
+                'address': arr[0]
+              });
+            } else if (arr[1] == 'transfer') {
+              Global.setToAddress(arr[0]);
+              eventBus.fire(TabChangeEvent(3));
+            } else {
+              // print(code);
+              // 如果模式无法匹配，就跳转扫码结果页面，显示扫码内容
+              Navigator.pushNamed(context, "scan",arguments: code);
+            }
           },
         ),
       )

@@ -5,6 +5,7 @@ import 'package:youwallet/widgets/modalDialog.dart';
 import 'package:youwallet/widgets/inputDialog.dart';
 import 'package:youwallet/widgets/customButton.dart';
 import 'package:youwallet/util/wallet_crypt.dart';
+import 'package:youwallet/global.dart';
 import 'package:flutter/services.dart';
 
 class WalletExport extends StatefulWidget {
@@ -74,9 +75,9 @@ class Page extends State<WalletExport> {
     return new Scaffold(
       key: globalKey,
       appBar: buildAppBar(context),
-      body: new Container(
+      body: Container(
         padding: const EdgeInsets.all(16.0),
-        child: ListView(
+        child: Column(
             children: <Widget>[
                new Card(
                   color: Colors.white, //背景色
@@ -92,7 +93,7 @@ class Page extends State<WalletExport> {
                                   name,
                                   style: new TextStyle(fontSize: 32.0, color: Colors.black),
                                 ),
-                                new Text(this.wallet['address']),
+                                Text(Global.maskAddress(this.wallet['address'])),
                               ],
                             ),
                           ),
@@ -111,7 +112,7 @@ class Page extends State<WalletExport> {
                       )
                   )
               ),
-              ListTile(
+               ListTile(
                 title: Text('导出助记词'),
                 trailing: new Icon(Icons.keyboard_arrow_right),
                 onTap: () {
@@ -134,7 +135,7 @@ class Page extends State<WalletExport> {
                   });
                 },
               ),
-              ListTile(
+               ListTile(
                 title: Text('导出私钥'),
                 trailing: new Icon(Icons.keyboard_arrow_right),
                 onTap: () {
@@ -155,14 +156,14 @@ class Page extends State<WalletExport> {
 
                 },
               ),
-              Padding(padding: EdgeInsets.only(top: 80.0)),
-              CustomButton(
+               Padding(padding: EdgeInsets.only(top: 80.0)),
+               CustomButton(
                   content: '删除钱包',
                   type:"danger",
                   onSuccessChooseEvent:(res){
                     this.delWallet();
                   }
-              )
+               )
             ],
         )
 
