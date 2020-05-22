@@ -16,13 +16,13 @@ class TokenLogo extends StatelessWidget {
     Map token = Global.hotToken.firstWhere((element)=>(element['address'] == this.address),orElse: ()=>({}));
     if (token.isEmpty) {
       return CircleAvatar(
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.transparent,
           radius: 25.0,
           child: Icon(IconData(0xe648, fontFamily: 'iconfont'),size: 50.0, color: Colors.black26)
       );
     } else {
       return CircleAvatar(
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.transparent,
           radius: 25.0,
           child: Icon(IconData(token['icon'], fontFamily: 'iconfont'),size: 50.0, color: token['color'])
       );

@@ -72,9 +72,10 @@ class _NewWalletNameState extends State<NewWalletName> {
                     if (_name.text.length == 0) {
                       this.showSnackbar('钱包名字不能为空');
                     } else {
+                      // 这里把名字直接保存在本地缓存中，不通过url传递
                       SharedPreferences prefs = await SharedPreferences.getInstance();
                       prefs.setString("new_wallet_name", _name.text);
-                      Navigator.pushNamed(context, "backup_wallet", arguments: <String, String>{});
+                      Navigator.pushNamed(context, "backup_wallet", arguments: null);
 //                    Navigator.pushNamed(context, "keyboard_main").then((data){
 //                      print('你设置的交易密码是=》${data.toString()}');
 //                      prefs.setString("new_wallet_pw", data.toString());

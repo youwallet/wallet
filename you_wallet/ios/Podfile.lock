@@ -2,6 +2,7 @@ PODS:
   - barcode_scan (0.0.1):
     - Flutter
     - MTBBarcodeScanner
+    - SwiftProtobuf
   - Bugly (2.5.2)
   - Flutter (1.0.0)
   - flutter_aes_ecb_pkcs5 (0.0.1):
@@ -36,6 +37,7 @@ PODS:
   - sqflite (0.0.1):
     - Flutter
     - FMDB (~> 2.7.2)
+  - SwiftProtobuf (1.9.0)
   - url_launcher (0.0.1):
     - Flutter
   - url_launcher_macos (0.0.1):
@@ -68,6 +70,7 @@ SPEC REPOS:
     - Bugly
     - FMDB
     - MTBBarcodeScanner
+    - SwiftProtobuf
 
 EXTERNAL SOURCES:
   barcode_scan:
@@ -108,7 +111,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/url_launcher_web/ios"
 
 SPEC CHECKSUMS:
-  barcode_scan: 33f586d02270046fc6559135038b34b5754eaa4f
+  barcode_scan: a5c27959edfafaa0c771905bad0b29d6d39e4479
   Bugly: dbac48b55ad469a97cc4321045cd50df8f63d44f
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_aes_ecb_pkcs5: fb682a7bb13f29cfbb33f88f7e1ed2211eacf5db
@@ -126,6 +129,7 @@ SPEC CHECKSUMS:
   shared_preferences_macos: f3f29b71ccbb56bf40c9dd6396c9acf15e214087
   shared_preferences_web: 141cce0c3ed1a1c5bf2a0e44f52d31eeb66e5ea9
   sqflite: 4001a31ff81d210346b500c55b17f4d6c7589dd0
+  SwiftProtobuf: ecbec1be9036d15655f6b3443a1c4ea693c97932
   url_launcher: a1c0cc845906122c4784c542523d8cacbded5626
   url_launcher_macos: fd7894421cd39320dce5f292fc99ea9270b2a313
   url_launcher_web: e5527357f037c87560776e36436bf2b0288b965c

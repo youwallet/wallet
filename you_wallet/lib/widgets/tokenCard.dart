@@ -16,33 +16,23 @@ class TokenCard extends StatelessWidget {
       margin: EdgeInsets.fromLTRB(0, 16.0, 0, 0),
       padding: EdgeInsets.only(left: 20, top: 20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: this.data.cardColors,
-        ),
+        color: Colors.lightBlue,
         borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 6,
-            spreadRadius: 4,
-            color: Color.fromARGB(20, 0, 0, 0),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: <Widget>[
-//          Positioned(
-//            right: -100,
-//            bottom: -100,
-//            child: TokenLogo(address: this.data.cardNumber),
+//        gradient: LinearGradient(
+//          begin: Alignment.topLeft,
+//          end: Alignment.bottomRight,
+//          colors: this.data.cardColors,
+//        ),
+//
+//        boxShadow: [
+//          BoxShadow(
+//            blurRadius: 6,
+//            spreadRadius: 4,
+//            color: Color.fromARGB(20, 0, 0, 0),
 //          ),
-          Positioned(
-            left: 0,
-            top: 0,
-            right: 0,
-            bottom: 0,
-            child: Column(
+//        ],
+      ),
+      child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Row(
@@ -98,9 +88,6 @@ class TokenCard extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }

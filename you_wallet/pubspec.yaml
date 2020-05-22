@@ -30,7 +30,7 @@ dependencies:
   share: ^0.6.1+1
   bip39: ^1.0.3
   bitcoin_flutter: ^1.0.7
-  barcode_scan: ^1.0.0
+  barcode_scan: ^3.0.1
   shared_preferences: ^0.5.4+6
   steel_crypt: ^1.5.1+1
   sqflite: ^1.0.0

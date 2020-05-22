@@ -126,9 +126,12 @@ class Page extends State<WalletExport> {
                     }
                     final mnemonic = await WalletCrypt(obj['pwd'], this.wallet['mnemonic']).decrypt();
                     if (mnemonic.split(" ").length == 12) {
-//                      Clipboard.setData(new ClipboardData(text: mnemonic));
-//                      this.showSnackbar('助记词已复制');
-                      Navigator.pushNamed(context, "scan",arguments: mnemonic);
+                      // 先跳转备份提示页面，再跳转真实的导出页面
+                      Navigator.pushNamed(context, "backup_wallet",arguments: {
+                        'to': 'scan',
+                        'res': mnemonic
+                      });
+                      // Navigator.pushNamed(context, "scan",arguments: mnemonic);
                     } else {
                       this.showSnackbar('该钱包没有助记词');
                     }
@@ -150,7 +153,12 @@ class Page extends State<WalletExport> {
 //                       ClipboardData data = new ClipboardData(text: privateKey);
 //                       Clipboard.setData(data);
 //                       this.showSnackbar('私钥导出成功，已复制到剪贴板');
-                       Navigator.pushNamed(context, "scan",arguments: privateKey);
+                       //Navigator.pushNamed(context, "scan",arguments: privateKey);
+                       // 先跳转备份提示页面，再跳转真实的导出页面
+                       Navigator.pushNamed(context, "backup_wallet",arguments: {
+                         'to': 'scan',
+                         'res': privateKey
+                       });
                      }
                   });
 
