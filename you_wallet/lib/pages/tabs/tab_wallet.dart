@@ -139,7 +139,10 @@ class Page extends State<TabWallet> {
             } else {
               // print(code);
               // 如果模式无法匹配，就跳转扫码结果页面，显示扫码内容
-              Navigator.pushNamed(context, "scan",arguments: code);
+              Navigator.pushNamed(context, "scan",arguments: {
+                'res': code,
+                'allowCopy': true
+              });
             }
           },
         ),
