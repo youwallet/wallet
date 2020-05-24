@@ -13,20 +13,23 @@ class TokenLogo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('start build logo');
     Map token = Global.hotToken.firstWhere((element)=>(element['address'] == this.address),orElse: ()=>({}));
+    print(token);
     if (token.isEmpty) {
+      // return Icon(IconData(0xe648, fontFamily: 'iconfont'),size: 50.0, color: Colors.black26);
       return Stack(
         children: <Widget>[
           Container(
             width: 50.0,
             height: 50.0,
             decoration: new BoxDecoration(
-                // border: new Border.all(width: 2.4, color: Colors.black26),
-                // borderRadius: new BorderRadius.all(new Radius.circular(25.0))
+                 border: new Border.all(width: 2.4, color: Colors.black26),
+                 borderRadius: new BorderRadius.all(new Radius.circular(25.0))
             ),
           ),
           Positioned(
-              child: Icon(IconData(0xe648, fontFamily: 'iconfont'),size: 50.0, color: Colors.black26)
+              child: Icon(IconData(0xe648, fontFamily: 'iconfont'),size: 50.0, color: Color(0xbdbdbd))
           ),
         ],
       );
@@ -37,13 +40,13 @@ class TokenLogo extends StatelessWidget {
             width: 50.0,
             height: 50.0,
             decoration: new BoxDecoration(
-                border: new Border.all(width: 2.4, color: token['color']),
+                border: new Border.all(width: 2.4, color: Colors.black54),
                 color: Colors.white,
                 borderRadius: new BorderRadius.all(new Radius.circular(25.0))
             ),
           ),
           Positioned(
-            child:Icon(IconData(token['icon'], fontFamily: 'iconfont'),size: 50.0, color: token['color'])
+            child:Icon(IconData(token['icon'], fontFamily: 'iconfont'),size: 50.0, color: Colors.black54)
           ),
         ],
       );

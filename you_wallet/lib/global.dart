@@ -49,10 +49,10 @@ class Global {
 
   // 热门token
   static const hotToken = [
-    {'name': 'BTAT', 'address':'0x8e4d8D520f52B044e1E8B054D763B723B7C3E716','color': Colors.black26, 'icon': 0xe648},
-    {'name': 'BTBT', 'address':'0x45e110F81bBf89041A63Bc2403058743bc552bAF','color': Colors.black26, 'icon': 0xe648},
-    {'name': 'BTCT', 'address':'0x7B29ed69368B0Ed0d3b21A857BaEeF788B13c626','color': Colors.black26, 'icon': 0xe648},
-    {'name': 'BTDT', 'address':'0x60423Ebc63245631Ea71bdF58CF23A3949329cDb','color': Colors.black26, 'icon': 0xe648},
+    {'name': 'BTAT', 'address':'0x8e4d8D520f52B044e1E8B054D763B723B7C3E716','color': Color(0xbdbdbd), 'icon': 0xe648},
+    {'name': 'BTBT', 'address':'0x45e110F81bBf89041A63Bc2403058743bc552bAF','color': Color(0xbdbdbd), 'icon': 0xe648},
+    {'name': 'BTCT', 'address':'0x7B29ed69368B0Ed0d3b21A857BaEeF788B13c626','color': Color(0xbdbdbd), 'icon': 0xe648},
+    {'name': 'BTDT', 'address':'0x60423Ebc63245631Ea71bdF58CF23A3949329cDb','color': Color(0xbdbdbd), 'icon': 0xe648},
     {'name': 'USDT', 'address':'0xdac17f958d2ee523a2206206994597c13d831ec7','color': Colors.green, 'icon': 0xe7f8},
     {'name': 'BNB', 'address':'0xB8c77482e45F1F44dE1745F52C74426C631bDD52','color': Colors.yellow, 'icon': 0xe7ec},
     {'name': 'SHT', 'address':'0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef','color': Colors.black26, 'icon': 0xe648},
