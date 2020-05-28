@@ -13,15 +13,26 @@ class UserMenu extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           UserAccountsDrawerHeader(
+
             accountName: Text(
               'sibbay',
-              style: TextStyle( fontWeight: FontWeight.bold, ),
+              style: TextStyle( fontWeight: FontWeight.bold, color: Colors.white),
             ),
-            accountEmail: Text('sibbay@example.com'),
+            accountEmail: Text(
+                'sibbay@example.com',
+                style: TextStyle( fontWeight: FontWeight.bold, color: Colors.white)
+            ),
             //currentAccountPicture: CircleAvatar( backgroundImage: NetworkImage('https://upyun-assets.ethfans.org/assets/ethereum-logo-fe43a240b78711a6d427e9638f03163f3dc88ca8c112510644ce7b5f6be07dbe.png')),
-            currentAccountPicture : Icon(IconData(0xe648, fontFamily: 'iconfont'),size: 60.0),
+//            currentAccountPicture: Icon(
+//                IconData(0xe648, fontFamily: 'iconfont'),
+//                size: 60.0
+//            ),
+            currentAccountPicture: Image(
+                image: AssetImage("images/logo.png"),
+                width: 100.0
+            ),
             decoration: BoxDecoration(
-              color: Colors.black12,
+              color: Colors.lightBlue,
 //                      image: DecorationImage(
 //                        image: NetworkImage( 'url'),
 //                        fit: BoxFit.cover,
@@ -67,7 +78,7 @@ class UserMenu extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text('版本号'),
-                Text('v1.0.1')
+                Text('v1.0.2')
               ],
             ),
             leading: Icon(Icons.exit_to_app),

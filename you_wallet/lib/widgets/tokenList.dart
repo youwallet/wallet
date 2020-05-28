@@ -31,9 +31,7 @@ class tokenList extends StatelessWidget {
     if (filterArr!= null && filterArr.length == 0) {
       return Column(
         children: <Widget>[
-          ListEmpty(
-            text: '还没有token，请先添加'
-          ),
+          ListEmpty(),
           new CustomButton(
               content: '添加token',
               onSuccessChooseEvent:(res) async{

@@ -24,13 +24,13 @@ class TokenCard extends StatelessWidget {
 //          colors: this.data.cardColors,
 //        ),
 //
-//        boxShadow: [
-//          BoxShadow(
-//            blurRadius: 6,
-//            spreadRadius: 4,
-//            color: Color.fromARGB(20, 0, 0, 0),
-//          ),
-//        ],
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 6,
+            spreadRadius: 4,
+            color: Color.fromARGB(20, 0, 0, 0),
+          ),
+        ],
       ),
       child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

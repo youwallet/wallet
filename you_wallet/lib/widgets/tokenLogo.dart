@@ -40,13 +40,13 @@ class TokenLogo extends StatelessWidget {
             width: 50.0,
             height: 50.0,
             decoration: new BoxDecoration(
-                border: new Border.all(width: 2.4, color: Colors.black54),
+                border: new Border.all(width: 2.4, color: token['color']),
                 color: Colors.white,
                 borderRadius: new BorderRadius.all(new Radius.circular(25.0))
             ),
           ),
           Positioned(
-            child:Icon(IconData(token['icon'], fontFamily: 'iconfont'),size: 50.0, color: Colors.black54)
+            child:Icon(IconData(token['icon'], fontFamily: 'iconfont'),size: 50.0, color: token['color'])
           ),
         ],
       );
