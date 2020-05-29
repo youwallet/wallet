@@ -92,7 +92,6 @@ class Http{
       'id': DateTime.now().millisecondsSinceEpoch,
       'params': []
     };
-    print('请求开始======');
     // 调用eth_call，params里面需要加上合约地址，就是参数to
     if (method == 'eth_call') {
       params['to'] = to;
@@ -109,8 +108,6 @@ class Http{
           data: data,
           cancelToken:cancelToken
       );
-      print('请求结束======');
-      print(response.data);
     }on DioError catch(e){
       if(CancelToken.isCancel(e)){
         print('get请求取消! ' + e.message);

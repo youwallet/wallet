@@ -6,16 +6,11 @@ import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/deal.dart';
 import 'package:youwallet/bus.dart';
-import 'package:provider/provider.dart';
-import 'package:youwallet/model/deal.dart';
 import 'package:youwallet/service/trade.dart';
 import 'package:flutter/services.dart';
 import 'package:youwallet/util/number_format.dart';
 
 class transferList extends StatefulWidget {
-
-//  List arr = [];
-//  Map filledAmount = {};
 
   transferList({Key key}) : super(key: key);
 

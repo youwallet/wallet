@@ -470,6 +470,21 @@ class Trade {
     return response['result'];
   }
 
+  /* 查询订单状态 - R
+ * od_hash: order hash
+ *
+ * 返回值:
+ * OrderFlag 枚举, (参考该结构体)
+ *
+ */
+  static Future orderFlags(String od_hash) async {
+    Map params = {
+      "data": Global.funcHashes['orderFlags(bytes32 od_hash)'] + od_hash.padLeft(64, '0')
+    };
+    var response = await Http().post(params: params);
+    return response['result'];
+  }
+
   // 本接口即将被废弃
   static Future getSellQueue(String bqHash) async {
     String postData = Global.funcHashes['sellQueue(bytes32)'] + bqHash.padLeft(64, '0');

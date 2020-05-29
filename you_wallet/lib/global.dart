@@ -39,7 +39,7 @@ class Global {
   static const proxy = "0x6BeE8B8a06F2Df4c3e3BE7E6ca8E489602378186";
 
   // youWallet钱包合约
-  static const tempMatchAddress = "0x950b5C568c46B1abcDC21F7348d9F29B7c64462a";
+  static const tempMatchAddress = "0x8e659597DEe347c9BC42a988bd3a6617103161dF";
 
   // 收取交易费的账户relayer ，测试阶段用SHT的合约账户代替
   static const taxAddress = "0xA9535b10EE96b4A03269D0e0DEf417aF97477FD6";
@@ -94,7 +94,8 @@ class Global {
     'getDecimals()': '0x313ce567',
     'getTokenBalance()': '0x70a08231',
     'getConfigData()': '0xfeee047e',
-    'getConfigSignature()': '0x0b973ca2'
+    'getConfigSignature()': '0x0b973ca2',
+    'orderFlags(bytes32 od_hash)': '0x76356e86'
 };
 
   static const myKey = "v3/37caa7b8b2c34ced8819de2b3853c8a2";

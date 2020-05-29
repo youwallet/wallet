@@ -19,13 +19,10 @@ class OrderDetail extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
-
     return new Page(arguments: this.arguments);
   }
 }
 
-// 收款tab页
 class Page extends State<OrderDetail> {
 
   Page({this.arguments});
@@ -36,18 +33,19 @@ class Page extends State<OrderDetail> {
 
   @override // override是重写父类中的函数
   void initState()  {
-    print(this.widget);
+    print('start initstate');
+    print(widget.arguments);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    print(this.widget);
     return layout(context);
   }
 
 
   Widget layout(BuildContext context) {
+    print('build order detail');
     return new Scaffold(
       key: globalKey,
       appBar: buildAppBar(context),
@@ -260,10 +258,14 @@ class Page extends State<OrderDetail> {
   }
 
   Future<Map> getDetail() async {
-    print('getDetail =>');
-    print(this.arguments);
-    Map response = await Trade.getTransactionByHash( this.arguments['txnHash']);
-    Map res = await Trade.getTransactionReceipt(this.arguments);
+    print('here is detail');
+    Map response = await Trade.getTransactionByHash( widget.arguments['txnHash']);
+    print(response);
+    Map res = await Trade.getTransactionReceipt(widget.arguments);
+    print(res);
+    var orderFlag = await Trade.orderFlags(widget.arguments['odHash']);
+    print('here is flag');
+    print(orderFlag);
     response['gasUsed'] = res['gasUsed'];
     return response;
   }
