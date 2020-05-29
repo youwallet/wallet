@@ -77,7 +77,7 @@ class Page extends State<OrderDetail> {
   }
 
   Widget buildPage(Map item) {
-    item['blockNumber'] = BigInt.parse(item['blockNumber'].replaceFirst('0x', ''), radix: 16).toString();
+    item['blockNumber'] = item['blockNumber']==null ? '':BigInt.parse(item['blockNumber'].replaceFirst('0x', ''), radix: 16).toString();
     item['gas'] = BigInt.parse(item['gas'].replaceFirst('0x', ''), radix: 16);
     item['gasPrice'] =Decimal.parse( (BigInt.parse(item['gasPrice'].replaceFirst('0x', ''), radix: 16)/BigInt.from(pow(10, 18))).toString()).toString();
     item['gasUsed'] = BigInt.parse(item['gasUsed'].replaceFirst('0x', ''), radix: 16);
@@ -258,16 +258,19 @@ class Page extends State<OrderDetail> {
   }
 
   Future<Map> getDetail() async {
-    print('here is detail');
     Map response = await Trade.getTransactionByHash( widget.arguments['txnHash']);
     print(response);
     Map res = await Trade.getTransactionReceipt(widget.arguments);
-    print('here is recept');
-    print(res);
-    var orderFlag = await Trade.orderFlags(widget.arguments['odHash']);
-    print('here is flag');
-    print(orderFlag);
-    response['gasUsed'] = res['gasUsed'];
+//    print('here is recept');
+//    print(res);
+//    var orderFlag = await Trade.orderFlags(widget.arguments['odHash']);
+//    print('here is flag');
+//    print(orderFlag);
+    if (res == null) {
+      response['gasUsed'] = '0x0';
+    } else {
+      response['gasUsed'] = res['gasUsed'];
+    }
     return response;
   }
 

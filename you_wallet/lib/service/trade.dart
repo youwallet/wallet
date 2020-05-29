@@ -126,6 +126,7 @@ class Trade {
   // 下单，返回订单的hash
   // 用户输入的价格和数量在提交时需要格式化，规则如下
   // https://github.com/youwallet/wallet/issues/35#issuecomment-586881171
+  // https://github.com/simolus3/web3dart/blob/4ca6f3d19426e2da201b2b2dbc256443c1fa0f06/lib/src/core/transaction.dart
    Future<String> takeOrder() async {
     this.trader =  formatParam(Global.getPrefs("currentWallet"));
     this.configData = await getConfigData(this.isBuy);
@@ -157,7 +158,8 @@ class Trade {
             value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
             data: hexToBytes(postData)
         ),
-        chainId: 3
+        // chainId: 3
+        fetchChainIdFromNetworkId: true
     );
     // print("transaction => ${rsp}");
     await client.dispose();
