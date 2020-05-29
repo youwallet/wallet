@@ -652,8 +652,9 @@ class Page extends State {
       print('+++++++++++++++');
       print(e);
       if(e.toString() == 'RPCError: got code -32000 with msg "insufficient funds for gas * price + value".') {
-
         this.showSnackBar('钱包ETH余额不足');
+      } else if(e.toString() == 'RPCError: got code -32000 with msg "replacement transaction underpriced".') {
+        this.showSnackBar('有交易在打包中，请先等待打包结束');
       } else {
         this.showSnackBar(e.toString());
       }

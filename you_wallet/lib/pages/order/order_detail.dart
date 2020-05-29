@@ -262,6 +262,7 @@ class Page extends State<OrderDetail> {
     Map response = await Trade.getTransactionByHash( widget.arguments['txnHash']);
     print(response);
     Map res = await Trade.getTransactionReceipt(widget.arguments);
+    print('here is recept');
     print(res);
     var orderFlag = await Trade.orderFlags(widget.arguments['odHash']);
     print('here is flag');
