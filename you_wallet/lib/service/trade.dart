@@ -161,11 +161,12 @@ class Trade {
         // chainId: 3
         fetchChainIdFromNetworkId: true
     );
-    // print("transaction => ${rsp}");
+
+    // 保存订单到本地数据库，
+    // 注意这时订单还在打包中（pending），只有hash值，不算成功
+    //  之内把hash值返回，页面关闭loading图标，订单列表显示所有订单
     await client.dispose();
     this.txnHash = rsp;
-    // 保存订单到本地数据库，
-    // 注意这时订单还在打包中，只有hash值，不算成功
     await this.saveTrader();
     return this.txnHash;
   }
@@ -477,14 +478,21 @@ class Trade {
  *
  * 返回值:
  * OrderFlag 枚举, (参考该结构体)
- *
+ *  订单状态
+ * ORDER_OK 订单完成，完全匹配以后挂单。
+ * ORDER_PENDING  挂弹中，订单未完全匹配。
+ * ORDER_FINISHED 订单完成，上个状态为ORDER_PENDING。
+ * ORDER_EXPIRED 订单超时，订单超时为匹配，上个状态为ORDER_PENDING。
+ * ORDER_CANCELED 订单取消，上个状态为ORDER_PENDING。
+ * ORDER_REMOVED 订单移除，账户余额不足被移除，上个状态为ORDER_PENDING。
  */
   static Future orderFlags(String od_hash) async {
     Map params = {
       "data": Global.funcHashes['orderFlags(bytes32 od_hash)'] + od_hash.padLeft(64, '0')
     };
     var response = await Http().post(params: params);
-    return response['result'];
+    int flag = int.parse(response['result'].replaceFirst("0x",''), radix: 16);
+    return Global.orderStatusMap[flag]['status'];
   }
 
   // 本接口即将被废弃

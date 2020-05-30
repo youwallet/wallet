@@ -59,6 +59,16 @@ class Global {
     {'name': 'EOS', 'address':'0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0','color': Colors.black, 'icon': 0xe7ef},
   ];
 
+  // 订单状态索引
+  static const orderStatusMap = [
+   {'type': 'ORDER_OK', 'status': '订单完成', 'remark': '订单完成,完全匹配以后挂单。' },
+   {'type': 'ORDER_PENDING', 'status': '挂单中', 'remark': '挂单中,订单未完全匹配。' },
+   {'type': 'ORDER_FINISHED', 'status': '订单完成', 'remark': '订单完成，上个状态为ORDER_PENDING。' },
+   {'type': 'ORDER_EXPIRED', 'status': '订单超时', 'remark': '订单超时，订单超时为匹配，上个状态为ORDER_PENDING' },
+   {'type': 'ORDER_CANCELED', 'status': '订单取消', 'remark': '订单取消，上个状态为ORDER_PENDING。' },
+   {'type': 'ORDER_REMOVED', 'status': '订单移除', 'remark': '订单移除，账户余额不足被移除，上个状态为ORDER_PENDING。' }
+  ];
+
 
   // gas price 10Gwei
   static final gasPrice = BigInt.from(10000000000);

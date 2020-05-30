@@ -86,8 +86,8 @@ class Page extends State {
 
     //监听订单操作结果
     eventBus.on<TransferDoneEvent>().listen((event) async{
-      Navigator.of(context).pop();
       this.showSnackBar(event.res);
+      Navigator.pop(context);
     });
 
     // 事件钩子，通知页面订单列表就要开始刷新了
@@ -629,9 +629,7 @@ class Page extends State {
     } else {
       isBuy = false;
     }
-    if (this.controllerAmount.text is String) {
-      print("this.controllerAmount.text is string");
-    }
+
     Trade trade = new Trade(this.value['address'], this.value['name'], this.rightToken['address'], this.rightToken['name'], this.controllerAmount.text, this.controllerPrice.text, isBuy, obj);
     try {
       await trade.takeOrder();
@@ -642,12 +640,6 @@ class Page extends State {
       // 下单成功后，主动更新当前交易的这个的余额
       // this.value就是需要更新的token，只需要更新value中的balance
       // 但是拿到订单hash，交易其实还是pading状态，余额已经减少了吗
-
-
-      this.setState((){
-        currentStatus = "打包中";
-      });
-
     } catch(e) {
       print('+++++++++++++++');
       print(e);

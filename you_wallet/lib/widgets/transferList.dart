@@ -268,10 +268,10 @@ class Page extends State<transferList> {
     List list = List.from(res);
     if (tab == '当前兑换') {
       print('here tab is => ${tab}');
-      list.retainWhere((element)=>(element['status']=='进行中' || element['status']=='打包中' ));
+      list.retainWhere((element)=>(element['status']=='进行中' || element['status']=='挂单中' || element['status']=='打包中' ));
 //      this._getTradeInfo(list);
     } else {
-      list.retainWhere((element)=>(element['status']!='进行中'));
+      list.retainWhere((element)=>(element['status']!='挂单中'));
     }
     setState(() {
       this.arr = list;
@@ -290,29 +290,20 @@ class Page extends State<transferList> {
     list.retainWhere((element)=>(element['status']=='进行中'|| element['status']=='打包中'));
     Map filled = {};
     for(var i = list.length -1; i>=0; i--) {
-      if(list[i]['status'] == '进行中' || list[i]['status'] == '打包中') {
+      if(list[i]['status'] == '进行中' || list[i]['status'] == '挂单中' || list[i]['status'] == '打包中') {
         double amount = await Trade.getFilled(list[i]['odHash']);
         print('匹配情况   =》${list[i]['amount']}-${amount}');
         await Provider.of<Deal>(context).updateFilled(
             list[i], amount.toStringAsFixed(4));
         filled[list[i]['txnHash']] = amount.toStringAsFixed(4);
 
-        // 只有额度不匹配的时候，才判断这个订单还是否存在
-        // 因为订单可能被撤销了
-        // 而匹配成功的订单，已经被移除了深度队列，下面这个接口是查不到的
-//        if(double.parse(list[i]['amount']).toStringAsFixed(4) != amount.toStringAsFixed(4)) {
-//          // 检查订单的在youwallet上的状态，如果为0，就表示这个订单被youwallet撤销了
-//          int orderFlag = await Trade.orderFlag(list[i]);
-//          if (orderFlag == 0) {
-//            await Provider.of<Deal>(context).updateOrderStatus(list[i]['txnHash'], '交易撤销');
-//          }
-//        }
 
-        //检查订单的在以太坊上的凭据，以为订单有可能在以太坊这里就上链失败了
-//        Map res = await Trade.getTransactionReceipt(list[i]);
-//        if(res['status'] == '0x0') {
-//          await Provider.of<Deal>(context).updateOrderStatus(list[i]['txnHash'], '挂单失败');
-//        }
+        // 检查订单状态，订单可能因为余额被合约移除，
+        // 这里要对进行中和打包中的订单再次确认一遍状态
+        print(list[i]);
+        var res = await Trade.orderFlags(list[i]['odHash']);
+        await Provider.of<Deal>(context).updateOrderStatus(list[i]['txnHash'], res);
+
       } else {
         //print('该订单状态为${this.arr[i]['status']},已匹配完毕');
       }
@@ -327,7 +318,7 @@ class Page extends State<transferList> {
   /// 订单匹配状态查询完毕，整体更新一次列表
   void updateList() async {
     List list = List.from(await Provider.of<Deal>(context).getTraderList());
-    list.retainWhere((element)=>(element['status']=='进行中' || element['status']=='打包中' ));
+    list.retainWhere((element)=>(element['status']=='进行中' || element['status']=='挂单中' || element['status']=='打包中' ));
     setState(() {
       this.arr = list;
     });
@@ -397,34 +388,6 @@ class Page extends State<transferList> {
       }
     }).catchError(print);
 
-//    Map response = await Trade.getTransactionByHash(hash);
-//    print("第${index}次查询");
-//    print(response);
-//    if(response['blockHash'] != null) {
-//      // 以太坊返回了交易的blockHash, 以太坊写链操作结束
-//      // 现在判断写链操作的状态
-//      Map res = await Trade.getTransactionReceipt({'txnHash': hash});
-//      if (res['status']== '0x1') {
-//        print('轮询结束，下单成功，更改状态为进行中');
-//        print('广播 TransferDoneEvent事件');
-//        await Provider.of<Deal>(context).updateOrderStatus(hash, '进行中');
-//        eventBus.fire(TransferDoneEvent('打包成功，订单状态变更为进行中'));
-//      } else {
-//        await Provider.of<Deal>(context).updateOrderStatus(hash, '失败');
-//        eventBus.fire(TransferDoneEvent('挂单失败'));
-//      }
-//      eventBus.fire(TransferUpdateStartEvent());
-//      this.updateOrderFilled();
-//    } else {
-//      if (index > 30) {
-//        print('已经轮询了30次，打包失败');
-//        eventBus.fire(TransferDoneEvent('订单打包超时，请重新下单'));
-//      } else {
-//        Future.delayed(Duration(seconds: 2), (){
-//          this.checkOrderStatus(hash, index+1);
-//        });
-//      }
-//    }
   }
 
 

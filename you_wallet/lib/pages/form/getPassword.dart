@@ -23,7 +23,7 @@ class _LoginPageState extends State<GetPasswordPage> {
 
   bool showExtraSet = false;
   Map data = {
-    'gasPrice': '10000000000', // 这个字段放到全局变量中去
+    'gasPrice': '100000000000', // 这个字段放到全局变量中去
     'gasLimit': Global.gasLimit.toString(),
     'pwd': ''
   };
@@ -86,7 +86,6 @@ class _LoginPageState extends State<GetPasswordPage> {
           }
 
           try {
-
             this.data['privateKey'] = await this.getPrivateKey(this.data['pwd']);
             this.data['gasPrice'] = EtherAmount.inWei(BigInt.parse(this.data['gasPrice']));
             this.data['gasLimit'] = int.parse(this.data['gasLimit']);
