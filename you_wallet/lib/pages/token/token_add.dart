@@ -34,8 +34,7 @@ class Page extends State<AddToken> {
   @override
   void initState() {
     super.initState();
-    print('start initState');
-    print(widget.arguments);
+    print('token add initState');
     // initState在整个生命周期中只执行一次，
     // 所以把初始化异步获取数据的代码放在这里
     // 为什么不放在didChangeDependencies里面呢？因为它会导致这个逻辑被自行两次
@@ -195,7 +194,7 @@ class Page extends State<AddToken> {
   }
 
   void startSearch(String text) async {
-
+    print('startSearch: $text');
     if (!text.startsWith('0x')) {
       this.showSnackbar('合约地址必须0x开头');
       return;
@@ -216,6 +215,7 @@ class Page extends State<AddToken> {
     // 获取token小数点、名字、余额这三个异步操作可以做成一个链式调用
     Future(() async {
       int decimals = await  TokenService.getDecimals(text);
+      print('decimals id $decimals');
       return Future.value(decimals);
     }).then((res){
       Future.wait([TokenService.getTokenName(text),TokenService.getTokenBalance({'address': text, 'decimals': res})]).then((list) {
@@ -234,6 +234,8 @@ class Page extends State<AddToken> {
         });
         saveToken(token);
       }).catchError((e){
+        print('catchError');
+        print(e);
         this.showSnackbar('没有搜索到token');
       }).whenComplete(() {
         print("名字和余额查询完毕");

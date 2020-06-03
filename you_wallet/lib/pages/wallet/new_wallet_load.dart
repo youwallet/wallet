@@ -229,21 +229,6 @@ class Page extends State<LoadWallet> {
                 this.saveWalletByKey('');
               }
           ),
-//          new Padding(
-//              padding: new EdgeInsets.all(30.0),
-//              child: new Text('免密设置')
-//          ),
-//          new Container(
-//              margin: const EdgeInsets.only(top: 10.0),
-//              child: GestureDetector(
-//                child: new Image.asset(
-//                    'images/fingerprint.png'
-//                ),
-//                onTap: () async {
-//                  saveWalletByKey();
-//                },
-//              )
-//          ),
         ],
       ),
     );
@@ -260,15 +245,6 @@ class Page extends State<LoadWallet> {
         child: null
       );
     }
-  }
-
-  _getWalletName() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String name = prefs.getString("new_wallet_name");
-    print("new name => ${name}");
-    setState(() {
-      this.name = name;
-    });
   }
 
   // 通过助记词导入

@@ -30,8 +30,6 @@ class Page extends State<transferList> {
 
     /// tab切换
     eventBus.on<CustomTabChangeEvent>().listen((event) {
-      print('change in component');
-      print(event.res);
       this.tabChange(event.res);
     });
 
@@ -262,21 +260,16 @@ class Page extends State<transferList> {
   // tab切换, 切换显示的数据，这里不刷新
   // 这里list需要用List.from转化一次，否则会提示read only
   void tabChange(String tab) async {
-    print('start tabChange');
     List res = await Provider.of<Deal>(context).getTraderList();
-    print(res);
     List list = List.from(res);
     if (tab == '当前兑换') {
-      print('here tab is => ${tab}');
       list.retainWhere((element)=>(element['status']=='进行中' || element['status']=='挂单中' || element['status']=='打包中' ));
-//      this._getTradeInfo(list);
     } else {
       list.retainWhere((element)=>(element['status']!='挂单中'));
     }
     setState(() {
       this.arr = list;
     });
-//    this.updateOrderStatus();
   }
 
   /// 从本地数据库中拿出所有进行中和打包中的订单
@@ -286,10 +279,11 @@ class Page extends State<transferList> {
   /// 如果订单匹配还在进行中，判断一下这个订单是否还有效（因为它可能被取消了）
   /// 最后通知顶层页面，刷新结束
   Future<void> updateOrderFilled() async {
+    print('start updateOrderFilled');
     List list = List.from(await Provider.of<Deal>(context).getTraderList());
-    list.retainWhere((element)=>(element['status']=='进行中'|| element['status']=='打包中'));
     Map filled = {};
     for(var i = list.length -1; i>=0; i--) {
+      print(list[i]);
       if(list[i]['status'] == '进行中' || list[i]['status'] == '挂单中' || list[i]['status'] == '打包中') {
         double amount = await Trade.getFilled(list[i]['odHash']);
         print('匹配情况   =》${list[i]['amount']}-${amount}');
@@ -300,7 +294,6 @@ class Page extends State<transferList> {
 
         // 检查订单状态，订单可能因为余额被合约移除，
         // 这里要对进行中和打包中的订单再次确认一遍状态
-        print(list[i]);
         var res = await Trade.orderFlags(list[i]['odHash']);
         await Provider.of<Deal>(context).updateOrderStatus(list[i]['txnHash'], res);
 
@@ -357,7 +350,7 @@ class Page extends State<transferList> {
       print('start dowhile again');
       if (countRequest > 30 ) {
         print('订单打包超时，请重新下单');
-        eventBus.fire(TransferDoneEvent('订单打包超时，请重新下单'));
+        eventBus.fire(TransferDoneEvent('订单打包超时，请下拉刷新'));
         return false;
       }
 

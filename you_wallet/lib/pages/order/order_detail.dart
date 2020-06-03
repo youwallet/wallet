@@ -33,8 +33,6 @@ class Page extends State<OrderDetail> {
 
   @override // override是重写父类中的函数
   void initState()  {
-    print('start initstate');
-    print(widget.arguments);
     super.initState();
   }
 
@@ -189,7 +187,6 @@ class Page extends State<OrderDetail> {
               ),
               onTap: () async {
                 String url= Global.getDomain() + item['hash'];
-                print(url);
                 await launch(url);
               }
             )
@@ -246,7 +243,7 @@ class Page extends State<OrderDetail> {
   }
 
   Widget buildIcon(String status) {
-    if (status == '进行中') {
+    if (status == '挂单中') {
       return Icon(Icons.autorenew, size: 80.0, color: Colors.green);
     } else if(status == '交易撤销') {
       return Icon(Icons.block, size: 80.0, color: Colors.red);
@@ -259,7 +256,6 @@ class Page extends State<OrderDetail> {
 
   Future<Map> getDetail() async {
     Map response = await Trade.getTransactionByHash( widget.arguments['txnHash']);
-    print(response);
     Map res = await Trade.getTransactionReceipt(widget.arguments);
 //    print('here is recept');
 //    print(res);

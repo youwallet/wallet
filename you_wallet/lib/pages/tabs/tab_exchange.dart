@@ -472,7 +472,6 @@ class Page extends State {
       return;
     }
 
-
     showDialog<Null>(
         context: context,
         barrierDismissible: false,

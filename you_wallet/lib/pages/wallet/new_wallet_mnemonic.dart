@@ -102,25 +102,4 @@ class Page extends State<WalletMnemonic> {
         )
     );
   }
-
-  // 点击助记词
-//  void clickItem(item) async {
-//    SharedPreferences prefs = await SharedPreferences.getInstance();
-//    String randomMnemonic = prefs.getString("randomMnemonic");
-//    setState((){
-//      this.randomMnemonicAgain.add(item);
-//      this._name.text = this.randomMnemonicAgain.reduce((a,b)=>(a + " " +b));
-//      this.randomMnemonic.remove(item);
-//    });
-//    if (this._name.text == randomMnemonic) {
-//      print("助记词确认ok，生成钱包，回到首页");
-//      Navigator.pushNamed(context, "tabs");
-//    } else {
-//      if (this.randomMnemonic.length == 0) {
-//        print("助记词点击完毕，但是不一致");
-//        print(this._name.text);
-//        print(randomMnemonic);
-//      }
-//    }
-//  }
 }
