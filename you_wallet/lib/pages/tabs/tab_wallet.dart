@@ -106,7 +106,7 @@ class Page extends State<TabWallet> {
 //            );
 //          }) ,
          title: Text(
-            'youwallet',
+            'youWallet',
             style: new TextStyle(color: Colors.white),
          ),
          actions: this.appBarActions(),
