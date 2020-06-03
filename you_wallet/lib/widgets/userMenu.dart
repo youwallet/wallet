@@ -13,9 +13,8 @@ class UserMenu extends StatelessWidget {
         padding: EdgeInsets.zero,
         children: <Widget>[
           UserAccountsDrawerHeader(
-
             accountName: Text(
-              'sibbay',
+              'youWallet',
               style: TextStyle( fontWeight: FontWeight.bold, color: Colors.white),
             ),
             accountEmail: Text(
@@ -78,7 +77,7 @@ class UserMenu extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text('版本号'),
-                Text('v1.0.2')
+                Text('v0.0.3')
               ],
             ),
             leading: Icon(Icons.exit_to_app),
