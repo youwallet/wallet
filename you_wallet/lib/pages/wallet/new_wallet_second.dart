@@ -17,7 +17,7 @@ class BackupWallet extends StatefulWidget {
 class BackupWalletState extends State<BackupWallet> {
 
   List content1 = [
-    {'val': '备份助记词', 'size': 20.0, 'height': 2, 'fontWeight': FontWeight.w600},
+    {'val': '备份助记词/私钥', 'size': 20.0, 'height': 2, 'fontWeight': FontWeight.w600},
     {'val': '使用纸和笔正确抄写助记词', 'size': 14.0, 'height': 2,'fontWeight': FontWeight.w400},
     {'val': '如果你的手机丢失、被盗、损坏，助记词可帮助恢复你的资产', 'size': 14.0, 'height': 2,'fontWeight': FontWeight.w400},
   ];
@@ -42,7 +42,7 @@ class BackupWalletState extends State<BackupWallet> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 new Text(
-                    '获取助记词等于拥有钱包资产所有权',
+                    '获取助记词/私钥等于拥有钱包资产所有权',
                     style: new TextStyle(
                         fontSize: 16.0,
                         height: 2
