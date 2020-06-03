@@ -66,7 +66,7 @@ class Global {
    {'type': 'ORDER_FINISHED', 'status': '订单完成', 'remark': '订单完成，上个状态为ORDER_PENDING。' },
    {'type': 'ORDER_EXPIRED', 'status': '订单超时', 'remark': '订单超时，订单超时为匹配，上个状态为ORDER_PENDING' },
    {'type': 'ORDER_CANCELED', 'status': '订单取消', 'remark': '订单取消，上个状态为ORDER_PENDING。' },
-   {'type': 'ORDER_REMOVED', 'status': '订单移除', 'remark': '订单移除，账户余额不足被移除，上个状态为ORDER_PENDING。' }
+   {'type': 'ORDER_REMOVED', 'status': '余额不足', 'remark': '订单移除，账户余额不足被移除，上个状态为ORDER_PENDING。' }
   ];
 
 
