@@ -91,7 +91,7 @@ class Page extends State<transferList> {
 
   // 构建滑动后右侧出现的小部件
   Widget buildRightAction(context, item){
-    if (item['status'] == '转账中' || item['status'] == '进行中' || item['status'] == '') {
+    if (item['status'] == '挂单中' || item['status'] == '进行中' || item['status'] == '') {
       return IconSlideAction(
         caption: '撤销',
         color: Colors.red,

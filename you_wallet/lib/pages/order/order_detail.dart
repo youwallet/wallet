@@ -199,7 +199,7 @@ class Page extends State<OrderDetail> {
 
   Widget buildName(String val) {
     return new Container(
-//      color: Colors.lightBlue,
+      color: Colors.lightBlue,
       width: 100.0,
       padding: const EdgeInsets.only(right: 10.0),
       margin: const EdgeInsets.only(bottom: 20.0),
@@ -256,7 +256,9 @@ class Page extends State<OrderDetail> {
 
   Future<Map> getDetail() async {
     Map response = await Trade.getTransactionByHash( widget.arguments['txnHash']);
+    print(response);
     Map res = await Trade.getTransactionReceipt(widget.arguments);
+    print(res);
 //    print('here is recept');
 //    print(res);
 //    var orderFlag = await Trade.orderFlags(widget.arguments['odHash']);

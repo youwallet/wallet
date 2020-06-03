@@ -86,8 +86,9 @@ class _LoginPageState extends State<GetPasswordPage> {
           }
 
           try {
+            print('try');
             this.data['privateKey'] = await this.getPrivateKey(this.data['pwd']);
-
+            print(this.data['gasPrice'] + '000000000');
             this.data['gasPrice'] = EtherAmount.inWei(BigInt.parse(this.data['gasPrice'] + '000000000'));
             this.data['gasLimit'] = int.parse(this.data['gasLimit']);
             Navigator.of(context).pop(this.data);
