@@ -36,14 +36,14 @@ class _SplashState extends State<Splash>{
           children: <Widget>[
             new Center(
               child: new Image.asset(
-                "images/splash.jpeg",
+                "images/logo.png",
                 width: 120.0,
                 height: 120.0,
                 fit: BoxFit.fill,
               ),
             ),
             Text(
-                'you wallet',
+                'youWallet',
                 style: TextStyle(
                   fontSize: 28.0,
                   height: 2.0,
