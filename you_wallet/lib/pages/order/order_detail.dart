@@ -199,10 +199,9 @@ class Page extends State<OrderDetail> {
 
   Widget buildName(String val) {
     return new Container(
-      color: Colors.lightBlue,
       width: 100.0,
       padding: const EdgeInsets.only(right: 10.0),
-      margin: const EdgeInsets.only(bottom: 20.0),
+      // margin: const EdgeInsets.only(bottom: 20.0),
       alignment: Alignment.centerRight,
       child: Text(
           val + ':',
@@ -216,17 +215,18 @@ class Page extends State<OrderDetail> {
 
   Widget buildValue(String val) {
     return Expanded(
-      child: GestureDetector(
-        onTap: (){
-          _copyAddress(val);
-          showSnackbar('复制成功');
-        },
-        child: Text(
-          val,
-          style: TextStyle(
-              fontSize: 18.0
-          ),
-        ),
+      child: Container(
+          margin: const EdgeInsets.only(bottom: 20.0),
+          child: GestureDetector(
+            onTap: (){
+              _copyAddress(val);
+              showSnackbar('复制成功');
+            },
+            child: Text(
+              val,
+              style: TextStyle(fontSize: 18.0),
+            ),
+        )
       )
     );
   }
