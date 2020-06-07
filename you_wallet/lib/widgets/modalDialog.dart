@@ -65,7 +65,16 @@ class GenderChooseDialog extends Dialog {
 
   Widget _buttonChooseItemWid(var gender) {
     return GestureDetector(
-        onTap: gender == 1 ? this.onCancelChooseEvent : this.onSuccessChooseEvent,
+        onTap: () {
+          // 这里调用回调函数必须是函数名字+()
+          if (gender == 1) {
+            print(gender);
+            this.onCancelChooseEvent();
+          } else {
+            print(gender);
+            this.onSuccessChooseEvent();
+          }
+        },
         child: Container(
             decoration: new BoxDecoration(
               borderRadius: new BorderRadius.all(new Radius.circular(40.0)),

@@ -9,6 +9,7 @@ import 'package:youwallet/bus.dart';
 import 'package:youwallet/service/trade.dart';
 import 'package:flutter/services.dart';
 import 'package:youwallet/util/number_format.dart';
+import 'package:youwallet/global.dart';
 
 class transferList extends StatefulWidget {
 
@@ -193,7 +194,13 @@ class Page extends State<transferList> {
               onSuccessChooseEvent: () async {
                   Navigator.pop(context);
                   Navigator.pushNamed(context, "getPassword").then((data) async{
-                      this.cancelProcess(item, data);
+                      print('cancelTrade callback');
+                      print(data);
+                      if (data == null) {
+                        print('取消密码输入');
+                      } else {
+                        this.cancelProcess(item, data);
+                      }
                   });
               },
               onCancelChooseEvent: () {
@@ -220,14 +227,9 @@ class Page extends State<transferList> {
       // 至于到底有没有撤销成功，还需要等待以太坊写链
       String res = await Trade.cancelOrder2(item, obj);
       print('订单撤销返回 => ${res}');
-//      int orderFlag = await Trade.orderFlag(item);
-//      if (orderFlag == 0) {
-        await Provider.of<Deal>(context).updateOrderStatus(item['txnHash'], '交易撤销');
-        this.updateList();
-        eventBus.fire(TransferDoneEvent('撤销成功'));
-//      } else {
-//        eventBus.fire(TransferDoneEvent('撤销失败，订单状态当前为挂单中'));
-//      }
+      await Provider.of<Deal>(context).updateOrderStatus(item['txnHash'], '交易撤销');
+      this.updateList();
+      eventBus.fire(TransferDoneEvent('撤销成功'));
     } catch(e) {
       print(e);
       eventBus.fire(TransferDoneEvent(e.toString()));
@@ -235,6 +237,7 @@ class Page extends State<transferList> {
   }
 
   // 删除历史记录
+  // 删除本地客户端保存的交易记录
   void delTrade(BuildContext context, Map item){
     showDialog(
         context: context,
@@ -243,7 +246,13 @@ class Page extends State<transferList> {
           return GenderChooseDialog(
               title: '确定删除记录?',
               content: '',
+              onCancelChooseEvent: () {
+                print('onCancelChooseEvent');
+                Navigator.pop(context);
+                // eventBus.fire(TransferDoneEvent('l'));
+              },
               onSuccessChooseEvent: () async {
+                print('onSuccessChooseEvent');
                 int i = await Provider.of<Deal>(context).deleteTrader(item['id']);
                 // 用bus向兑换页面发出删除成功的通知，兑换页面显示toast
                 if (i == 1) {
@@ -254,7 +263,7 @@ class Page extends State<transferList> {
                   eventBus.fire(TransferDoneEvent('删除成功'));
                 }
               });
-        });
+    });
   }
 
   // tab切换, 切换显示的数据，这里不刷新
