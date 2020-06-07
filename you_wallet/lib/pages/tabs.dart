@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-
 import 'package:youwallet/pages/tabs/tab_wallet.dart'; // 钱包引导页TabExchange
 import 'package:youwallet/pages/tabs/tab_exchange.dart'; // 钱包引导页
 import 'package:youwallet/pages/tabs/tab_receive.dart'; // 钱包引导页
 import 'package:youwallet/pages/tabs/tab_transfer.dart'; // 钱包引导页
 import 'package:youwallet/db/sql_util.dart';
 import 'package:youwallet/bus.dart';
-import 'package:youwallet/util/translations.dart';
 
 class _Item {
   String name, activeIcon, normalIcon;
@@ -66,20 +64,19 @@ class _ContainerPageState extends State<TabsPage> {
       ];
     }
     if(itemList == null){
-      itemList = itemNames
-          .map((item) => BottomNavigationBarItem(
-          icon: Image.asset(
-            item.normalIcon,
-            width: 30.0,
-            height: 30.0,
-          ),
-          title: Text(
-            item.name,
-            style: TextStyle(fontSize: 10.0,color: Colors.lightBlue),
-          ),
-          activeIcon:
-          Image.asset(item.activeIcon, width: 30.0, height: 30.0)))
-          .toList();
+      this.itemList = itemNames.map((item) =>
+          BottomNavigationBarItem(
+            icon: Image.asset(
+              item.normalIcon,
+              width: 30.0,
+              height: 30.0,
+            ),
+            title: Text(
+              item.name,
+              style: TextStyle(fontSize: 12.0),
+            ),
+            activeIcon: Image.asset(item.activeIcon, width: 26.0, height: 26.0))
+          ).toList();
     }
 
     eventBus.on<TabChangeEvent>().listen((event) {
@@ -90,6 +87,7 @@ class _ContainerPageState extends State<TabsPage> {
 
   }
 
+  // todo: 删除这个函数，从全局状态容器中调用它的逻辑
   Future getWallet() async {
     var sql = SqlUtil.setTable("wallet");
     List res = await sql.get();
@@ -130,7 +128,7 @@ class _ContainerPageState extends State<TabsPage> {
             _getPagesWidget(3),
           ],
         ),
-        backgroundColor: Color.fromARGB(255, 248, 248, 248),
+        backgroundColor: Colors.white,
         bottomNavigationBar: BottomNavigationBar(
           items: itemList,
           onTap: (int index) {
@@ -140,11 +138,12 @@ class _ContainerPageState extends State<TabsPage> {
               _selectIndex = index;
             });
           },
-          iconSize: 24,
-          //图标大小
+          iconSize: 26, //图标大小
           currentIndex: _selectIndex,
+          selectedItemColor: Colors.lightBlue,
+          unselectedItemColor: Colors.black54,
           //选中后，底部BottomNavigationBar内容的颜色(选中时，默认为主题色)（仅当type: BottomNavigationBarType.fixed,时生效）
-          fixedColor: Color.fromARGB(255, 0, 188, 96),
+          // fixedColor: Colors.lightBlue,
           type: BottomNavigationBarType.fixed,
         ),
       );
