@@ -409,14 +409,14 @@ class Trade {
  * od_hash: 订单哈希值
  * function cancelOrder2(bytes32 bq_hash, bytes32 od_hash);
  */
-  static Future cancelOrder2(Map item,Map obj) async {
+  static Future cancelOrder(Map item,Map obj) async {
     String hash = "";
     if(item['orderType']=='卖出') {
       hash = item['sqHash'];
     } else {
       hash = item['bqHash'];
     }
-    String postData = Global.funcHashes['cancelOrder2(bytes32,bytes32)'] + formatParam(hash) + formatParam(item['odHash']);
+    String postData = Global.funcHashes['cancelOrder(bytes32,bytes32)'] + formatParam(hash) + formatParam(item['odHash']);
 
     String rpcUrl = await Global.rpcUrl();
 

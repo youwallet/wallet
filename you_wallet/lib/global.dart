@@ -95,6 +95,7 @@ class Global {
     'takeOrder()': '0xefe29415',
     'approve()': '0x095ea7b3',
     'allowance': '0xdd62ed3e',
+    'cancelOrder(bytes32,bytes32)':'0xa47d9d33',
     'cancelOrder2(bytes32,bytes32)':'0xa18d42d3',
     'orderFlag(bytes32)':'0xf8a8db0e',
     'sellQueue(bytes32)': '0xf875a998',

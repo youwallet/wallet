@@ -225,7 +225,7 @@ class Page extends State<transferList> {
     try{
       // 订单撤销后立即返回的是交易的hash，
       // 至于到底有没有撤销成功，还需要等待以太坊写链
-      String res = await Trade.cancelOrder2(item, obj);
+      String res = await Trade.cancelOrder(item, obj);
       print('订单撤销返回 => ${res}');
       await Provider.of<Deal>(context).updateOrderStatus(item['txnHash'], '交易撤销');
       this.updateList();
