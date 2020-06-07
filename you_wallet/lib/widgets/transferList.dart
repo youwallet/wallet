@@ -10,6 +10,7 @@ import 'package:youwallet/service/trade.dart';
 import 'package:flutter/services.dart';
 import 'package:youwallet/util/number_format.dart';
 import 'package:youwallet/global.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class transferList extends StatefulWidget {
 
@@ -156,10 +157,10 @@ class Page extends State<transferList> {
                           style: new TextStyle(
                               color: Colors.deepOrange
                           )
-                      )
+                      ),
+                      // new SpinKitFadingCircle(color: Colors.blueAccent, size: 12.0)
                     ],
                   )
-
                 ],
               ),
               new Row(

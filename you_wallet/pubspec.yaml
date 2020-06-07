@@ -52,6 +52,7 @@ dependencies:
   decimal: ^0.3.0
   hex: ^0.1.2
   flutter_bugly: ^0.2.8
+  flutter_spinkit: ^4.1.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
