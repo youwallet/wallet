@@ -36,6 +36,9 @@ import 'package:youwallet/pages/order/order_deep.dart';
 // 扫码
 import 'package:youwallet/pages/scan/scan.dart';
 
+// 操作反馈
+import 'package:youwallet/pages/success/index.dart';
+
 // 定义全局的路由对象
 final routes = {
   '/': (context) => new TabsPage(),
@@ -62,6 +65,7 @@ final routes = {
   "order_detail":  (context, {arguments}) => new OrderDetail(arguments: arguments),
   "order_deep":  (context, {arguments}) => new OrderDeep(arguments: arguments),
   "scan":  (context, {arguments}) => new Scan(arguments: arguments),
+  "success":  (context, {arguments}) => new Success(arguments: arguments),
 //  "tabs": (context) => new ContainerPage()
 };
 

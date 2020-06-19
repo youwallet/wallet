@@ -275,7 +275,7 @@ class Page extends State<transferList> {
     if (tab == '当前兑换') {
       list.retainWhere((element)=>(element['status']=='进行中' || element['status']=='挂单中' || element['status']=='打包中' ));
     } else {
-      list.retainWhere((element)=>(element['status']!='挂单中'));
+      list.retainWhere((element)=>(element['status']!='挂单中' && element['status']!='打包中'));
     }
     setState(() {
       this.arr = list;
@@ -288,13 +288,13 @@ class Page extends State<transferList> {
   /// 如果订单中的数量已经匹配完毕，则代表这个订单转账成功，刷新的时候不再遍历
   /// 如果订单匹配还在进行中，判断一下这个订单是否还有效（因为它可能被取消了）
   /// 最后通知顶层页面，刷新结束
-  Future<void> updateOrderFilled() async {
+  Future<void>updateOrderFilled() async {
     print('start updateOrderFilled');
     List list = List.from(await Provider.of<Deal>(context).getTraderList());
     Map filled = {};
-    for(var i = list.length -1; i>=0; i--) {
+    for(var i = list.length - 1; i >= 0; i--) {
       print(list[i]);
-      if(list[i]['status'] == '进行中' || list[i]['status'] == '挂单中' || list[i]['status'] == '打包中') {
+      if(list[i]['status'] == '进行中' || list[i]['status'] == '挂单中' ) {
         double amount = await Trade.getFilled(list[i]['odHash']);
         print('匹配情况   =》${list[i]['amount']}-${amount}');
         await Provider.of<Deal>(context).updateFilled(

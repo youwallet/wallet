@@ -631,14 +631,21 @@ class Page extends State {
 
     Trade trade = new Trade(this.value['address'], this.value['name'], this.rightToken['address'], this.rightToken['name'], this.controllerAmount.text, this.controllerPrice.text, isBuy, obj);
     try {
-      await trade.takeOrder();
-
-      // 拿到订单Hash，通知历史列表组件更新
-      eventBus.fire(OrderSuccessEvent());
 
       // 下单成功后，主动更新当前交易的这个的余额
       // this.value就是需要更新的token，只需要更新value中的balance
       // 但是拿到订单hash，交易其实还是pading状态，余额已经减少了吗
+      // takeOrder要返回hash
+      String txnHash = await trade.takeOrder();
+      print('@@@@@下单成功，拿到了hash，以太坊还在写链@@@@@@');
+      print(txnHash);
+      Navigator.pop(context);
+      Navigator.pushNamed(context, "success", arguments: {
+        'msg': '下单成功',
+        'txnHash': txnHash
+      });
+      // 拿到订单Hash，通知历史列表组件更新
+      // eventBus.fire(OrderSuccessEvent());
     } catch(e) {
       print('+++++++++++++++');
       print(e);
@@ -690,7 +697,8 @@ class Page extends State {
           return new LoadingDialog( //调用对话框
             text: '刷新中...',
           );
-        });
+        }
+    );
   }
 
   // 更新token的余额，在交易结束后
