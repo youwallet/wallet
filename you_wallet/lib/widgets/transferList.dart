@@ -16,10 +16,10 @@ class transferList extends StatefulWidget {
 
   transferList({Key key}) : super(key: key);
 
-  Page createState() => new Page();
+  TransferListState createState() => new TransferListState();
 }
 
-class Page extends State<transferList> {
+class TransferListState extends State<transferList> {
 
   final SlidableController slidableController = SlidableController();
   List arr = []; // 控制当前页面中显示的兑换数组
@@ -294,7 +294,7 @@ class Page extends State<transferList> {
     Map filled = {};
     for(var i = list.length - 1; i >= 0; i--) {
       print(list[i]);
-      if(list[i]['status'] == '进行中' || list[i]['status'] == '挂单中' ) {
+      if(list[i]['status'] == '进行中' || list[i]['status'] == '挂单中' || list[i]['status'] == '打包中') {
         double amount = await Trade.getFilled(list[i]['odHash']);
         print('匹配情况   =》${list[i]['amount']}-${amount}');
         await Provider.of<Deal>(context).updateFilled(

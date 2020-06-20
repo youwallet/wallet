@@ -18,6 +18,7 @@ import 'package:youwallet/widgets/customTab.dart';
 import 'package:youwallet/widgets/tradesDeep.dart';
 import 'package:decimal/decimal.dart';
 import 'package:youwallet/util/translations.dart';
+import 'package:youwallet/model/network.dart';
 
 class TabExchange extends StatefulWidget {
 
@@ -34,6 +35,9 @@ class Page extends State {
 
   // 价格编辑框
   final controllerPrice = TextEditingController();
+
+  // 定义一个全局的key，通过key，在当前页面就可以调用组件内部的函数
+  final GlobalKey<TransferListState> transferListKey = GlobalKey();
 
   String inputPrice = "";
 
@@ -155,7 +159,9 @@ class Page extends State {
             ),
             new Container(
               padding: const EdgeInsets.only(left:16.0,right:16.0),
-              child: new transferList(),
+              child: new transferList(
+                key: transferListKey
+              ),
             )
 //            new Container(
 //              padding: const EdgeInsets.only(left:16.0,right:16.0),
@@ -489,7 +495,7 @@ class Page extends State {
     List list = await Provider.of<Deal>(context).getTraderList();
     bool packing = list.any((element)=>(element['status']=="打包中"));
     if (packing) {
-      this.showSnackBar('当前有订单在打包中，请先等待打包完毕');
+      this.showSnackBar('当前有订单在打包中，请先下拉刷新');
       Navigator.of(context).pop();
       return ;
     }
@@ -640,6 +646,7 @@ class Page extends State {
       print('@@@@@下单成功，拿到了hash，以太坊还在写链@@@@@@');
       print(txnHash);
       Navigator.pop(context);
+      transferListKey.currentState.tabChange('当前兑换');
       Navigator.pushNamed(context, "success", arguments: {
         'msg': '下单成功',
         'txnHash': txnHash
@@ -687,6 +694,12 @@ class Page extends State {
 
   // 下拉刷新底部交易列表
   Future<void> _refresh() async {
+
+    if ('mainnet' == Provider.of<Network>(context).network) {
+      this.showSnackBar('当前网络不支持刷新，请切换测试网');
+      return;
+    }
+
     eventBus.fire(UpdateTeadeDeepEvent());
     eventBus.fire(CustomTabChangeEvent('当前兑换'));
     eventBus.fire(UpdateOrderListEvent());
