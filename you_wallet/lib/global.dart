@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
+
 // 提供五套可选主题色
 const _themes = <MaterialColor>[
   Colors.blue,
@@ -15,7 +16,6 @@ const _themes = <MaterialColor>[
 // 修改全局变量后，安卓studio需要重新启动应用，热加载不会自动更新全局变量
 // 参考：https://book.flutterchina.club/chapter15/globals.html
 class Global {
-
   // 全局调用_prefs实现KV保存和读取
   static SharedPreferences _prefs;
   // static Profile profile = Profile();
@@ -49,26 +49,89 @@ class Global {
 
   // 热门token
   static const hotToken = [
-    {'name': 'BTAT', 'address':'0x8e4d8D520f52B044e1E8B054D763B723B7C3E716','color': Colors.black12, 'icon': 0xe648},
-    {'name': 'BTBT', 'address':'0x45e110F81bBf89041A63Bc2403058743bc552bAF','color': Colors.black12, 'icon': 0xe648},
-    {'name': 'BTCT', 'address':'0x7B29ed69368B0Ed0d3b21A857BaEeF788B13c626','color': Colors.black12, 'icon': 0xe648},
-    {'name': 'BTDT', 'address':'0x60423Ebc63245631Ea71bdF58CF23A3949329cDb','color': Colors.black12, 'icon': 0xe648},
-    {'name': 'USDT', 'address':'0xdac17f958d2ee523a2206206994597c13d831ec7','color': Colors.green, 'icon': 0xe7f8},
-    {'name': 'BNB', 'address':'0xB8c77482e45F1F44dE1745F52C74426C631bDD52','color': Colors.yellow, 'icon': 0xe7ec},
-    {'name': 'SHT', 'address':'0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef','color': Colors.black26, 'icon': 0xe648},
-    {'name': 'EOS', 'address':'0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0','color': Colors.black, 'icon': 0xe7ef},
+    {
+      'name': 'BTAT',
+      'address': '0x8e4d8D520f52B044e1E8B054D763B723B7C3E716',
+      'color': Colors.black12,
+      'icon': 0xe648,
+      'network': 'ropsten'
+    },
+    {
+      'name': 'BTBT',
+      'address': '0x45e110F81bBf89041A63Bc2403058743bc552bAF',
+      'color': Colors.black12,
+      'icon': 0xe648,
+      'network': 'ropsten'
+    },
+    {
+      'name': 'BTCT',
+      'address': '0x7B29ed69368B0Ed0d3b21A857BaEeF788B13c626',
+      'color': Colors.black12,
+      'icon': 0xe648,
+      'network': 'ropsten'
+    },
+    {
+      'name': 'BTDT',
+      'address': '0x60423Ebc63245631Ea71bdF58CF23A3949329cDb',
+      'color': Colors.black12,
+      'icon': 0xe648,
+      'network': 'ropsten'
+    },
+    {
+      'name': 'USDT',
+      'address': '0xdac17f958d2ee523a2206206994597c13d831ec7',
+      'color': Colors.green,
+      'icon': 0xe7f8,
+      'network': 'mainnet'
+    },
+    {
+      'name': 'BNB',
+      'address': '0xB8c77482e45F1F44dE1745F52C74426C631bDD52',
+      'color': Colors.yellow,
+      'icon': 0xe7ec,
+      'network': 'mainnet'
+    },
+    {
+      'name': 'SHT',
+      'address': '0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef',
+      'color': Colors.black26,
+      'icon': 0xe648,
+      'network': 'mainnet'
+    },
+    {
+      'name': 'EOS',
+      'address': '0x86fa049857e0209aa7d9e616f7eb3b3b78ecfdb0',
+      'color': Colors.black,
+      'icon': 0xe7ef,
+      'network': 'mainnet'
+    }
   ];
 
   // 订单状态索引
   static const orderStatusMap = [
-   {'type': 'ORDER_OK', 'status': '订单完成', 'remark': '订单完成,完全匹配以后挂单。' },
-   {'type': 'ORDER_PENDING', 'status': '挂单中', 'remark': '挂单中,订单未完全匹配。' },
-   {'type': 'ORDER_FINISHED', 'status': '订单完成', 'remark': '订单完成，上个状态为ORDER_PENDING。' },
-   {'type': 'ORDER_EXPIRED', 'status': '订单超时', 'remark': '订单超时，订单超时为匹配，上个状态为ORDER_PENDING' },
-   {'type': 'ORDER_CANCELED', 'status': '订单取消', 'remark': '订单取消，上个状态为ORDER_PENDING。' },
-   {'type': 'ORDER_REMOVED', 'status': '余额不足', 'remark': '订单移除，账户余额不足被移除，上个状态为ORDER_PENDING。' }
+    {'type': 'ORDER_OK', 'status': '订单完成', 'remark': '订单完成,完全匹配以后挂单。'},
+    {'type': 'ORDER_PENDING', 'status': '挂单中', 'remark': '挂单中,订单未完全匹配。'},
+    {
+      'type': 'ORDER_FINISHED',
+      'status': '订单完成',
+      'remark': '订单完成，上个状态为ORDER_PENDING。'
+    },
+    {
+      'type': 'ORDER_EXPIRED',
+      'status': '订单超时',
+      'remark': '订单超时，订单超时为匹配，上个状态为ORDER_PENDING'
+    },
+    {
+      'type': 'ORDER_CANCELED',
+      'status': '订单取消',
+      'remark': '订单取消，上个状态为ORDER_PENDING。'
+    },
+    {
+      'type': 'ORDER_REMOVED',
+      'status': '余额不足',
+      'remark': '订单移除，账户余额不足被移除，上个状态为ORDER_PENDING。'
+    }
   ];
-
 
   // gas price 10Gwei
   static final gasPrice = BigInt.from(10000000000);
@@ -87,7 +150,7 @@ class Global {
   static int priceDecimal = 6;
 
   // 所有function hash
-  static const funcHashes= {
+  static const funcHashes = {
     'filled(bytes32)': '0x288cdc91',
     'getOrderQueueInfo(address,address,bool)': '0x22f42f6b',
     'transfer(address,uint256)': '0xa9059cbb',
@@ -95,9 +158,9 @@ class Global {
     'takeOrder()': '0xefe29415',
     'approve()': '0x095ea7b3',
     'allowance': '0xdd62ed3e',
-    'cancelOrder(bytes32,bytes32)':'0xa47d9d33',
-    'cancelOrder2(bytes32,bytes32)':'0xa18d42d3',
-    'orderFlag(bytes32)':'0xf8a8db0e',
+    'cancelOrder(bytes32,bytes32)': '0xa47d9d33',
+    'cancelOrder2(bytes32,bytes32)': '0xa18d42d3',
+    'orderFlag(bytes32)': '0xf8a8db0e',
     'sellQueue(bytes32)': '0xf875a998',
     'getOrderDepth(bytes32)': '0x3e8c0c4c',
     'getBQODHash()': '0xefe331cf',
@@ -107,7 +170,7 @@ class Global {
     'getConfigData()': '0xfeee047e',
     'getConfigSignature()': '0x0b973ca2',
     'orderFlags(bytes32 od_hash)': '0x76356e86'
-};
+  };
 
   static const myKey = "v3/37caa7b8b2c34ced8819de2b3853c8a2";
 
@@ -115,7 +178,7 @@ class Global {
     _prefs = await SharedPreferences.getInstance();
 
     // 获取当前的以太坊网络
-    network =  _prefs.getString("network");
+    network = _prefs.getString("network");
 
     currentWallet = _prefs.getString("currentWallet");
     //初始化网络请求相关配置
@@ -123,7 +186,7 @@ class Global {
   }
 
   static Future<String> rpcUrl() async {
-    String network =  _prefs.getString("network");
+    String network = _prefs.getString("network");
     return "https://" + network + ".infura.io/" + myKey;
   }
 
@@ -135,6 +198,7 @@ class Global {
   static String getDomain() {
     return "https://" + getPrefs('network') + ".etherscan.io/tx/";
   }
+
   // 获取缓存中数据
   static String getPrefs(String key) {
     return _prefs.getString(key);
@@ -146,7 +210,7 @@ class Global {
   }
 
   // 缩短钱包地址长度
-  static  maskAddress(String address) {
+  static maskAddress(String address) {
     if (address.length > 0) {
       return "${address.substring(0, 6)}  ****  ****  ${address.substring(address.length - 4, address.length)}";
     } else {
@@ -170,7 +234,7 @@ class Global {
 //        print('扫码错误: $e');
 //        showSnackBar(context, e.toString());
 //      }
-    } on FormatException{
+    } on FormatException {
       // 进入扫码页面后未扫码就返回
       print('进入扫码页面后未扫码就返回');
       showSnackBar(context, '取消扫码');
@@ -190,5 +254,4 @@ class Global {
     print(val);
     _toAddress = val;
   }
-
 }
