@@ -16,10 +16,8 @@ class Deal extends ChangeNotifier {
   // 构造函数，获取本地保存的token'
   List<Map> _items = [];
 
-
   // 获取钱包列表
   List<Map> get items => _items;
-
 
   /// 从数据库获取当前兑换列表，
   Future<List> getTraderList() async {
@@ -29,21 +27,16 @@ class Deal extends ChangeNotifier {
   }
 
   /// 更新订单匹配的交易额到数据库
-  Future<int> updateFilled(Map item, String filled ) async {
+  Future<int> updateFilled(Map item, String filled) async {
     var sql = SqlUtil.setTable("trade");
-    String status = '进行中';
-    if(double.parse(item['amount']) == double.parse(filled)) {
-      status = '成功';
-    }
-//    print(status);
-//    print(item['amount']);
-//    print(filled);
-    int i = await sql.update({'filled': filled, 'status': status}, 'txnHash', item['txnHash']);
+    print('update sql: ${filled}');
+    int i = await sql.update({'filled': filled}, 'txnHash', item['txnHash']);
+    print(i);
     return i;
   }
 
   /// 更新订单状态
-  Future<int> updateOrderStatus(String txnHash, String status ) async {
+  Future<int> updateOrderStatus(String txnHash, String status) async {
     var sql = SqlUtil.setTable("trade");
     int i = await sql.update({'status': status}, 'txnHash', txnHash);
     return i;
@@ -59,10 +52,10 @@ class Deal extends ChangeNotifier {
   /// 保存兑换的订单到数据库
   Future<void> saveTrader(List list) async {
     var sql = SqlUtil.setTable("trade");
-    String sqlInsert ='INSERT INTO trade(orderType, price, amount,filled, token,tokenName, baseToken,baseTokenname, txnHash, odHash, bqHash, sqHash,createtime,status) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
+    String sqlInsert =
+        'INSERT INTO trade(orderType, price, amount,filled, token,tokenName, baseToken,baseTokenname, txnHash, odHash, bqHash, sqHash,createtime,status) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)';
     int id = await sql.rawInsert(sqlInsert, list);
     print("db trade id => ${id}");
     return id;
   }
-
 }

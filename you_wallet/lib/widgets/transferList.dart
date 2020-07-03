@@ -13,14 +13,12 @@ import 'package:youwallet/global.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class transferList extends StatefulWidget {
-
   transferList({Key key}) : super(key: key);
 
   TransferListState createState() => new TransferListState();
 }
 
 class TransferListState extends State<transferList> {
-
   final SlidableController slidableController = SlidableController();
   List arr = []; // 控制当前页面中显示的兑换数组
   Map filledAmount = {};
@@ -57,25 +55,27 @@ class TransferListState extends State<transferList> {
 //      this.tabChange('当前兑换');
   }
 
-
   @override
   Widget build(BuildContext context) {
     return new Container(
         padding: const EdgeInsets.only(bottom: 12.0), // 四周填充边距32像素
         child: new Column(
-          children: this.arr.reversed.map((item) => buildsilde(item, context)).toList()
-        )
-    );
+            children: this
+                .arr
+                .reversed
+                .map((item) => buildsilde(item, context))
+                .toList()));
   }
 
   // 给数据列表中的每一个项包裹一层滑动组件
   Widget buildsilde(item, context) {
     return Slidable(
       controller: slidableController,
-      actionPane: SlidableScrollActionPane(),//滑出选项的面板 动画
+      actionPane: SlidableScrollActionPane(), //滑出选项的面板 动画
       actionExtentRatio: 0.25,
       child: this.buildItem(item, context),
-      secondaryActions: <Widget>[//右侧按钮列表
+      secondaryActions: <Widget>[
+        //右侧按钮列表
         IconSlideAction(
           caption: '订单详情',
           color: Colors.blue,
@@ -92,8 +92,10 @@ class TransferListState extends State<transferList> {
   }
 
   // 构建滑动后右侧出现的小部件
-  Widget buildRightAction(context, item){
-    if (item['status'] == '挂单中' || item['status'] == '进行中' || item['status'] == '') {
+  Widget buildRightAction(context, item) {
+    if (item['status'] == '挂单中' ||
+        item['status'] == '进行中' ||
+        item['status'] == '') {
       return IconSlideAction(
         caption: '撤销',
         color: Colors.red,
@@ -116,75 +118,69 @@ class TransferListState extends State<transferList> {
     }
   }
 
-
   Widget buildItem(item, context) {
 //    print(item);
-    String date = DateUtil.formatDateMs( int.parse( item['createTime']), format: DataFormats.full);
+    String date = DateUtil.formatDateMs(int.parse(item['createTime']),
+        format: DataFormats.full);
     String filled = '';
-    if (item['status'] == '成功'){
+    if (item['status'] == '成功') {
       filled = item['filled'];
     } else {
-      filled = this.filledAmount.containsKey(item['txnHash'])?this.filledAmount[item['txnHash'].toString()]:item['filled'];
+      filled = this.filledAmount.containsKey(item['txnHash'])
+          ? this.filledAmount[item['txnHash'].toString()]
+          : item['filled'];
     }
     return new Container(
-        padding: const EdgeInsets.only(top:10.0, bottom: 10.0), // 四周填充边距32像素
+        padding: const EdgeInsets.only(top: 10.0, bottom: 10.0), // 四周填充边距32像素
         decoration: new BoxDecoration(
-           border: Border(bottom: BorderSide(color: Colors.black26,width: 1.0)),
+          border: Border(bottom: BorderSide(color: Colors.black26, width: 1.0)),
 //           color: Colors.lightBlue,
         ),
         child: new Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              new Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  new Row(
-                    children: <Widget>[
-                      new Text(
-                          '${item['orderType']}',
-                          style: new TextStyle(
-                              color: item['orderType']== '买入' ? Colors.green : Colors.deepOrange
-                          )
-                      ),
-                      new Text('   ${date}'),
-                    ],
-                  ),
-                  new Row(
-                    children: <Widget>[
-                      item['status'] == '失败' ? Icon(Icons.error,size: 16.0, color: Colors.red): Text(''),
-                      new Text(
-                          item['status']??'进行中',
-                          style: new TextStyle(
-                              color: Colors.deepOrange
-                          )
-                      ),
-                      // new SpinKitFadingCircle(color: Colors.blueAccent, size: 12.0)
-                    ],
-                  )
-                ],
-              ),
-              new Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  new Text(
-                      '${item['price']} (${item['baseTokenName']})',
-                  ),
-                  new Text(
-                      '${NumberFormat(filled).format()}/${item['amount']}(${item['tokenName']})',
-                      style: new TextStyle(
-                          color: Colors.lightBlue
-                      )
-                  )
-                ],
-              ),
-            ],
-      )
-    );
-
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                new Row(
+                  children: <Widget>[
+                    new Text('${item['orderType']}',
+                        style: new TextStyle(
+                            color: item['orderType'] == '买入'
+                                ? Colors.green
+                                : Colors.deepOrange)),
+                    new Text('   ${date}'),
+                  ],
+                ),
+                new Row(
+                  children: <Widget>[
+                    item['status'] == '失败'
+                        ? Icon(Icons.error, size: 16.0, color: Colors.red)
+                        : Text(''),
+                    new Text(item['status'] ?? '进行中',
+                        style: new TextStyle(color: Colors.deepOrange)),
+                    // new SpinKitFadingCircle(color: Colors.blueAccent, size: 12.0)
+                  ],
+                )
+              ],
+            ),
+            new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                new Text(
+                  '${item['price']} (${item['baseTokenName']})',
+                ),
+                new Text(
+                    '${NumberFormat(filled).format()}/${item['amount']}(${item['tokenName']})',
+                    style: new TextStyle(color: Colors.lightBlue))
+              ],
+            ),
+          ],
+        ));
   }
 
   /// 取消交易
-  void cancelTrade(BuildContext context, Map item){
+  void cancelTrade(BuildContext context, Map item) {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -193,45 +189,45 @@ class TransferListState extends State<transferList> {
               title: '确定撤销交易?',
               content: '',
               onSuccessChooseEvent: () async {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, "getPassword").then((data) async{
-                      print('cancelTrade callback');
-                      print(data);
-                      if (data == null) {
-                        print('取消密码输入');
-                      } else {
-                        this.cancelProcess(item, data);
-                      }
-                  });
+                Navigator.pop(context);
+                Navigator.pushNamed(context, "getPassword").then((data) async {
+                  print('cancelTrade callback');
+                  print(data);
+                  if (data == null) {
+                    print('取消密码输入');
+                  } else {
+                    this.cancelProcess(item, data);
+                  }
+                });
               },
               onCancelChooseEvent: () {
                 Navigator.pop(context);
               });
-
         });
   }
 
   /// 取消订单的进程，不会立刻拿到结果
   /// 注意这里的obj,里面有四个字段
-  void cancelProcess(Map item, Map obj) async{
+  void cancelProcess(Map item, Map obj) async {
     showDialog<Null>(
         context: context, //BuildContext对象
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return new LoadingDialog( //调用对话框
+          return new LoadingDialog(
+            //调用对话框
             text: '撤销中...',
           );
-        }
-    );
-    try{
+        });
+    try {
       // 订单撤销后立即返回的是交易的hash，
       // 至于到底有没有撤销成功，还需要等待以太坊写链
       String res = await Trade.cancelOrder(item, obj);
       print('订单撤销返回 => ${res}');
-      await Provider.of<Deal>(context).updateOrderStatus(item['txnHash'], '交易撤销');
+      await Provider.of<Deal>(context)
+          .updateOrderStatus(item['txnHash'], '交易撤销');
       this.updateList();
       eventBus.fire(TransferDoneEvent('撤销成功'));
-    } catch(e) {
+    } catch (e) {
       print(e);
       eventBus.fire(TransferDoneEvent(e.toString()));
     }
@@ -239,7 +235,7 @@ class TransferListState extends State<transferList> {
 
   // 删除历史记录
   // 删除本地客户端保存的交易记录
-  void delTrade(BuildContext context, Map item){
+  void delTrade(BuildContext context, Map item) {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -254,28 +250,35 @@ class TransferListState extends State<transferList> {
               },
               onSuccessChooseEvent: () async {
                 print('onSuccessChooseEvent');
-                int i = await Provider.of<Deal>(context).deleteTrader(item['id']);
+                int i =
+                    await Provider.of<Deal>(context).deleteTrader(item['id']);
                 // 用bus向兑换页面发出删除成功的通知，兑换页面显示toast
                 if (i == 1) {
-                  this.arr.removeWhere((element) => element['id']==item['id']);
+                  this
+                      .arr
+                      .removeWhere((element) => element['id'] == item['id']);
                   setState(() {
                     this.arr;
                   });
                   eventBus.fire(TransferDoneEvent('删除成功'));
                 }
               });
-    });
+        });
   }
 
   // tab切换, 切换显示的数据，这里不刷新
   // 这里list需要用List.from转化一次，否则会提示read only
+  // 注意：这里只是切换数据的显示，并不负责刷新
   void tabChange(String tab) async {
     List res = await Provider.of<Deal>(context).getTraderList();
     List list = List.from(res);
     if (tab == '当前兑换') {
-      list.retainWhere((element)=>(element['status']=='进行中' || element['status']=='挂单中' || element['status']=='打包中' ));
+      list.retainWhere((element) => (element['status'] == '进行中' ||
+          element['status'] == '挂单中' ||
+          element['status'] == '打包中'));
     } else {
-      list.retainWhere((element)=>(element['status']!='挂单中' && element['status']!='打包中'));
+      list.retainWhere((element) =>
+          (element['status'] != '挂单中' && element['status'] != '打包中'));
     }
     setState(() {
       this.arr = list;
@@ -288,25 +291,28 @@ class TransferListState extends State<transferList> {
   /// 如果订单中的数量已经匹配完毕，则代表这个订单转账成功，刷新的时候不再遍历
   /// 如果订单匹配还在进行中，判断一下这个订单是否还有效（因为它可能被取消了）
   /// 最后通知顶层页面，刷新结束
-  Future<void>updateOrderFilled() async {
-    print('start updateOrderFilled');
+  Future<void> updateOrderFilled() async {
     List list = List.from(await Provider.of<Deal>(context).getTraderList());
     Map filled = {};
-    for(var i = list.length - 1; i >= 0; i--) {
-      print(list[i]);
-      if(list[i]['status'] == '进行中' || list[i]['status'] == '挂单中' || list[i]['status'] == '打包中') {
+    for (var i = list.length - 1; i >= 0; i--) {
+      print('查询第${i}个订单');
+      // print(list[i]);
+      if (list[i]['status'] == '进行中' ||
+          list[i]['status'] == '挂单中' ||
+          list[i]['status'] == '打包中' ||
+          list[i]['status'] == '订单完成') {
         double amount = await Trade.getFilled(list[i]['odHash']);
         print('匹配情况   =》${list[i]['amount']}-${amount}');
-        await Provider.of<Deal>(context).updateFilled(
-            list[i], amount.toStringAsFixed(4));
+        await Provider.of<Deal>(context)
+            .updateFilled(list[i], amount.toStringAsFixed(4));
         filled[list[i]['txnHash']] = amount.toStringAsFixed(4);
-
 
         // 检查订单状态，订单可能因为余额被合约移除，
         // 这里要对进行中和打包中的订单再次确认一遍状态
         var res = await Trade.orderFlags(list[i]['odHash']);
-        await Provider.of<Deal>(context).updateOrderStatus(list[i]['txnHash'], res);
-
+        print(res);
+        await Provider.of<Deal>(context)
+            .updateOrderStatus(list[i]['txnHash'], res);
       } else {
         //print('该订单状态为${this.arr[i]['status']},已匹配完毕');
       }
@@ -321,7 +327,9 @@ class TransferListState extends State<transferList> {
   /// 订单匹配状态查询完毕，整体更新一次列表
   void updateList() async {
     List list = List.from(await Provider.of<Deal>(context).getTraderList());
-    list.retainWhere((element)=>(element['status']=='进行中' || element['status']=='挂单中' || element['status']=='打包中' ));
+    list.retainWhere((element) => (element['status'] == '进行中' ||
+        element['status'] == '挂单中' ||
+        element['status'] == '打包中'));
     setState(() {
       this.arr = list;
     });
@@ -338,7 +346,8 @@ class TransferListState extends State<transferList> {
   void updateOrderStatus() async {
     print('start updateOrderStatus');
     List list = await Provider.of<Deal>(context).getTraderList();
-    Map order = list.lastWhere((e)=>e['status'] == '打包中',orElse: ()=>(null));
+    Map order =
+        list.lastWhere((e) => e['status'] == '打包中', orElse: () => (null));
     if (order == null) {
       print('no order');
       return;
@@ -358,7 +367,7 @@ class TransferListState extends State<transferList> {
     Map response;
     Future.doWhile(() {
       print('start dowhile again');
-      if (countRequest > 30 ) {
+      if (countRequest > 30) {
         print('订单打包超时，请重新下单');
         eventBus.fire(TransferDoneEvent('订单打包超时，请下拉刷新'));
         return false;
@@ -374,11 +383,11 @@ class TransferListState extends State<transferList> {
         return true;
       });
     }).then((res) async {
-      if(response['blockHash'] != null) {
+      if (response['blockHash'] != null) {
         // 以太坊返回了交易的blockHash, 以太坊写链操作结束
         // 现在判断写链操作的状态
         Map res = await Trade.getTransactionReceipt({'txnHash': hash});
-        if (res['status']== '0x1') {
+        if (res['status'] == '0x1') {
           print('轮询结束，下单成功，更改状态为进行中,广播 TransferDoneEvent事件');
           await Provider.of<Deal>(context).updateOrderStatus(hash, '进行中');
           eventBus.fire(TransferDoneEvent('打包成功，订单状态变更为进行中'));
@@ -390,8 +399,5 @@ class TransferListState extends State<transferList> {
         this.updateOrderFilled();
       }
     }).catchError(print);
-
   }
-
-
 }
