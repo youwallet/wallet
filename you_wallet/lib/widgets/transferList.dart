@@ -119,7 +119,6 @@ class TransferListState extends State<transferList> {
   }
 
   Widget buildItem(item, context) {
-//    print(item);
     String date = DateUtil.formatDateMs(int.parse(item['createTime']),
         format: DataFormats.full);
     String filled = '';
@@ -134,7 +133,6 @@ class TransferListState extends State<transferList> {
         padding: const EdgeInsets.only(top: 10.0, bottom: 10.0), // 四周填充边距32像素
         decoration: new BoxDecoration(
           border: Border(bottom: BorderSide(color: Colors.black26, width: 1.0)),
-//           color: Colors.lightBlue,
         ),
         child: new Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -156,6 +154,10 @@ class TransferListState extends State<transferList> {
                   children: <Widget>[
                     item['status'] == '失败'
                         ? Icon(Icons.error, size: 16.0, color: Colors.red)
+                        : Text(''),
+                    item['status'] == '打包中'
+                        ? new SpinKitFadingCircle(
+                            color: Colors.deepOrange, size: 12.0)
                         : Text(''),
                     new Text(item['status'] ?? '进行中',
                         style: new TextStyle(color: Colors.deepOrange)),
@@ -299,8 +301,7 @@ class TransferListState extends State<transferList> {
       // print(list[i]);
       if (list[i]['status'] == '进行中' ||
           list[i]['status'] == '挂单中' ||
-          list[i]['status'] == '打包中' ||
-          list[i]['status'] == '订单完成') {
+          list[i]['status'] == '打包中') {
         double amount = await Trade.getFilled(list[i]['odHash']);
         print('匹配情况   =》${list[i]['amount']}-${amount}');
         await Provider.of<Deal>(context)
