@@ -22,6 +22,7 @@ class TransferListState extends State<transferList> {
   final SlidableController slidableController = SlidableController();
   List arr = []; // 控制当前页面中显示的兑换数组
   Map filledAmount = {};
+  String currentTab = '当前兑换';
 
   //数据初始化
   @override
@@ -30,13 +31,14 @@ class TransferListState extends State<transferList> {
 
     /// tab切换
     eventBus.on<CustomTabChangeEvent>().listen((event) {
+      this.currentTab = event.res;
       this.tabChange(event.res);
     });
 
     /// 用户挂单成功，拿到刚刚挂的订单Hash，查询订单是否成功
     eventBus.on<OrderSuccessEvent>().listen((event) {
-//      this.tabChange('当前兑换');
-      this.updateOrderStatus();
+      // this.tabChange('当前兑换');
+      // this.updateOrderStatus();
     });
 
     /// 监听兑换页面用户手动触发下拉刷新
@@ -173,7 +175,7 @@ class TransferListState extends State<transferList> {
                   '${item['price']} (${item['baseTokenName']})',
                 ),
                 new Text(
-                    '${NumberFormat(filled).format()}/${item['amount']}(${item['tokenName']})',
+                    '${item['filled']}/${item['amount']}(${item['tokenName']})',
                     style: new TextStyle(color: Colors.lightBlue))
               ],
             ),
@@ -227,7 +229,7 @@ class TransferListState extends State<transferList> {
       print('订单撤销返回 => ${res}');
       await Provider.of<Deal>(context)
           .updateOrderStatus(item['txnHash'], '交易撤销');
-      this.updateList();
+      this.tabChange(this.currentTab);
       eventBus.fire(TransferDoneEvent('撤销成功'));
     } catch (e) {
       print(e);
@@ -294,47 +296,54 @@ class TransferListState extends State<transferList> {
   /// 如果订单匹配还在进行中，判断一下这个订单是否还有效（因为它可能被取消了）
   /// 最后通知顶层页面，刷新结束
   Future<void> updateOrderFilled() async {
+    print(this.currentTab);
     List list = List.from(await Provider.of<Deal>(context).getTraderList());
     Map filled = {};
     for (var i = list.length - 1; i >= 0; i--) {
-      print('查询第${i}个订单');
       // print(list[i]);
       if (list[i]['status'] == '进行中' ||
           list[i]['status'] == '挂单中' ||
           list[i]['status'] == '打包中') {
-        double amount = await Trade.getFilled(list[i]['odHash']);
-        print('匹配情况   =》${list[i]['amount']}-${amount}');
-        await Provider.of<Deal>(context)
-            .updateFilled(list[i], amount.toStringAsFixed(4));
-        filled[list[i]['txnHash']] = amount.toStringAsFixed(4);
-
         // 检查订单状态，订单可能因为余额被合约移除，
         // 这里要对进行中和打包中的订单再次确认一遍状态
-        var res = await Trade.orderFlags(list[i]['odHash']);
-        print(res);
-        await Provider.of<Deal>(context)
-            .updateOrderStatus(list[i]['txnHash'], res);
+        print("查询第${i}个订单，状态是${list[i]['status']}");
+        await this.updateOrder(list[i]);
       } else {
+        if (double.parse(list[i]['amount']) !=
+            double.parse(list[i]['filled'])) {
+          await this.updateOrder(list[i]);
+        } else {}
+        // print("查询第${i}个订单，状态是${list[i]['status']}, 不发起请求");
         //print('该订单状态为${this.arr[i]['status']},已匹配完毕');
       }
     }
-    setState(() {
-      this.filledAmount = filled;
-    });
-    this.updateList();
+    // setState(() {
+    //   this.filledAmount = filled;
+    // });
+    // this.updateList();
+    this.tabChange(this.currentTab);
     eventBus.fire(TransferDoneEvent('订单刷新完毕'));
   }
 
-  /// 订单匹配状态查询完毕，整体更新一次列表
-  void updateList() async {
-    List list = List.from(await Provider.of<Deal>(context).getTraderList());
-    list.retainWhere((element) => (element['status'] == '进行中' ||
-        element['status'] == '挂单中' ||
-        element['status'] == '打包中'));
-    setState(() {
-      this.arr = list;
-    });
+  // 更新订单，更新的值包括订单匹配的数量和订单的状态
+  Future<void> updateOrder(Map order) async {
+    double amount = await Trade.getFilled(order['odHash']);
+    await Provider.of<Deal>(context)
+        .updateFilled(order, amount.toStringAsFixed(4));
+    var res = await Trade.orderFlags(order['odHash']);
+    await Provider.of<Deal>(context).updateOrderStatus(order['txnHash'], res);
   }
+
+  /// 订单匹配状态查询完毕，整体更新一次列表
+  // void updateList() async {
+  //   List list = List.from(await Provider.of<Deal>(context).getTraderList());
+  //   list.retainWhere((element) => (element['status'] == '进行中' ||
+  //       element['status'] == '挂单中' ||
+  //       element['status'] == '打包中'));
+  //   setState(() {
+  //     this.arr = list;
+  //   });
+  // }
 
   /// 点击订单复制订单的hash
   void copyHash(Map item) {

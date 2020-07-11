@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:youwallet/service/token_service.dart';
 import 'package:youwallet/widgets/transferList.dart';
@@ -19,15 +18,14 @@ import 'package:youwallet/widgets/tradesDeep.dart';
 import 'package:decimal/decimal.dart';
 import 'package:youwallet/util/translations.dart';
 import 'package:youwallet/model/network.dart';
+import 'dart:async';
 
 class TabExchange extends StatefulWidget {
-
   @override
   State<StatefulWidget> createState() => new Page();
 }
 
 class Page extends State {
-
   BuildContext mContext;
 
   // 数量编辑框
@@ -62,7 +60,7 @@ class Page extends State {
   // 右边的token对象
   var rightToken;
 
-  String _btnText="买入";
+  String _btnText = "买入";
   List tokens = [];
   String tokenBalance = "";
 
@@ -71,6 +69,9 @@ class Page extends State {
 
   // 当前页面显示的token余额
   String balance = "";
+
+  //申明一个定时器
+  var _timer;
 
   //数据初始化
   @override
@@ -81,17 +82,17 @@ class Page extends State {
     eventBus.on<TabChangeEvent>().listen((event) {
       // print("event listen =》${event.index}");
       if (event.index == 1) {
-         print('监听TabChangeEvent =》${event.index}');
-         eventBus.fire(CustomTabChangeEvent('当前兑换'));
+        print('监听TabChangeEvent =》${event.index}');
+        eventBus.fire(CustomTabChangeEvent('当前兑换'));
       } else {
         print('do nothing');
       }
     });
 
     //监听订单操作结果
-    eventBus.on<TransferDoneEvent>().listen((event) async{
-      this.showSnackBar(event.res);
-      Navigator.pop(context);
+    eventBus.on<TransferDoneEvent>().listen((event) async {
+      // this.showSnackBar(event.res);
+      // Navigator.pop(context);
     });
 
     // 事件钩子，通知页面订单列表就要开始刷新了
@@ -100,7 +101,8 @@ class Page extends State {
           context: context, //BuildContext对象
           barrierDismissible: false,
           builder: (BuildContext context) {
-            return new LoadingDialog( //调用对话框
+            return new LoadingDialog(
+              //调用对话框
               text: '刷新中...',
             );
           });
@@ -113,6 +115,8 @@ class Page extends State {
 
     print('tab exchange init');
     //eventBus.fire(CustomTabChangeEvent('当前兑换'));
+
+    this._startTimer();
   }
 
   @override
@@ -130,60 +134,49 @@ class Page extends State {
   // 构建页面
   Widget layout(BuildContext context) {
     return new Scaffold(
-      backgroundColor: _btnText == '买入' ? Colors.green[50] : Colors.red[50],
-      appBar: buildAppBar(context),
-      body: RefreshIndicator(
-      onRefresh: _refresh,
-        child: new ListView(
-          children: <Widget>[
-            new Container(
-                padding: const EdgeInsets.all(16.0), // 四周填充边距32像素
-                child: new Column(
-                  children: <Widget>[
-                    buildPageTop(context),
-                    new Container(
-                      height: 1.0,
-                      color: Color(0xFF919D97),
-                      margin: const EdgeInsets.only(top: 16.0, bottom: 0),
-                      child: null,
-                    ),
-                  ],
+        backgroundColor: _btnText == '买入' ? Colors.green[50] : Colors.red[50],
+        appBar: buildAppBar(context),
+        body: RefreshIndicator(
+            onRefresh: _refresh,
+            child: new ListView(
+              children: <Widget>[
+                new Container(
+                    padding: const EdgeInsets.all(16.0), // 四周填充边距32像素
+                    child: new Column(
+                      children: <Widget>[
+                        buildPageTop(context),
+                        new Container(
+                          height: 1.0,
+                          color: Color(0xFF919D97),
+                          margin: const EdgeInsets.only(top: 16.0, bottom: 0),
+                          child: null,
+                        ),
+                      ],
+                    )),
+                new Container(
+                    margin: const EdgeInsets.only(left: 16.0, right: 16.0),
+                    child: new CustomTab(
+                        buttons: ['当前兑换', '历史兑换'], activeIndex: '当前兑换')),
+                new Container(
+                  padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                  child: new transferList(key: transferListKey),
                 )
-            ),
-            new Container(
-              margin: const EdgeInsets.only(left:16.0,right:16.0),
-              child: new CustomTab(
-                buttons:['当前兑换','历史兑换'],
-                activeIndex: '当前兑换'
-              )
-            ),
-            new Container(
-              padding: const EdgeInsets.only(left:16.0,right:16.0),
-              child: new transferList(
-                key: transferListKey
-              ),
-            )
 //            new Container(
 //              padding: const EdgeInsets.only(left:16.0,right:16.0),
 //              child: transferList(arr: this.trades, filledAmount: this.filledAmount),
 //            )
-          ],
-        )
-      )
-    );
+              ],
+            )));
   }
 
   // 构建顶部标题栏
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
-        title: Text(
-            Translations.of(context).text("title_tab_exchange")
-        ),
+        title: Text(Translations.of(context).text("title_tab_exchange")),
         elevation: 0.0,
         // actions: this.appBarActions(),
         automaticallyImplyLeading: false, //设置没有返回按钮
-        backgroundColor: _btnText == '买入' ? Colors.green[50] : Colors.red[50]
-    );
+        backgroundColor: _btnText == '买入' ? Colors.green[50] : Colors.red[50]);
   }
 
   List appBarActions() {
@@ -195,9 +188,7 @@ class Page extends State {
           onPressed: () {
             if (this.value == null || this.rightToken == null) {
               this.showSnackBar('请选择token和base token，再查看交易深度');
-            } else {
-
-            }
+            } else {}
           },
         ),
       )
@@ -211,40 +202,33 @@ class Page extends State {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           //左边一列
-          new  Expanded(
+          new Expanded(
             child: new Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                new TokenSelectSheet(
-                    onCallBackEvent: (res){
-                       setState(() {
-                         this.value = res;
-                         this.suffixText = res['name'];
-                       });
-                       Future.delayed(Duration(seconds: 1), (){
-                         eventBus.fire(UpdateTeadeDeepEvent());
-                         print('延时1s执行，因为立即执行收不到setState设置的值');
-                       });
-                    }
-                ),
+                new TokenSelectSheet(onCallBackEvent: (res) {
+                  setState(() {
+                    this.value = res;
+                    this.suffixText = res['name'];
+                  });
+                  Future.delayed(Duration(seconds: 1), () {
+                    eventBus.fire(UpdateTeadeDeepEvent());
+                    print('延时1s执行，因为立即执行收不到setState设置的值');
+                  });
+                }),
                 new Container(
-                  child: new Row(
-                    children: <Widget>[
-                      new Expanded(
-                          child: getButton('买入', this._btnText),
-                          flex: 1
-                      ),
-                      new Expanded(
-                          child: getButton('卖出', this._btnText),
-                          flex: 1
-                      )
-                    ],
-                  )
-                ),
+                    child: new Row(
+                  children: <Widget>[
+                    new Expanded(
+                        child: getButton('买入', this._btnText), flex: 1),
+                    new Expanded(child: getButton('卖出', this._btnText), flex: 1)
+                  ],
+                )),
                 new Text('限价模式'),
                 new Input(
-                  suffixText: this.rightToken == null?'':this.rightToken['name'],
+                  suffixText:
+                      this.rightToken == null ? '' : this.rightToken['name'],
                   hintText: '输入买入价格',
                   controllerEdit: controllerPrice,
                   onSuccessChooseEvent: (res) {
@@ -258,7 +242,7 @@ class Page extends State {
                 new Input(
                   hintText: '输入买入数量',
                   controllerEdit: controllerAmount,
-                  suffixText: this.value == null?'':this.value['name'],
+                  suffixText: this.value == null ? '' : this.value['name'],
                   onSuccessChooseEvent: (res) {
                     this.computeTrade();
                   },
@@ -267,33 +251,28 @@ class Page extends State {
                 new Container(
                   padding: new EdgeInsets.only(top: 30.0),
                   child: new Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
                       new Text(
-                          '交易额: ${tradePrice??""}',
-                          style: new TextStyle(
-                            color: _btnText == '买入'? Colors.green : Colors.red
-                          ),
+                        '交易额: ${tradePrice ?? ""}',
+                        style: new TextStyle(
+                            color:
+                                _btnText == '买入' ? Colors.green : Colors.red),
                       ),
                       new SizedBox(
                         width: double.infinity,
                         height: 30,
                         child: RaisedButton(
-                            color: _btnText == '买入'? Colors.green : Colors.red,
-                            elevation: 0,
-                            onPressed: () async {
-                               this.makeOrder();
-                            },
-
-                            child: Text(
-                                this._btnText + this.suffixText,
-                                style: TextStyle(
-                                    fontSize: 14.0,
-                                    color: Colors.white
-                                )
-                            ),
-                            textColor: Colors.white,
-                          ),
+                          color: _btnText == '买入' ? Colors.green : Colors.red,
+                          elevation: 0,
+                          onPressed: () async {
+                            this.makeOrder();
+                          },
+                          child: Text(this._btnText + this.suffixText,
+                              style: TextStyle(
+                                  fontSize: 14.0, color: Colors.white)),
+                          textColor: Colors.white,
+                        ),
                       ),
                     ],
                   ),
@@ -305,42 +284,38 @@ class Page extends State {
             width: 20.0,
             alignment: Alignment.topCenter,
             child: Text(
-                '/',
-                style: TextStyle(
-                  fontSize: 28.0,
-                  color: Colors.black38,
-                ),
+              '/',
+              style: TextStyle(
+                fontSize: 28.0,
+                color: Colors.black38,
+              ),
             ),
           ),
           // 右边一列
-          new  Expanded(
+          new Expanded(
             child: new Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                new TokenSelectSheet(
-                    onCallBackEvent: (res){
-                      print('页面右侧token选择 = > ${res}');
-                      setState(() {
-                        rightToken = res;
-                        balance = res['balance'] + res['name'];
-                      });
-                      Future.delayed(Duration(seconds: 1), (){
-                        eventBus.fire(UpdateTeadeDeepEvent());
-                        print('延时1s执行，因为立即执行收不到setState设置的值');
-                      });
-                    }
-                ),
+                new TokenSelectSheet(onCallBackEvent: (res) {
+                  print('页面右侧token选择 = > ${res}');
+                  setState(() {
+                    rightToken = res;
+                    balance = res['balance'] + res['name'];
+                  });
+                  Future.delayed(Duration(seconds: 1), () {
+                    eventBus.fire(UpdateTeadeDeepEvent());
+                    print('延时1s执行，因为立即执行收不到setState设置的值');
+                  });
+                }),
                 buildRightWidget()
               ],
             ),
-
           ),
         ],
       ),
     );
   }
-
 
   // 构建一组颜色会动态变更的按钮
   Widget getButton(String btnText, String currentBtn) {
@@ -351,38 +326,28 @@ class Page extends State {
             changeOrderModel(btnText);
           },
           shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(0))
-          ), // 设置圆角，默认有圆角
+              borderRadius: BorderRadius.all(Radius.circular(0))), // 设置圆角，默认有圆角
           elevation: 0, // 按钮阴影高度
           color: Colors.white,
-          child: Text(
-              btnText + this.suffixText,
-              softWrap: false,
-              overflow: TextOverflow.fade
-          )
-      );
+          child: Text(btnText + this.suffixText,
+              softWrap: false, overflow: TextOverflow.fade));
     } else {
       return OutlineButton(
         padding: const EdgeInsets.all(0.0),
         onPressed: () {
           changeOrderModel(btnText);
         },
-        child: Text(
-            btnText + this.suffixText,
+        child: Text(btnText + this.suffixText,
             style: TextStyle(
-                color: currentBtn == '买入'? Colors.green : Colors.red,
-
+              color: currentBtn == '买入' ? Colors.green : Colors.red,
             ),
-            softWrap: false
-        ),
-        borderSide:  BorderSide(
-            color: currentBtn == '买入'? Colors.green : Colors.red,
+            softWrap: false),
+        borderSide: BorderSide(
+            color: currentBtn == '买入' ? Colors.green : Colors.red,
             width: 1.0,
-            style: BorderStyle.solid
-        ),
+            style: BorderStyle.solid),
       );
     }
-
   }
 
   // 更改下单模式
@@ -407,9 +372,9 @@ class Page extends State {
           ),
 //          priceNum(arr: this.tradesDeep)
           new TradesDeep(
-              leftToken: this.value != null?this.value['address']:'',
-              rightToken: this.rightToken != null?this.rightToken['address']:'',
-
+            leftToken: this.value != null ? this.value['address'] : '',
+            rightToken:
+                this.rightToken != null ? this.rightToken['address'] : '',
           )
         ],
       ),
@@ -422,17 +387,17 @@ class Page extends State {
   void makeOrder() async {
     if (this.value == null) {
       this.showSnackBar('请选择左侧token');
-      return ;
+      return;
     }
 
     if (this.rightToken == null) {
       this.showSnackBar('请选择右侧token');
-      return ;
+      return;
     }
 
     if (this.controllerPrice.text.length == 0) {
       this.showSnackBar('请输入价格');
-      return ;
+      return;
     }
 
     try {
@@ -447,23 +412,21 @@ class Page extends State {
           return;
         }
       }
-
     } catch (e) {
       print(e);
       this.showSnackBar('你输入的价格无法识别');
       return;
     }
 
-
     if (this.controllerAmount.text.length == 0) {
       this.showSnackBar('请输入数量');
-      return ;
+      return;
     }
 
     try {
       if (Decimal.parse(this.controllerAmount.text) <= Decimal.parse('0')) {
         this.showSnackBar('数量必须大于0');
-        return ;
+        return;
       }
       List strs = this.controllerAmount.text.split('.');
       if (strs.length == 2) {
@@ -485,19 +448,18 @@ class Page extends State {
           return new LoadingDialog(
             text: this.currentStatus,
           );
-        }
-    );
+        });
     // 关闭键盘
     FocusScope.of(context).requestFocus(FocusNode());
 
     // 判断一下有没有还在打包中的订单
     // 如果有订单在打包中，发起交易会失败
     List list = await Provider.of<Deal>(context).getTraderList();
-    bool packing = list.any((element)=>(element['status']=="打包中"));
+    bool packing = list.any((element) => (element['status'] == "打包中"));
     if (packing) {
       this.showSnackBar('当前有订单在打包中，请先下拉刷新');
       Navigator.of(context).pop();
-      return ;
+      return;
     }
 
     // 先检查授权
@@ -509,7 +471,7 @@ class Page extends State {
   // 买入时对右边的token授权，
   // 卖出时对左边的token授权
   // 一句话说明：哪个token要被转出去给其他人，就给哪个token授权
-  void checkApprove() async{
+  void checkApprove() async {
     if (this._btnText == '买入') {
       needApproveToken = this.rightToken['address'];
     } else {
@@ -524,7 +486,8 @@ class Page extends State {
     // 授权额度为0，发起提示
     if (res == '0') {
       Navigator.of(context).pop();
-      Map currentWallet = Provider.of<walletModel.Wallet>(context).currentWalletObject;
+      Map currentWallet =
+          Provider.of<walletModel.Wallet>(context).currentWalletObject;
       if (currentWallet['balance'] == '0.00') {
         this.showSnackBar('您的钱包ETH余额为0，无法授权，不可以交易');
       } else {
@@ -540,10 +503,10 @@ class Page extends State {
   /// approve 是否授权
   /// 发起授权之前，要先确认用户的钱包ETH有余额，否则无法授权
   void getPwd(bool approve) {
-    Navigator.pushNamed(context, "getPassword").then((data) async{
+    Navigator.pushNamed(context, "getPassword").then((data) async {
       print('密码输入页面拿到的对象');
       print(data);
-      if(data == null) {
+      if (data == null) {
         this.showSnackBar('交易终止');
         Navigator.of(context).pop();
         return;
@@ -564,11 +527,10 @@ class Page extends State {
           print('授权Hash=> ${hash}');
           // 这里不能用await，否则会黑屏
           this.checkAuthResponse(hash, 0);
-        } catch(e) {
+        } catch (e) {
           Navigator.of(context).pop();
         }
       }
-
     });
   }
 
@@ -577,7 +539,7 @@ class Page extends State {
     Map response = await Trade.getTransactionByHash(hash);
     print("第${index}次查询");
     print(response);
-    if(response['blockHash'] != null) {
+    if (response['blockHash'] != null) {
       print('授权成功，以太坊返回了交易的blockHash');
       Navigator.of(context).pop();
       this.showSnackBar('授权成功，请重新挂单');
@@ -589,8 +551,8 @@ class Page extends State {
         this.showSnackBar('授权响应超时，请重新授权');
         return false;
       } else {
-        Future.delayed(Duration(seconds: 2), (){
-          this.checkAuthResponse(hash, index+1);
+        Future.delayed(Duration(seconds: 2), () {
+          this.checkAuthResponse(hash, index + 1);
         });
       }
     }
@@ -604,7 +566,8 @@ class Page extends State {
         builder: (BuildContext context) {
           return GenderChooseDialog(
               title: '授权交易',
-              content: '为了便于后续兑换，需要您授权youwallet代理。youwallet只会在你授权的情况下才会执行交易，请放心授权！',
+              content:
+                  '为了便于后续兑换，需要您授权youwallet代理。youwallet只会在你授权的情况下才会执行交易，请放心授权！',
               onCancelChooseEvent: () {
                 Navigator.pop(context);
                 this.showSnackBar('取消交易');
@@ -615,11 +578,11 @@ class Page extends State {
                     context: context, //BuildContext对象
                     barrierDismissible: false,
                     builder: (BuildContext context) {
-                      return new LoadingDialog( //调用对话框
+                      return new LoadingDialog(
+                        //调用对话框
                         text: '授权中...',
                       );
-                    }
-                );
+                    });
                 this.getPwd(false);
               });
         });
@@ -635,9 +598,16 @@ class Page extends State {
       isBuy = false;
     }
 
-    Trade trade = new Trade(this.value['address'], this.value['name'], this.rightToken['address'], this.rightToken['name'], this.controllerAmount.text, this.controllerPrice.text, isBuy, obj);
+    Trade trade = new Trade(
+        this.value['address'],
+        this.value['name'],
+        this.rightToken['address'],
+        this.rightToken['name'],
+        this.controllerAmount.text,
+        this.controllerPrice.text,
+        isBuy,
+        obj);
     try {
-
       // 下单成功后，主动更新当前交易的这个的余额
       // this.value就是需要更新的token，只需要更新value中的balance
       // 但是拿到订单hash，交易其实还是pading状态，余额已经减少了吗
@@ -646,19 +616,19 @@ class Page extends State {
       print('@@@@@下单成功，拿到了hash，以太坊还在写链@@@@@@');
       print(txnHash);
       Navigator.pop(context);
-      transferListKey.currentState.tabChange('当前兑换');
-      Navigator.pushNamed(context, "success", arguments: {
-        'msg': '下单成功',
-        'txnHash': txnHash
-      });
+      // transferListKey.currentState.tabChange('当前兑换');
+      Navigator.pushNamed(context, "success",
+          arguments: {'msg': '下单成功', 'txnHash': txnHash});
       // 拿到订单Hash，通知历史列表组件更新
       // eventBus.fire(OrderSuccessEvent());
-    } catch(e) {
+    } catch (e) {
       print('+++++++++++++++');
       print(e);
-      if(e.toString() == 'RPCError: got code -32000 with msg "insufficient funds for gas * price + value".') {
+      if (e.toString() ==
+          'RPCError: got code -32000 with msg "insufficient funds for gas * price + value".') {
         this.showSnackBar('钱包ETH余额不足');
-      } else if(e.toString() == 'RPCError: got code -32000 with msg "replacement transaction underpriced".') {
+      } else if (e.toString() ==
+          'RPCError: got code -32000 with msg "replacement transaction underpriced".') {
         this.showSnackBar('有交易在打包中，请先等待打包结束');
       } else {
         this.showSnackBar(e.toString());
@@ -675,53 +645,66 @@ class Page extends State {
     Scaffold.of(context).showSnackBar(snackBar);
   }
 
-   // 计算交易额度
-   void computeTrade() {
-     if (this.controllerAmount.text.length == 0) {
-       return ;
-     }
+  // 计算交易额度
+  void computeTrade() {
+    if (this.controllerAmount.text.length == 0) {
+      return;
+    }
 
-     if (this.controllerPrice.text.length == 0) {
-       return ;
-     }
+    if (this.controllerPrice.text.length == 0) {
+      return;
+    }
 
-
-     var tradePrice = Decimal.parse(this.controllerAmount.text) * Decimal.parse(this.controllerPrice.text);
-     setState(() {
-       this.tradePrice = tradePrice.toString() + this.rightToken['name'];
-     });
-   }
+    var tradePrice = Decimal.parse(this.controllerAmount.text) *
+        Decimal.parse(this.controllerPrice.text);
+    setState(() {
+      this.tradePrice = tradePrice.toString() + this.rightToken['name'];
+    });
+  }
 
   // 下拉刷新底部交易列表
   Future<void> _refresh() async {
-
     if ('mainnet' == Provider.of<Network>(context).network) {
       this.showSnackBar('当前网络不支持刷新，请切换测试网');
       return;
     }
 
-    eventBus.fire(UpdateTeadeDeepEvent());
-    eventBus.fire(CustomTabChangeEvent('当前兑换'));
-    eventBus.fire(UpdateOrderListEvent());
-    showDialog<Null>(
-        context: context, //BuildContext对象
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return new LoadingDialog( //调用对话框
-            text: '刷新中...',
-          );
-        }
-    );
+    // eventBus.fire(UpdateTeadeDeepEvent());
+    // eventBus.fire(CustomTabChangeEvent('当前兑换'));
+    // eventBus.fire(UpdateOrderListEvent());
+    this.showSnackBar('后台刷新中...');
+    // showDialog<Null>(
+    //     context: context, //BuildContext对象
+    //     barrierDismissible: false,
+    //     builder: (BuildContext context) {
+    //       return new LoadingDialog(
+    //         //调用对话框
+    //         text: '刷新中...',
+    //       );
+    //     });
   }
 
   // 更新token的余额，在交易结束后
   // 计算当前账户余额，这里计算的是右边token的余额
-  Future updateTokenBalance() async{
+  Future updateTokenBalance() async {
     String balance = await TokenService.getTokenBalance(this.rightToken);
-    await Provider.of<Token>(context).updateTokenBalance(this.rightToken, balance);
+    await Provider.of<Token>(context)
+        .updateTokenBalance(this.rightToken, balance);
     setState(() {
       this.balance = balance + this.rightToken['name'];
     });
   }
 
+  // 创建循环
+  // 这里要不断的更新兑换列表的交易状态
+  _startTimer() {
+    _timer = new Timer.periodic(new Duration(seconds: 5), (timer) {
+      transferListKey.currentState.updateOrderFilled();
+      eventBus.fire(UpdateTeadeDeepEvent());
+    });
+  }
+
+  _cancelTimer() {
+    _timer?.cancel();
+  }
 }
