@@ -143,7 +143,7 @@ class Page extends State<TradesDeep> {
         int i = 0;
         int len = 3 - sell.length;
         while (i < len) {
-          sell.add({'price': '-', 'amount': '-', 'is_sell': true});
+          sell.insert(0, {'price': '-', 'amount': '-', 'is_sell': true});
           i = i + 1;
         }
       }

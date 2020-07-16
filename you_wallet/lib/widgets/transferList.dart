@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:youwallet/util/number_format.dart';
 import 'package:youwallet/global.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:youwallet/widgets/listEmpty.dart';
 
 class transferList extends StatefulWidget {
   transferList({Key key}) : super(key: key);
@@ -59,14 +60,18 @@ class TransferListState extends State<transferList> {
 
   @override
   Widget build(BuildContext context) {
-    return new Container(
-        padding: const EdgeInsets.only(bottom: 12.0), // 四周填充边距32像素
-        child: new Column(
-            children: this
-                .arr
-                .reversed
-                .map((item) => buildsilde(item, context))
-                .toList()));
+    if (this.arr.length > 0) {
+      return new Container(
+          padding: const EdgeInsets.only(bottom: 12.0), // 四周填充边距32像素
+          child: new Column(
+              children: this
+                  .arr
+                  .reversed
+                  .map((item) => buildsilde(item, context))
+                  .toList()));
+    } else {
+      return ListEmpty(text: '还没有交易');
+    }
   }
 
   // 给数据列表中的每一个项包裹一层滑动组件
