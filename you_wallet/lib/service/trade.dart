@@ -314,8 +314,10 @@ class Trade {
     String postData = func['filled(bytes32)'] + odHash;
     Map params = {"data": postData};
     var response = await Http().post(params: params, to: Global.hydroAddress);
-    return BigInt.parse(response['result'].replaceFirst("0x", ''), radix: 16) /
-        BigInt.from(pow(10, 18));
+    print(response);
+    return 0.00;
+    // return BigInt.parse(response['result'].replaceFirst("0x", ''), radix: 16) /
+    // BigInt.from(pow(10, 18));
   }
 
   // 0x22f42f6b
@@ -527,6 +529,7 @@ class Trade {
           od_hash.padLeft(64, '0')
     };
     var response = await Http().post(params: params);
+    print(response);
     int flag = int.parse(response['result'].replaceFirst("0x", ''), radix: 16);
     print('flag -> ${flag}');
     return Global.orderStatusMap[flag]['status'];
