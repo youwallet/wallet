@@ -73,6 +73,9 @@ class Page extends State {
   //申明一个定时器
   var _timer;
 
+  // 当前token兑换列表被选中的列表索引
+  String currentTab = '当前兑换';
+
   //数据初始化
   @override
   void initState() {
@@ -83,10 +86,15 @@ class Page extends State {
       // print("event listen =》${event.index}");
       if (event.index == 1) {
         print('监听TabChangeEvent =》${event.index}');
-        eventBus.fire(CustomTabChangeEvent('当前兑换'));
+        // eventBus.fire(CustomTabChangeEvent('当前兑换'));
       } else {
         print('do nothing');
       }
+    });
+
+    //监听订单操作结果
+    eventBus.on<CustomTabChangeEvent>().listen((event) async {
+      this.currentTab = event.res;
     });
 
     //监听订单操作结果
@@ -156,7 +164,8 @@ class Page extends State {
                 new Container(
                     margin: const EdgeInsets.only(left: 16.0, right: 16.0),
                     child: new CustomTab(
-                        buttons: ['当前兑换', '历史兑换'], activeIndex: '当前兑换')),
+                        buttons: ['当前兑换', '历史兑换'],
+                        activeIndex: this.currentTab)),
                 new Container(
                   padding: const EdgeInsets.only(left: 16.0, right: 16.0),
                   child: new transferList(key: transferListKey),
