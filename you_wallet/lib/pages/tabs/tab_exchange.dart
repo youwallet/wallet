@@ -182,11 +182,20 @@ class Page extends State {
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
         title: Text(Translations.of(context).text("title_tab_exchange")),
+        // title: Text('买入/卖出'),
+        // title: buildTopBar(context),
         elevation: 0.0,
         // actions: this.appBarActions(),
         automaticallyImplyLeading: false, //设置没有返回按钮
         backgroundColor: _btnText == '买入' ? Colors.green[50] : Colors.red[50]);
   }
+
+  // Widget buildTopBar(BuildContext context) {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //     children: [Text('买入'), Text('卖出')],
+  //   );
+  // }
 
   List appBarActions() {
     return <Widget>[
@@ -479,7 +488,7 @@ class Page extends State {
   // 进行交易授权, 每一种token，只需要授权一次，目前没有接口确定token是否授权
   // 买入时对右边的token授权，
   // 卖出时对左边的token授权
-  // 一句话说明：哪个token要被转出去给其他人，就给哪个token授权
+  // 一句话说明：哪个token要被转出去给��他人，就给哪个token授权
   void checkApprove() async {
     if (this._btnText == '买入') {
       needApproveToken = this.rightToken['address'];
