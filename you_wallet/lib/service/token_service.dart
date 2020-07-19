@@ -71,12 +71,10 @@ class TokenService {
   /// 获取指定钱包的余额，这里获取的是ETH的余额
   static Future<String> getBalance(String address) async {
     String rpcUrl = Global.getBaseUrl();
-    print('rpcurl => $rpcUrl');
     final client = Web3Client(rpcUrl, Client());
     EtherAmount balance =
         await client.getBalance(EthereumAddress.fromHex(address));
     double b = balance.getValueInUnit(EtherUnit.ether);
-    print(b);
     return b.toStringAsFixed(4);
   }
 
@@ -94,7 +92,6 @@ class TokenService {
           hexList[i] != 3 &&
           hexList[i] != 2 &&
           hexList[i] != 0) {
-        print(hexList[i]);
         String str = String.fromCharCode(hexList[i]);
         nameString = nameString + str;
       }
@@ -127,7 +124,6 @@ class TokenService {
   static Future<int> getDecimals(String address) async {
     Map params = {"data": Global.funcHashes['getDecimals()']};
     var response = await Http().post(params: params, to: address);
-    print(response);
     return int.parse(response['result'].replaceFirst("0x", ''), radix: 16);
   }
 
@@ -160,7 +156,7 @@ class TokenService {
     String postData =
         '0x1214dd580000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000b71756f7465746f6b656e73000000000000000000000000000000000000000000';
     var response = await Http().post(params: {"data": postData});
-    print(response);
+    // print(response);
     //return BigInt.parse(response['result']).toString();
   }
 }

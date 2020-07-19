@@ -19,7 +19,7 @@ class Deal extends ChangeNotifier {
   // 获取钱包列表
   List<Map> get items => _items;
 
-  /// 从数据库获取当前兑换列表，
+  /// 从数据库获取兑换列表，
   Future<List> getTraderList() async {
     var sql = SqlUtil.setTable("trade");
     List list = await sql.get();

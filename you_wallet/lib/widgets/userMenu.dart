@@ -64,11 +64,10 @@ class UserMenu extends StatelessWidget {
                         title: '确定要清空缓存吗?',
                         content: '钱包和交易记录将不可找回！',
                         onSuccessChooseEvent: () async {
+                          print('===========ok');
                           final provider = new ProviderSql();
                           await provider.clearCache();
-                          final snackBar = new SnackBar(
-                              content: new Text('数据清除成功，关闭程序重新进入'));
-                          Scaffold.of(context).showSnackBar(snackBar);
+                          Navigator.pop(context);
                         },
                         onCancelChooseEvent: () {
                           Navigator.pop(context);

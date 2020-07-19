@@ -314,10 +314,8 @@ class Trade {
     String postData = func['filled(bytes32)'] + odHash;
     Map params = {"data": postData};
     var response = await Http().post(params: params, to: Global.hydroAddress);
-    print(response);
-    return 0.00;
-    // return BigInt.parse(response['result'].replaceFirst("0x", ''), radix: 16) /
-    // BigInt.from(pow(10, 18));
+    return BigInt.parse(response['result'].replaceFirst("0x", ''), radix: 16) /
+        BigInt.from(pow(10, 18));
   }
 
   // 0x22f42f6b
@@ -458,10 +456,8 @@ class Trade {
         formatParam(item['odHash']);
 
     String rpcUrl = await Global.rpcUrl();
-
     final client = Web3Client(rpcUrl, Client());
     var credentials = await client.credentialsFromPrivateKey(obj['privateKey']);
-
     var rsp = await client.sendTransaction(
         credentials,
         Transaction(
@@ -530,6 +526,7 @@ class Trade {
     };
     var response = await Http().post(params: params);
     int flag = int.parse(response['result'].replaceFirst("0x", ''), radix: 16);
+    print('打印订单的flag => ${flag}');
     return Global.orderStatusMap[flag]['status'];
   }
 
@@ -666,15 +663,6 @@ class Trade {
         headers: {'Content-Type': 'application/json'},
         body: json.encode(payload));
     Map result = jsonDecode(rsp.body);
-
-    String res = result['result'].replaceFirst("0x", ""); // 得到一个64字节的数据
-    print(res);
-    return res;
-//    String sq_hash = res.substring(0,64);
-//    String bq_hash = res.substring(64,128);
-//    return {
-//      'sq_hash': sq_hash,
-//      'bq_hash': bq_hash,
-//    };
+    return result['result'].replaceFirst("0x", ""); // 得到一个64字节的数据
   }
 }

@@ -224,10 +224,10 @@ class TransferListState extends State<transferList> {
       // 至于到底有没有撤销成功，还需要等待以太坊写链
       String res = await Trade.cancelOrder(item, obj);
       print('订单撤销返回 => ${res}');
+      eventBus.fire(TransferDoneEvent('撤销中'));
       await Provider.of<Deal>(context)
           .updateOrderStatus(item['txnHash'], '撤销中');
       this.tabChange(this.currentTab);
-      // eventBus.fire(TransferDoneEvent('撤销中'));
     } catch (e) {
       print(e);
       eventBus.fire(TransferDoneEvent(e.toString()));
@@ -250,7 +250,6 @@ class TransferListState extends State<transferList> {
                 // eventBus.fire(TransferDoneEvent('l'));
               },
               onSuccessChooseEvent: () async {
-                print('onSuccessChooseEvent');
                 int i =
                     await Provider.of<Deal>(context).deleteTrader(item['id']);
                 // 用bus向兑换页面发出删除成功的通知，兑换页面显示toast
@@ -263,6 +262,7 @@ class TransferListState extends State<transferList> {
                   });
                   eventBus.fire(TransferDoneEvent('删除成功'));
                 }
+                Navigator.pop(context);
               });
         });
   }
@@ -271,6 +271,7 @@ class TransferListState extends State<transferList> {
   // 这里list需要用List.from转化一次，否则会提示read only
   // 注意：这里只是切换数据的显示，并不负责刷新
   void tabChange(String tab) async {
+    print('start tabChange ${tab}');
     List res = await Provider.of<Deal>(context).getTraderList();
     List list = List.from(res);
     if (tab == '当前兑换') {
@@ -306,11 +307,11 @@ class TransferListState extends State<transferList> {
         print("查询第${i}个订单，状态是${list[i]['status']}");
         await this.updateOrder(list[i]);
       } else {
-        if (double.parse(list[i]['amount']) !=
-            double.parse(list[i]['filled'])) {
-          await this.updateOrder(list[i]);
-        } else {}
-        // print("查询第${i}个订单，状态是${list[i]['status']}, 不发起请求");
+        // if (double.parse(list[i]['amount']) !=
+        //     double.parse(list[i]['filled'])) {
+        //   await this.updateOrder(list[i]);
+        // } else {}
+        print("查询第${i}个订单，状态是${list[i]['status']}, 不发起请求");
         //print('该订单状态为${this.arr[i]['status']},已匹配完毕');
       }
     }
@@ -327,6 +328,9 @@ class TransferListState extends State<transferList> {
     await Provider.of<Deal>(context)
         .updateFilled(order, amount.toStringAsFixed(4));
     var res = await Trade.orderFlags(order['odHash']);
+    if (order['status'] == '撤销中' && res == '打包中') {
+      res = '撤销中';
+    }
     await Provider.of<Deal>(context).updateOrderStatus(order['txnHash'], res);
   }
 

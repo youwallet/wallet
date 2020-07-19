@@ -37,7 +37,6 @@ class Page extends State<TradesDeep> {
     super.initState();
 
     eventBus.on<UpdateTeadeDeepEvent>().listen((event) {
-      print('change in UpdateTeadeDeepEvent');
       this.getOrderDeep();
     });
 
