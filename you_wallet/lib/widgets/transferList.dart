@@ -100,9 +100,7 @@ class TransferListState extends State<transferList> {
 
   // 构建滑动后右侧出现的小部件
   Widget buildRightAction(context, item) {
-    if (item['status'] == '挂单中' ||
-        item['status'] == '进行中' ||
-        item['status'] == '') {
+    if (item['status'] == '挂单中' || item['status'] == '打包中') {
       return IconSlideAction(
         caption: '撤销',
         color: Colors.red,
@@ -166,6 +164,10 @@ class TransferListState extends State<transferList> {
                         ? new SpinKitFadingCircle(
                             color: Colors.deepOrange, size: 12.0)
                         : Text(''),
+                    item['status'] == '撤销中'
+                        ? new SpinKitFadingCircle(
+                            color: Colors.deepOrange, size: 12.0)
+                        : Text(''),
                     new Text(item['status'] ?? '进行中',
                         style: new TextStyle(color: Colors.deepOrange)),
                     // new SpinKitFadingCircle(color: Colors.blueAccent, size: 12.0)
@@ -188,7 +190,8 @@ class TransferListState extends State<transferList> {
         ));
   }
 
-  /// 取消交易
+  /// 撤销一笔交易
+  /// 撤销是一个休要时间的过程，增加【撤销中】的loading状态
   void cancelTrade(BuildContext context, Map item) {
     showDialog(
         context: context,
@@ -200,8 +203,6 @@ class TransferListState extends State<transferList> {
               onSuccessChooseEvent: () async {
                 Navigator.pop(context);
                 Navigator.pushNamed(context, "getPassword").then((data) async {
-                  print('cancelTrade callback');
-                  print(data);
                   if (data == null) {
                     print('取消密码输入');
                   } else {
@@ -215,27 +216,18 @@ class TransferListState extends State<transferList> {
         });
   }
 
-  /// 取消订单的进程，不会立刻拿到结果
+  /// 撤销订单的进程，不会立刻拿到结果
   /// 注意这里的obj,里面有四个字段
   void cancelProcess(Map item, Map obj) async {
-    showDialog<Null>(
-        context: context, //BuildContext对象
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return new LoadingDialog(
-            //调用对话框
-            text: '撤销中...',
-          );
-        });
     try {
       // 订单撤销后立即返回的是交易的hash，
       // 至于到底有没有撤销成功，还需要等待以太坊写链
       String res = await Trade.cancelOrder(item, obj);
       print('订单撤销返回 => ${res}');
       await Provider.of<Deal>(context)
-          .updateOrderStatus(item['txnHash'], '交易撤销');
+          .updateOrderStatus(item['txnHash'], '撤销中');
       this.tabChange(this.currentTab);
-      eventBus.fire(TransferDoneEvent('撤销成功'));
+      // eventBus.fire(TransferDoneEvent('撤销中'));
     } catch (e) {
       print(e);
       eventBus.fire(TransferDoneEvent(e.toString()));
@@ -282,12 +274,13 @@ class TransferListState extends State<transferList> {
     List res = await Provider.of<Deal>(context).getTraderList();
     List list = List.from(res);
     if (tab == '当前兑换') {
-      list.retainWhere((element) => (element['status'] == '进行中' ||
-          element['status'] == '挂单中' ||
-          element['status'] == '打包中'));
+      list.retainWhere((element) => (element['status'] == '挂单中' ||
+          element['status'] == '打包中' ||
+          element['status'] == '撤销中'));
     } else {
-      list.retainWhere((element) =>
-          (element['status'] != '挂单中' && element['status'] != '打包中'));
+      list.retainWhere((element) => (element['status'] != '挂单中' &&
+          element['status'] != '打包中' &&
+          element['status'] != '撤销中'));
     }
     setState(() {
       this.arr = list;
@@ -301,14 +294,13 @@ class TransferListState extends State<transferList> {
   /// 如果订单匹配还在进行中，判断一下这个订单是否还有效（因为它可能被取消了）
   /// 最后通知顶层页面，刷新结束
   Future<void> updateOrderFilled() async {
-    print(this.currentTab);
     List list = List.from(await Provider.of<Deal>(context).getTraderList());
-    Map filled = {};
     for (var i = list.length - 1; i >= 0; i--) {
       // print(list[i]);
       if (list[i]['status'] == '进行中' ||
           list[i]['status'] == '挂单中' ||
-          list[i]['status'] == '打包中') {
+          list[i]['status'] == '打包中' ||
+          list[i]['status'] == '撤销中') {
         // 检查订单状态，订单可能因为余额被合约移除，
         // 这里要对进行中和打包中的订单再次确认一遍状态
         print("查询第${i}个订单，状态是${list[i]['status']}");
@@ -327,7 +319,6 @@ class TransferListState extends State<transferList> {
     // });
     // this.updateList();
     this.tabChange(this.currentTab);
-    eventBus.fire(TransferDoneEvent('订单刷新完毕'));
   }
 
   // 更新订单，更新的值包括订单匹配的数量和订单的状态

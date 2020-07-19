@@ -34,18 +34,22 @@ class Global {
   static String _toAddress = '';
   static String get toAddress => _toAddress;
 
-  // 代理合约，用来给token授权
-  // static final proxy = "0x141A60c20026d88385a5339191C3950285e41072";
-  static const proxy = "0x96949E3CC22A990F143c359DdaD0e35F22d56Fe9";
+// relayder: 0xaf4a581d88dA97a202580aBBfB53061869fE6755
+// proxy: 0x1De5593BC2eb8bE7756fE0De610af416CBE149f4
+// hydro: 0x99f0e3B2E8005c9B654E8B477a6fE367e01F9065
+// you-match: 0x199794aBADE0c68d4791961455C5A0FA7bBc74BD
 
-  // youWallet钱包合约
-  static const tempMatchAddress = "0x496517f66AC0a1Df739B7670032ebFCB31864A68";
+  // 代理合约，用来给token授权
+  static const proxy = "0x1De5593BC2eb8bE7756fE0De610af416CBE149f4";
+
+  // youWallet钱包合约 you-match:
+  static const tempMatchAddress = "0x199794aBADE0c68d4791961455C5A0FA7bBc74BD";
 
   // 收取交易费的账户relayer ，测试阶段用SHT的合约账户代替
   static const taxAddress = "0xaf4a581d88dA97a202580aBBfB53061869fE6755";
 
   // 查询订单的匹配了多个额度在这个合约上查询
-  static const hydroAddress = "0x1CfbECBC4dC2AFa63F02e326EcEf03AA3a89ba46";
+  static const hydroAddress = "0x99f0e3B2E8005c9B654E8B477a6fE367e01F9065";
 
   // 热门token
   static const hotToken = [
@@ -109,6 +113,7 @@ class Global {
 
   // 订单状态索引
   static const orderStatusMap = [
+    {'type': 'ORDER_NONE', 'status': '打包中', 'remark': '订单还在写链中。'},
     {'type': 'ORDER_OK', 'status': '订单完成', 'remark': '订单完成,完全匹配以后挂单。'},
     {'type': 'ORDER_PENDING', 'status': '挂单中', 'remark': '挂单中,订单未完全匹配。'},
     {
@@ -169,7 +174,8 @@ class Global {
     'getTokenBalance()': '0x70a08231',
     'getConfigData()': '0xfeee047e',
     'getConfigSignature()': '0x0b973ca2',
-    'orderFlags(bytes32 od_hash)': '0x76356e86'
+    'orderFlags(bytes32 od_hash)': '0x76356e86',
+    'configurations(string key)': '0x1214dd58',
   };
 
   static const myKey = "v3/37caa7b8b2c34ced8819de2b3853c8a2";

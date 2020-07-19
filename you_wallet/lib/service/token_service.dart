@@ -1,4 +1,3 @@
-
 import 'dart:math';
 
 import 'package:bip39/bip39.dart' as bip39;
@@ -37,14 +36,13 @@ class TokenService {
     return randomMnemonic;
   }
 
-
 //  static String getPrivateKey(String randomMnemonic) {
 //    String hexSeed = bip39.mnemonicToSeedHex(randomMnemonic);
 //    KeyData master = ED25519_HD_KEY.getMasterKeyFromSeed(hexSeed);
 //    return HEX.encode(master.key);
 //  }
 
-  static  maskAddress(String address) {
+  static maskAddress(String address) {
     if (address.length > 0) {
       return "${address.substring(0, 8)}...${address.substring(address.length - 12, address.length)}";
     } else {
@@ -56,8 +54,7 @@ class TokenService {
     return bip39.entropyToMnemonic(entropyMnemonic);
   }
 
-
-   // 助记词转私钥Private Key
+  // 助记词转私钥Private Key
   static String getPrivateKey(String mnemonic) {
     final seed = bip39.mnemonicToSeed(mnemonic);
     final root = bip32.BIP32.fromSeed(seed);
@@ -71,16 +68,16 @@ class TokenService {
     return address;
   }
 
-
   /// 获取指定钱包的余额，这里获取的是ETH的余额
   static Future<String> getBalance(String address) async {
-      String rpcUrl = Global.getBaseUrl();
-      print('rpcurl => $rpcUrl');
-      final client = Web3Client(rpcUrl, Client());
-      EtherAmount balance = await client.getBalance(EthereumAddress.fromHex(address));
-      double b = balance.getValueInUnit(EtherUnit.ether);
-      print(b);
-      return  b.toStringAsFixed(4);
+    String rpcUrl = Global.getBaseUrl();
+    print('rpcurl => $rpcUrl');
+    final client = Web3Client(rpcUrl, Client());
+    EtherAmount balance =
+        await client.getBalance(EthereumAddress.fromHex(address));
+    double b = balance.getValueInUnit(EtherUnit.ether);
+    print(b);
+    return b.toStringAsFixed(4);
   }
 
   /// 搜索指定token
@@ -91,8 +88,12 @@ class TokenService {
     String name = res.replaceFirst('0x', '');
     String nameString = '';
     List hexList = HEX.decode(name);
-    for(var i = 0; i < hexList.length; i++) {
-      if (hexList[i] != 32 && hexList[i] != 4 && hexList[i] != 3 && hexList[i] != 2 && hexList[i] != 0) {
+    for (var i = 0; i < hexList.length; i++) {
+      if (hexList[i] != 32 &&
+          hexList[i] != 4 &&
+          hexList[i] != 3 &&
+          hexList[i] != 2 &&
+          hexList[i] != 0) {
         print(hexList[i]);
         String str = String.fromCharCode(hexList[i]);
         nameString = nameString + str;
@@ -109,10 +110,12 @@ class TokenService {
   static Future<String> getTokenBalance(Map token) async {
     String myAddress = Global.getPrefs("currentWallet");
     Map params = {
-      "data": Global.funcHashes['getTokenBalance()'] + myAddress.replaceFirst('0x', '').padLeft(64, '0')
+      "data": Global.funcHashes['getTokenBalance()'] +
+          myAddress.replaceFirst('0x', '').padLeft(64, '0')
     };
     var response = await Http().post(params: params, to: token['address']);
-    double balance = BigInt.parse(response['result'])/BigInt.from(pow(10, token['decimals']));
+    double balance = BigInt.parse(response['result']) /
+        BigInt.from(pow(10, token['decimals']));
     if (balance == 0.0) {
       return '0';
     } else {
@@ -122,14 +125,11 @@ class TokenService {
 
   /// 获取代币的小数位数
   static Future<int> getDecimals(String address) async {
-    Map params = {
-      "data": Global.funcHashes['getDecimals()']
-    };
+    Map params = {"data": Global.funcHashes['getDecimals()']};
     var response = await Http().post(params: params, to: address);
     print(response);
-    return int.parse(response['result'].replaceFirst("0x",''), radix: 16);
+    return int.parse(response['result'].replaceFirst("0x", ''), radix: 16);
   }
-
 
   /* 获取授权代理额度 - R
    * owner: 授权人账户地址，就是用户钱包地址
@@ -138,10 +138,29 @@ class TokenService {
    * 返回值
    * uint256 value: 代理额度
    * */
-  static Future<String> allowance(context,String token) async{
-    String myAddress = Provider.of<walletModel.Wallet>(context).currentWalletObject['address'];
-    String postData = Global.funcHashes['allowance'] + myAddress.replaceFirst('0x', '').padLeft(64, '0') + Global.proxy.replaceFirst('0x', '').padLeft(64, '0');
+  static Future<String> allowance(context, String token) async {
+    String myAddress =
+        Provider.of<walletModel.Wallet>(context).currentWalletObject['address'];
+    String postData = Global.funcHashes['allowance'] +
+        myAddress.replaceFirst('0x', '').padLeft(64, '0') +
+        Global.proxy.replaceFirst('0x', '').padLeft(64, '0');
     var response = await Http().post(params: {"data": postData}, to: token);
     return BigInt.parse(response['result']).toString();
+  }
+
+  /* 获取配置信息 - R
+  * key: 配置key
+  *
+  * 返回值:
+  * string value
+  * function configurations(string key);
+  */
+  static Future<void> configurations(String key) async {
+    // String postData = Global.funcHashes['configurations(string key)'] + key;
+    String postData =
+        '0x1214dd580000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000b71756f7465746f6b656e73000000000000000000000000000000000000000000';
+    var response = await Http().post(params: {"data": postData});
+    print(response);
+    //return BigInt.parse(response['result']).toString();
   }
 }

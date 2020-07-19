@@ -99,7 +99,7 @@ class Page extends State {
 
     //监听订单操作结果
     eventBus.on<TransferDoneEvent>().listen((event) async {
-      // this.showSnackBar(event.res);
+      this.showSnackBar(event.res);
       // Navigator.pop(context);
     });
 
@@ -682,24 +682,14 @@ class Page extends State {
 
   // 下拉刷新底部交易列表
   Future<void> _refresh() async {
-    if ('mainnet' == Provider.of<Network>(context).network) {
-      this.showSnackBar('当前网络不支持刷新，请切换测试网');
-      return;
-    }
+    // if ('mainnet' == Provider.of<Network>(context).network) {
+    //   this.showSnackBar('当前网络不支持刷新，请切换测试网');
+    //   return;
+    // }
 
-    // eventBus.fire(UpdateTeadeDeepEvent());
-    // eventBus.fire(CustomTabChangeEvent('当前兑换'));
-    // eventBus.fire(UpdateOrderListEvent());
-    this.showSnackBar('后台刷新中...');
-    // showDialog<Null>(
-    //     context: context, //BuildContext对象
-    //     barrierDismissible: false,
-    //     builder: (BuildContext context) {
-    //       return new LoadingDialog(
-    //         //调用对话框
-    //         text: '刷新中...',
-    //       );
-    //     });
+    // this.showSnackBar('后台刷新中...');
+
+    TokenService.configurations('quotetokens');
   }
 
   // 更新token的余额，在交易结束后
@@ -716,7 +706,7 @@ class Page extends State {
   // 创建循环
   // 这里要不断的更新兑换列表的交易状态
   _startTimer() {
-    _timer = new Timer.periodic(new Duration(seconds: 5), (timer) {
+    _timer = new Timer.periodic(new Duration(seconds: 10), (timer) {
       transferListKey.currentState.updateOrderFilled();
       eventBus.fire(UpdateTeadeDeepEvent());
     });

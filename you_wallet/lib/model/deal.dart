@@ -29,9 +29,7 @@ class Deal extends ChangeNotifier {
   /// 更新订单匹配的交易额到数据库
   Future<int> updateFilled(Map item, String filled) async {
     var sql = SqlUtil.setTable("trade");
-    print('update sql: ${filled}');
     int i = await sql.update({'filled': filled}, 'txnHash', item['txnHash']);
-    print(i);
     return i;
   }
 
