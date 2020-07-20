@@ -151,12 +151,25 @@ class TokenService {
   * string value
   * function configurations(string key);
   */
-  static Future<void> configurations(String key) async {
+  static Future<List> configurations(String key) async {
     // String postData = Global.funcHashes['configurations(string key)'] + key;
+    String offset =
+        '20'.padLeft(64, '0'); // 偏移量固定是两个32位的字节，第一个32位是偏移量，第二个32位是长度，
+    String len = key.length.toRadixString(16).padLeft(64, '0');
+    String value = bytesToHex(utf8.encode(key)).padRight(64, '0');
     String postData =
-        '0x1214dd580000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000b71756f7465746f6b656e73000000000000000000000000000000000000000000';
+        Global.funcHashes['configurations(string key)'] + offset + len + value;
     var response = await Http().post(params: {"data": postData});
-    // print(response);
-    //return BigInt.parse(response['result']).toString();
+    String res = response['result'].replaceFirst('0x', '');
+    String str = '';
+    List hexList = HEX.decode(res);
+    print(hexList);
+    for (var i = 0; i < hexList.length; i++) {
+      if (hexList[i] != 0 && hexList[i] != 32 && hexList[i] != 171) {
+        String s = String.fromCharCode(hexList[i]);
+        str = str + s;
+      }
+    }
+    return str.split(":");
   }
 }

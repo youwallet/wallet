@@ -323,6 +323,7 @@ class TransferListState extends State<transferList> {
   }
 
   // 更新订单，更新的值包括订单匹配的数量和订单的状态
+  // 如果一个订单已经是撤销中的状态
   Future<void> updateOrder(Map order) async {
     double amount = await Trade.getFilled(order['odHash']);
     await Provider.of<Deal>(context)

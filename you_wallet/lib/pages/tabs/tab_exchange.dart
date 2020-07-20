@@ -707,8 +707,8 @@ class Page extends State {
   // 这里要不断的更新兑换列表的交易状态
   _startTimer() {
     _timer = new Timer.periodic(new Duration(seconds: 2), (timer) {
-      transferListKey.currentState.updateOrderFilled();
-      eventBus.fire(UpdateTeadeDeepEvent());
+      // transferListKey.currentState.updateOrderFilled();
+      // eventBus.fire(UpdateTeadeDeepEvent());
     });
   }
 
