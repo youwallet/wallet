@@ -67,7 +67,7 @@ class Page extends State {
   // 下单过程中，当前订单的进度
   String currentStatus = "挂单中";
 
-  // 当前页面显示的token余额
+  // 当前页面显示的token余额,是左边token的余额还是右边token的余额
   String balance = "";
 
   //申明一个定时器
@@ -76,10 +76,16 @@ class Page extends State {
   // 当前token兑换列表被选中的列表索引
   String currentTab = '当前兑换';
 
+  List rightTokenArr = []; // 右边显示的数组列表
+
   //数据初始化
   @override
   void initState() {
     super.initState();
+
+    // 对话页面在初始化的时候，要获取链上配置的quetoken
+    // 就是在兑换页面右侧等待选择的token
+    this.getRightTokens();
 
     // 监听页面切换，刷新交易的状态
     eventBus.on<TabChangeEvent>().listen((event) {
@@ -131,7 +137,7 @@ class Page extends State {
   void didChangeDependencies() {
     super.didChangeDependencies();
     // eventBus.fire(CustomTabChangeEvent('当前兑换'));
-    print('tab exchange didChangeDependencies');
+    // print('tab exchange didChangeDependencies');
   }
 
   @override
@@ -225,16 +231,19 @@ class Page extends State {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                new TokenSelectSheet(onCallBackEvent: (res) {
-                  setState(() {
-                    this.value = res;
-                    this.suffixText = res['name'];
-                  });
-                  Future.delayed(Duration(seconds: 1), () {
-                    eventBus.fire(UpdateTeadeDeepEvent());
-                    print('延时1s执行，因为立即执行收不到setState设置的值');
-                  });
-                }),
+                new TokenSelectSheet(
+                    selectArr: Provider.of<Token>(context).items.toList(),
+                    onCallBackEvent: (res) {
+                      setState(() {
+                        this.value = res;
+                        this.balance = res['balance'] + res['name'];
+                        this.suffixText = res['name'];
+                      });
+                      Future.delayed(Duration(seconds: 1), () {
+                        eventBus.fire(UpdateTeadeDeepEvent());
+                        print('延时1s执行，因为立即执行收不到setState设置的值');
+                      });
+                    }),
                 new Container(
                     child: new Row(
                   children: <Widget>[
@@ -315,17 +324,19 @@ class Page extends State {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                new TokenSelectSheet(onCallBackEvent: (res) {
-                  print('页面右侧token选择 = > ${res}');
-                  setState(() {
-                    rightToken = res;
-                    balance = res['balance'] + res['name'];
-                  });
-                  Future.delayed(Duration(seconds: 1), () {
-                    eventBus.fire(UpdateTeadeDeepEvent());
-                    print('延时1s执行，因为立即执行收不到setState设置的值');
-                  });
-                }),
+                new TokenSelectSheet(
+                    selectArr: this.rightTokenArr,
+                    onCallBackEvent: (res) {
+                      print('页面右侧token选择 = > ${res}');
+                      setState(() {
+                        rightToken = res;
+                        // balance = res['balance'] + res['name'];
+                      });
+                      Future.delayed(Duration(seconds: 1), () {
+                        eventBus.fire(UpdateTeadeDeepEvent());
+                        print('延时1s执行，因为立即执行收不到setState设置的值');
+                      });
+                    }),
                 buildRightWidget()
               ],
             ),
@@ -485,7 +496,7 @@ class Page extends State {
   }
 
   // 交易授权
-  // 进行交易授权, 每一种token，只需要授权一次，目前没有接口确定token是否授权
+  // ���行交易授权, 每一种token，只需要授权一次，目前没有接口确定token是否授权
   // 买入时对右边的token授权，
   // 卖出时对左边的token授权
   // 一句话说明：哪个token要被转出去给��他人，就给哪个token授权
@@ -688,8 +699,20 @@ class Page extends State {
     // }
 
     // this.showSnackBar('后台刷新中...');
+    this.getRightTokens();
+  }
 
-    TokenService.configurations('quotetokens');
+  Future<void> getRightTokens() async {
+    List selects = [];
+    List arr = await TokenService.configurations('quotetokens');
+    for (var i = 0; i < arr.length; i++) {
+      String name = await TokenService.getTokenName(arr[i]);
+      print(arr[i] + '---' + name);
+      selects.add({'name': name, 'address': arr[i]});
+    }
+    setState(() {
+      this.rightTokenArr = selects;
+    });
   }
 
   // 更新token的余额，在交易结束后
@@ -704,7 +727,7 @@ class Page extends State {
   }
 
   // 创建循环
-  // 这里要不断的更新兑换列表的交易状态
+  // 这里要不��的更新兑换列表的交易状态
   _startTimer() {
     _timer = new Timer.periodic(new Duration(seconds: 2), (timer) {
       // transferListKey.currentState.updateOrderFilled();

@@ -163,7 +163,6 @@ class TokenService {
     String res = response['result'].replaceFirst('0x', '');
     String str = '';
     List hexList = HEX.decode(res);
-    print(hexList);
     for (var i = 0; i < hexList.length; i++) {
       if (hexList[i] != 0 && hexList[i] != 32 && hexList[i] != 171) {
         String s = String.fromCharCode(hexList[i]);
