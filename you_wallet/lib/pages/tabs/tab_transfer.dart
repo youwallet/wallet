@@ -93,13 +93,15 @@ class Page extends State<TabTransfer> {
                 new Container(
                   margin: const EdgeInsets.only(right: 40.0),
                   width: 100.0,
-                  child: new TokenSelectSheet(onCallBackEvent: (res) {
-                    print(res);
-                    setState(() {
-                      token = res;
-                      balance = res['balance'];
-                    });
-                  }),
+                  child: new TokenSelectSheet(
+                      selectArr: Provider.of<Token>(context).items.toList(),
+                      onCallBackEvent: (res) {
+                        print(res);
+                        setState(() {
+                          token = res;
+                          balance = res['balance'];
+                        });
+                      }),
                 ),
                 new Expanded(
                     child: new Container(
@@ -471,7 +473,7 @@ class Page extends State<TabTransfer> {
         builder: (BuildContext context) {
           return InputDialog(
               title: '编辑联系人备注',
-              hintText: '请输入',
+              hintText: '���输入',
               controller: this._addressRemarkInput,
               onCancelChooseEvent: () {
                 Navigator.pop(context);
