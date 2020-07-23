@@ -241,7 +241,7 @@ class Page extends State {
                       });
                       Future.delayed(Duration(seconds: 1), () {
                         eventBus.fire(UpdateTeadeDeepEvent());
-                        print('延时1s执行，因为立即执行收不到setState设置的值');
+                        print('延时1s执行���因为立即执行收不到setState设置的值');
                       });
                     }),
                 new Container(
@@ -484,12 +484,12 @@ class Page extends State {
     // 判断一下有没有还在打包中的订单
     // 如果有订单在打包中，发起交易会失败
     List list = await Provider.of<Deal>(context).getTraderList();
-    bool packing = list.any((element) => (element['status'] == "打包中"));
-    if (packing) {
-      this.showSnackBar('当前有订单在打包中，请先下拉刷新');
-      Navigator.of(context).pop();
-      return;
-    }
+    // bool packing = list.any((element) => (element['status'] == "打包中"));
+    // if (packing) {
+    //   this.showSnackBar('当前有订单在打包中，请先下拉刷新');
+    //   Navigator.of(context).pop();
+    //   return;
+    // }
 
     // 先检查授权
     this.checkApprove();
@@ -643,13 +643,14 @@ class Page extends State {
       // takeOrder要返回hash
       String txnHash = await trade.takeOrder();
       print('@@@@@下单成功，拿到了hash，以太坊还在写链@@@@@@');
-      print(txnHash);
       Navigator.pop(context);
       // transferListKey.currentState.tabChange('当前兑换');
       Navigator.pushNamed(context, "success",
           arguments: {'msg': '下单成功', 'txnHash': txnHash});
-      // 拿到订单Hash，通知历史列表组件更新
-      // eventBus.fire(OrderSuccessEvent());
+
+      // 每次下单成功，主动触发一次兑换列表更新
+      // 如果不触发，会感觉有延迟
+      transferListKey.currentState.updateOrderFilled();
     } catch (e) {
       print('+++++++++++++++');
       print(e);
@@ -729,9 +730,9 @@ class Page extends State {
   // 创建循环
   // 这里要不��的更新兑换列表的交易状态
   _startTimer() {
-    _timer = new Timer.periodic(new Duration(seconds: 2), (timer) {
-      // transferListKey.currentState.updateOrderFilled();
-      // eventBus.fire(UpdateTeadeDeepEvent());
+    _timer = new Timer.periodic(new Duration(seconds: 10), (timer) {
+      transferListKey.currentState.updateOrderFilled();
+      eventBus.fire(UpdateTeadeDeepEvent());
     });
   }
 

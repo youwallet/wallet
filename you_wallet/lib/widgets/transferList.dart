@@ -311,7 +311,7 @@ class TransferListState extends State<transferList> {
         //     double.parse(list[i]['filled'])) {
         //   await this.updateOrder(list[i]);
         // } else {}
-        print("查询第${i}个订单，状态是${list[i]['status']}, 不发起请求");
+        // print("查询第${i}个订单，状态是${list[i]['status']}, 不发起请求");
         //print('该订单状态为${this.arr[i]['status']},已匹配完毕');
       }
     }
