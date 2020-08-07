@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:groovin_material_icons/groovin_material_icons.dart';
 import 'package:youwallet/widgets/customButton.dart';
@@ -11,49 +10,31 @@ class PasswordPage extends StatefulWidget {
 class _LoginPageState extends State<PasswordPage> {
   final _formKey = GlobalKey<FormState>();
   String _email, _password;
-  bool _isObscure = true;
-  Color _eyeColor;
-  List _loginMethod = [
-    {
-      "title": "facebook",
-      "icon": GroovinMaterialIcons.facebook,
-    },
-    {
-      "title": "google",
-      "icon": GroovinMaterialIcons.google,
-    },
-    {
-      "title": "twitter",
-      "icon": GroovinMaterialIcons.twitter,
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: new Builder(builder: (BuildContext context) {
-            return Form(
-                key: _formKey,
-                child: ListView(
-                  padding: EdgeInsets.symmetric(horizontal: 22.0),
-                  children: <Widget>[
-                    SizedBox(height: kToolbarHeight,),
-                    buildTitle(),
-                    buildTitleLine(),
-                    SizedBox(height: 70.0),
-                    buildEmailTextField(),
-                    SizedBox(height: 30.0),
-                    buildPasswordTextField(context),
-                    buildTips('密码长度为8-20位的字母或者数字'),
-                    SizedBox(height: 60.0),
+    return Scaffold(body: new Builder(builder: (BuildContext context) {
+      return Form(
+          key: _formKey,
+          child: ListView(
+            padding: EdgeInsets.symmetric(horizontal: 22.0),
+            children: <Widget>[
+              SizedBox(
+                height: kToolbarHeight,
+              ),
+              buildTitle(),
+              buildTitleLine(),
+              SizedBox(height: 70.0),
+              buildEmailTextField(),
+              SizedBox(height: 30.0),
+              buildPasswordTextField(context),
+              buildTips('密码长度为8-20位的字母或者数字'),
+              SizedBox(height: 60.0),
 //                    buildLoginButton(context),
-                    buildButton(context)
-                  ],
-
-                )
-            );
-          })
-    );
+              buildButton(context)
+            ],
+          ));
+    }));
   }
 
   // 获取用户两次输入的密码，两次密码必须相同
@@ -87,32 +68,32 @@ class _LoginPageState extends State<PasswordPage> {
   }
 
   Widget buildButton(BuildContext context) {
-    return new CustomButton(
-        onSuccessChooseEvent:(res){
-          _formKey.currentState.save();
-          if (_email == _password && !_email.isEmpty && _email.length >= 8 && _email.length <=20) {
-            Navigator.of(context).pop(_email);
+    return new CustomButton(onSuccessChooseEvent: (res) {
+      _formKey.currentState.save();
+      if (_email == _password &&
+          !_email.isEmpty &&
+          _email.length >= 8 &&
+          _email.length <= 20) {
+        Navigator.of(context).pop(_email);
+      } else {
+        if (_email.isEmpty || _password.isEmpty) {
+          final snackBar = new SnackBar(content: new Text('不能为空'));
+          Scaffold.of(context).showSnackBar(snackBar);
+        } else {
+          String val = '';
+          if (_email.length < 8) {
+            val = '长度必须大于等于8位';
+          } else if (_email.length > 20) {
+            val = '长度必须小于等于20位';
           } else {
-            if (_email.isEmpty || _password.isEmpty) {
-              final snackBar = new SnackBar(content: new Text('不能为空'));
-              Scaffold.of(context).showSnackBar(snackBar);
-            } else {
-              String val = '';
-              if (_email.length < 8) {
-                val = '长度必须大于等于8位';
-              } else if (_email.length > 20) {
-                val = '长度必须小于等于20位';
-              } else {
-                val = '两次输入密码不同';
-              }
-              final snackBar = new SnackBar(content: new Text(val));
-              Scaffold.of(context).showSnackBar(snackBar);
-            }
+            val = '两次输入密码不同';
           }
+          final snackBar = new SnackBar(content: new Text(val));
+          Scaffold.of(context).showSnackBar(snackBar);
         }
-    );
+      }
+    });
   }
-
 
   TextFormField buildPasswordTextField(BuildContext context) {
     return TextFormField(
@@ -123,8 +104,7 @@ class _LoginPageState extends State<PasswordPage> {
         fillColor: Colors.black12,
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6.0),
-            borderSide: BorderSide.none
-        ),
+            borderSide: BorderSide.none),
       ),
     );
   }
@@ -137,8 +117,7 @@ class _LoginPageState extends State<PasswordPage> {
         fillColor: Colors.black12,
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6.0),
-            borderSide: BorderSide.none
-        ),
+            borderSide: BorderSide.none),
       ),
       onSaved: (String value) => _email = value,
     );
@@ -170,17 +149,15 @@ class _LoginPageState extends State<PasswordPage> {
 
   Widget buildTips(String val) {
     return Container(
-      padding: EdgeInsets.only(top: 16.0),
-      child: Row(
-        children: <Widget>[
-          Icon(Icons.help,size: 16.0, color: Colors.black26),
-          Text(
-            val,
-            style: TextStyle(fontSize: 12.0),
-          ),
-        ],
-      )
-
-    );
+        padding: EdgeInsets.only(top: 16.0),
+        child: Row(
+          children: <Widget>[
+            Icon(Icons.help, size: 16.0, color: Colors.black26),
+            Text(
+              val,
+              style: TextStyle(fontSize: 12.0),
+            ),
+          ],
+        ));
   }
 }

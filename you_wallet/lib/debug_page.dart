@@ -6,25 +6,20 @@ import 'package:http/http.dart' as http;
 //import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:youwallet/db/provider.dart';
-import 'package:youwallet/pages/keyboard/keyboard_main.dart';
-import 'package:youwallet/service/token_service.dart';
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
-import 'package:sacco/sacco.dart';
+
 import 'package:bitcoin_flutter/bitcoin_flutter.dart' as bf;
-import "package:pointycastle/digests/sha256.dart";
+
 import 'dart:convert';
 import 'package:web3dart/web3dart.dart';
 import 'package:web3dart/crypto.dart';
 import 'package:crypto/crypto.dart';
 import 'package:bip32/bip32.dart' as bip32;
-import 'package:hex/hex.dart';
-import 'package:bitcoin_flutter/src/payments/p2pkh.dart';
+
 import 'package:convert/convert.dart';
 import 'package:decimal/decimal.dart';
 import 'dart:math';
-import 'package:youwallet/util/number_format.dart';
 
 class TokenModel {
   /// 银行
@@ -48,9 +43,7 @@ class DebugPage extends StatefulWidget {
 class _DebugPageState extends State<DebugPage> {
   /// 本地认证框架
   final LocalAuthentication auth = LocalAuthentication();
-  File _imageFile;
-  bool _canCheckBiometrics; // 是否有可用的生物识别技术
-  String _authorized = '验证失败';
+
   // 保存图片到相册
   void _onImageSaveButtonPressed() async {
     print("_onImageSaveButtonPressed");
@@ -80,9 +73,6 @@ class _DebugPageState extends State<DebugPage> {
       print(e);
     }
     if (!mounted) return;
-    setState(() {
-      _canCheckBiometrics = canCheckBiometrics;
-    });
   }
 
   // 生物识别
@@ -224,7 +214,7 @@ class _DebugPageState extends State<DebugPage> {
 //              onPressed: () async {
 //                print('开始输入支付');
 //                Navigator.pushNamed(context, "keyboard_main").then((data){
-//                  //接受返回的参数
+//                  //接受返��的参数
 //                  print(data.toString());
 //                });
 //              },

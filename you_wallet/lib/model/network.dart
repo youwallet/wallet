@@ -11,28 +11,25 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// (不是必须得把 ChangeNotifier 和 provider 结合起来用，不过它确实是一个特别简单的类)。
 
 class Network extends ChangeNotifier {
-
   // 构造函数，获取本地保存的token'
-  Network()  {
+  Network() {
     this._getNetwork();
   }
-
 
   String _network = "";
   String _rpcUrl = "";
 
   //
-  String  get network => _network;
+  String get network => _network;
 
   // 获取jsonrpc请求所用的url
-  String  get rpcUrl => _rpcUrl;
+  String get rpcUrl => _rpcUrl;
 
   Future<void> _getNetwork() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String network = await prefs.getString("network")??'ropsten';
+    String network = prefs.getString("network") ?? 'ropsten';
     await this.changeNetwork(network);
   }
-
 
   Future<void> changeNetwork(String network) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -41,5 +38,4 @@ class Network extends ChangeNotifier {
     this._rpcUrl = 'https://' + network + '.infura.io/';
     notifyListeners();
   }
-
 }
