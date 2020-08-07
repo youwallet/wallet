@@ -10,10 +10,9 @@ import 'package:youwallet/global.dart';
 import 'package:youwallet/bus.dart';
 
 class AddToken extends StatefulWidget {
-
   final arguments;
 
-  AddToken({Key key ,this.arguments}) : super(key: key);
+  AddToken({Key key, this.arguments}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -22,13 +21,11 @@ class AddToken extends StatefulWidget {
 }
 
 class Page extends State<AddToken> {
-
   List tokenArr = new List();
-  Map  token = {};
+  Map token = {};
   bool showHotToken = true;
 
   final globalKey = GlobalKey<ScaffoldState>();
-
 
   //数据初始化
   @override
@@ -41,7 +38,7 @@ class Page extends State<AddToken> {
     // 这里一定要用Future.delayed把异步逻辑包起来，
     // 因为页面还没有build，没有context，执行执行会发生异常
     if (!widget.arguments.isEmpty) {
-      Future.delayed(Duration.zero, (){
+      Future.delayed(Duration.zero, () {
         this.startSearch(widget.arguments['address']);
       });
     }
@@ -52,7 +49,6 @@ class Page extends State<AddToken> {
     super.didChangeDependencies();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return layout(context);
@@ -60,38 +56,29 @@ class Page extends State<AddToken> {
 
   Widget layout(BuildContext context) {
     return new Scaffold(
-      key: globalKey,
-      appBar: buildAppBar(context),
-      body: Builder (
-        builder:  (BuildContext context) {
+        key: globalKey,
+        appBar: buildAppBar(context),
+        body: Builder(builder: (BuildContext context) {
           return new Container(
-            padding: const EdgeInsets.all(16.0),
-            child: buildPage(this.showHotToken)
-          );
-        }
-      )
-    );
+              padding: const EdgeInsets.all(16.0),
+              child: buildPage(this.showHotToken));
+        }));
   }
 
   // 根据用户输入，决定是否显示热门token
   Widget buildPage(bool showHotToken) {
     if (showHotToken) {
-      return HotToken(
-          onHotTokenCallBack: (res) {
-            this.startSearch(res['address']);
-          }
-      );
+      return HotToken(onHotTokenCallBack: (res) {
+        this.startSearch(res['address']);
+      });
     } else {
       return ListView(
-        children: <Widget>[
-          buildItem(this.token)
-        ],
+        children: <Widget>[buildItem(this.token)],
       );
-
     }
   }
 
-  Widget buildItem(Map item){
+  Widget buildItem(Map item) {
     if (item.containsKey('name')) {
       return new Card(
         color: Colors.white, //背景色
@@ -101,8 +88,7 @@ class Page extends State<AddToken> {
               children: <Widget>[
                 new Container(
                     margin: const EdgeInsets.only(right: 16.0),
-                    child: TokenLogo(address: item['address'])
-                ),
+                    child: TokenLogo(address: item['address'])),
                 new Expanded(
                   child: new Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,26 +101,25 @@ class Page extends State<AddToken> {
                                 fontSize: 32.0, color: Colors.black),
                           ),
                           new IconButton(
-                            icon: Icon(IconData(0xe600,
-                                fontFamily: 'iconfont')),
+                            icon:
+                                Icon(IconData(0xe600, fontFamily: 'iconfont')),
                             onPressed: () {
                               print(item);
-                              Navigator.pushNamed(
-                                  context, "token_info", arguments: {
-                                'address': item['address'],
-                              });
+                              Navigator.pushNamed(context, "token_info",
+                                  arguments: {
+                                    'address': item['address'],
+                                  });
                             },
                           ),
                         ],
                       ),
                       GestureDetector(
-                        child: new Text(
-                            TokenService.maskAddress(item['address'])),
+                        child:
+                            new Text(TokenService.maskAddress(item['address'])),
                         onTap: () async {
                           print(item['address']);
                         },
                       )
-
                     ],
                   ),
                 ),
@@ -146,16 +131,14 @@ class Page extends State<AddToken> {
                           item['balance'].toString(),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
-                          style: new TextStyle(fontSize: 16.0,
+                          style: new TextStyle(
+                              fontSize: 16.0,
                               color: Color.fromARGB(100, 6, 147, 193)),
                         ),
                       ],
-                    )
-
-                )
+                    ))
               ],
-            )
-        ),
+            )),
       );
     } else {
       print('start null');
@@ -165,7 +148,7 @@ class Page extends State<AddToken> {
 
   // 构建顶部tabBar
   Widget buildAppBar(BuildContext context) {
-    return  new AppBar(
+    return new AppBar(
       title: new Container(
         padding: const EdgeInsets.only(left: 8.0),
         decoration: new BoxDecoration(
@@ -179,9 +162,7 @@ class Page extends State<AddToken> {
             hintText: "输入合约地址",
             fillColor: Colors.black12,
             contentPadding: EdgeInsets.all(2),
-            border: OutlineInputBorder(
-                borderSide: BorderSide.none
-            ),
+            border: OutlineInputBorder(borderSide: BorderSide.none),
           ),
           onSubmitted: (text) async {
             //内容提交(按回车)的回调
@@ -194,7 +175,6 @@ class Page extends State<AddToken> {
   }
 
   void startSearch(String text) async {
-    print('startSearch: $text');
     if (!text.startsWith('0x')) {
       this.showSnackbar('合约地址必须0x开头');
       return;
@@ -208,17 +188,21 @@ class Page extends State<AddToken> {
         context: context, //BuildContext对象
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return new LoadingDialog( //调用对话框
+          return new LoadingDialog(
+            //调用对话框
             text: '搜索中...',
           );
         });
     // 获取token小数点、名字、余额这三个异步操作可以做成一个链式调用
     Future(() async {
-      int decimals = await  TokenService.getDecimals(text);
+      int decimals = await TokenService.getDecimals(text);
       print('decimals id $decimals');
       return Future.value(decimals);
-    }).then((res){
-      Future.wait([TokenService.getTokenName(text),TokenService.getTokenBalance({'address': text, 'decimals': res})]).then((list) {
+    }).then((res) {
+      Future.wait([
+        TokenService.getTokenName(text),
+        TokenService.getTokenBalance({'address': text, 'decimals': res})
+      ]).then((list) {
         print(list);
         Map token = {};
         token['address'] = text;
@@ -227,24 +211,24 @@ class Page extends State<AddToken> {
         token['balance'] = list[1];
         token['decimals'] = res;
         token['rmb'] = '';
-        token['network'] =  Global.getPrefs("network");
+        token['network'] = Global.getPrefs("network");
         setState(() {
           this.token = token;
           this.showHotToken = false;
         });
         saveToken(token);
-      }).catchError((e){
+      }).catchError((e) {
         print('catchError');
         print(e);
         this.showSnackbar('没有搜索到token');
       }).whenComplete(() {
         print("名字和余额查询完毕");
       });
-    }).catchError((onError){
+    }).catchError((onError) {
       print('catchError');
       print(onError);
       this.showSnackbar('当前网络没有搜索到该token');
-    }).whenComplete((){
+    }).whenComplete(() {
       print("全部完成");
       Navigator.pop(context);
     });
@@ -264,36 +248,30 @@ class Page extends State<AddToken> {
             }
             List arr = code.split(':');
             if (arr[1] == 'token') {
-              Navigator.pushNamed(context, "add_token",arguments: {
-                'address': arr[0]
-              });
+              Navigator.pushNamed(context, "add_token",
+                  arguments: {'address': arr[0]});
             } else if (arr[1] == 'transfer') {
               Global.setToAddress(arr[0]);
               eventBus.fire(TabChangeEvent(3));
             } else {
               // print(code);
               // 如果模式无法匹配，就跳转扫码结果页面，显示扫码内容
-              Navigator.pushNamed(context, "scan",arguments: {
-                'res': code,
-                'allowCopy': true
-              });
+              Navigator.pushNamed(context, "scan",
+                  arguments: {'res': code, 'allowCopy': true});
             }
           },
         ),
       )
     ];
   }
+
   void showSnackbar(String text) {
     final snackBar = SnackBar(content: Text(text));
     globalKey.currentState.showSnackBar(snackBar);
   }
 
-
-
-
   // SHT智能合约地址,测试用
   // 0x3d9c6c5a7b2b2744870166eac237bd6e366fa3ef
-
 
   // 将搜索到的token填充到页面中
   buildTokenList(arr) {
@@ -310,5 +288,3 @@ class Page extends State<AddToken> {
     }
   }
 }
-
-

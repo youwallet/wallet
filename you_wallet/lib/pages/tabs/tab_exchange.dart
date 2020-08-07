@@ -240,7 +240,7 @@ class Page extends State {
                       });
                       Future.delayed(Duration(seconds: 1), () {
                         eventBus.fire(UpdateTeadeDeepEvent());
-                        print('延时1s执行���因为立即执行收不到setState设置的值');
+                        print('延时1s执行���因为立即执行收不到setState设��的值');
                       });
                     }),
                 new Container(
@@ -641,15 +641,16 @@ class Page extends State {
       // 但是拿到订单hash，交易其实还是pading状态，余额已经减少了吗
       // takeOrder要返回hash
       String txnHash = await trade.takeOrder();
+
+      // 每次下单成功，主动更新一次列表，
+      // 并不需要刷新token匹配的额度，只是希望及时显示刚刚下的订单
+      transferListKey.currentState.tabChange(this.currentTab);
+
       print('@@@@@下单成功，拿到了hash，以太坊还在写链@@@@@@');
       Navigator.pop(context);
       // transferListKey.currentState.tabChange('当前兑换');
       Navigator.pushNamed(context, "success",
           arguments: {'msg': '下单成功', 'txnHash': txnHash});
-
-      // 每次下单成功，主动触发一次兑换列表更新
-      // 如果不触发，会感觉有延迟
-      transferListKey.currentState.updateOrderFilled();
     } catch (e) {
       print('+++++++++++++++');
       print(e);
