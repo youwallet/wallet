@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:youwallet/model/token.dart';
-import 'package:youwallet/model/wallet.dart' as walletModel;
 import 'package:youwallet/widgets/bottomSheetDialog.dart';
+import 'package:youwallet/global.dart';
 
 // token下拉选择模块
 class TokenSelectSheet extends StatefulWidget {
@@ -29,7 +27,12 @@ class Page extends State<TokenSelectSheet> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        this.selectToken(context);
+        if (widget.selectArr.length == 0) {
+          print('当前选项数量为0，不弹出');
+          Global.showSnackBar(context, '请先前往首页添加token');
+        } else {
+          this.selectToken(context);
+        }
       },
       child: new Container(
         padding: const EdgeInsets.all(4.0),

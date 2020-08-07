@@ -17,7 +17,6 @@ import 'package:youwallet/widgets/customTab.dart';
 import 'package:youwallet/widgets/tradesDeep.dart';
 import 'package:decimal/decimal.dart';
 import 'package:youwallet/util/translations.dart';
-import 'package:youwallet/model/network.dart';
 import 'dart:async';
 
 class TabExchange extends StatefulWidget {
