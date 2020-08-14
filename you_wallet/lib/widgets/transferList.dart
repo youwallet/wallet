@@ -160,6 +160,9 @@ class TransferListState extends State<transferList> {
                     item['status'] == '失败'
                         ? Icon(Icons.error, size: 16.0, color: Colors.red)
                         : Text(''),
+                    item['status'] == '交易失败'
+                        ? Icon(Icons.error, size: 16.0, color: Colors.red)
+                        : Text(''),
                     item['status'] == '打包中'
                         ? new SpinKitFadingCircle(
                             color: Colors.deepOrange, size: 12.0)
@@ -325,14 +328,22 @@ class TransferListState extends State<transferList> {
   // 更新订单，更新的值包括订单匹配的数量和订单的状态
   // 如果一个订单已经是撤销中的状态
   Future<void> updateOrder(Map order) async {
+    print('updateOrder');
     double amount = await Trade.getFilled(order['odHash']);
-    await Provider.of<Deal>(context)
-        .updateFilled(order, amount.toStringAsFixed(4));
-    var res = await Trade.orderFlags(order['odHash']);
-    if (order['status'] == '撤销中' && res == '打包中') {
-      res = '撤销中';
+    var transactionReceipt = await Trade.getTransactionReceipt(order);
+    if (transactionReceipt['status'] == '0x0') {
+      await Provider.of<Deal>(context)
+          .updateOrderStatus(order['txnHash'], '交易失败');
+    } else {
+      await Provider.of<Deal>(context)
+          .updateFilled(order, amount.toStringAsFixed(4));
+      print(order);
+      var res = await Trade.orderFlags(order['odHash']);
+      if (order['status'] == '撤销中' && res == '打包中') {
+        res = '撤销中';
+      }
+      await Provider.of<Deal>(context).updateOrderStatus(order['txnHash'], res);
     }
-    await Provider.of<Deal>(context).updateOrderStatus(order['txnHash'], res);
   }
 
   /// 订单匹配状态查询完毕，整体更新一次列表

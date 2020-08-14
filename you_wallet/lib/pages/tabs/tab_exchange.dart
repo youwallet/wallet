@@ -645,8 +645,9 @@ class Page extends State {
       // 每次下单成功，主动更新一次列表，
       // 并不需要刷新token匹配的额度，只是希望及时显示刚刚下的订单
       transferListKey.currentState.tabChange(this.currentTab);
-
       print('@@@@@下单成功，拿到了hash，以太坊还在写链@@@@@@');
+      print(txnHash);
+
       Navigator.pop(context);
       // transferListKey.currentState.tabChange('当前兑换');
       Navigator.pushNamed(context, "success",
