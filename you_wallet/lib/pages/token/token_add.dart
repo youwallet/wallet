@@ -216,21 +216,23 @@ class Page extends State<AddToken> {
           this.token = token;
           this.showHotToken = false;
         });
+        Navigator.pop(context);
         saveToken(token);
       }).catchError((e) {
         print('catchError');
         print(e);
         this.showSnackbar('没有搜索到token');
+        Navigator.pop(context);
       }).whenComplete(() {
         print("名字和余额查询完毕");
       });
     }).catchError((onError) {
       print('catchError');
       print(onError);
+      Navigator.pop(context);
       this.showSnackbar('当前网络没有搜索到该token');
     }).whenComplete(() {
       print("全部完成");
-      Navigator.pop(context);
     });
   }
 
