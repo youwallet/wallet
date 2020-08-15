@@ -160,7 +160,9 @@ class TokenService {
     String postData =
         Global.funcHashes['configurations(string key)'] + offset + len + value;
     var response = await Http().post(params: {"data": postData});
-    String res = response['result'].replaceFirst('0x', '');
+    // 0-64为是偏移量
+    // 64-128是长度
+    String res = response['result'].replaceFirst('0x', '').substring(128);
     String str = '';
     List hexList = HEX.decode(res);
     for (var i = 0; i < hexList.length; i++) {
