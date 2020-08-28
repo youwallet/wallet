@@ -235,9 +235,9 @@ class Page extends State {
                     onCallBackEvent: (res) {
                       setState(() {
                         this.value = res;
-                        this.balance = res['balance'] + res['name'];
                         this.suffixText = res['name'];
                       });
+                      this.getBalance(this._btnText);
                       Future.delayed(Duration(seconds: 1), () {
                         eventBus.fire(UpdateTeadeDeepEvent());
                         print('延时1s执行���因为立即执行收不到setState设��的值');
@@ -326,11 +326,11 @@ class Page extends State {
                 new TokenSelectSheet(
                     selectArr: this.rightTokenArr,
                     onCallBackEvent: (res) {
-                      print('页面右侧token选择 = > ${res}');
                       setState(() {
                         rightToken = res;
                         // balance = res['balance'] + res['name'];
                       });
+                      this.getBalance(this._btnText);
                       Future.delayed(Duration(seconds: 1), () {
                         eventBus.fire(UpdateTeadeDeepEvent());
                         print('延时1s执行，因为立即执行收不到setState设置的值');
@@ -355,7 +355,7 @@ class Page extends State {
           },
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(0))), // 设置圆角，默认有圆角
-          elevation: 0, // 按钮阴影高度
+          elevation: 0,
           color: Colors.white,
           child: Text(btnText + this.suffixText,
               softWrap: false, overflow: TextOverflow.fade));
@@ -379,10 +379,31 @@ class Page extends State {
   }
 
   // 更改下单模式
+  // 选择买单、卖单
   void changeOrderModel(String text) {
     print("当前下单模式=》${text}");
     setState(() {
       this._btnText = text;
+    });
+    this.getBalance(text);
+  }
+
+  // 获取账户余额
+  Future<void> getBalance(String mode) async {
+    print(mode);
+    // print(this.rightToken)
+    String balance = '';
+    Map token;
+    if (mode == '买入') {
+      token = this.rightToken;
+    } else {
+      token = this.value;
+    }
+    balance = await TokenService.getTokenBalance(
+        {'address': token['address'], 'decimals': 18});
+    print(balance);
+    setState(() {
+      this.balance = balance + token['name'];
     });
   }
 
@@ -732,8 +753,8 @@ class Page extends State {
   // 这里要不��的更新兑换列表的交易状态
   _startTimer() {
     _timer = new Timer.periodic(new Duration(seconds: 10), (timer) {
-      transferListKey.currentState.updateOrderFilled();
-      eventBus.fire(UpdateTeadeDeepEvent());
+      // transferListKey.currentState.updateOrderFilled();
+      // eventBus.fire(UpdateTeadeDeepEvent());
     });
   }
 
