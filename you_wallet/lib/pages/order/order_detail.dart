@@ -1,4 +1,3 @@
-
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -12,10 +11,9 @@ import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:decimal/decimal.dart';
 
 class OrderDetail extends StatefulWidget {
-
   final arguments;
 
-  OrderDetail({Key key ,this.arguments}) : super(key: key);
+  OrderDetail({Key key, this.arguments}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -24,7 +22,6 @@ class OrderDetail extends StatefulWidget {
 }
 
 class Page extends State<OrderDetail> {
-
   Page({this.arguments});
 
   Map arguments;
@@ -32,7 +29,7 @@ class Page extends State<OrderDetail> {
   Map detail;
 
   @override // override是重写父类中的函数
-  void initState()  {
+  void initState() {
     super.initState();
   }
 
@@ -41,25 +38,23 @@ class Page extends State<OrderDetail> {
     return layout(context);
   }
 
-
   Widget layout(BuildContext context) {
     print('build order detail');
     return new Scaffold(
-      key: globalKey,
-      appBar: buildAppBar(context),
-      body: FutureBuilder(
-        future: this.getDetail(),
-        builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
-          /*表示数据成功返回*/
-          if (snapshot.hasData) {
-            Map response = snapshot.data;
-            return buildPage(response);
-          } else {
-            return LoadingDialog();
-          }
-        },
-      )
-    );
+        key: globalKey,
+        appBar: buildAppBar(context),
+        body: FutureBuilder(
+          future: this.getDetail(),
+          builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
+            /*表示数据成功返回*/
+            if (snapshot.hasData) {
+              Map response = snapshot.data;
+              return buildPage(response);
+            } else {
+              return LoadingDialog();
+            }
+          },
+        ));
   }
 
   Widget buildAppBar(BuildContext context) {
@@ -75,61 +70,72 @@ class Page extends State<OrderDetail> {
   }
 
   Widget buildPage(Map item) {
-    item['blockNumber'] = item['blockNumber']==null ? '':BigInt.parse(item['blockNumber'].replaceFirst('0x', ''), radix: 16).toString();
+    item['blockNumber'] = item['blockNumber'] == null
+        ? ''
+        : BigInt.parse(item['blockNumber'].replaceFirst('0x', ''), radix: 16)
+            .toString();
     item['gas'] = BigInt.parse(item['gas'].replaceFirst('0x', ''), radix: 16);
-    item['gasPrice'] =Decimal.parse( (BigInt.parse(item['gasPrice'].replaceFirst('0x', ''), radix: 16)/BigInt.from(pow(10, 18))).toString()).toString();
-    item['gasUsed'] = BigInt.parse(item['gasUsed'].replaceFirst('0x', ''), radix: 16);
-    item['percentage'] = ((item['gasUsed']/item['gas'])*100).toStringAsFixed(2) + '%';
+    item['gasPrice'] = Decimal.parse(
+            (BigInt.parse(item['gasPrice'].replaceFirst('0x', ''), radix: 16) /
+                    BigInt.from(pow(10, 18)))
+                .toString())
+        .toString();
+    item['gasUsed'] =
+        BigInt.parse(item['gasUsed'].replaceFirst('0x', ''), radix: 16);
+    item['percentage'] =
+        ((item['gasUsed'] / item['gas']) * 100).toStringAsFixed(2) + '%';
     return new Container(
       color: Colors.white,
       alignment: Alignment.topCenter,
       child: new Container(
-        padding: const EdgeInsets.all(40.0 ),
+        padding: const EdgeInsets.all(40.0),
         child: new ListView(
           children: <Widget>[
             buildIcon(this.arguments['status']),
-            new Text(
-                this.arguments['status'],
+            new Text(this.arguments['status'],
                 textAlign: TextAlign.center,
                 style: new TextStyle(
-                    fontSize: 30.0,
-                    color: Colors.black,
-                    height: 3.0,
-
-                )
-            ),
+                  fontSize: 30.0,
+                  color: Colors.black,
+                  height: 3.0,
+                )),
             new Column(
               children: <Widget>[
                 new Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       buildName('交易时间'),
-                      buildValue(DateUtil.formatDateMs( int.parse( this.arguments['createTime']), format: DataFormats.full))
+                      buildValue(DateUtil.formatDateMs(
+                          int.parse(this.arguments['createTime']),
+                          format: DataFormats.full))
                     ]),
                 new Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       buildName('gas limit'),
                       buildValue(item['gas'].toString())
-                ]),
+                    ]),
                 new Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       buildName('gas price'),
                       buildValue(item['gasPrice'] + 'ETH')
-                ]),
+                    ]),
                 new Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       buildName('gas used'),
-                      buildValue(item['gasUsed'].toString() + ' (' +item['percentage']+')')
+                      buildValue(item['gasUsed'].toString() +
+                          ' (' +
+                          item['percentage'] +
+                          ')')
                     ]),
                 new Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       buildName('钱包地址'),
                       buildValue(item['from'])
-                ]),
+                    ]),
                 SizedBox(
                   height: 20.0,
                 ),
@@ -138,7 +144,7 @@ class Page extends State<OrderDetail> {
                     children: <Widget>[
                       buildName('合约地址'),
                       buildValue(item['to'])
-                ]),
+                    ]),
                 SizedBox(
                   height: 20.0,
                 ),
@@ -147,7 +153,7 @@ class Page extends State<OrderDetail> {
                     children: <Widget>[
                       buildName('交易号'),
                       buildValue(item['hash']),
-                ]),
+                    ]),
                 SizedBox(
                   height: 20.0,
                 ),
@@ -156,7 +162,7 @@ class Page extends State<OrderDetail> {
                     children: <Widget>[
                       buildName('区块'),
                       buildValue(item['blockNumber'])
-                ]),
+                    ]),
               ],
             ),
             SizedBox(
@@ -169,31 +175,25 @@ class Page extends State<OrderDetail> {
                 child: new Column(
                   children: <Widget>[
                     QrImage(
-                      backgroundColor:Colors.white,
+                      backgroundColor: Colors.white,
                       data: item['hash'],
                       size: 100.0,
                     ),
                   ],
-                )
-            ),
+                )),
             GestureDetector(
-              child: Text(
-                '到Etherscan查询更详细信息>',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: Colors.lightBlue,
-                    fontSize: 14.0
+                child: Text(
+                  '到Etherscan查询更详细信息>',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.lightBlue, fontSize: 14.0),
                 ),
-              ),
-              onTap: () async {
-                String url= Global.getDomain() + item['hash'];
-                await launch(url);
-              }
-            )
+                onTap: () async {
+                  String url = Global.getDomain() + item['hash'];
+                  await launch(url);
+                })
           ],
         ),
       ),
-
     );
   }
 
@@ -204,35 +204,30 @@ class Page extends State<OrderDetail> {
       // margin: const EdgeInsets.only(bottom: 20.0),
       alignment: Alignment.centerRight,
       child: Text(
-          val + ':',
-          style: TextStyle(
-              color: Colors.black,
-              fontSize: 18.0
-          ),
+        val + ':',
+        style: TextStyle(color: Colors.black, fontSize: 18.0),
       ),
     );
   }
 
   Widget buildValue(String val) {
     return Expanded(
-      child: Container(
-          margin: const EdgeInsets.only(bottom: 20.0),
-          child: GestureDetector(
-            onTap: (){
-              _copyAddress(val);
-              showSnackbar('复制成功');
-            },
-            child: Text(
-              val,
-              style: TextStyle(fontSize: 18.0),
-            ),
-        )
-      )
-    );
+        child: Container(
+            margin: const EdgeInsets.only(bottom: 20.0),
+            child: GestureDetector(
+              onTap: () {
+                _copyAddress(val);
+                showSnackbar('复制成功');
+              },
+              child: Text(
+                val,
+                style: TextStyle(fontSize: 18.0),
+              ),
+            )));
   }
 
-  void  _copyAddress(val) {
-    ClipboardData data = new ClipboardData(text:val);
+  void _copyAddress(val) {
+    ClipboardData data = new ClipboardData(text: val);
     Clipboard.setData(data);
     this.showSnackbar('复制成功');
   }
@@ -245,17 +240,20 @@ class Page extends State<OrderDetail> {
   Widget buildIcon(String status) {
     if (status == '挂单中') {
       return Icon(Icons.autorenew, size: 80.0, color: Colors.green);
-    } else if(status == '交易撤销') {
+    } else if (status == '交易撤销') {
       return Icon(Icons.block, size: 80.0, color: Colors.red);
-    } else if(status == '失败'){
-      return Icon(Icons.error,size: 80.0, color: Colors.red);
+    } else if (status == '失败') {
+      return Icon(Icons.error, size: 80.0, color: Colors.red);
+    } else if (status == '交易失败') {
+      return Icon(Icons.error, size: 80.0, color: Colors.red);
     } else {
-      return Icon(Icons.work,size: 80.0, color: Colors.green);
+      return Icon(Icons.work, size: 80.0, color: Colors.green);
     }
   }
 
   Future<Map> getDetail() async {
-    Map response = await Trade.getTransactionByHash( widget.arguments['txnHash']);
+    Map response =
+        await Trade.getTransactionByHash(widget.arguments['txnHash']);
     print(response);
     Map res = await Trade.getTransactionReceipt(widget.arguments);
     print(res);
@@ -271,5 +269,4 @@ class Page extends State<OrderDetail> {
     }
     return response;
   }
-
 }
