@@ -51,6 +51,9 @@ class Global {
   // 查询订单的匹配了多个额度在这个合约上查询
   static const hydroAddress = "0x8647e23314Fb7A202EA842994D3b5c941199C039";
 
+  // 刷新订单的间隔时间
+  static const orderUpdateTime = 10;
+
   // 热门token
   static const hotToken = [
     {

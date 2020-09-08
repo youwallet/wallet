@@ -329,7 +329,6 @@ class TransferListState extends State<transferList> {
   // 如果一个订单已经是撤销中的状态
   Future<void> updateOrder(Map order) async {
     print('【updateOrder】');
-    print(order);
     double amount = await Trade.getFilled(order['odHash']);
     // transactionReceipt有可能是null
     var transactionReceipt = await Trade.getTransactionReceipt(order);

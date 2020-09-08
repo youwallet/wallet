@@ -750,10 +750,11 @@ class Page extends State {
   // 创建循环
   // 这里要不��的更新兑换列表的交易状态
   _startTimer() {
-    // _timer = new Timer.periodic(new Duration(seconds: 10), (timer) {
-    //   transferListKey.currentState.updateOrderFilled();
-    //   eventBus.fire(UpdateTeadeDeepEvent());
-    // });
+    _timer = new Timer.periodic(new Duration(seconds: Global.orderUpdateTime),
+        (timer) {
+      transferListKey.currentState.updateOrderFilled();
+      eventBus.fire(UpdateTeadeDeepEvent());
+    });
   }
 
   _cancelTimer() {
