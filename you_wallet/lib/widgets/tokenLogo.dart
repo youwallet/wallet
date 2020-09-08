@@ -35,11 +35,12 @@ class TokenLogo extends StatelessWidget {
             width: 50.0,
             height: 50.0,
             decoration: new BoxDecoration(
-                border: new Border.all(width: 2.4, color: Colors.lightBlue),
+                border: new Border.all(width: 2.4, color: Colors.transparent),
                 color: Colors.white,
                 borderRadius: new BorderRadius.all(new Radius.circular(25.0))),
           ),
           Positioned(
+              top: -2.0,
               child: Icon(IconData(token['icon'], fontFamily: 'iconfont'),
                   size: 50.0, color: token['color'])),
         ],

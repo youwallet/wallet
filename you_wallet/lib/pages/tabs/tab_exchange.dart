@@ -280,7 +280,7 @@ class Page extends State {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       new Text(
-                        '交易额: ${tradePrice ?? ""}',
+                        '交易额: ${tradePrice ?? "--"} ${rightToken == null ? "" : rightToken["name"]}',
                         style: new TextStyle(
                             color:
                                 _btnText == '买入' ? Colors.green : Colors.red),
@@ -543,7 +543,6 @@ class Page extends State {
         this.showAuthTips();
       }
     } else {
-      // 已经授权
       this.getPwd(true);
     }
   }
@@ -561,13 +560,12 @@ class Page extends State {
         return;
       }
 
-//      Navigator.of(context).pop();
-//      return;
-
       // 已经授权过
       if (approve) {
+        print('已经授权，开始交易');
         this.startTrade(data);
       } else {
+        print('进入授权逻辑处理');
         try {
           // 授权接口可以立刻拿到Hash，但是授权不一定成功，
           // 需要利用hash查询接口，查询这个订单有没有上链
@@ -710,7 +708,7 @@ class Page extends State {
     var tradePrice = Decimal.parse(this.controllerAmount.text) *
         Decimal.parse(this.controllerPrice.text);
     setState(() {
-      this.tradePrice = tradePrice.toString() + this.rightToken['name'];
+      this.tradePrice = tradePrice.toString();
     });
   }
 
@@ -752,10 +750,10 @@ class Page extends State {
   // 创建循环
   // 这里要不��的更新兑换列表的交易状态
   _startTimer() {
-    _timer = new Timer.periodic(new Duration(seconds: 10), (timer) {
-      transferListKey.currentState.updateOrderFilled();
-      eventBus.fire(UpdateTeadeDeepEvent());
-    });
+    // _timer = new Timer.periodic(new Duration(seconds: 10), (timer) {
+    //   transferListKey.currentState.updateOrderFilled();
+    //   eventBus.fire(UpdateTeadeDeepEvent());
+    // });
   }
 
   _cancelTimer() {

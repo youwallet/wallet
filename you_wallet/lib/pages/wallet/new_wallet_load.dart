@@ -1,40 +1,26 @@
-
 import 'package:flutter/material.dart';
 import 'package:bip39/bip39.dart' as bip39;
-import 'package:bitcoin_flutter/bitcoin_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:math';
-import 'package:web3dart/crypto.dart';
-import 'package:ed25519_hd_key/ed25519_hd_key.dart';
-import 'package:web3dart/credentials.dart';
-import "package:hex/hex.dart";
+
 //import 'package:stellar_hd_wallet/stellar_hd_wallet.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path_provider/path_provider.dart';
+
 import 'package:youwallet/service/local_authentication_service.dart';
 import 'package:youwallet/service/service_locator.dart';
 import 'package:youwallet/service/token_service.dart';
 import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:youwallet/widgets/customButton.dart';
 
-
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart' as myWallet;
 
-
 class LoadWallet extends StatefulWidget {
-
   final arguments;
-  LoadWallet({Key key ,this.arguments}) : super();
+  LoadWallet({Key key, this.arguments}) : super();
 
   @override
-  State<StatefulWidget> createState()  => new Page(arguments: this.arguments);
-
+  State<StatefulWidget> createState() => new Page(arguments: this.arguments);
 }
 
-
 class Page extends State<LoadWallet> {
-
   Page({this.arguments});
 
   String name;
@@ -42,10 +28,10 @@ class Page extends State<LoadWallet> {
   String privateKey;
   TextEditingController _name = TextEditingController();
   TextEditingController _key = TextEditingController();
-  final LocalAuthenticationService _localAuth = locator<LocalAuthenticationService>();
+  final LocalAuthenticationService _localAuth =
+      locator<LocalAuthenticationService>();
   final globalKey = GlobalKey<ScaffoldState>();
   Map arguments;
-
 
   @override
   // override是重写父类中的函数 每次初始化的时候执行一次，类似于小程序中的onLoad
@@ -59,15 +45,14 @@ class Page extends State<LoadWallet> {
     if (this.arguments == null) {
       print("没有参数");
     } else {
-      String key = Provider.of<myWallet.Wallet>(context).exportPrivateKey(this.arguments['address']);
+      String key = Provider.of<myWallet.Wallet>(context)
+          .exportPrivateKey(this.arguments['address']);
       print('查询到的key=》${key}');
       setState(() {
         this._key.text = key;
       });
     }
-
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -83,25 +68,23 @@ class Page extends State<LoadWallet> {
               buildKeyPage('输入明文私钥'),
             ],
           ),
-        )
-    );
+        ));
   }
 
   Widget buildAppBar(BuildContext context) {
     return new AppBar(
         title: const Text('恢复身份'),
-        actions: appBarActions(),
+        // actions: appBarActions(),
         bottom: new TabBar(
-            tabs: [
-              new Tab(text: '助记词'),
-              new Tab(text: '私钥'),
-            ],
+          tabs: [
+            new Tab(text: '助记词'),
+            new Tab(text: '私钥'),
+          ],
           onTap: (index) {
             //your currently selected index
             print('current index => ${index}');
           },
-        )
-    );
+        ));
   }
 
   // 定义bar右侧的icon按钮
@@ -110,7 +93,7 @@ class Page extends State<LoadWallet> {
       new Container(
         width: 50.0,
         child: new IconButton(
-          icon: new Icon(Icons.camera_alt ),
+          icon: new Icon(Icons.camera_alt),
           onPressed: () {
             print("123");
 //            _localAuth.authenticate().then((result){
@@ -123,46 +106,43 @@ class Page extends State<LoadWallet> {
   }
 
   // 构建助记词page
-  buildPage(placeholder){
+  buildPage(placeholder) {
     return new Container(
       child: new Column(
         children: <Widget>[
           new Container(
-            padding: const EdgeInsets.all(32.0), // 四周填充边距32像素
-            color: Colors.white,
-            child: new Column(
-              children: <Widget>[
-                buildText(placeholder),
-                new TextField(
-                  controller: this._name,
-                  maxLines: 3,
-                  decoration: InputDecoration(
+              padding: const EdgeInsets.all(32.0), // 四周填充边距32像素
+              color: Colors.white,
+              child: new Column(
+                children: <Widget>[
+                  buildText(placeholder),
+                  new TextField(
+                    controller: this._name,
+                    maxLines: 3,
+                    decoration: InputDecoration(
                       filled: true,
                       hintText: placeholder,
                       fillColor: Colors.black12,
                       contentPadding: new EdgeInsets.all(6.0), // 内部边距，默认不是0
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(6.0),
-                        borderSide: BorderSide(color: Colors.grey,width: 1),
+                        borderSide: BorderSide(color: Colors.grey, width: 1),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.grey,width: 1),
+                        borderSide: BorderSide(color: Colors.grey, width: 1),
                       ),
+                    ),
+                    onSubmitted: (text) {
+                      print('change $text');
+                    },
                   ),
-
-                  onSubmitted: (text) {
-                    print('change $text');
-                  },
-                ),
-              ],
-            )
-          ),
+                ],
+              )),
           new CustomButton(
               content: '添加账户密码',
-              onSuccessChooseEvent:(res){
+              onSuccessChooseEvent: (res) {
                 this.loadWalletByMnemonic();
-              }
-          )
+              })
 //          new Padding(
 //              padding: new EdgeInsets.all(30.0),
 //              child: Column(
@@ -189,7 +169,7 @@ class Page extends State<LoadWallet> {
   }
 
   // 构建私钥page
-  buildKeyPage(placeholder){
+  buildKeyPage(placeholder) {
     return new Container(
       child: new Column(
         children: <Widget>[
@@ -203,37 +183,33 @@ class Page extends State<LoadWallet> {
                     controller: this._key,
                     maxLines: 3,
                     decoration: InputDecoration(
-                        filled: true,
-                        hintText: placeholder,
-                        fillColor: Colors.black12,
-                        contentPadding: new EdgeInsets.all(6.0), // 内部边距，默认不是0
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(6.0),
-                          borderSide: BorderSide(color: Colors.grey,width: 1),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.grey,width: 1),
-                        ),
+                      filled: true,
+                      hintText: placeholder,
+                      fillColor: Colors.black12,
+                      contentPadding: new EdgeInsets.all(6.0), // 内部边距，默认不是0
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(6.0),
+                        borderSide: BorderSide(color: Colors.grey, width: 1),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey, width: 1),
+                      ),
                     ),
-
                     onSubmitted: (text) {
                       print('change $text');
                     },
                   ),
                 ],
-              )
-          ),
+              )),
           new CustomButton(
               content: '添加账户密码',
-              onSuccessChooseEvent:(res){
+              onSuccessChooseEvent: (res) {
                 this.saveWalletByKey('');
-              }
-          ),
+              }),
         ],
       ),
     );
   }
-
 
   buildText(p) {
     if (p == '输入明文私钥') {
@@ -241,23 +217,21 @@ class Page extends State<LoadWallet> {
         child: new Text('输入私钥文件内容至输入框，或通过扫描私钥内容生成的二维码录入，注意字符大小写。'),
       );
     } else {
-      return new Container(
-        child: null
-      );
+      return new Container(child: null);
     }
   }
 
   // 通过助记词导入
   void loadWalletByMnemonic() async {
-
     if (this._name.text.length == 0) {
       this.showSnackbar('请输入助记词');
-      return ;
+      return;
     }
 
     if (this._name.text.split(' ').length != 12) {
-      this.showSnackbar('助记词是12个单词，你输入的是${this._name.text.split(' ').length}个单词');
-      return ;
+      this.showSnackbar(
+          '助记词是12个单词，你输入的是${this._name.text.split(' ').length}个单词');
+      return;
     }
 
     String privateKey = TokenService.getPrivateKey(this._name.text);
@@ -272,7 +246,6 @@ class Page extends State<LoadWallet> {
 
   // 通过私钥 key导入钱包
   void saveWalletByKey(String pwd) async {
-
     if (this._key.text.length == 0) {
       this.showSnackbar('私钥不能为空');
       return;
@@ -298,7 +271,7 @@ class Page extends State<LoadWallet> {
 
   // 跳转密码设置页面
   void doSave(Map item) {
-    Navigator.of(context).pushNamed('password').then((data){
+    Navigator.of(context).pushNamed('password').then((data) {
       print(data);
       if (data == null) {
         print('input nothing');
@@ -314,21 +287,23 @@ class Page extends State<LoadWallet> {
         context: context, //BuildContext对象
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return new LoadingDialog( //调用对话框
+          return new LoadingDialog(
+            //调用对话框
             text: '保存钱包...',
           );
         });
 
     int id;
     try {
-      id = await Provider.of<myWallet.Wallet>(context).add(item,pwd);
+      id = await Provider.of<myWallet.Wallet>(context).add(item, pwd);
     } catch (e) {
       print(e);
       Navigator.pop(context);
     }
 
     if (id > 0) {
-       Navigator.pushNamedAndRemoveUntil(context, "wallet_success", (route) => route == null);
+      Navigator.pushNamedAndRemoveUntil(
+          context, "wallet_success", (route) => route == null);
       // 删除路由栈中除了顶级理由之外的路由
       // 然后添加目标页面进入路由，并且跳转
 
@@ -341,5 +316,4 @@ class Page extends State<LoadWallet> {
     final snackBar = SnackBar(content: Text(text));
     globalKey.currentState.showSnackBar(snackBar);
   }
-
 }

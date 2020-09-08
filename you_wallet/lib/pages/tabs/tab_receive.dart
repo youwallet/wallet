@@ -43,6 +43,13 @@ class Page extends State<TabReceive> {
               decoration: new BoxDecoration(
                 borderRadius: new BorderRadius.all(new Radius.circular(8.0)),
                 color: Colors.lightBlue,
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 6,
+                    spreadRadius: 4,
+                    color: Color.fromARGB(20, 0, 0, 0),
+                  ),
+                ],
               ),
               child: new Column(
                 children: <Widget>[
