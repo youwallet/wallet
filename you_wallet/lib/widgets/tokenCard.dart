@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:youwallet/model/viewModel.dart';
 import 'package:youwallet/widgets/tokenLogo.dart';
-import 'package:youwallet/global.dart';
 import 'package:youwallet/widgets/addressFormat.dart';
 
 class TokenCard extends StatelessWidget {
-
   final TokenCardViewModel data;
   const TokenCard({Key key, this.data}) : super(key: key);
 
@@ -33,61 +31,60 @@ class TokenCard extends StatelessWidget {
         ],
       ),
       child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    TokenLogo(address: this.data.cardNumber),
-                    Padding(padding: EdgeInsets.only(left: 15)),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        new Row(
-                          children: <Widget>[
-                            Text(
-                              this.data.bankName,
-                              style: TextStyle(
-                                fontSize: 19,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                            Padding(padding: EdgeInsets.only(left: 15)),
-                            GestureDetector(
-                              child: Icon(
-                                  IconData(0xe600, fontFamily: 'iconfont'),
-                                  color: Colors.white,
-                              ),
-                              onTap: () {
-                                Map token = {
-                                  'name': this.data.bankName,
-                                  'address': this.data.cardNumber,
-                                };
-                                Navigator.pushNamed(context, "token_info", arguments: token);
-                              },
-                            ),
-                          ],
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              TokenLogo(address: this.data.cardNumber),
+              Padding(padding: EdgeInsets.only(left: 15)),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  new Row(
+                    children: <Widget>[
+                      Text(
+                        this.data.bankName,
+                        style: TextStyle(
+                          fontSize: 19,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
-                        Text(
-                          this.data.balance,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color.fromARGB(200, 255, 255, 255),
-                          ),
+                      ),
+                      Padding(padding: EdgeInsets.only(left: 15)),
+                      GestureDetector(
+                        child: Icon(
+                          IconData(0xe600, fontFamily: 'iconfont'),
+                          color: Colors.white,
                         ),
-                      ],
+                        onTap: () {
+                          Map token = {
+                            'name': this.data.bankName,
+                            'address': this.data.cardNumber,
+                          };
+                          Navigator.pushNamed(context, "token_info",
+                              arguments: token);
+                        },
+                      ),
+                    ],
+                  ),
+                  Text(
+                    this.data.balance,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Color.fromARGB(200, 255, 255, 255),
                     ),
-                    Padding(padding: EdgeInsets.only(left: 10)),
-
-                  ],
-                ),
-                Padding(
-                  padding: EdgeInsets.only(left: 65, top: 20),
-                  child: new AddressFormat(this.data.cardNumber)
-                ),
-              ],
-            ),
+                  ),
+                ],
+              ),
+              Padding(padding: EdgeInsets.only(left: 10)),
+            ],
+          ),
+          Padding(
+              padding: EdgeInsets.only(left: 65, top: 20),
+              child: new AddressFormat(this.data.cardNumber)),
+        ],
+      ),
     );
   }
 }

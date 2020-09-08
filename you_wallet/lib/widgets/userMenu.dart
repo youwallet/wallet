@@ -19,7 +19,7 @@ class UserMenu extends StatelessWidget {
               style:
                   TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
             ),
-            accountEmail: Text('sibbay@example.com',
+            accountEmail: Text('https://youwallet.github.io/',
                 style: TextStyle(
                     fontWeight: FontWeight.bold, color: Colors.white)),
             //currentAccountPicture: CircleAvatar( backgroundImage: NetworkImage('https://upyun-assets.ethfans.org/assets/ethereum-logo-fe43a240b78711a6d427e9638f03163f3dc88ca8c112510644ce7b5f6be07dbe.png')),
@@ -45,13 +45,13 @@ class UserMenu extends StatelessWidget {
               Navigator.pushNamed(context, "set_network");
             },
           ),
-          ListTile(
-            title: Text('进入调试'),
-            leading: Icon(Icons.adb),
-            onTap: () {
-              Navigator.pushNamed(context, "debug_page");
-            },
-          ),
+          // ListTile(
+          //   title: Text('进入调试'),
+          //   leading: Icon(Icons.adb),
+          //   onTap: () {
+          //     Navigator.pushNamed(context, "debug_page");
+          //   },
+          // ),
           ListTile(
             title: Text('清空缓存'),
             leading: Icon(Icons.cached),
@@ -86,7 +86,7 @@ class UserMenu extends StatelessWidget {
           ListTile(
             title: new Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[Text('版本号'), Text('v0.0.5')],
+              children: <Widget>[Text('版本号'), Text('v1.0.0')],
             ),
             leading: Icon(Icons.exit_to_app),
             onTap: () {
