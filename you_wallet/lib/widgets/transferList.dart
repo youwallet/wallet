@@ -328,10 +328,13 @@ class TransferListState extends State<transferList> {
   // 更新订单，更新的值包括订单匹配的数量和订单的状态
   // 如果一个订单已经是撤销中的状态
   Future<void> updateOrder(Map order) async {
-    print('updateOrder');
+    print('【updateOrder】');
+    print(order);
     double amount = await Trade.getFilled(order['odHash']);
+    // transactionReceipt有可能是null
     var transactionReceipt = await Trade.getTransactionReceipt(order);
-    if (transactionReceipt['status'] == '0x0') {
+    print('transactionReceipt => ${transactionReceipt}');
+    if (transactionReceipt != null && transactionReceipt['status'] == '0x0') {
       await Provider.of<Deal>(context)
           .updateOrderStatus(order['txnHash'], '交易失败');
     } else {
