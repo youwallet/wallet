@@ -697,11 +697,11 @@ class Page extends State {
 
   // 计算交易额度
   void computeTrade() {
-    if (this.controllerAmount.text.length == 0) {
-      return;
-    }
-
-    if (this.controllerPrice.text.length == 0) {
+    if (this.controllerAmount.text.length == 0 ||
+        this.controllerPrice.text.length == 0) {
+      setState(() {
+        this.tradePrice = '--';
+      });
       return;
     }
 
