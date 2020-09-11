@@ -255,7 +255,7 @@ class Page extends State {
                 new Input(
                   suffixText:
                       this.rightToken == null ? '' : this.rightToken['name'],
-                  hintText: '输入买入价格',
+                  hintText: this._btnText == '买入' ? '输入买入价格' : '输出卖出价格',
                   controllerEdit: controllerPrice,
                   onSuccessChooseEvent: (res) {
                     print('onSuccessChooseEvent =》 ${res}');
@@ -266,7 +266,7 @@ class Page extends State {
                 new Text(''),
                 new Container(height: 10.0, child: null),
                 new Input(
-                  hintText: '输入买入数量',
+                  hintText: this._btnText == '买入' ? '输入买入数量' : '输入卖出数量',
                   controllerEdit: controllerAmount,
                   suffixText: this.value == null ? '' : this.value['name'],
                   onSuccessChooseEvent: (res) {

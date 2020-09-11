@@ -238,7 +238,7 @@ class Global {
       print(result.format); // The barcode format (as enum)
       print(result
           .formatNote); // If a unknown format was scanned this field contains a note
-
+      // 将扫码结果上报
       return result.rawContent;
     } on PlatformException catch (e) {
       print(e.toString());
