@@ -231,8 +231,15 @@ class Global {
   static Future scan(BuildContext context) async {
     try {
       // 此处为扫码结果，barcode为二维码的内容
-      var barcode = await BarcodeScanner.scan();
-      return barcode;
+      var result = await BarcodeScanner.scan();
+      print('here is scan res');
+      print(result.type); // The result type (barcode, cancelled, failed)
+      print(result.rawContent); // The barcode content
+      print(result.format); // The barcode format (as enum)
+      print(result
+          .formatNote); // If a unknown format was scanned this field contains a note
+
+      return result.rawContent;
     } on PlatformException catch (e) {
       print(e.toString());
 //      if (e.code == BarcodeScanner.CameraAccessDenied) {

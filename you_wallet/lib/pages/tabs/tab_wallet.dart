@@ -129,20 +129,25 @@ class Page extends State<TabWallet> {
           onPressed: () async {
             String code = await Global.scan(context);
             if (code == null) {
-              return;
+              Global.showSnackBar(context, '扫码结果解析异常');
             }
             List arr = code.split(':');
-            if (arr[1] == 'token') {
-              Navigator.pushNamed(context, "add_token",
-                  arguments: {'address': arr[0]});
-            } else if (arr[1] == 'transfer') {
-              Global.setToAddress(arr[0]);
-              eventBus.fire(TabChangeEvent(3));
-            } else {
-              // print(code);
-              // 如果模式无法匹配，就跳转扫码结果页面，显示扫码内容
+            if (arr.length == 1) {
               Navigator.pushNamed(context, "scan",
-                  arguments: {'res': code, 'allowCopy': true});
+                  arguments: {'res': code, 'allowCopy': true, 'title': '扫码提示'});
+            } else {
+              if (arr[1] == 'token') {
+                Navigator.pushNamed(context, "add_token",
+                    arguments: {'address': arr[0]});
+              } else if (arr[1] == 'transfer') {
+                Global.setToAddress(arr[0]);
+                eventBus.fire(TabChangeEvent(3));
+              } else {
+                // print(code);
+                // 如果模式无法匹配，就跳转扫码结果页面，显示扫码内容
+                Navigator.pushNamed(context, "scan",
+                    arguments: {'res': code, 'allowCopy': true});
+              }
             }
           },
         ),

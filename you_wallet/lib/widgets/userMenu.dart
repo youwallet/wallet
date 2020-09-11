@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youwallet/db/provider.dart';
-import 'package:youwallet/widgets/customButton.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
+import 'package:youwallet/global.dart';
 
 // 类的名字需要大写字母开头
 class UserMenu extends StatelessWidget {
@@ -90,8 +90,8 @@ class UserMenu extends StatelessWidget {
             ),
             leading: Icon(Icons.exit_to_app),
             onTap: () {
-//              final snackBar = new SnackBar(content: new Text('没有检测到新版本'));
-//              Scaffold.of(context).showSnackBar(snackBar);
+              // 点击这里，需要去检查有没有新版本
+              Global.showSnackBar(context, '当前就是最新版');
             },
           ),
         ],
