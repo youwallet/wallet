@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:youwallet/service/app_server.dart';
 import 'package:youwallet/widgets/addressFormat.dart';
 import 'package:youwallet/widgets/tokenList.dart';
 import 'package:youwallet/bus.dart';
@@ -52,6 +53,21 @@ class Page extends State<TabWallet> {
       Provider.of<walletModel.Wallet>(context).updateWallet(address);
       // 更新钱包里面多个token的余额
       Provider.of<Token>(context).updateBalance(address);
+    });
+
+    //监听版本检查
+    eventBus.on<CheckVersion>().listen((event) async {
+      showDialog<Null>(
+          context: context, //BuildContext对象
+          barrierDismissible: false,
+          builder: (BuildContext context) {
+            return new LoadingDialog(
+              text: '版本检查中...',
+            );
+          });
+      String version = await APPService.getVersion();
+      Navigator.pop(context);
+      Global.showSnackBar(context, '当前最新版：' + version);
     });
   }
 

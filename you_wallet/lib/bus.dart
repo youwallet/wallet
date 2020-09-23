@@ -63,6 +63,11 @@ class TokenListUpdateEvent {
   TokenListUpdateEvent();
 }
 
+// app新版本检查
+class CheckVersion {
+  CheckVersion();
+}
+
 /// 事件钩子，订单列表准备刷新
 //class Event{
 //  TransferUpdateStartEvent();

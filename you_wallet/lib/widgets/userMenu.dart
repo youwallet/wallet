@@ -4,6 +4,7 @@ import 'package:youwallet/db/provider.dart';
 import 'package:youwallet/service/app_server.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
 import 'package:youwallet/global.dart';
+import 'package:youwallet/bus.dart';
 
 // 类的名字需要大写字母开头
 class UserMenu extends StatelessWidget {
@@ -93,10 +94,8 @@ class UserMenu extends StatelessWidget {
             onTap: () async {
               // 先收起侧边栏
               Navigator.pop(context); // close the drawer
-              print('路由回退，打印这里');
-              // 到github去检查有没有新版本
-              APPService.getVersion();
-              Global.showSnackBar(context, '当前就是最新版');
+              // 通知首页检查最新版本
+              eventBus.fire(CheckVersion());
             },
           ),
         ],
