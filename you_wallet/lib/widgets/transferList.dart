@@ -125,7 +125,7 @@ class TransferListState extends State<transferList> {
 
   Widget buildItem(item, context) {
     String date = DateUtil.formatDateMs(int.parse(item['createTime']),
-        format: DataFormats.full);
+        format: "yyyy-MM-dd HH:mm:ss");
     String filled = '';
     if (item['status'] == '成功') {
       filled = item['filled'];

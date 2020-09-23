@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youwallet/db/provider.dart';
+import 'package:youwallet/service/app_server.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
 import 'package:youwallet/global.dart';
 
@@ -89,8 +90,12 @@ class UserMenu extends StatelessWidget {
               children: <Widget>[Text('版本号'), Text('v1.0.0')],
             ),
             leading: Icon(Icons.exit_to_app),
-            onTap: () {
-              // 点击这里，需要去检查有没有新版本
+            onTap: () async {
+              // 先收起侧边栏
+              Navigator.pop(context); // close the drawer
+              print('路由回退，打印这里');
+              // 到github去检查有没有新版本
+              APPService.getVersion();
               Global.showSnackBar(context, '当前就是最新版');
             },
           ),

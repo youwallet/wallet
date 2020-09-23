@@ -177,7 +177,7 @@ class Page extends State<AddToken> {
   void startSearch(String text) async {
     if (!text.startsWith('0x')) {
       this.showSnackbar('合约地址必须0x开头');
-      return;
+      throw StateError('token搜索异常：' + text);
     }
 
     if (text.length != 42) {
@@ -196,7 +196,6 @@ class Page extends State<AddToken> {
     // 获取token小数点、名字、余额这三个异步操作可以做成一个链式调用
     Future(() async {
       int decimals = await TokenService.getDecimals(text);
-      print('decimals id $decimals');
       return Future.value(decimals);
     }).then((res) {
       Future.wait([

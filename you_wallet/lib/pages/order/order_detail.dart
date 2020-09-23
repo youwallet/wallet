@@ -107,7 +107,7 @@ class Page extends State<OrderDetail> {
                       buildName('交易时间'),
                       buildValue(DateUtil.formatDateMs(
                           int.parse(this.arguments['createTime']),
-                          format: DataFormats.full))
+                          format: "yyyy-MM-dd HH:mm:ss"))
                     ]),
                 new Row(
                     crossAxisAlignment: CrossAxisAlignment.start,

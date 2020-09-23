@@ -16,7 +16,6 @@ class TokenHistory extends StatefulWidget {
 }
 
 class Page extends State<TokenHistory> {
-
   List list = [];
   int today = 0;
   int threeDay = 0;
@@ -37,118 +36,107 @@ class Page extends State<TokenHistory> {
   }
 
   void initFilter() {
-      int now = DateTime.now().millisecondsSinceEpoch;
-      int hour = DateTime.now().hour;
-      int minute = DateTime.now().minute;
-      int second = DateTime.now().second;
-      int today = now - (hour*60*60 + minute*60 + second)*1000;
-      int threeDay = today - 3*24*60*60*1000;
-      int weekday = today - (DateTime.now().weekday - 1)*24*60*60*1000;
-      int month = today - (DateTime.now().day - 1)*24*60*60*1000;
-      print(today);
-      print(threeDay);
-      print(weekday);
-      this.setState(() {
-        today = today;
-        threeDay = threeDay;
-        weekday = weekday;
-        month = month;
-      });
+    int now = DateTime.now().millisecondsSinceEpoch;
+    int hour = DateTime.now().hour;
+    int minute = DateTime.now().minute;
+    int second = DateTime.now().second;
+    int today = now - (hour * 60 * 60 + minute * 60 + second) * 1000;
+    int threeDay = today - 3 * 24 * 60 * 60 * 1000;
+    int weekday = today - (DateTime.now().weekday - 1) * 24 * 60 * 60 * 1000;
+    int month = today - (DateTime.now().day - 1) * 24 * 60 * 60 * 1000;
+    print(today);
+    print(threeDay);
+    print(weekday);
+    this.setState(() {
+      today = today;
+      threeDay = threeDay;
+      weekday = weekday;
+      month = month;
+    });
   }
 
   Widget layout(BuildContext context) {
     return DefaultTabController(
-      length: 5,
-      child: new Scaffold(
-        appBar: buildAppBar(context),
-        body: new TabBarView(
-          children: [
-            _getHistoryToken('all'),
-            _getHistoryToken('today'),
-            _getHistoryToken('three'),
-            _getHistoryToken('week'),
-            _getHistoryToken('month')
-          ],
-        ),
-        bottomNavigationBar: new BottomAppBar(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Expanded(
-                child: new SizedBox(
-                  height: 50.0,
-                  child: RaisedButton.icon(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(0))
-                    ),
-                    elevation: 0,
-                    icon: Icon(IconData(0xe6eb, fontFamily: 'iconfont')),
-                    label: Text(
-                        "兑换",
-                    ),
-                    onPressed: (){
-                      eventBus.fire(TabChangeEvent(1));
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ),
-                flex: 1,
-              ),
-              Expanded(
-                child: new SizedBox(
-                  height: 50.0,
-                  child: RaisedButton.icon(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(0))
-                    ),
-                    elevation: 0.0,
-                    icon: Icon(IconData(0xe624, fontFamily: 'iconfont'),color: Colors.white),
-                    color: Colors.blue,
-                    highlightColor: Colors.blue,
-                    splashColor: Colors.blue,
-                    label: Text(
-                        "收款",
-                        style: new TextStyle(
-                            color: Colors.white
-                        )
-                    ),
-                    onPressed: () {
-                      eventBus.fire(TabChangeEvent(2));
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ),
-                flex: 1,
-              ),
-              Expanded(
-                child: new SizedBox(
-                  height: 50.0,
-                  child: RaisedButton.icon(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(0))
-                    ),
-                    elevation: 0,
-                    icon: Icon(IconData(0xe616, fontFamily: 'iconfont'),color: Colors.white),
-                    label: Text(
-                        "转账",
-                        style: new TextStyle(
-                            color: Colors.white
-                        )
-                    ),
-                    color: Colors.green,
-                    onPressed: (){
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ),
-                flex: 1,
-              ),
+        length: 5,
+        child: new Scaffold(
+          appBar: buildAppBar(context),
+          body: new TabBarView(
+            children: [
+              _getHistoryToken('all'),
+              _getHistoryToken('today'),
+              _getHistoryToken('three'),
+              _getHistoryToken('week'),
+              _getHistoryToken('month')
             ],
           ),
-        ),
-      )
-    );
-
+          bottomNavigationBar: new BottomAppBar(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Expanded(
+                  child: new SizedBox(
+                    height: 50.0,
+                    child: RaisedButton.icon(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(0))),
+                      elevation: 0,
+                      icon: Icon(IconData(0xe6eb, fontFamily: 'iconfont')),
+                      label: Text(
+                        "兑换",
+                      ),
+                      onPressed: () {
+                        eventBus.fire(TabChangeEvent(1));
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ),
+                  flex: 1,
+                ),
+                Expanded(
+                  child: new SizedBox(
+                    height: 50.0,
+                    child: RaisedButton.icon(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(0))),
+                      elevation: 0.0,
+                      icon: Icon(IconData(0xe624, fontFamily: 'iconfont'),
+                          color: Colors.white),
+                      color: Colors.blue,
+                      highlightColor: Colors.blue,
+                      splashColor: Colors.blue,
+                      label:
+                          Text("收款", style: new TextStyle(color: Colors.white)),
+                      onPressed: () {
+                        eventBus.fire(TabChangeEvent(2));
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ),
+                  flex: 1,
+                ),
+                Expanded(
+                  child: new SizedBox(
+                    height: 50.0,
+                    child: RaisedButton.icon(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(0))),
+                      elevation: 0,
+                      icon: Icon(IconData(0xe616, fontFamily: 'iconfont'),
+                          color: Colors.white),
+                      label:
+                          Text("转账", style: new TextStyle(color: Colors.white)),
+                      color: Colors.green,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ),
+                  flex: 1,
+                ),
+              ],
+            ),
+          ),
+        ));
   }
 
   // 构建app bar
@@ -165,8 +153,8 @@ class Page extends State<TokenHistory> {
             new Tab(text: '本月')
           ],
         )
-      //leading: new Icon(Icons.account_balance_wallet),
-    );
+        //leading: new Icon(Icons.account_balance_wallet),
+        );
   }
 
   // 查询所有记录
@@ -178,36 +166,36 @@ class Page extends State<TokenHistory> {
     int hour = DateTime.now().hour;
     int minute = DateTime.now().minute;
     int second = DateTime.now().second;
-    int today = now - (hour*60*60 + minute*60 + second)*1000;
+    int today = now - (hour * 60 * 60 + minute * 60 + second) * 1000;
     if (para == 'three') {
-      timestamp = today - 3*24*60*60*1000;
+      timestamp = today - 3 * 24 * 60 * 60 * 1000;
     } else if (para == 'week') {
-      timestamp = today - (DateTime.now().weekday - 1)*24*60*60*1000;
+      timestamp = today - (DateTime.now().weekday - 1) * 24 * 60 * 60 * 1000;
     } else if (para == 'month') {
-      timestamp = today - (DateTime.now().day - 1)*24*60*60*1000;
+      timestamp = today - (DateTime.now().day - 1) * 24 * 60 * 60 * 1000;
     } else if (para == 'today') {
-      timestamp = now - (hour*60*60 + minute*60 + second)*1000;
+      timestamp = now - (hour * 60 * 60 + minute * 60 + second) * 1000;
     } else {
       timestamp = 0;
     }
     List arr = List.from(this.list);
-    arr.retainWhere((e)=>(int.parse(e['createTime'])>timestamp));
+    arr.retainWhere((e) => (int.parse(e['createTime']) > timestamp));
 
     return new Container(
       padding: new EdgeInsets.all(16.0),
       child: new ListView(
-        children: arr.reversed.map((item) => _buildToken(item)).toList()
-      ),
+          children: arr.reversed.map((item) => _buildToken(item)).toList()),
     );
   }
 
   Widget _buildToken(item) {
-    String date = DateUtil.formatDateMs( int.parse( item['createTime']), format: DataFormats.full);
+    String date = DateUtil.formatDateMs(int.parse(item['createTime']),
+        format: "yyyy-MM-dd HH:mm:ss");
     return new Container(
-        padding: const EdgeInsets.only(top: 12.0,bottom: 12.0), // 四周填充边距32像素
+        padding: const EdgeInsets.only(top: 12.0, bottom: 12.0), // 四周填充边距32像素
         decoration: new BoxDecoration(
-            border: Border(bottom: BorderSide(color: Colors.black12,width: 1.0))
-        ),
+            border:
+                Border(bottom: BorderSide(color: Colors.black12, width: 1.0))),
         child: GestureDetector(
           child: new Column(
             children: <Widget>[
@@ -215,39 +203,26 @@ class Page extends State<TokenHistory> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   new Text('转账-${item['tokenName']}'),
-                  new Text(
-                      '-${item['num']} token',
-                      style: new TextStyle(
-                          color: Colors.lightBlue
-                      )
-                  )
+                  new Text('-${item['num']} token',
+                      style: new TextStyle(color: Colors.lightBlue))
                 ],
               ),
               new Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  new Text(
-                      '${date}',
-                      style: new TextStyle(
-                          color: Colors.black38
-                      )
-                  ),
-                  new Text(
-                      '${item['status']??'转账中'}',
-                      style: new TextStyle(
-                          color: Colors.deepOrange
-                      )
-                  )
+                  new Text('${date}',
+                      style: new TextStyle(color: Colors.black38)),
+                  new Text('${item['status'] ?? '转账中'}',
+                      style: new TextStyle(color: Colors.deepOrange))
                 ],
               ),
             ],
           ),
-          onTap: (){
+          onTap: () {
             print(item);
             Navigator.pushNamed(context, "order_detail", arguments: item);
           },
-        )
-    );
+        ));
   }
 
   void _getHistory() async {
@@ -272,14 +247,12 @@ class Page extends State<TokenHistory> {
 //        print('订单不需要查询，状态不为null或者hash长度不符合格式');
 //      }
 //    });
-
   }
 
   Future<void> updateTransferStatus(String txnHash) async {
     print('开始更新数据表 =》 ${txnHash}');
     var sql = SqlUtil.setTable("transfer");
-    int i = await sql.update({'status':'成功'}, 'txnHash', txnHash);
+    int i = await sql.update({'status': '成功'}, 'txnHash', txnHash);
     print('更新完毕=》${i}');
   }
-
 }

@@ -43,6 +43,16 @@ class Page extends State<TabWallet> {
 //        print('do nothing');
 //      }
 //    });
+
+    //监听token列表刷新事件
+    eventBus.on<TokenListUpdateEvent>().listen((event) async {
+      String address = Provider.of<walletModel.Wallet>(context)
+          .currentWalletObject['address'];
+      // 更新钱包的ETH余额
+      Provider.of<walletModel.Wallet>(context).updateWallet(address);
+      // 更新钱包里面多个token的余额
+      Provider.of<Token>(context).updateBalance(address);
+    });
   }
 
   // 页面回退时候触发
