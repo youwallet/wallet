@@ -16,6 +16,9 @@ const _themes = <MaterialColor>[
 // 修改全局变量后，安卓studio需要重新启动应用，热加载不会自动更新全局变量
 // 参考：https://book.flutterchina.club/chapter15/globals.html
 class Global {
+  // 当前版本号码
+  static const version = 'pre-1.0.0';
+
   // 全局调用_prefs实现KV保存和读取
   static SharedPreferences _prefs;
   // static Profile profile = Profile();

@@ -11,6 +11,7 @@ import 'package:youwallet/model/wallet.dart' as walletModel;
 import 'package:youwallet/global.dart';
 import 'package:youwallet/widgets/loadingDialog.dart';
 import 'package:youwallet/widgets/userMenu.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TabWallet extends StatefulWidget {
   @override
@@ -23,6 +24,7 @@ class Page extends State<TabWallet> {
   int current_wallet = 0;
   String current_wallet_address = "";
   String _balance = '0Eth';
+  var showNotice = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
 //  @override
@@ -35,15 +37,12 @@ class Page extends State<TabWallet> {
     super.initState();
 
     // 监听页面切换，
-//    eventBus.on<TabChangeEvent>().listen((event) {
-//      print("event listen =》${event.index}");
-//      if (event.index == 0) {
-//        print('刷新订单状态');
-//        this._getBalance();
-//      } else {
-//        print('do nothing');
-//      }
-//    });
+    eventBus.on<TabChangeEvent>().listen((event) {
+      if (event.index == 0) {
+        print('tab切换到首页');
+        this.checkVersion();
+      }
+    });
 
     //监听token列表刷新事件
     eventBus.on<TokenListUpdateEvent>().listen((event) async {
@@ -99,6 +98,7 @@ class Page extends State<TabWallet> {
           onRefresh: _refresh,
           child: new ListView(
             children: <Widget>[
+              buildNotice(context),
               topCard(context),
               listTopBar(context),
               new Container(
@@ -179,6 +179,24 @@ class Page extends State<TabWallet> {
         ),
       )
     ];
+  }
+
+  // 构建通知卡片
+  Widget buildNotice(BuildContext context) {
+    if (this.showNotice) {
+      return GestureDetector(
+          onTap: () async {
+            const url = 'https://github.com/youwallet/wallet/releases/';
+            await launch(url);
+          },
+          child: new Container(
+            padding: const EdgeInsets.all(16.0),
+            color: Color(0xffA9DFED),
+            child: new Text('新版本已发布，点击立即下载'),
+          ));
+    } else {
+      return new Container();
+    }
   }
 
   // 构建顶部卡片
@@ -275,6 +293,20 @@ class Page extends State<TabWallet> {
             ],
           ),
         ));
+  }
+
+  // 检查新版本
+  Future<void> checkVersion() async {
+    String version = await APPService.getVersion();
+    if (version != Global.version) {
+      this.setState(() {
+        this.showNotice = true;
+      });
+    } else {
+      this.setState(() {
+        this.showNotice = false;
+      });
+    }
   }
 
   // 首页下拉刷新

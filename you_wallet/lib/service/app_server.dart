@@ -57,7 +57,7 @@ class APPService {
       // return app[i].attributes['href'];
       return app[i].innerHtml;
     });
-    return data[0];
+    return data[0].trim();
   }
 
   /* 获取配置信息 - R
