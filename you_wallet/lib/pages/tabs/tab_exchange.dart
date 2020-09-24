@@ -572,6 +572,10 @@ class Page extends State {
           // 如果没有上链，就一直给用户loading
           String hash = await Trade.approve(needApproveToken, data);
           print('授权Hash=> ${hash}');
+          if (hash == null) {
+            Navigator.of(context).pop();
+            Global.showSnackBar(context, '授权失败，请检查网络和ETH余额');
+          }
           // 这里不能用await，否则会黑屏
           this.checkAuthResponse(hash, 0);
         } catch (e) {

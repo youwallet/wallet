@@ -421,26 +421,27 @@ class Trade {
     String postData = Global.funcHashes['approve()'] +
         formatParam(Global.proxy) +
         formatParam(value);
-    print('授权 data');
-    print(postData);
     String rpcUrl = await Global.rpcUrl();
 
     final client = Web3Client(rpcUrl, Client());
     var credentials = await client.credentialsFromPrivateKey(obj['privateKey']);
-
     // chainId跟网络有关，测试网和主网的chainId不一样
-    var rsp = await client.sendTransaction(
-        credentials,
-        Transaction(
-            to: EthereumAddress.fromHex(token),
-            gasPrice: obj['gasPrice'],
-            maxGas: obj['gasLimit'],
-            value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
-            data: hexToBytes(postData)),
-        chainId: 3);
-    print('授权结果');
-    print(rsp);
-    return rsp.toString();
+    try {
+      var rsp = await client.sendTransaction(
+          credentials,
+          Transaction(
+              to: EthereumAddress.fromHex(token),
+              gasPrice: obj['gasPrice'],
+              maxGas: obj['gasLimit'],
+              value: EtherAmount.fromUnitAndValue(EtherUnit.ether, 0),
+              data: hexToBytes(postData)),
+          chainId: 3);
+
+      return rsp.toString();
+    } catch (e) {
+      print('授权异常');
+      print(e);
+    }
   }
 
 /* 取消订单 - W
