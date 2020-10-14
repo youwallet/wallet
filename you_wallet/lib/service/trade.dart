@@ -10,12 +10,10 @@ import 'package:web3dart/crypto.dart';
 import 'package:youwallet/db/sql_util.dart';
 import 'package:youwallet/global.dart';
 import 'package:youwallet/util/md5_encrypt.dart';
-import 'package:youwallet/util/wallet_crypt.dart';
+
 import 'package:flutter_aes_ecb_pkcs5/flutter_aes_ecb_pkcs5.dart';
 import 'package:decimal/decimal.dart';
-import 'package:youwallet/util/number_format.dart';
-import 'package:provider/provider.dart';
-import 'package:youwallet/model/deal.dart';
+
 import 'package:youwallet/util/http_server.dart';
 
 class Trade {
@@ -371,6 +369,31 @@ class Trade {
     String postData =
         '${func['transfer(address,uint256)']}${toAddress.replaceFirst("0x", "").padLeft(64, '0')}${hexNum.padLeft(64, '0')}';
     return await Http().transaction(token['address'], obj, postData);
+  }
+
+  // 发送ETH
+  // 返回1表示true，接口调用成功，0表示false失败了
+  static Future sendEth(String from, String to, String value, Map obj) async {
+    String rpcUrl = await Global.rpcUrl();
+    final client = Web3Client(rpcUrl, Client());
+    var credentials = await client.credentialsFromPrivateKey(obj['privateKey']);
+    try {
+      var rsp = await client.sendTransaction(
+          credentials,
+          Transaction(
+              from: EthereumAddress.fromHex(from),
+              to: EthereumAddress.fromHex(to),
+              gasPrice: obj['gasPrice'],
+              maxGas: obj['gasLimit'],
+              value: EtherAmount.fromUnitAndValue(EtherUnit.ether, value),
+              data: hexToBytes('')),
+          fetchChainIdFromNetworkId: true);
+
+      return rsp.toString();
+    } catch (e) {
+      print('ETH发送异常');
+      print(e);
+    }
   }
 
   // 根据hash查询订单

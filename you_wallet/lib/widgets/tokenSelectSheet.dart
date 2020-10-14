@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:youwallet/widgets/bottomSheetDialog.dart';
 import 'package:youwallet/global.dart';
+import 'package:provider/provider.dart';
+import 'package:youwallet/model/wallet.dart' as walletModel;
 
 // token下拉选择模块
 class TokenSelectSheet extends StatefulWidget {
@@ -54,9 +56,22 @@ class Page extends State<TokenSelectSheet> {
   }
 
   /// 弹出底部的选择列表
+  /// 转账模式下，要把ETH加进去
   selectToken(context) async {
-    // String wallet =
-    //     Provider.of<walletModel.Wallet>(context).currentWalletObject['address'];
+    Map wallet = Provider.of<walletModel.Wallet>(context).currentWalletObject;
+    print('here is my wallet');
+    print(wallet);
+    print(widget.selectArr);
+    List tokens = [
+      {
+        'id': 0,
+        'name': 'ETH',
+        'decimals': '18',
+        'balance': wallet['balance'],
+        'address': '' // ETH没有地址
+      },
+      ...widget.selectArr,
+    ];
     // List tokens = Provider.of<Token>(context)
     //     .items
     //     .where((e) => (e['wallet'] == wallet))
@@ -72,7 +87,7 @@ class Page extends State<TokenSelectSheet> {
         context: context,
         builder: (BuildContext context) {
           return BottomSheetDialog(
-              content: widget.selectArr,
+              content: tokens,
               onSuccessChooseEvent: (res) {
                 print('showModalBottomSheet => ${res}');
                 setState(() {

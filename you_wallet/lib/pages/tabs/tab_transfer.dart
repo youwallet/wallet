@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:youwallet/service/token_service.dart';
-import 'package:youwallet/widgets/customStepper.dart';
 import 'package:youwallet/widgets/modalDialog.dart';
 import 'package:provider/provider.dart';
 import 'package:youwallet/model/wallet.dart';
@@ -16,6 +15,7 @@ import 'package:youwallet/global.dart';
 import 'package:decimal/decimal.dart';
 import 'package:youwallet/widgets/inputDialog.dart';
 
+// 转账页面
 class TabTransfer extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -94,6 +94,7 @@ class Page extends State<TabTransfer> {
                   margin: const EdgeInsets.only(right: 40.0),
                   width: 100.0,
                   child: new TokenSelectSheet(
+                      selectType: 'transfer',
                       selectArr: Provider.of<Token>(context).items.toList(),
                       onCallBackEvent: (res) {
                         print(res);
@@ -320,7 +321,6 @@ class Page extends State<TabTransfer> {
                 FocusScope.of(context).requestFocus(FocusNode());
               });
         }).then((val) {
-      print(val);
       if (val == 'confirm') {
         this.startTransfer();
       }
@@ -395,14 +395,21 @@ class Page extends State<TabTransfer> {
             text: '转账中...',
           );
         });
+    print('star');
     print(controllerPrice.text);
+    print(this.token);
     String from = Provider.of<Wallet>(context).currentWallet;
     String to = controllerAddress.text;
     String num = controllerPrice.text;
     // obj里面包括私钥，gaslimit，gasprice
     Navigator.pushNamed(context, "getPassword").then((obj) async {
       try {
-        String txnHash = await Trade.sendToken(from, to, num, this.token, obj);
+        String txnHash = '';
+        if (this.token['name'] == 'ETH') {
+          txnHash = await Trade.sendEth(from, to, num, obj);
+        } else {
+          txnHash = await Trade.sendToken(from, to, num, this.token, obj);
+        }
         // 保存转账记录
         this.saveTransfer(from, to, num, txnHash, this.token);
         // 保存转账人到常用联系人表
@@ -473,7 +480,7 @@ class Page extends State<TabTransfer> {
         builder: (BuildContext context) {
           return InputDialog(
               title: '编辑联系人备注',
-              hintText: '���输入',
+              hintText: '输入',
               controller: this._addressRemarkInput,
               onCancelChooseEvent: () {
                 Navigator.pop(context);
