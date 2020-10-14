@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:youwallet/service/token_service.dart';
@@ -10,11 +9,10 @@ import 'package:youwallet/widgets/customButton.dart';
 class WalletCheck extends StatefulWidget {
   TokenService _tokenService;
   @override
-  Page createState()  => Page(this._tokenService);
+  Page createState() => Page(this._tokenService);
 }
 
 class Page extends State<WalletCheck> {
-
   Page(this._tokenService);
 
   List randomMnemonic = [];
@@ -57,11 +55,8 @@ class Page extends State<WalletCheck> {
 
     setState(() {
       List temp = randomMnemonic.split(' ');
-      temp.forEach((element){
-        this.randomMnemonic.add({
-          'val': element,
-          'active': false
-        });
+      temp.forEach((element) {
+        this.randomMnemonic.add({'val': element, 'active': false});
       });
       this.randomMnemonic.shuffle();
       this.randomMnemonicAgain = [];
@@ -86,9 +81,7 @@ class Page extends State<WalletCheck> {
             children: <Widget>[
               new Container(
                 margin: const EdgeInsets.only(bottom: 30.0),
-                child: new Image.asset(
-                    'images/new_wallet.png'
-                ),
+                child: new Image.asset('images/new_wallet.png'),
               ),
               Text('请按照顺序依次点击助记词'),
 //              new TextField(
@@ -114,83 +107,69 @@ class Page extends State<WalletCheck> {
 //                },
 //              ),
               Wrap(
-                alignment: WrapAlignment.spaceBetween,
-                spacing: 8.0, // gap between adjacent chips
-                runSpacing: 4.0, // gap between lines
-                children: this.randomMnemonic.map((item) => buildItem(item)).toList()
-              ),
-              SizedBox(
-                height: 10.0
-              ),
+                  alignment: WrapAlignment.spaceBetween,
+                  spacing: 8.0, // gap between adjacent chips
+                  runSpacing: 4.0, // gap between lines
+                  children: this
+                      .randomMnemonic
+                      .map((item) => buildItem(item))
+                      .toList()),
+              SizedBox(height: 10.0),
               new CustomButton(
                   content: '清空重试',
-                  onSuccessChooseEvent:(res){
+                  onSuccessChooseEvent: (res) {
                     this._name.text = ""; // 设置初始值
 //                    this.randomMnemonicAgain = [];
                     this.setRandomMnemonic();
-                  }
-              )
+                  })
             ],
           ),
-        )
-    );
+        ));
   }
 
   //构建每一个助记词
-  Widget buildItem(item){
+  Widget buildItem(item) {
     MediaQueryData mediaQuery = MediaQuery.of(context);
     var _screenWidth = mediaQuery.size.width;
     return Container(
-      alignment:  Alignment.center,
+      alignment: Alignment.center,
       padding: const EdgeInsets.all(8.0), // 四周填充边距32像素
       decoration: new BoxDecoration(
         borderRadius: new BorderRadius.all(new Radius.circular(8.0)),
-        color: item['active']? Colors.lightBlue:Colors.grey,
+        color: item['active'] ? Colors.lightBlue : Colors.grey,
       ),
 
-      width: _screenWidth/4,
+      width: _screenWidth / 4,
       child: GestureDetector(
         onTap: () => this.clickItem(item), //写入方法名称就可以了，但是是无参的
-        child: Text(
-            item['val'],
-            style: new TextStyle(
-                fontSize: 18.0,
-                color:Colors.white
-            )),
+        child: Text(item['val'],
+            style: new TextStyle(fontSize: 18.0, color: Colors.white)),
       ),
-
     );
-//    return Chip(
-//      label: InkWell(
-//        onTap: () {
-//          this.clickItem(item);
-//        },
-//        child: Text(item,style: new TextStyle(fontSize: 18.0))
-//      )
-//    );
   }
 
   // 点击助记词
   void clickItem(item) async {
     print(item);
-    final index = this.randomMnemonic.indexWhere((element) => element['val']==item['val']);
+    final index = this
+        .randomMnemonic
+        .indexWhere((element) => element['val'] == item['val']);
     bool active = item['active'];
     print(index);
-    setState((){
+    setState(() {
       this.randomMnemonic[index]['active'] = !item['active'];
       //this._name.text = this.randomMnemonicAgain.reduce((a,b)=>(a + " " +b));
       // this.randomMnemonic.remove(item);
     });
 
     if (active) {
-      this.randomMnemonicAgain.removeWhere((element)=> element==item['val']);
+      this.randomMnemonicAgain.removeWhere((element) => element == item['val']);
     } else {
       this.randomMnemonicAgain.add(item['val']);
     }
 
-
     if (this.randomMnemonicAgain.length < 12) {
-      return ;
+      return;
     }
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -199,10 +178,9 @@ class Page extends State<WalletCheck> {
     if (this.randomMnemonicAgain.join(" ") == randomMnemonic) {
       print("助记词一致性确认完毕");
       // 助记词和私钥在这里加密
-      Navigator.of(context).pushNamed('password').then((data){
+      Navigator.of(context).pushNamed('password').then((data) {
         this.saveWallet(data);
       });
-
     } else {
       this.showSnackbar('助记词不一致，请重试');
       this.setRandomMnemonic();
@@ -214,7 +192,8 @@ class Page extends State<WalletCheck> {
         context: context, //BuildContext对象
         barrierDismissible: false,
         builder: (BuildContext context) {
-          return new LoadingDialog( //调用对话框
+          return new LoadingDialog(
+            //调用对话框
             text: '保存钱包...',
           );
         });
@@ -222,17 +201,15 @@ class Page extends State<WalletCheck> {
     String randomMnemonic = prefs.getString("randomMnemonic");
 
     Map obj = {
-      'privateKey':  TokenService.getPrivateKey(randomMnemonic),
+      'privateKey': TokenService.getPrivateKey(randomMnemonic),
       'mnemonic': randomMnemonic
     };
 
-    int id = await Provider.of<myWallet.Wallet>(context).add(obj,passWord);
-    if(id>0) {
+    int id = await Provider.of<myWallet.Wallet>(context).add(obj, passWord);
+    if (id > 0) {
       Navigator.of(context).pushReplacementNamed("wallet_success");
     } else {
       this.showSnackbar('钱包保存失败，请反馈给社区');
     }
   }
-
-
 }

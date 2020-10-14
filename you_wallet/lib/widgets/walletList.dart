@@ -2,18 +2,15 @@ import 'package:flutter/material.dart';
 
 // 类的名字需要大写字母开头
 class WalletList extends StatelessWidget {
-
   List arr = [];
   WalletList({Key key, this.arr}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Column(
-        children: arr.map((item) => walletCard(item)).toList()
-    );
+    return Column(children: arr.map((item) => walletCard(item)).toList());
   }
 }
 
-void setNetWork(name) async{
+void setNetWork(name) async {
 //  setState(() {
 ////    _newValue = name;
 ////  });
@@ -29,7 +26,7 @@ Widget walletCard(item) {
   String current_address = item['address'];
   return new Card(
       color: Colors.white, //背景色
-      child:  GestureDetector(
+      child: GestureDetector(
         child: new Container(
             padding: const EdgeInsets.all(28.0),
             child: new Row(
@@ -55,7 +52,8 @@ Widget walletCard(item) {
                     children: [
                       new Text(
                         item['name'],
-                        style: new TextStyle(fontSize: 32.0, color: Colors.black),
+                        style:
+                            new TextStyle(fontSize: 32.0, color: Colors.black),
                       ),
                       new Text(item['address']),
                     ],
@@ -75,14 +73,9 @@ Widget walletCard(item) {
 //
 //                )
               ],
-            )
-        ),
-        onTap: (){
+            )),
+        onTap: () {
           print("点击token =》 ${item}");
         },
-      )
-  );
-
-
+      ));
 }
-

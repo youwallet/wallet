@@ -39,7 +39,6 @@ class Page extends State<OrderDetail> {
   }
 
   Widget layout(BuildContext context) {
-    print('build order detail');
     return new Scaffold(
         key: globalKey,
         appBar: buildAppBar(context),

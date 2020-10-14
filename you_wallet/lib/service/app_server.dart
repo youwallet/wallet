@@ -17,6 +17,7 @@ import "package:hex/hex.dart";
 import 'package:dio/dio.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart';
+import 'dart:convert' show json;
 
 //abstract class TokenService {
 //  String generateMnemonic();
@@ -60,12 +61,21 @@ class APPService {
     return data[0].trim();
   }
 
-  /* 获取配置信息 - R
-  * key: 配置key
+  /* 获取第三方gas信息 - R
   *
   * 返回值:
-  * string value
-  * function configurations(string key);
+  * 
   */
-
+  static Future<List> getGasList() async {
+    String url = 'https://www.gasnow.org/api/v3/gas/price?utm_source=youwallet';
+    var response = await new Dio().get(url);
+    print(response);
+    var jsonList = json.decode(response.toString());
+    return [
+      {'name': '极速', 'checked': false, 'value': jsonList['data']['rapid']},
+      {'name': '快速', 'checked': true, 'value': jsonList['data']['fast']},
+      {'name': '标准', 'checked': false, 'value': jsonList['data']['standard']},
+      {'name': '慢速', 'checked': false, 'value': jsonList['data']['slow']}
+    ];
+  }
 }
