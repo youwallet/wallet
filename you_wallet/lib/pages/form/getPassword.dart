@@ -170,8 +170,8 @@ class _LoginPageState extends State<GetPasswordPage> {
                         fontSize: 18.0,
                         color: Colors.white,
                         fontWeight: FontWeight.w700)),
-                Text(item['value'].toString(),
-                    style: new TextStyle(fontSize: 12.0, color: Colors.white)),
+                Text((item['value']/1000000000).toString() + 'Gwei',
+                    style: new TextStyle(fontSize: 16.0, color: Colors.white, fontWeight: FontWeight.w700)),
               ],
             )));
   }
