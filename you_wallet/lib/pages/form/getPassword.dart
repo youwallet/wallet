@@ -6,6 +6,7 @@ import 'package:youwallet/service/app_server.dart';
 import 'package:youwallet/db/sql_util.dart';
 import 'package:youwallet/util/wallet_crypt.dart';
 import 'package:web3dart/web3dart.dart';
+import 'package:youwallet/service/token_service.dart';
 
 // 在该页面让用户输入密码
 // 通过密码解密出私钥
@@ -23,8 +24,8 @@ class _LoginPageState extends State<GetPasswordPage> {
 
   bool showExtraSet = false;
   Map data = {
-    'gasPrice': '10', // 这个字段放到全局变量中去
-    'gasLimit': Global.gasLimit.toString(),
+    'gasPrice': '',   // 从第三方接口动态获取
+    'gasLimit': '',   // 从配置合约中动态读取
     'pwd': ''
   };
 
@@ -38,6 +39,7 @@ class _LoginPageState extends State<GetPasswordPage> {
 
     ///用_futureBuilderFuture来保存_gerData()的结果，以避免不必要的ui重绘
     _futureBuilderFuture = getGasList();
+    this.getGasLimit();
   }
 
   @override
@@ -48,6 +50,7 @@ class _LoginPageState extends State<GetPasswordPage> {
           future: _futureBuilderFuture,
           builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
             if (snapshot.hasData) {
+
               return Form(
                   key: _formKey,
                   child: ListView(
@@ -102,10 +105,13 @@ class _LoginPageState extends State<GetPasswordPage> {
         return;
       }
 
+      // 默认使用当前页面选中的gas
       if (this.data['gasPrice'].isEmpty) {
-        final snackBar = new SnackBar(content: new Text('gasPrice不能为空'));
-        Scaffold.of(context).showSnackBar(snackBar);
-        return;
+        var gas = gasList.firstWhere((v) => v['checked'] == true);
+        this.data['gasPrice'] = gas['value'].toString();
+        // final snackBar = new SnackBar(content: new Text('gasPrice不能为空'));
+        // Scaffold.of(context).showSnackBar(snackBar);
+        // return;
       }
 
       try {
@@ -173,15 +179,18 @@ class _LoginPageState extends State<GetPasswordPage> {
   // 点击gas项目
   void clickItem(item) async {
     var gasList = this.gasList;
+    var gasPrice = '';
     gasList.forEach((element) {
       if (element['name'] == item['name']) {
         element['checked'] = true;
+        gasPrice = element['value'].toString();
       } else {
         element['checked'] = false;
       }
     });
     setState(() {
-      this.gasList = gasList;
+      data['gasPrice'] = gasPrice;
+      gasList = gasList;
     });
   }
 
@@ -200,13 +209,15 @@ class _LoginPageState extends State<GetPasswordPage> {
   }
 
   // 高级设置
-  // 如果用户是在导出私钥或者助记忆词，则不=显示高级设计
+  // 如果用户是在导出私钥或者助记忆词，则不显示高级设计
   Widget buildExtraTip() {
     if (widget.arguments == null) {
+      var gas = gasList.firstWhere((v) => v['checked'] == true);
       return GestureDetector(
           onTap: () {
             setState(() {
               this.showExtraSet = !this.showExtraSet;
+              data['gasPrice'] = gas['value'].toString();
             });
           },
           child: Padding(
@@ -218,6 +229,7 @@ class _LoginPageState extends State<GetPasswordPage> {
     }
   }
 
+  // 构建高级设置模块
   Widget buildExtraSet(bool showSet) {
     if (this.showExtraSet) {
       return new Column(
@@ -236,9 +248,9 @@ class _LoginPageState extends State<GetPasswordPage> {
                         borderRadius: BorderRadius.circular(6.0),
                         borderSide: BorderSide.none),
                   ),
-                  onSaved: (String value) => this.data['gasLimit'] = value)),
+                  onSaved: (String value) => data['gasLimit'] = value)),
           TextFormField(
-            controller: TextEditingController(text: this.data['gasPrice']),
+            controller: TextEditingController(text: data['gasPrice']),
             decoration: InputDecoration(
               hintText: '请输入gasPrice',
               helperText: "自定义gasPrice",
@@ -307,7 +319,23 @@ class _LoginPageState extends State<GetPasswordPage> {
   // 调用第三方获取gas
   Future<List> getGasList() async {
     var data = await APPService.getGasList();
+//    var gas = data.firstWhere((v) => v['checked'] == true);
+//    print('getGasList');
+//    print(gas);
+//    setState(() {
+//      data['gasPrice'] = 123;
+//    });
     this.gasList = data;
     return data;
+  }
+
+  // 获取配置信息中的gas limit
+  Future<void> getGasLimit() async {
+    List arr = await TokenService.configurations('gaslimit');
+    print('获取到配置合约中的gas limit:');
+    print(arr);
+    this.setState((){
+      data['gasLimit']= arr[0];
+    });
   }
 }

@@ -224,7 +224,7 @@ class Page extends State {
       child: new Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          //左边一列
+          // 左边一列
           new Expanded(
             child: new Column(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -306,6 +306,7 @@ class Page extends State {
               ],
             ),
           ),
+          // 中间的分割斜线
           new Container(
             width: 20.0,
             alignment: Alignment.topCenter,
@@ -724,8 +725,9 @@ class Page extends State {
     // }
 
     // this.showSnackBar('后台刷新中...');
-    this.getRightTokens();
+//    this.getRightTokens();
   }
+
 
   Future<void> getRightTokens() async {
     List selects = [];
@@ -752,14 +754,14 @@ class Page extends State {
   }
 
   // 创建循环
-  // 这里要不��的更新兑换列表的交易状态
+  // 这里要自动更新兑换列表的交易状态
   _startTimer() {
-    // _timer = new Timer.periodic(new Duration(seconds: Global.orderUpdateTime),
-    //     (timer) {
-    //   transferListKey.currentState.updateOrderFilled();
-    //   eventBus.fire(UpdateTeadeDeepEvent());
-    //   eventBus.fire(TokenListUpdateEvent());
-    // });
+    _timer = new Timer.periodic(new Duration(seconds: Global.orderUpdateTime),
+        (timer) {
+      transferListKey.currentState.updateOrderFilled();
+      eventBus.fire(UpdateTeadeDeepEvent());
+      eventBus.fire(TokenListUpdateEvent());
+    });
   }
 
   _cancelTimer() {

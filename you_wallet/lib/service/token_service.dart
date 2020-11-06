@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:web3dart/credentials.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart';
 import 'dart:convert';
 import 'package:web3dart/web3dart.dart';
@@ -144,7 +143,7 @@ class TokenService {
     return BigInt.parse(response['result']).toString();
   }
 
-  /* 获取配置信息 - R
+  /* 获取配置信息，交易页面右侧的token列表 - R
   * key: 配置key
   *
   * 返回值:
@@ -159,9 +158,10 @@ class TokenService {
     String value = bytesToHex(utf8.encode(key)).padRight(64, '0');
     String postData =
         Global.funcHashes['configurations(string key)'] + offset + len + value;
-    var response = await Http().post(params: {"data": postData});
+    var response = await Http().post(params: {"data": postData}, to: Global.youMatchConfig);
     // 0-64为是偏移量
     // 64-128是长度
+    print(response['result']);
     String res = response['result'].replaceFirst('0x', '').substring(128);
     String str = '';
     List hexList = HEX.decode(res);
@@ -171,6 +171,7 @@ class TokenService {
         str = str + s;
       }
     }
+
     return str.split(":");
   }
 }

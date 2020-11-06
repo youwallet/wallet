@@ -43,16 +43,21 @@ class Global {
 // you-match: 0x199794aBADE0c68d4791961455C5A0FA7bBc74BD
 
   // 代理合约，用来给token授权
-  static const proxy = "0x147534DEB1c0AFD37EB16533796b8Af40193b57A";
+  static const proxy = "0x749510a720aF919611Ac24724030f46BB32CE93F";
 
   // youWallet钱包合约 you-match:
-  static const tempMatchAddress = "0xf91901607dd87dcE298a779364d1dF77C8A06Cc6";
+  // 执行下单等操作
+  static const tempMatchAddress = "0xF1735de1f84dd72222d273EE9f6e4Df389D10E18";
 
   // 收取交易费的账户relayer ，测试阶段用SHT的合约账户代替
   static const taxAddress = "0xA9535b10EE96b4A03269D0e0DEf417aF97477FD6";
 
   // 查询订单的匹配了多个额度在这个合约上查询
-  static const hydroAddress = "0x8647e23314Fb7A202EA842994D3b5c941199C039";
+  static const hydroAddress = "0xF5cE9570F8523456cbffB4b18e201cD8d0a6A090";
+
+  // 新增一个配置合约，用来获取交易页面右侧的token列表信息
+  static const youMatchConfig ="0xc607fE1c04f7ed326561e0C061Fcd20423759851";
+
 
   // 刷新订单的间隔时间
   static const orderUpdateTime = 10;

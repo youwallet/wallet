@@ -51,7 +51,7 @@ class ProviderSql {
 
     if (!tableIsRight) {
       // 关闭上面打开的db，否则无法执行open
-      print('db lost table，new db');
+      print('there is no DB Table，new db');
       db.close();
       //表不完整
       // Delete the database
@@ -80,16 +80,14 @@ class ProviderSql {
     //Get a location using getDatabasesPath
     String databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'wallet.db');
-    print(path);
     await deleteDatabase(path);
-    print('结束');
+    print('数据库删除，done');
   }
 
   // 删除交易数据表，然后新建交易数据表
   Future clearTrade() async {
     String databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'wallet.db');
-    print(path);
     await db.delete('trade');
     await db.execute(SqlTable.sql_createTable_trade);
   }

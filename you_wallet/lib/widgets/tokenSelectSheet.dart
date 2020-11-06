@@ -59,9 +59,7 @@ class Page extends State<TokenSelectSheet> {
   /// 转账模式下，要把ETH加进去
   selectToken(context) async {
     Map wallet = Provider.of<walletModel.Wallet>(context).currentWalletObject;
-    print('here is my wallet');
-    print(wallet);
-    print(widget.selectArr);
+
     List tokens = [
       {
         'id': 0,
@@ -87,7 +85,8 @@ class Page extends State<TokenSelectSheet> {
         context: context,
         builder: (BuildContext context) {
           return BottomSheetDialog(
-              content: tokens,
+              content:
+                  widget.selectType == 'transfer' ? tokens : widget.selectArr,
               onSuccessChooseEvent: (res) {
                 print('showModalBottomSheet => ${res}');
                 setState(() {
