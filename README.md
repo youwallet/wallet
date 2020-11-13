@@ -57,13 +57,6 @@ youWallet除提供ETH钱包的基础功能外，核心的功能是去中心化�
 <img src="https://github.com/youwallet/wallet/blob/master/screenshots/%E5%B8%81%E5%B8%81%E5%85%91%E6%8D%A2.gif" width = "294" height = "486" div align=middle />
 
 
-## Install
-This project uses node and npm. Go check them out if you don't have them locally installed.
-```
-$ npm install --global standard-readme-spec
-```
-
-
 ## License
 
 [MIT](https://mit-license.org/)
