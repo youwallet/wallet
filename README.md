@@ -70,7 +70,6 @@ flutter pub get
 ```
 
 
-
 ## License
 
 [MIT](https://mit-license.org/)
