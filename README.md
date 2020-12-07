@@ -1,9 +1,14 @@
-<p align="center"><a href="#" target="_blank" rel="noopener noreferrer"><img width="100" src="https://cn.etherscan.com/images/svg/brands/ethereum-1.svg?v=1.3" alt="wallet logo"></a></p>
+<p align="center">
+  <a href="#" target="_blank" rel="noopener noreferrer">
+    <img width="100" src="https://user-images.githubusercontent.com/8922614/101351071-fc289780-38ca-11eb-8742-ff6a6b995a7b.png" alt="wallet logo">
+  </a>
+</p>
 
 
 <p align="center">
   <a href="#"><img src="https://img.shields.io/github/workflow/status/youwallet/wallet/Flutter CI" alt="Build Status"></a>
-  <a href="https://discord.com/channels/703130665604087819"><img src="https://img.shields.io/discord/703130665604087819" alt="Chat"></a>
+  <a href="https://discord.com/channels/703130665604087819">
+  <img src="https://img.shields.io/discord/703130665604087819" alt="Chat"></a>
   <img src="https://img.shields.io/github/license/youwallet/wallet">
 </p>
 
@@ -19,18 +24,19 @@ youWallet，一款去中心化的数字货币交易工具，没有中心化上�
 
 项目完全采用和众社区的贡献模式由所有贡献者推动。
 
-## Documentation
+## 文档
 https://github.com/youwallet/wallet/wiki
 
 ## 功能说明
 youWallet除提供ETH钱包的基础功能外，核心的功能是去中心化的币币交易。
-### [钱包功能](https://github.com/youwallet/wallet/wiki/%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/_edit#%E9%92%B1%E5%8C%85%E5%8A%9F%E8%83%BD)
+
+### 钱包功能
 * 创建管理新ETH钱包
 * 导入/导出已有ETH钱包
 * 添加任意ETH的TOKEN资产
 * 转帐收款
 
-### [去中心化币币交易](https://github.com/youwallet/wallet/wiki/%E5%8A%9F%E8%83%BD%E8%AF%B4%E6%98%8E/_edit#%E5%B8%81%E5%B8%81%E5%85%91%E6%8D%A2)
+### 去中心化币币交易
 * 挂买/卖单
 * 去中化撮合交易
 
@@ -57,11 +63,12 @@ youWallet除提供ETH钱包的基础功能外，核心的功能是去中心化�
 <img src="https://github.com/youwallet/wallet/blob/master/screenshots/%E5%B8%81%E5%B8%81%E5%85%91%E6%8D%A2.gif" width = "294" height = "486" div align=middle />
 
 
-## Install
-This project uses node and npm. Go check them out if you don't have them locally installed.
+## 快速开发
+本地clone仓库，进入项目中的you_wallet目录，执行命令：
 ```
-$ npm install --global standard-readme-spec
+flutter pub get
 ```
+
 
 
 ## License
