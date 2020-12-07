@@ -1,6 +1,6 @@
 <p align="center">
   <a href="#" target="_blank" rel="noopener noreferrer">
-    <img width="100" src="https://user-images.githubusercontent.com/8922614/101351071-fc289780-38ca-11eb-8742-ff6a6b995a7b.png" alt="wallet logo">
+    <img width="100" src="https://cn.etherscan.com/images/svg/brands/ethereum-1.svg?v=1.3" alt="wallet logo">
   </a>
 </p>
 
