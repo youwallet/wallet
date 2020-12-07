@@ -5,12 +5,8 @@
 </p>
 
 
-<p align="center">
-  <a href="#"><img src="https://img.shields.io/github/workflow/status/youwallet/wallet/Flutter CI" alt="Build Status"></a>
-  <a href="https://discord.com/channels/703130665604087819">
-  <img src="https://img.shields.io/discord/703130665604087819" alt="Chat"></a>
-  <img src="https://img.shields.io/github/license/youwallet/wallet">
-</p>
+## youwallet
+[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
 
 ## youwallet众和社区
