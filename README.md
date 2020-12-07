@@ -9,6 +9,7 @@
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/youwallet/wallet)
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/youwallet/wallet)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/youwallet/wallet/Flutter%20CI)
 
 ## youwallet众和社区
 为什么在区块链去中心化的世界里，交易所都是中心化的？
