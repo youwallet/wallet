@@ -7,7 +7,7 @@
 
 ## youwallet
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
-
+https://img.shields.io/github/languages/code-size/youwallet/wallet
 
 ## youwallet众和社区
 为什么在区块链去中心化的世界里，交易所都是中心化的？
