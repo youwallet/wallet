@@ -60,10 +60,45 @@ youWallet除提供ETH钱包的基础功能外，核心的功能是去中心化�
 
 <img src="https://github.com/youwallet/wallet/blob/master/screenshots/%E5%B8%81%E5%B8%81%E5%85%91%E6%8D%A2.gif" width = "294" height = "486" div align=middle />
 
+## 开发必备软件
+- Xcode
+- Andriod studio
+- flutter 
+
+## mac环境配置
+```yaml
+vim ~/.bash_profile。在~/.bash_profile文件中，添加配置
+
+Flutter 镜像配置:
+
+export PUB_HOSTED_URL=https://pub.flutter-io.cn
+export FLUTTER_STORAGE_BASE_URL=https://storage.flutter-io.cn
+
+Flutter 环境配置:
+
+export PATH=/Users/gn/Desktop/FlutterSDK/flutter/bin:$PATH
+```
+
+## 载入配置
+source .bash_profile
+
+## 环境检查
+```yaml
+flutter doctor
+
+# 如果环境准备OK，则输出如下：
+Doctor summary (to see all details, run flutter doctor -v):
+[✓] Flutter (Channel stable, v1.17.5, on macOS 13.0 22A380, locale zh-Hans-CN)
+
+[✓] Android toolchain - develop for Android devices (Android SDK version 29.0.2)
+[✓] Xcode - develop for iOS and macOS (Xcode 14.1)
+[✓] Android Studio (version 3.5)
+[✓] Connected device (1 available)
+```
 
 ## 快速开发
 本地clone仓库，进入项目中的you_wallet目录，执行命令：
-```
+```yaml
 flutter pub get
 ```
 
@@ -71,6 +106,17 @@ flutter pub get
 ## License
 
 [MIT](https://mit-license.org/)
+
+## 常见问题
+```yaml
+# 执行flutter pub get，报如下错误
+Git error. Command: `git fetch`
+stdout:
+stderr: fatal: unable to connect to github.com:
+github.com[0: 20.205.243.166]: errno=Operation timed out
+
+exit code: 128
+```
 
 
 
