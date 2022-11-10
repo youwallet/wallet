@@ -139,7 +139,29 @@ exit code: 128
 以后任意打开终端都可以 创建flutter 项目了。 
 
 ## 常见问题3
+This app is using a deprecated version of the Android embedding.
+To avoid unexpected runtime failures, or future build failures, try to migrate this app to the V2 embedding.
+Take a look at the docs for migrating an app: https://github.com/flutter/flutter/wiki/Upgrading-pre-1.12-Android-projects
+The plugin `flutter_aes_ecb_pkcs5` requires your app to be migrated to the Android embedding v2. Follow the steps on
+https://flutter.dev/go/android-project-migration and re-run this command.
 
+```yaml
+# 打开\android\app\src\main\AndroidManifest.xml
+<application
+  android:name="io.flutter.app.FlutterApplication"
+  >
+</application>
+# 将以上配置修改为以下的样子即可：
+<application
+  android:name="${applicationName}"
+  >
+</application>
 
+```
 
+## 常见问题4
+Android toolchain - develop for Android devices (Android SDK version 29.0.2)
+    ✗ cmdline-tools component is missing
+      Run `path/to/sdkmanager --install "cmdline-tools;latest"`
+      See https://developer.android.com/studio/command-line for more details.
 
