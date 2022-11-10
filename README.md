@@ -100,14 +100,22 @@ Doctor summary (to see all details, run flutter doctor -v):
 本地clone仓库，进入项目中的you_wallet目录，执行命令：
 ```yaml
 flutter pub get
+
+# 如果flutter版本太低，请先执行
+flutter upgrade
 ```
+## 启动ios模拟器
+
+>> open -a Simulator
 
 
+## 启动项目
+>> flutter run
 ## License
 
 [MIT](https://mit-license.org/)
 
-## 常见问题
+## 常见问题·
 ```yaml
 # 执行flutter pub get，报如下错误
 Git error. Command: `git fetch`
@@ -116,7 +124,21 @@ stderr: fatal: unable to connect to github.com:
 github.com[0: 20.205.243.166]: errno=Operation timed out
 
 exit code: 128
+
+# 解决办法
+造成这个问题的原因是pubspec.yaml中配置的第三方包，有的包已经不存在了无法下载，确定是哪个包，删除即可
+
 ```
+## 常见问题2
+配置完成环境变量后，创建flutter 项目，使用命令行每次都需要运行 source .bash_profile 才能生效。。。
+
+解决办法：使用的终端是 iTrem ，使用了 zsh,则需要配置 .zshrc 文件（同.bash_profile的配置）
+>> vim .zshrc
+>> source .zshrc
+
+以后任意打开终端都可以 创建flutter 项目了。 
+
+## 常见问题3
 
 
 
